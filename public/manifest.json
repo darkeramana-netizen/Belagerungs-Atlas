@@ -1,0 +1,20 @@
+{
+  "name": "Belagerungs-Atlas",
+  "short_name": "Burgen ⚔️",
+  "description": "35 historische und Fantasy-Festungen analysieren, belagern und vergleichen",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#060504",
+  "theme_color": "#060504",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "education", "entertainment"],
+  "lang": "de"
+}
