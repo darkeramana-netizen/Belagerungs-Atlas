@@ -800,7 +800,7 @@ const CASTLES = [
  attackTips:["Spion (Maeglin) gewinnen","Zugangspfad erkunden","Drachen & Balrogs über die Berge"],
  siegeCtx:"Du bist Morgoths Stratege. Du hast Maeglin. Er kennt den Weg und jede Schwachstelle.",defender:"König Turgon"},
 
-{id:"barad_dur",name:"Barad-dûr",sub:"Saurons Dunkler Turm",era:"Zweites & Drittes Zeitalter",year:3018,loc:"Mordor",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"👁️",
+{id:"barad_dur",name:"Barad-dûr",sub:"Saurons Dunkler Turm",era:"Zweites & Drittes Zeitalter",year:3018,loc:"Mordor",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"👁️",plan:"tower",
  theme:{bg:"#0c0804",accent:"#cc4422",glow:"rgba(180,50,20,0.22)"},
  ratings:{walls:99,supply:70,position:96,garrison:98,morale:99},
  desc:"Solange der Eine Ring existiert: absolut uneinnehmbar. Fiel als Frodo den Ring warf.",
@@ -812,7 +812,7 @@ const CASTLES = [
  attackTips:["Ring zerstören (Schicksalsberg)","Ablenkung vor den Morannon-Toren","Gollum als unfreiwilligen Agenten"],
  siegeCtx:"Du willst Barad-dûr zerstören. Elessars Armee lenkt ab. Zwei Hobbits nähern sich dem Schicksalsberg.",defender:"Sauron, Herr der Ringe"},
 
-{id:"erebor",name:"Erebor",sub:"Einsamer Berg",era:"Drittes Zeitalter",year:2941,loc:"Rhûn-Randgebirge",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"⛏️",
+{id:"erebor",name:"Erebor",sub:"Einsamer Berg",era:"Drittes Zeitalter",year:2941,loc:"Rhûn-Randgebirge",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"⛏️",plan:"mountain",
  theme:{bg:"#0e0c06",accent:"#bb8822",glow:"rgba(170,120,30,0.15)"},
  ratings:{walls:96,supply:92,position:90,garrison:55,morale:80},
  desc:"Ein ganzer Berg. Einziger Zugang: ein Tunnel. Innen: Labyrinthe und ein Drache.",
@@ -1095,7 +1095,7 @@ const CASTLES = [
 
 // ── PERSÖNLICHE BURG ───────────────────────────────────────────────────────
 
-{id:"schwarzer_bergfried",name:"Schwarzer Bergfried",sub:"Wächter der verbotenen Karten",era:"ca. 800–850",year:825,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"⬛",
+{id:"schwarzer_bergfried",name:"Schwarzer Bergfried",sub:"Wächter der verbotenen Karten",era:"ca. 800–850",year:825,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"⬛",plan:"tower",
  theme:{bg:"#060608",accent:"#8a8a9a",glow:"rgba(100,100,130,0.18)"},
  ratings:{walls:85,supply:65,position:92,garrison:55,morale:99},
  desc:"Die älteste Festung des Ordo Custodum Sorrowland. Hier lagern die verbotenen Karten — Wegbeschreibungen zu Ruinen einer untergegangenen Zivilisation, deren Wiederentdeckung politische Dynastien stürzen könnte.",
@@ -1253,7 +1253,7 @@ const CASTLES = [
 
 // ── NEUE FANTASY-BURGEN BATCH 3 ────────────────────────────────────────────
 
-{id:"orthanc",name:"Orthanc",sub:"Gespaltene Spitze",era:"Zweites Zeitalter",year:3019,loc:"Nan Curunír, Mittelerde",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"🗼",
+{id:"orthanc",name:"Orthanc",sub:"Gespaltene Spitze",era:"Zweites Zeitalter",year:3019,loc:"Nan Curunír, Mittelerde",type:"fantasy",epoch:"Mittelerde",region:"mittelerde",icon:"🗼",plan:"tower",
  theme:{bg:"#080c08",accent:"#667766",glow:"rgba(85,100,85,0.14)"},
  ratings:{walls:99,supply:65,position:85,garrison:45,morale:88},
  desc:"Von den Númenórern in der Zweiten Ära aus schwarzem Stein gebaut — unzerstörbar durch alle bekannten Kräfte außer den Händen von Sauron selbst.",
@@ -8783,6 +8783,10 @@ function CastleDiorama({castle}){
       const innerZones=zones.filter(z=>z.r>10&&z.r<=18);
       const ptZones   =zones.filter(z=>z.r<=10);
 
+      const plan=castle.plan||'';
+      const isTowerPlan=plan==='tower';
+      const isMountainPlan=plan==='mountain';
+
       const isFantasy    =castle.type==='fantasy';
       const isMesa       =(castle.ratings.position||0)>=95&&!isFantasy;
       const hasMtnBarrier=zones.some(z=>z.r>36&&z.a>=8)&&!isMesa;
@@ -8910,7 +8914,7 @@ function CastleDiorama({castle}){
 
       // ── Terrain (gT) ─────────────────────────────────────────────────
       const hillMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#1e1408'),0.5)});
-      if(isMesa){
+      if(!isMountainPlan&&isMesa){
         const mesaCol=new T.Color(castle.theme.bg).lerp(new T.Color('#7a5a30'),0.5);
         const mesa=tag(new T.Mesh(new T.CylinderGeometry(outerR+1.0,outerR+2.2,terrainH*2,24),new T.MeshLambertMaterial({color:mesaCol})),
           'Tafelberg / Mesa','Ein steil abfallender Felstafel bietet natürlichen Schutz auf allen Seiten — kaum zu ersteigen, schwer zu untergraben.',
@@ -8918,7 +8922,7 @@ function CastleDiorama({castle}){
         mesa.position.y=terrainH;gT.add(mesa);
         const cap=new T.Mesh(new T.CircleGeometry(outerR+1.0,24),gndMat);
         cap.rotation.x=-Math.PI/2;cap.position.y=terrainH*2;gT.add(cap);
-      } else if(terrainH>0.18){
+      } else if(!isMountainPlan&&terrainH>0.18){
         const mnd=tag(new T.Mesh(new T.ConeGeometry(outerR+2.5,terrainH*2.8,18),hillMat),
           isMesa?'Felsklippe':'Burgberg',
           'Höhenburgen nutzen natürliche Anhöhen als ersten Schutzring. Angreifer müssen bergauf kämpfen — erschöpft und im Nachteil.',
@@ -8976,7 +8980,7 @@ function CastleDiorama({castle}){
       }
 
       // ── Moat (gW) ────────────────────────────────────────────────────
-      if(hasMoat){
+      if(hasMoat&&!isMountainPlan){
         const mr=isRound?outerR+0.62:Math.hypot(outerR,outerR*aspect)*0.78+0.55;
         const mt=tag(new T.Mesh(new T.TorusGeometry(mr,0.50,6,44),moatMat),
           'Burggraben','Der Wassergraben verhindert das Untergraben der Mauern (Minengänge) und hält Sturmtruppen auf Abstand.',
@@ -8985,7 +8989,7 @@ function CastleDiorama({castle}){
       }
 
       // ── ROUND plan walls (gW) ─────────────────────────────────────────
-      if(isRound&&wallZones.length>0){
+      if(isRound&&wallZones.length>0&&!isTowerPlan&&!isMountainPlan){
         const owm=tag(new T.Mesh(new T.CylinderGeometry(outerR,outerR,wallH,48,1,true),stoneMat),
           'Äußerer Ringwall',
           'Konzentrische Ringe aus Stein — jeder Ring ist eine eigenständige Verteidigungslinie. Fällt eine, kämpft man im nächsten Ring weiter.',
@@ -9013,7 +9017,7 @@ function CastleDiorama({castle}){
       }
 
       // ── RECT plan walls (gW) ──────────────────────────────────────────
-      if(!isRound&&wallZones.length>0){
+      if(!isRound&&wallZones.length>0&&!isTowerPlan&&!isMountainPlan){
         const hw=outerR, hd=outerR*aspect, wt=0.18;
         const courtMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).multiplyScalar(1.3)});
         const cf=tag(new T.Mesh(new T.BoxGeometry(hw*2,0.04,hd*2),courtMat),
@@ -9061,7 +9065,7 @@ function CastleDiorama({castle}){
       }
 
       // ── Inner ward (gI) ───────────────────────────────────────────────
-      if(innerZones.length>0){
+      if(innerZones.length>0&&!isTowerPlan&&!isMountainPlan){
         const iH=wallH*1.36;
         if(isRound){
           const iw=tag(new T.Mesh(new T.CylinderGeometry(innerR,innerR,iH,32,1,true),innerMat),
@@ -9133,32 +9137,35 @@ function CastleDiorama({castle}){
       });
 
       // ── Keep / Donjon (gK) ────────────────────────────────────────────
-      if(isRound){
-        const kp=tag(new T.Mesh(new T.CylinderGeometry(0.40,0.45,keepH,spireS),keepMat),
-          'Donjon / Bergfried',
-          'Der Bergfried ist der letzte Rückzugsturm. Hier stand die Besatzung bis zur Kapitulation. Er diente auch als Aussichts­posten und Statussymbol.',
-          `Höhe: ~${(keepH*3.5).toFixed(1)}m · Mauerwertung: ${castle.ratings.walls}/100`);
-        kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
-        const kr=new T.Mesh(new T.ConeGeometry(0.50,isFantasy?1.55:0.70,spireS),roofMat);
-        kr.position.set(0,topY+keepH+(isFantasy?0.82:0.40),0);gK.add(kr);
-      } else {
-        const kw=0.78, kd=kw*Math.min(aspect,1.3);
-        const kp=tag(new T.Mesh(new T.BoxGeometry(kw,keepH,kd),keepMat),
-          'Donjon / Bergfried',
-          'Der quadratische Bergfried ist typisch für normannische und frühmittelalterliche Burgen. Dicke Mauern, wenige Fenster, schwere Eingangstür im ersten Obergeschoss — eine Miniatur­festung in der Festung.',
-          `Höhe: ~${(keepH*3.5).toFixed(1)}m · Grundriss: ${(kw*3.5).toFixed(0)}m × ${(kd*3.5).toFixed(0)}m`);
-        kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
-        [[kw/2,0],[-kw/2,0],[0,kd/2],[0,-kd/2]].forEach(([dx,dz])=>{
-          const cm=new T.Mesh(new T.BoxGeometry(0.13,0.20,0.13),keepMat);
-          cm.position.set(dx,topY+keepH+0.12,dz);gK.add(cm);
-        });
-        const kr=new T.Mesh(new T.ConeGeometry(Math.max(kw,kd)*0.72,0.68,4),roofMat);
-        kr.rotation.y=Math.PI/4;kr.position.set(0,topY+keepH+0.43,0);gK.add(kr);
+      if(!isTowerPlan&&!isMountainPlan){
+        if(isRound){
+          const kp=tag(new T.Mesh(new T.CylinderGeometry(0.40,0.45,keepH,spireS),keepMat),
+            'Donjon / Bergfried',
+            'Der Bergfried ist der letzte Rückzugsturm. Hier stand die Besatzung bis zur Kapitulation. Er diente auch als Aussichts­posten und Statussymbol.',
+            `Höhe: ~${(keepH*3.5).toFixed(1)}m · Mauerwertung: ${castle.ratings.walls}/100`);
+          kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
+          const kr=new T.Mesh(new T.ConeGeometry(0.50,isFantasy?1.55:0.70,spireS),roofMat);
+          kr.position.set(0,topY+keepH+(isFantasy?0.82:0.40),0);gK.add(kr);
+        } else {
+          const kw=0.78, kd=kw*Math.min(aspect,1.3);
+          const kp=tag(new T.Mesh(new T.BoxGeometry(kw,keepH,kd),keepMat),
+            'Donjon / Bergfried',
+            'Der quadratische Bergfried ist typisch für normannische und frühmittelalterliche Burgen. Dicke Mauern, wenige Fenster, schwere Eingangstür im ersten Obergeschoss — eine Miniatur­festung in der Festung.',
+            `Höhe: ~${(keepH*3.5).toFixed(1)}m · Grundriss: ${(kw*3.5).toFixed(0)}m × ${(kd*3.5).toFixed(0)}m`);
+          kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
+          [[kw/2,0],[-kw/2,0],[0,kd/2],[0,-kd/2]].forEach(([dx,dz])=>{
+            const cm=new T.Mesh(new T.BoxGeometry(0.13,0.20,0.13),keepMat);
+            cm.position.set(dx,topY+keepH+0.12,dz);gK.add(cm);
+          });
+          const kr=new T.Mesh(new T.ConeGeometry(Math.max(kw,kd)*0.72,0.68,4),roofMat);
+          kr.rotation.y=Math.PI/4;kr.position.set(0,topY+keepH+0.43,0);gK.add(kr);
+        }
       }
 
       // ── Eye of Sauron (gK) ────────────────────────────────────────────
       if(hasEye){
-        const ey=topY+keepH+(isFantasy?2.2:1.5);
+        const eyeKeepH=isTowerPlan?keepH*3.2:keepH;
+        const ey=topY+eyeKeepH+(isFantasy?2.2:1.5);
         const eye=tag(new T.Mesh(new T.SphereGeometry(0.40,14,14),glowMat),
           'Auge Saurons',
           'Das Auge des Dunklen Herrn — allsehend, niemals schlafend. Es durchdringt Lügen und findet jeden, der den Einen Ring trägt.',
@@ -9167,6 +9174,135 @@ function CastleDiorama({castle}){
         const pupil=new T.Mesh(new T.SphereGeometry(0.16,10,10),darkMat);
         pupil.position.set(0,ey,0.32);gK.add(pupil);
         const epl=new T.PointLight(acCol.getHex(),4.0,9);epl.position.set(0,ey,0);gK.add(epl);
+      }
+
+      // ── TOWER plan: single massive tower (barad_dur, orthanc, schwarzer_bergfried) ──
+      if(isTowerPlan){
+        const isBaradDur=castle.id==='barad_dur';
+        const isOrthanc=castle.id==='orthanc';
+        const tH=keepH*(isBaradDur?3.2:isOrthanc?3.8:2.0);
+        const tR=isBaradDur?1.05:isOrthanc?0.34:0.58;
+        const tSegs=isBaradDur?8:isOrthanc?4:6;
+        const tMat=(isBaradDur||isOrthanc)?darkMat:keepMat;
+        // Main tower body
+        const twr=tag(new T.Mesh(new T.CylinderGeometry(tR*0.88,tR,tH,tSegs),tMat),
+          isBaradDur?'Barad-dûr':isOrthanc?'Orthanc-Turm':'Schwarzer Bergfried',
+          isBaradDur?'Saurons Dunkler Turm — solange der Eine Ring existiert unzerstörbar. Ein ganzer Turm aus reinem Willen zusammengehalten.':
+          isOrthanc?'Aus schwarzem Númenórer-Stein gehauen — keine bekannte Waffe kann ihn beschädigen. Überlebt selbst den Fall von Isengard.':
+          'Massiver Wehrturm mit extrem dicken Mauern — die verbotenen Karten hinter einer Doppelwand eingemauert.',
+          `Höhe: ~${(tH*3.5).toFixed(1)}m`);
+        twr.position.y=topY+tH/2;twr.castShadow=true;gK.add(twr);
+        // Battlements
+        const bN=isOrthanc?4:8;
+        for(let i=0;i<bN;i++){
+          const a=(i/bN)*Math.PI*2+(isOrthanc?Math.PI/4:0);
+          const bt2=new T.Mesh(new T.BoxGeometry(0.13,0.26,0.13),tMat);
+          bt2.position.set(Math.cos(a)*tR*0.82,topY+tH+0.15,Math.sin(a)*tR*0.82);gK.add(bt2);
+        }
+        if(isOrthanc){
+          // Orthanc: 4 distinctive split prongs at top
+          for(let i=0;i<4;i++){
+            const a=(i/4)*Math.PI*2+Math.PI/4;
+            const pr=new T.Mesh(new T.CylinderGeometry(0.055,0.105,tH*0.24,4),darkMat);
+            pr.position.set(Math.cos(a)*tR*0.70,topY+tH+tH*0.12,Math.sin(a)*tR*0.70);gK.add(pr);
+          }
+          // Flooded/ruined Isengard: flat dark disc at base
+          const ruins=tag(new T.Mesh(new T.CylinderGeometry(4.5,4.5,0.06,28),new T.MeshLambertMaterial({color:new T.Color('#060e08'),transparent:true,opacity:0.88})),
+            'Überschwemmtes Isengard','Die Ents öffneten den Fluss Isen — Isengard ertrank. Nur Orthanc selbst überstand die Flut.','');
+          ruins.position.y=topY+0.03;gK.add(ruins);
+        }
+        if(isBaradDur){
+          // Lava pools at base of Barad-dûr
+          for(let i=0;i<4;i++){
+            const a=(i/4)*Math.PI*2;
+            const lp=new T.Mesh(new T.CylinderGeometry(0.38,0.38,0.06,10),lavaMat);
+            lp.position.set(Math.cos(a)*(tR+1.2),topY+0.04,Math.sin(a)*(tR+1.2));gK.add(lp);
+            const lpl2=new T.PointLight(0xff3a00,1.5,4);
+            lpl2.position.set(Math.cos(a)*(tR+1.2),topY+0.3,Math.sin(a)*(tR+1.2));gK.add(lpl2);
+          }
+          // Support buttresses
+          for(let i=0;i<6;i++){
+            const a=(i/6)*Math.PI*2;
+            const bt3=new T.Mesh(new T.BoxGeometry(0.18,tH*0.42,0.18),darkMat);
+            bt3.position.set(Math.cos(a)*(tR+0.08),topY+tH*0.21,Math.sin(a)*(tR+0.08));gK.add(bt3);
+          }
+        }
+        if(!isBaradDur&&!isOrthanc){
+          // Schwarzer Bergfried: hexagonal outer courtyard wall on plateau
+          const cwR=tR+0.95;
+          const cw=tag(new T.Mesh(new T.CylinderGeometry(cwR,cwR,wallH*0.7,6,1,true),stoneMat),
+            'Außenmauer','Sechseckige Umfassungsmauer des Plateaus — auf drei Seiten senkrecht abfallende Klippe. Ein Dutzend Ritter kann hier eine Armee aufhalten.','');
+          cw.position.y=topY+wallH*0.35;gW.add(cw);
+          for(let i=0;i<6;i++){
+            const a=(i/6)*Math.PI*2;
+            const m2=new T.Mesh(new T.BoxGeometry(0.10,0.20,0.10),stoneMat);
+            m2.position.set(Math.cos(a)*cwR,topY+wallH*0.70+0.12,Math.sin(a)*cwR);gW.add(m2);
+          }
+          // Signal fire on wall
+          const fMat2=new T.MeshLambertMaterial({color:new T.Color('#ff8800'),emissive:new T.Color('#ff5500'),emissiveIntensity:2.0});
+          const fb=tag(new T.Mesh(new T.ConeGeometry(0.08,0.24,6),fMat2),'Signalfeuer',
+            'Feuerzeichen nachts, Rauchsignale tagsüber — Code-System nur Ordensritter kennen. Verbindet den Bergfried mit Castle Sorrow und Gravecrest.','');
+          fb.position.set(cwR*0.72,topY+wallH*0.70+0.18,cwR*0.72);gK.add(fb);
+          const fpl3=new T.PointLight(0xff8800,2.5,5);fpl3.position.set(cwR*0.72,topY+wallH*0.70+0.4,cwR*0.72);gK.add(fpl3);
+        }
+        // Eye of Sauron still handled above — but tower plan needs its own keepH offset
+        // Move eye higher for tower plan (if barad_dur)
+      }
+
+      // ── MOUNTAIN plan: Erebor — carved mountain fortress ──────────────
+      if(isMountainPlan){
+        const mH=7.8+(castle.ratings.position/100)*2.5;
+        const mR=5.6;
+        const mtnMat2=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#5a4a35'),0.55)});
+        const snowMat2=new T.MeshLambertMaterial({color:new T.Color('#ddeae6')});
+        // Main mountain cone
+        const mtn=tag(new T.Mesh(new T.ConeGeometry(mR,mH,16),mtnMat2),
+          'Erebor-Massiv','Ein ganzer Berg als Festung — die Bergflanken selbst sind die Außenmauern. Unersteigbar auf allen Seiten außer vorn.',
+          `Positionswertung: ${castle.ratings.position}/100`);
+        mtn.position.y=mH/2;gT.add(mtn);
+        // Snow cap
+        const snow=new T.Mesh(new T.ConeGeometry(mR*0.21,mH*0.17,10),snowMat2);
+        snow.position.y=mH-mH*0.085;gT.add(snow);
+        // Rocky outcrops around base
+        for(let i=0;i<6;i++){
+          const a=(i/6)*Math.PI*2,sc=0.42+((i*41+73)%100)/100*0.50;
+          const rk=new T.Mesh(new T.ConeGeometry(sc*0.75,mH*0.35*sc,7),mtnMat2);
+          rk.position.set(Math.cos(a)*(mR*0.58),mH*0.175*sc,Math.sin(a)*(mR*0.58));gT.add(rk);
+        }
+        // Front gate carved into mountain face
+        const gH=wallH*1.25,gW2=0.72;
+        const gateDepth=mR*0.38;
+        const gateFrame=tag(new T.Mesh(new T.BoxGeometry(gW2*2.5,gH*1.5,0.60),keepMat),
+          'Vordertor Erebor','Einziger bekannter Zugang — massives Steintor in den Fels gehauen, von Zwergenmeistern errichtet. Leicht verteidigbar, schwer zu brechen.',
+          '⚠ Einziger Zugang (frontal)');
+        gateFrame.position.set(0,gH*0.75,gateDepth);gK.add(gateFrame);
+        const gateOpen=new T.Mesh(new T.BoxGeometry(gW2,gH,0.64),darkMat);
+        gateOpen.position.set(0,gH*0.52,gateDepth);gK.add(gateOpen);
+        // Tunnel arch details
+        const archMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#8a7040'),0.7)});
+        for(let s=-1;s<=1;s+=2){
+          const col=new T.Mesh(new T.BoxGeometry(0.18,gH*1.35,0.18),archMat);
+          col.position.set(s*(gW2*0.65),gH*0.68,gateDepth-0.05);gK.add(col);
+        }
+        // Gold glow (Smaugs Schatz tief im Berg)
+        const goldLight=new T.PointLight(0xffaa22,4.0,8);
+        goldLight.position.set(0,gH*0.55,gateDepth-2.2);gK.add(goldLight);
+        const goldLight2=new T.PointLight(0xdd8800,2.0,5);
+        goldLight2.position.set(0.8,gH*0.3,gateDepth-1.5);gK.add(goldLight2);
+        // Smaug-hint: glowing ember mass inside tunnel
+        const embMat=new T.MeshLambertMaterial({color:new T.Color('#ff6600'),emissive:new T.Color('#ff3300'),emissiveIntensity:1.8,transparent:true,opacity:0.65});
+        const emb=tag(new T.Mesh(new T.SphereGeometry(0.42,8,8),embMat),
+          'Schatzberg (Smaugs Lager)','Ein Drache schläft auf einem Berg aus Gold. Er hört jedes Geräusch, riecht jeden fremden Duft — und wartet.','Drache schläft hier.');
+        emb.position.set(0,gH*0.45,gateDepth-2.8);gK.add(emb);
+        const spl=new T.PointLight(0xff4400,2.5,6);spl.position.set(0,gH*0.45,gateDepth-2.8);gK.add(spl);
+        // Secret side door (faint, hard to see)
+        const sdMat=new T.MeshLambertMaterial({color:new T.Color('#cc7733'),transparent:true,opacity:0.45});
+        const sd=tag(new T.Mesh(new T.BoxGeometry(0.22,0.48,0.10),sdMat),
+          'Geheime Seitentür','Nur im letzten Mondlicht von Durins Tag sichtbar. Schlüssel + Mondlicht + der richtige Tag im Jahr — einziger nicht-frontaler Zugang.',
+          '⚠ Schwachstelle: Geheimeingang');
+        sd.position.set(mR*0.34,gH*0.38,-mR*0.34);gK.add(sd);
+        // Camera adjustment: look at mountain center
+        lookAt.set(0,mH*0.38,0);camRadius=18;phi_cam=0.58;positionCamera();
       }
 
       // ── Siege machines (gS) — animated catapults, tower, battering ram ──
@@ -9368,13 +9504,13 @@ function CastleDiorama({castle}){
         renderer.render(scene,camera);
       };
       tick();
-    }catch(e){console.error('Diorama error:',e);}};  // end try+init
+    }catch(e){console.error('Diorama error:',e);setReady(true);}};  // end try+init
 
     if(window.THREE){init();}
     else{
       const s=document.createElement('script');
       s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      s.onload=init;document.head.appendChild(s);
+      s.onload=init;s.onerror=()=>setReady(true);document.head.appendChild(s);
     }
     return()=>{
       camCtrlRef.current=null;
