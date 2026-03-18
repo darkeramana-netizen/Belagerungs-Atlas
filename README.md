@@ -9,7 +9,7 @@ Interaktiver Atlas für historische und Fantasy-Festungen — mit KI-gestützten
 ## 🏰 Features
 
 ### Burgen & Karten
-- **85 Festungen** — historisch (Europa, Nahost, Asien, Amerika, Afrika) und Fantasy (Mittelerde, Westeros, Sorrowland)
+- **100 Festungen** — historisch (Europa, Nahost, Asien, Amerika, Afrika) und Fantasy (Mittelerde, Westeros, Sorrowland)
 - **Querformat-Übersichtskarten** mit Stat-Balken, Score-Ring, Typ-Badge
 - **Karten-Tab** mit zwei Unter-Tabs:
   - **Grundriss** — zoombare SVG-Karte (0.8×–2.5×), klickbare Zonen mit Verteidigungswert-Balken, Angriffsmodus
@@ -32,7 +32,7 @@ Interaktiver Atlas für historische und Fantasy-Festungen — mit KI-gestützten
   - ⬛ Chroniken von Sorrowland (Legendär)
   - 👑 Edwards Eiserner Ring
   - ✦ Das Dritte Zeitalter (Mittelerde)
-  - 🌙 Die Mongolische Welle
+  - 🏇 Der Mongolensturm
 - **Choose-your-own-Adventure** — Entscheidungen mit echten Konsequenzen für den Belagerungsausgang
 
 ### Analyse & Tools
@@ -50,7 +50,12 @@ Interaktiver Atlas für historische und Fantasy-Festungen — mit KI-gestützten
 - **🏆 38 Achievements** mit Toast-Benachrichtigungen
 - **💾 localStorage** Persistenz
 - **🎖️ Scores-Tab** — Rekorde, Regionsauswertung, Filter, Export
-- **📊 Atlas-Tab** — globale Statistiken
+- **📊 Atlas-Tab** — Übersicht, Ranglisten, Analyse (3 Unter-Tabs)
+
+### PWA
+- Installierbar (Manifest + Service Worker v2, Burg-Icon + maskable-Variante)
+- **Offline-Fallback-Seite** bei fehlender Verbindung
+- 3 App-Shortcuts (Weltkarte, Simulator, Kampagnen)
 
 ### Der Ordo Custodum Sorrowland
 Eigene fiktive Ordensburg-Trilogie:
@@ -91,7 +96,7 @@ npm run dev
 
 ```
 belagerungs-atlas/
-├── src/App.jsx          ← Hauptkomponente (85 Burgen, alle Features)
+├── src/App.jsx          ← Hauptkomponente (100 Burgen, alle Features)
 ├── api/claude.js        ← Anthropic API Proxy
 ├── public/
 │   ├── manifest.json    ← PWA
@@ -109,13 +114,11 @@ React 18 + Vite · Leaflet.js · Anthropic Claude API · Vercel
 
 | Region | Anzahl |
 |--------|--------|
-| Europa | 18 |
-| Naher Osten / Zentralasien | 12 |
-| Japan | 5 |
-| Indien / Sri Lanka | 4 |
-| Südostasien | 5 |
-| Amerika (Nord/Süd/Mittel) | 8 |
-| Afrika | 4 |
-| Mittelerde | 10 |
-| Westeros | 5 |
-| Sorrowland | 3 |
+| Europa (inkl. Sorrowland) | 31 |
+| Naher Osten / Zentralasien / Afrika | 28 |
+| Ostasien (Japan, Indien, Südostasien) | 13 |
+| Amerika | 7 |
+| Mittelerde | 14 |
+| Westeros | 6 |
+| Südostasien | 1 |
+| **Gesamt** | **100** |
