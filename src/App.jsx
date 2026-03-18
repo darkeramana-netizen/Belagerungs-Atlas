@@ -522,7 +522,69 @@ const CASTLES = [
  strengths:["Konzentrische Doppelmauer","Zisternen für 5 Jahre","650m Hangposition","Dreifache Toranlagen"],
  weaknesses:["Nordflankenzugang","Garnison oft 200 statt 2000","Nahrungsabhängig von außen"],
  attackTips:["Nordwall zuerst","Vollständige Einkreisung","Versorgung kappen","Brief-Fälschung!"],
- siegeCtx:"1271 — Du befehligst Baibars' 8.000 Mann. 200 erschöpfte Ritter halten die Burg.",defender:"Grandmaster Bertrand de Blanquefort"},
+ siegeCtx:"1271 — Du befehligst Baibars' 8.000 Mann. 200 erschöpfte Ritter halten die Burg.",defender:"Grandmaster Bertrand de Blanquefort",
+ components:[
+  // ── ÄUSSERER MAUERRING (tiefer gelegen, h≈2.5) ──────────────────────────
+  {type:'WALL',x:-10,z:-9,x2:10,z2:-9,h:2.5,thick:0.8,
+   label:'Nordmauer (Außenring)',info:'Die nördliche Außenmauer schützte den Zutritt vom flacheren Nordhang — die einzige Seite, wo ein Angreifer tatsächlich Belagerungsmaschinen aufstellen konnte. Schwäche: flacheres Gelände.'},
+  {type:'WALL',x:10,z:-9,x2:10,z2:9,h:2.5,thick:0.8,
+   label:'Ostmauer (Außenring)',info:'Östliche Außenmauer mit Haupttor. Kaufleute und Pilger passierten hier — unter scharfer Bewachung der Flankentürme.'},
+  {type:'WALL',x:-10,z:9,x2:10,z2:9,h:2.5,thick:0.8,
+   label:'Südmauer (Außenring)',info:'Die Südseite der Außenmauer lag unterhalb der massiven inneren Schildmauer. Ein Durchbruch hier würde den Angreifer direkt vor die mächtigsten Türme des Krak bringen.'},
+  {type:'WALL',x:-10,z:-9,x2:-10,z2:9,h:2.5,thick:0.8,
+   label:'Westmauer (Außenring)',info:'Die Westmauer war in natürliches Felsgelände eingebettet — teilweise direkt aus dem Fels gehauen, was Minen unmöglich machte.'},
+  // Eck- und Zwischentürme Außenring
+  {type:'ROUND_TOWER',x:-10,z:-9,r:1.3,h:4.5,
+   label:'Eckturm NW (Außen)',info:'Nordwestturm mit Sichtlinie auf das Tal. Diente als Signalwachtposten.'},
+  {type:'ROUND_TOWER',x:10,z:-9,r:1.3,h:4.5,
+   label:'Eckturm NO (Außen)',info:'Nordostturm — gemeinsam mit dem NW-Turm überwachten sie den gesamten Nordhang.'},
+  {type:'ROUND_TOWER',x:10,z:9,r:1.3,h:4.5,
+   label:'Eckturm SO (Außen)',info:'Flankierte das Haupttor von Süden — enfilierender Beschuss entlang der Ost- und Südmauer.'},
+  {type:'ROUND_TOWER',x:-10,z:9,r:1.3,h:4.5,
+   label:'Eckturm SW (Außen)',info:'Kontrollierte den Zugangspfad von Südwesten und das Vorgelände des Berges.'},
+  {type:'ROUND_TOWER',x:0,z:-9,r:1.1,h:4.0,
+   label:'Nordturm (Außenring)',info:'Mittlerer Nordturm — Beobachtungsposten für heranrückende Truppen. Der flachere Nordhang machte ihn besonders wichtig.'},
+  {type:'ROUND_TOWER',x:10,z:0,r:1.1,h:4.0,
+   label:'Ostturm (Außenring)',info:'Flankierungsturm neben dem Haupttor — deckte den Torzugang von Norden ab.'},
+  {type:'ROUND_TOWER',x:-10,z:-2,r:1.1,h:4.0,
+   label:'Westturm Nord',info:'Nördlicher Westturm — ermöglichte enfilierenden Beschuss entlang der Westmauer.'},
+  {type:'ROUND_TOWER',x:-10,z:5,r:1.1,h:4.0,
+   label:'Westturm Süd',info:'Südlicher Westturm — Sichtlinie auf die talus-geschützte Südseite des Innenhofs.'},
+  // Haupttor (Ostseite)
+  {type:'GATE',x:10,z:4,w:3.0,d:2.5,h:5.5,rotation:-Math.PI/2,
+   label:'Haupttor (Barbakane)',info:'Der Zugang war absichtlich gewunden — ein Angreifer, der das äußere Tor durchbrach, fand sich in einem engen Korridor unter Beschuss von drei Seiten. Eine Fallbrücke, zwei Fallgatter und Bohrungen im Gewölbe für siedendes Öl machten diesen Gang zur Falle.'},
+  // ── INNERER MAUERRING (erhöht um 1.8, h≈4–5.5) ──────────────────────────
+  {type:'WALL',x:-5,z:-5.5,x2:5,z2:-5.5,h:4.2,y:1.8,thick:1.0,
+   label:'Innere Nordmauer',info:'Schützte den Konventsaal und die Kapelle. Mehrere Wehrgänge und zahlreiche Schießscharten ermöglichten Bogenschützen parallelen Beschuss.'},
+  {type:'WALL',x:5,z:-5.5,x2:5,z2:3.5,h:4.2,y:1.8,thick:1.0,
+   label:'Innere Ostmauer',info:'Die Verbindung zwischen dem Großen Turm und dem Nordostturm des Innenhofs — hier verlief der gedeckte Wehrgang.'},
+  {type:'WALL',x:-5,z:-5.5,x2:-5,z2:3.5,h:4.2,y:1.8,thick:1.0,
+   label:'Innere Westmauer',info:'Die Westseite des Innenhofs. Weniger exponiert als die Süd- oder Ostseite, diente aber als Verbindungsglied.'},
+  // Glacis / Schildmauer Süd (das mächtigste Element)
+  {type:'WALL',x:-5,z:3.5,x2:5,z2:3.5,h:6.0,y:1.8,thick:2.8,
+   label:'Schildmauer / Glacis (Süd)',info:'Das ikonischste Element des Krak — eine 6 Meter dicke, leicht geneigte Steinschale auf dem abfallenden Südhang. Sie verteilt den Aufprall von Katapultsteinen und macht Minen praktisch unmöglich. Schwäche: Erdbeben 1202 beschädigte die Fundamente. Nur Aushungern konnte sie überwinden.'},
+  // Innere Ecktürme (Nord)
+  {type:'ROUND_TOWER',x:-5,z:-5.5,r:1.5,h:7.0,y:1.8,
+   label:'Nordwestturm (Innen)',info:'Turm an der Nordwestecke des Innenhofs — kontrollierte den Übergang zwischen Nord- und Westmauer, mit Sichtlinie ins Vorland.'},
+  {type:'ROUND_TOWER',x:5,z:-5.5,r:1.5,h:7.0,y:1.8,
+   label:'Nordostturm (Innen)',info:'Überblickte das gesamte äußere Ostfeld und das Haupttor — ideal für Bogenschützen zur Unterstützung der Torverteidigung.'},
+  // Die drei massiven Südtürme (das Herzstück des Krak)
+  {type:'ROUND_TOWER',x:-5,z:3.5,r:2.0,h:9.5,y:1.8,
+   label:'Südwestturm (Wächterturm)',info:'Einer der drei mächtigen Südtürme — mit Maschikulierungen (Gusserker) an der Spitze, durch die Steine, Öl und Pech senkrecht auf Angreifer geworfen wurden. Dreistöckig mit eigener Wasserversorgung.'},
+  {type:'ROUND_TOWER',x:0,z:3.5,r:1.9,h:9.0,y:1.8,
+   label:'Südmittelturm',info:'Mittlerer Südturm der inneren Schildmauer. Die Maschikulierungsreihe entlang aller drei Südtürme ermöglichte lückenlosen vertikalen Beschuss — kein Angreifer konnte die Mauerfüße ungestraft erreichen.'},
+  {type:'ROUND_TOWER',x:5,z:3.5,r:2.3,h:11.0,y:1.8,
+   label:'Torre Grande (Großer Turm)',info:'Der mächtigste Turm des gesamten Krak des Chevaliers — dreistöckig, mit eigenem Brunnen und Lagerraum für Monate. Er konnte als völlig selbstständiger letzter Rückzugspunkt fungieren. 1271 hielten die Johanniter diesen Turm noch, als die äußere Festung bereits gefallen war. Erst ein gefälschter Brief des Sultans brachte ihn zur Übergabe.'},
+  // Konventsaal (Großer Saal entlang der Nordseite des Innenhofs)
+  {type:'SQUARE_TOWER',x:0,z:-4.3,w:8.0,d:2.4,h:3.5,y:1.8,
+   label:'Konventsaal (Großer Saal)',info:'Der gotische Konventsaal der Johanniter — über 36 Meter lang, mit eleganten Kreuzrippengewölben. Hier tagte der Ordensrat, wurden Entscheidungen über Verteidigung und Diplomatie getroffen. Die Fenster zeigen feine arabische Einflüsse — ein Zeugnis des kulturellen Austauschs trotz Krieg.'},
+  // Inneres Tor / Passage
+  {type:'GATE',x:5,z:-1.5,w:2.5,d:2.0,h:5.0,y:1.8,rotation:-Math.PI/2,
+   label:'Inneres Tor (Gewundener Korridor)',info:'Das Innentor war durch einen bewusst gewundenen, langen Korridor gesichert. Selbst bei Einbruch in den äußeren Hof war diese Passage ein eigenständiges Hindernis — eng, dunkel, mit Fallgattern und Schießscharten auf beiden Seiten.'},
+  // Zisternen (in der äußeren Ward, NW-Bereich)
+  {type:'SQUARE_TOWER',x:-7,z:4,w:5,d:3.5,h:0.6,y:0,
+   label:'Zisternen (Wasserspeicher)',info:'Die unterirdischen Zisternen des Krak konnten über 5 Jahre Wasser für die gesamte Garnison speichern. Das war die eigentliche Geheimwaffe — keine Belagerung durch Durst konnte die Festung bezwingen. 40.000 m³ Wasser, gesammelt aus Regenwasser und einer Quelle.'},
+ ]},
 
 {id:"masada",name:"Masada",sub:"Jüdische Bergfestung",era:"73 n.Chr.",year:73,loc:"Judäa",type:"real",epoch:"Antike",region:"nahost",icon:"🪨",
  theme:{bg:"#150c05",accent:"#c97a40",glow:"rgba(180,100,50,0.15)"},
@@ -8746,882 +8808,388 @@ function Lexikon({castle,onAsk}){
   );
 }
 
+
 // ── Castle 3D Diorama ─────────────────────────────────────────────────────
-// Plan type: 'round' = fantasy + ring-wall castles (concentric cylinders)
-//            'rect'  = real medieval castles (4 flat box-wall segments)
-//            'mesa'  = cliff/plateau castle (Masada etc.)
-// Features: spherical camera orbit, raycaster inspection, educational labels,
-// Singleton WebGL renderer — browsers cap WebGL contexts at ~16 per page.
-// Reusing one renderer avoids "blank scene" after navigating many castles.
+// Component-based system: WALL · ROUND_TOWER · SQUARE_TOWER · GATE presets
+// Each castle defines `components: [{type, x, z, ...}]` or uses procedural fallback.
+// Click any element → info overlay. Drag: orbit. Scroll: zoom.
 let _dioramaRenderer=null;
 function _getRenderer(){
   if(!_dioramaRenderer){
-    _dioramaRenderer=new THREE.WebGLRenderer({antialias:true});
+    _dioramaRenderer=new THREE.WebGLRenderer({antialias:true,logarithmicDepthBuffer:false});
     _dioramaRenderer.shadowMap.enabled=true;
     _dioramaRenderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    _dioramaRenderer.toneMapping=THREE.ACESFilmicToneMapping;
+    _dioramaRenderer.toneMappingExposure=1.15;
   }
   return _dioramaRenderer;
 }
-//           animated siege machines, day/night, camera presets, build stages, screenshot
+
+// ── Preset builders ───────────────────────────────────────────────────────
+function _mkMat(hex,rough=0.9,metal=0.03){
+  return new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:rough,metalness:metal});
+}
+const _MATS={
+  stone:  ()=>_mkMat(0x4a3d32,0.92,0.03),
+  dark:   ()=>_mkMat(0x2e2318,0.95,0.01),
+  roof:   ()=>_mkMat(0x1e1610,0.88,0.02),
+  ground: ()=>_mkMat(0x1c1a10,1.0,0.0),
+  gate:   ()=>_mkMat(0x3a2f22,0.94,0.04),
+};
+
+// WALL: box stretched between (x,z)→(x2,z2) with battlements
+function buildWall(p,sm,dm){
+  const dx=p.x2-p.x, dz=p.z2-p.z;
+  const len=Math.sqrt(dx*dx+dz*dz), ang=Math.atan2(dx,dz);
+  const h=p.h||3, thick=p.thick||0.75, y=p.y||0;
+  const g=new THREE.Group();
+  g.position.set((p.x+p.x2)/2, y, (p.z+p.z2)/2);
+  g.rotation.y=ang;
+  g.userData={label:p.label||'',info:p.info||''};
+  // Main wall
+  const wall=new THREE.Mesh(new THREE.BoxGeometry(len,h,thick),sm);
+  wall.position.y=h/2; wall.castShadow=true; wall.receiveShadow=true; g.add(wall);
+  // Merlons (every ~1.1 units)
+  const spacing=1.1, start=-(len/2)+spacing/2;
+  for(let t=start; t<len/2-0.1; t+=spacing){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(0.44,0.62,thick*1.05),sm);
+    m.position.set(t, h+0.31, 0); g.add(m);
+  }
+  return g;
+}
+
+// ROUND_TOWER: cylinder + battlements ring + cone roof
+function buildRoundTower(p,sm,dm,rm){
+  const r=p.r||1.2, h=p.h||5, y=p.y||0;
+  const g=new THREE.Group();
+  g.position.set(p.x, y, p.z);
+  g.userData={label:p.label||'',info:p.info||''};
+  // Body (slight batter at base)
+  const body=new THREE.Mesh(new THREE.CylinderGeometry(r,r*1.12,h,18),sm);
+  body.position.y=h/2; body.castShadow=true; body.receiveShadow=true; g.add(body);
+  // Battlement ring
+  const bc=Math.max(8,Math.round(r*TWO_PI_APPROX));
+  for(let i=0;i<bc;i+=2){
+    const a=(i/bc)*Math.PI*2;
+    const mrl=new THREE.Mesh(new THREE.BoxGeometry(0.38,0.60,0.34),sm);
+    mrl.position.set(Math.sin(a)*(r+0.14), h+0.30, Math.cos(a)*(r+0.14));
+    mrl.rotation.y=a; g.add(mrl);
+  }
+  // Cone roof
+  const cH=r*1.55;
+  const cone=new THREE.Mesh(new THREE.ConeGeometry(r+0.14,cH,18),rm);
+  cone.position.y=h+cH/2; cone.castShadow=true; g.add(cone);
+  return g;
+}
+const TWO_PI_APPROX=6.2;
+
+// SQUARE_TOWER: box body + battlements on 4 sides
+function buildSquareTower(p,sm,dm,rm){
+  const w=p.w||2.5, d=p.d||2.5, h=p.h||5.5, y=p.y||0;
+  const g=new THREE.Group();
+  g.position.set(p.x, y, p.z);
+  if(p.rotation) g.rotation.y=p.rotation;
+  g.userData={label:p.label||'',info:p.info||''};
+  // Body
+  const body=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),sm);
+  body.position.y=h/2; body.castShadow=true; body.receiveShadow=true; g.add(body);
+  // Battlements on all 4 sides
+  [[0,d/2,false],[0,-d/2,false],[w/2,0,true],[-w/2,0,true]].forEach(([ox,oz,axis])=>{
+    const slen=axis?d:w;
+    for(let t=-(slen/2)+0.5; t<slen/2-0.1; t+=1.1){
+      const m=new THREE.Mesh(new THREE.BoxGeometry(0.40,0.60,0.34),sm);
+      m.position.set(axis?ox:ox+t, h+0.30, axis?oz+t:oz);
+      if(axis) m.rotation.y=Math.PI/2;
+      g.add(m);
+    }
+  });
+  return g;
+}
+
+// GATE: flanking towers + lintel
+function buildGate(p,sm,dm){
+  const w=p.w||3.5, d=p.d||2.2, h=p.h||5.0, y=p.y||0;
+  const g=new THREE.Group();
+  g.position.set(p.x, y, p.z);
+  if(p.rotation) g.rotation.y=p.rotation;
+  g.userData={label:p.label||'',info:p.info||''};
+  // Two flanking towers
+  [-1,1].forEach(s=>{
+    const tw=new THREE.Mesh(new THREE.BoxGeometry(d,h,d),sm);
+    tw.position.set(s*(w/2-d/2+0.1), h/2, 0); tw.castShadow=true; g.add(tw);
+  });
+  // Lintel
+  const lin=new THREE.Mesh(new THREE.BoxGeometry(w,0.5,d),sm);
+  lin.position.y=h*0.72; g.add(lin);
+  // Threshold (bottom fill)
+  const thr=new THREE.Mesh(new THREE.BoxGeometry(w,h*0.35,d),dm||sm);
+  thr.position.y=h*0.175; g.add(thr);
+  return g;
+}
+
+function _buildComponent(comp,sm,dm,rm){
+  switch(comp.type){
+    case 'WALL':         return buildWall(comp,sm,dm);
+    case 'ROUND_TOWER':  return buildRoundTower(comp,sm,dm,rm);
+    case 'SQUARE_TOWER': return buildSquareTower(comp,sm,dm,rm);
+    case 'GATE':         return buildGate(comp,sm,dm);
+    default: return null;
+  }
+}
+
+// ── Procedural fallback (castles without hand-crafted components) ──────────
+function generateComponents(castle){
+  const zones=castle.zones||[];
+  const wz=zones.filter(z=>z.r>18&&z.r<=36);
+  const walls=castle.ratings?.walls||50;
+  const pos=castle.ratings?.position||50;
+  const isF=castle.type==='fantasy';
+  // Outer ring size proportional to zone count
+  const oR=9+Math.min(wz.length,6)*0.5;
+  const iR=oR*0.52;
+  const oH=2+walls*0.014;
+  const iH=oH*1.5;
+  const keepH=3.5+walls*0.02;
+  const yOff=(pos>=90&&!isF)?2:1;
+  const tR=isF?1.4:1.2;
+  const cs=[];
+  // Outer walls
+  [[-oR,-oR,oR,-oR,'N'],[ oR,-oR,oR, oR,'O'],[-oR,oR,oR,oR,'S'],[-oR,-oR,-oR,oR,'W']]
+    .forEach(([x,z,x2,z2,dir])=>
+      cs.push({type:'WALL',x,z,x2,z2,h:oH,thick:0.7,
+        label:`Außenmauer ${dir}`,info:'Äußere Verteidigungslinie.'}));
+  // Outer corner towers
+  [[-oR,-oR],[oR,-oR],[oR,oR],[-oR,oR]].forEach(([x,z])=>
+    cs.push({type:'ROUND_TOWER',x,z,r:tR,h:oH*1.7,
+      label:'Eckturm (Außenring)',info:'Flankierungsturm.'}));
+  // Inner walls (elevated)
+  [[-iR,-iR,iR,-iR,'N'],[iR,-iR,iR,iR,'O'],[-iR,iR,iR,iR,'S'],[-iR,-iR,-iR,iR,'W']]
+    .forEach(([x,z,x2,z2,dir])=>
+      cs.push({type:'WALL',x,z,x2,z2,h:iH,y:yOff,thick:0.85,
+        label:`Innenmauer ${dir}`,info:'Innerer Mauerring.'}));
+  // Inner corner towers
+  [[-iR,-iR],[iR,-iR],[iR,iR],[-iR,iR]].forEach(([x,z])=>
+    cs.push({type:'ROUND_TOWER',x,z,r:tR*1.15,h:iH*1.5,y:yOff,
+      label:'Turm (Innenring)',info:'Innerer Wehrturm.'}));
+  // Gate
+  cs.push({type:'GATE',x:oR,z:0,w:3,d:2,h:oH*1.2,rotation:-Math.PI/2,
+    label:`Haupttor – ${castle.name}`,info:'Einziger regulärer Zugang.'});
+  // Keep
+  cs.push({type:'SQUARE_TOWER',x:0,z:0,w:3,d:3,h:keepH,y:yOff,
+    label:`Bergfried – ${castle.name}`,
+    info:`Letzter Rückzugspunkt der Garnison. Mauerstärke: ${walls}/100 Punkte.`});
+  return cs;
+}
+
+// ── CastleDiorama component ───────────────────────────────────────────────
 function CastleDiorama({castle}){
   const mountRef=useRef(null);
   const [ready,setReady]=useState(false);
   const [info,setInfo]=useState(null);
-  const [night,setNight]=useState(false);
-  const [stage,setStage]=useState(4);
   const infoRef=useRef(null);
-  const nightRef=useRef(false);
-  const stageRef=useRef(4);
-  const camCtrlRef=useRef(null);
   infoRef.current=setInfo;
-  const ac=castle.theme.accent;
-
-  const zones=castle.zones||[];
-  const isRound=castle.type==='fantasy'||zones.some(z=>/ring/i.test(z.l||''));
+  const ac=castle.theme?.accent||'#c9a84c';
 
   useEffect(()=>{
-    let animId,renderer;
+    let animId;
     const mount=mountRef.current;
     if(!mount) return;
     setReady(false);
     infoRef.current(null);
 
-    const init=()=>{try{
+    try{
       const T=THREE;
-      const W=mount.clientWidth||600;
-      const H=Math.min(Math.round(W*0.62),440);
+      const W=mount.clientWidth||700;
+      const H=Math.min(Math.round(W*0.60),460);
 
-      // ── Zone analysis ─────────────────────────────────────────────────
-      const wallZones =zones.filter(z=>z.r>18&&z.r<=36);
-      const innerZones=zones.filter(z=>z.r>10&&z.r<=18);
-      const ptZones   =zones.filter(z=>z.r<=10);
-
-      const plan=castle.plan||'';
-      const isTowerPlan=plan==='tower';
-      const isMountainPlan=plan==='mountain';
-
-      const isFantasy    =castle.type==='fantasy';
-      const isMesa       =(castle.ratings.position||0)>=95&&!isFantasy;
-      const hasMtnBarrier=zones.some(z=>z.r>36&&z.a>=8)&&!isMesa;
-      const hasVolcano   =zones.some(z=>/vulkan|thangorodrim/i.test(z.l||''));
-      const hasEye       =zones.some(z=>/auge/i.test(z.l||''));
-      const txt          =(castle.desc||'')+(castle.history||'');
-      const hasMoat      =/wassergraben|burggraben/i.test(txt)
-                         ||zones.some(z=>/graben/i.test(z.l||'')&&z.r>15);
-
-      // Aspect ratio from actual zone x,y spread
-      const zxA=zones.map(z=>z.x||50), zyA=zones.map(z=>z.y||50);
-      const xSp=zxA.length?Math.max(...zxA)-Math.min(...zxA):0;
-      const ySp=zyA.length?Math.max(...zyA)-Math.min(...zyA):0;
-      const aspect=xSp>8&&ySp>8
-        ? Math.min(1.65,Math.max(0.55,ySp/xSp))
-        : 0.82+((Math.abs(castle.year||0)*17+(castle.id.charCodeAt(0)||0)*11)%15)/40;
-
-      // ── Geometry params ──────────────────────────────────────────────
-      const outerR  =wallZones.length>0 ? 1.7+(wallZones[0].r/36)*1.55 : 2.4;
-      const innerR  =innerZones.length>0? 0.8+(innerZones[0].r/18)*0.85: outerR*0.54;
-      const wallH   =0.42+(castle.ratings.walls/100)*1.95;
-      const keepH   =1.1+(castle.ratings.walls/100)*2.3;
-      const towerN  =Math.min(4+zones.filter(z=>(z.a||0)>=4).length,10);
-      const terrainH=isMesa?1.55:(castle.ratings.position/100)*0.72;
-      const topY    =isMesa?terrainH*2:terrainH;
-      const spireH  =isFantasy?1.05:0.40;
-      const spireS  =isFantasy?8:9;
-
-      // ── Colors ───────────────────────────────────────────────────────
-      const acCol=new T.Color(ac);
-      const hsl={};acCol.getHSL(hsl);
-      const mkC=(l)=>new T.Color().setHSL(hsl.h,(isFantasy?0.48:0.12)+l*0.04,l);
-      const bgCol=new T.Color(castle.theme.bg).multiplyScalar(0.55);
-      const nightBgCol=new T.Color('#010108');
-
-      const stoneMat=new T.MeshLambertMaterial({color:mkC(0.20)});
-      const innerMat=new T.MeshLambertMaterial({color:mkC(0.28)});
-      const keepMat =new T.MeshLambertMaterial({color:mkC(0.35)});
-      const gndMat  =new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#1a1208'),0.6)});
-      const roofMat =new T.MeshLambertMaterial({color:acCol.clone().multiplyScalar(isFantasy?0.65:0.44)});
-      const moatMat =new T.MeshLambertMaterial({color:new T.Color('#0c1c28'),transparent:true,opacity:0.85});
-      const darkMat =new T.MeshLambertMaterial({color:new T.Color('#050302')});
-      const lavaMat =new T.MeshLambertMaterial({color:new T.Color('#ff3a00'),emissive:new T.Color('#ff2200'),emissiveIntensity:1.3});
-      const glowMat =new T.MeshLambertMaterial({color:acCol.clone(),emissive:acCol.clone(),emissiveIntensity:0.9});
-      const woodMat =new T.MeshLambertMaterial({color:new T.Color('#5a3810')});
-      const siegeMat=new T.MeshLambertMaterial({color:new T.Color('#6a4818')});
-
-      // ── Scene ────────────────────────────────────────────────────────
-      const scene=new T.Scene();
-      scene.background=bgCol.clone();
-      scene.fog=new T.FogExp2(bgCol.getHex(),0.054);
-      const camera=new T.PerspectiveCamera(42,W/H,0.1,130);
-      renderer=_getRenderer();
+      // Renderer (singleton)
+      const renderer=_getRenderer();
       renderer.setSize(W,H);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-      // Move canvas to this castle's mount (detach from previous if needed)
-      if(renderer.domElement.parentNode&&renderer.domElement.parentNode!==mount){
-        renderer.domElement.parentNode.removeChild(renderer.domElement);
-      }
-      if(!mount.contains(renderer.domElement))mount.appendChild(renderer.domElement);
+      renderer.shadowMap.enabled=true;
+      renderer.shadowMap.type=T.PCFSoftShadowMap;
+      if(!mount.contains(renderer.domElement)) mount.appendChild(renderer.domElement);
+      renderer.domElement.style.cssText='display:block;width:100%;height:100%;cursor:grab;';
 
-      // ── Stage groups ──────────────────────────────────────────────────
-      // gT=terrain(always) gP=palisade(stage1) gW=stone walls(2+)
-      // gI=inner ward(3+)  gK=keep+features(4) gS=siege(2+)
-      const grp=new T.Group(); scene.add(grp);
-      const gT=new T.Group(); grp.add(gT);
-      const gP=new T.Group(); grp.add(gP);
-      const gW=new T.Group(); grp.add(gW);
-      const gI=new T.Group(); grp.add(gI);
-      const gK=new T.Group(); grp.add(gK);
-      const gS=new T.Group(); grp.add(gS);
-      const gFire=new T.Group(); gS.add(gFire); // camp fires — night only
+      // Scene
+      const scene=new T.Scene();
+      scene.background=new T.Color(0x0c0a07);
+      scene.fog=new T.FogExp2(0x0c0a07,0.016);
 
-      // ── Spherical camera setup ────────────────────────────────────────
-      let autoTheta=Math.PI, manualTheta=0, phi_cam=0.52, camRadius=14.5;
-      const lookAt=new T.Vector3(0, topY+keepH*0.38, 0);
-      const positionCamera=()=>{
-        const sp=Math.sin(phi_cam), t=autoTheta+manualTheta;
-        camera.position.set(
-          lookAt.x+camRadius*sp*Math.sin(t),
-          lookAt.y+camRadius*Math.cos(phi_cam),
-          lookAt.z+camRadius*sp*Math.cos(t)
-        );
-        camera.lookAt(lookAt);
-      };
-      positionCamera();
+      // Camera
+      const camera=new T.PerspectiveCamera(52,W/H,0.1,200);
 
-      // ── Educational tag helper ────────────────────────────────────────
-      const tag=(mesh,label,desc,extra)=>{
-        mesh.userData={label,desc,extra:extra||''};
-        return mesh;
-      };
+      // Materials
+      const sm=_MATS.stone(), dm=_MATS.dark(), rm=_MATS.roof(), gm=_MATS.ground();
 
-      // ── Helpers (addTo param routes to correct stage group) ───────────
-      const wallSeg=(cx,cz,axis,len,yB,h,thick,mat,lbl,desc,addTo=gW)=>{
-        const geo=axis==='x'?new T.BoxGeometry(len,h,thick):new T.BoxGeometry(thick,h,len);
-        const w=tag(new T.Mesh(geo,mat),lbl||'Ringmauer',
-          desc||'Die Außenmauer schützt den Burghof. Dicke Steinmauern widerhalten Rammen und Katapulten.',
-          `Höhe: ${(wallH*3.5).toFixed(1)}m · Dicke: ~${(thick*3.5).toFixed(1)}m · Wertung: ${castle.ratings.walls}/100`);
-        w.position.set(cx,yB+h/2,cz);w.castShadow=true;addTo.add(w);
-        const n=Math.floor(len/0.33);
-        for(let i=0;i<n;i+=2){
-          const t2=(i+0.5)/n-0.5;
-          const m=new T.Mesh(new T.BoxGeometry(0.10,0.20,0.10),mat);
-          m.position.set(
-            axis==='x'?cx+t2*len:cx,
-            yB+h+0.12,
-            axis==='z'?cz+t2*len:cz
-          );addTo.add(m);
-        }
-      };
-      const tower=(x,z,yB,tH,seg,tMat,rH,lbl,desc,extra,addTo=gW)=>{
-        const tw=tag(new T.Mesh(new T.CylinderGeometry(0.26,0.27,tH,seg||spireS),tMat||stoneMat),
-          lbl||'Wehrturm',
-          desc||'Türme ermöglichen flankierendes Feuer entlang der Mauer. Bogenschützen und Armbrust­schützen verteidigen von oben.',
-          extra||`Turmhöhe: ~${(tH*3.5).toFixed(1)}m`);
-        tw.position.set(x,yB+tH/2,z);tw.castShadow=true;addTo.add(tw);
-        const rof=new T.Mesh(new T.ConeGeometry(0.32,rH||spireH,seg||spireS),roofMat);
-        rof.position.set(x,yB+tH+(rH||spireH)/2,z);addTo.add(rof);
-      };
+      // Ground disc
+      const gnd=new T.Mesh(new T.CircleGeometry(55,48),gm);
+      gnd.rotation.x=-Math.PI/2; gnd.receiveShadow=true; scene.add(gnd);
 
-      // ── Ground (gT) ───────────────────────────────────────────────────
-      const gnd=tag(new T.Mesh(new T.CircleGeometry(12,52),gndMat),
-        'Burggelände','Das umliegende Gelände beeinflusst Versorgung und Zugangswege der Angreifer.',
-        `Positionswertung: ${castle.ratings.position}/100`);
-      gnd.rotation.x=-Math.PI/2;gnd.receiveShadow=true;gT.add(gnd);
-
-      // ── Terrain (gT) ─────────────────────────────────────────────────
-      const hillMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#1e1408'),0.5)});
-      if(!isMountainPlan&&isMesa){
-        const mesaCol=new T.Color(castle.theme.bg).lerp(new T.Color('#7a5a30'),0.5);
-        const mesa=tag(new T.Mesh(new T.CylinderGeometry(outerR+1.0,outerR+2.2,terrainH*2,24),new T.MeshLambertMaterial({color:mesaCol})),
-          'Tafelberg / Mesa','Ein steil abfallender Felstafel bietet natürlichen Schutz auf allen Seiten — kaum zu ersteigen, schwer zu untergraben.',
-          `Positionsvorteil: ${castle.ratings.position}/100`);
-        mesa.position.y=terrainH;gT.add(mesa);
-        const cap=new T.Mesh(new T.CircleGeometry(outerR+1.0,24),gndMat);
-        cap.rotation.x=-Math.PI/2;cap.position.y=terrainH*2;gT.add(cap);
-      } else if(!isMountainPlan&&terrainH>0.18){
-        const mnd=tag(new T.Mesh(new T.ConeGeometry(outerR+2.5,terrainH*2.8,18),hillMat),
-          isMesa?'Felsklippe':'Burgberg',
-          'Höhenburgen nutzen natürliche Anhöhen als ersten Schutzring. Angreifer müssen bergauf kämpfen — erschöpft und im Nachteil.',
-          `Geländehöhe: ${(terrainH*3.5).toFixed(1)}m · Position: ${castle.ratings.position}/100`);
-        mnd.position.y=terrainH*0.82;gT.add(mnd);
-        if(terrainH>0.5){
-          const mnd2=new T.Mesh(new T.ConeGeometry(outerR*0.55,terrainH*1.6,14),hillMat);
-          mnd2.position.set(outerR*0.22,terrainH*0.48,outerR*0.16);gT.add(mnd2);
-        }
+      // Terrain elevation for mesa-style castles
+      const posR=castle.ratings?.position||50;
+      const hasMesa=(posR>=90)&&castle.type!=='fantasy';
+      if(hasMesa){
+        const mesa=new T.Mesh(
+          new T.CylinderGeometry(15,18.5,2,32),
+          new T.MeshStandardMaterial({color:0x2a2015,roughness:0.96}));
+        mesa.position.y=1; mesa.receiveShadow=true; mesa.castShadow=true; scene.add(mesa);
       }
 
-      // ── Mountain barrier / volcanic peaks (gT) ────────────────────────
-      if(hasMtnBarrier&&!hasVolcano){
-        const mtnMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#28283a'),0.44)});
-        for(let i=0;i<6;i++){
-          const a=(i/6)*Math.PI*2;
-          const sc=0.72+((Math.abs(castle.year||500)*13+i*47)%100)/100*0.62;
-          const pk=tag(new T.Mesh(new T.ConeGeometry(sc,2.5+sc*1.6,7),mtnMat),
-            'Gebirgssperre','Das Gebirge bildet eine natürliche Barriere — Pässe sind leicht zu verteidigen, Belagerungsmaschinen kaum passierbar.');
-          pk.position.set(Math.cos(a)*(outerR+2.9),0.3,Math.sin(a)*(outerR+2.9));pk.castShadow=true;gT.add(pk);
-        }
-      }
-      if(hasVolcano){
-        for(let i=0;i<3;i++){
-          const a=(i/3)*Math.PI*2,h=3.5+i*0.8;
-          const vol=tag(new T.Mesh(new T.ConeGeometry(1.2,h,9),new T.MeshLambertMaterial({color:new T.Color('#160a04')})),
-            'Vulkan / Thangorodrim','Vulkanische Berge umgeben diese Festung. Feuer und Asche machen jede Belagerung zur Höllenfahrt.');
-          vol.position.set(Math.cos(a)*5.0,h/2,Math.sin(a)*5.0);vol.castShadow=true;gT.add(vol);
-          const lava=new T.Mesh(new T.CircleGeometry(0.32,9),lavaMat);
-          lava.rotation.x=-Math.PI/2;lava.position.set(Math.cos(a)*5.0,h,Math.sin(a)*5.0);gT.add(lava);
-          const lpl=new T.PointLight(0xff3a00,2.0,5);lpl.position.set(Math.cos(a)*5.0,h+0.3,Math.sin(a)*5.0);gT.add(lpl);
-        }
-      }
+      // Lighting
+      const amb=new T.AmbientLight(0x3d3328,0.75); scene.add(amb);
+      const sun=new T.DirectionalLight(0xfff2d0,2.4);
+      sun.position.set(22,32,14);
+      sun.castShadow=true;
+      sun.shadow.mapSize.set(2048,2048);
+      sun.shadow.camera.near=1; sun.shadow.camera.far=120;
+      sun.shadow.camera.left=-40; sun.shadow.camera.right=40;
+      sun.shadow.camera.top=40; sun.shadow.camera.bottom=-40;
+      scene.add(sun);
+      const fill=new T.DirectionalLight(0x405080,0.38);
+      fill.position.set(-18,12,-22); scene.add(fill);
 
-      // ── Stage 1: Motte & Bailey palisade (gP) ────────────────────────
-      {
-        const palR=outerR+0.5;
-        const palWall=tag(new T.Mesh(new T.CylinderGeometry(palR,palR,0.85,32,1,true),woodMat),
-          'Holzpalisade','Die Motte-und-Bailey-Anlage ist die früheste Burgform: ein Erdwall mit Holzpalisade und Wachtturm auf künstlichem Hügel.','Baustufe 1 · Holz · ~9.–11. Jh.');
-        palWall.position.y=topY+0.42;gP.add(palWall);
-        for(let i=0;i<28;i++){
-          const a=(i/28)*Math.PI*2;
-          const log=new T.Mesh(new T.CylinderGeometry(0.07,0.07,1.1,5),woodMat);
-          log.position.set(Math.cos(a)*palR,topY+0.58,Math.sin(a)*palR);gP.add(log);
-        }
-        const motteMat2=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#2a1e08'),0.65)});
-        const motte=tag(new T.Mesh(new T.ConeGeometry(1.1,1.6,10),motteMat2),
-          'Motte (Turmhügel)','Der künstlich aufgeschüttete Hügel trägt den hölzernen Wachtturm. Schwer zu ersteigen, bietet weite Rundumsicht.','Höhe: ~4–6m · Material: Erde + Holz');
-        motte.position.y=0.8;gP.add(motte);
-        const motteT=tag(new T.Mesh(new T.BoxGeometry(0.45,1.2,0.45),woodMat),
-          'Hölzerner Bergfried','Frühform des Bergfrieds aus Holz — später durch Stein ersetzt, da leicht brennbar.');
-        motteT.position.y=2.4;gP.add(motteT);
-        const motteR=new T.Mesh(new T.ConeGeometry(0.30,0.5,4),new T.MeshLambertMaterial({color:new T.Color('#3a1808')}));
-        motteR.position.y=3.35;gP.add(motteR);
-      }
-
-      // ── Moat (gW) ────────────────────────────────────────────────────
-      if(hasMoat&&!isMountainPlan){
-        const mr=isRound?outerR+0.62:Math.hypot(outerR,outerR*aspect)*0.78+0.55;
-        const mt=tag(new T.Mesh(new T.TorusGeometry(mr,0.50,6,44),moatMat),
-          'Burggraben','Der Wassergraben verhindert das Untergraben der Mauern (Minengänge) und hält Sturmtruppen auf Abstand.',
-          'Breite: ~5–10m · Tiefe: ~3–5m');
-        mt.rotation.x=Math.PI/2;mt.position.y=topY-0.06;gW.add(mt);
-      }
-
-      // ── ROUND plan walls (gW) ─────────────────────────────────────────
-      if(isRound&&wallZones.length>0&&!isTowerPlan&&!isMountainPlan){
-        const owm=tag(new T.Mesh(new T.CylinderGeometry(outerR,outerR,wallH,48,1,true),stoneMat),
-          'Äußerer Ringwall',
-          'Konzentrische Ringe aus Stein — jeder Ring ist eine eigenständige Verteidigungslinie. Fällt eine, kämpft man im nächsten Ring weiter.',
-          `Mauerwertung: ${castle.ratings.walls}/100 · Wandhöhe: ~${(wallH*3.5).toFixed(1)}m`);
-        owm.position.y=topY+wallH/2;owm.castShadow=true;gW.add(owm);
-        const crt=new T.Mesh(new T.CircleGeometry(outerR-0.1,48),new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).multiplyScalar(1.3)}));
-        crt.rotation.x=-Math.PI/2;crt.position.y=topY+0.01;gW.add(crt);
-        const mN=Math.round(outerR*Math.PI*2/0.34);
-        for(let i=0;i<mN;i+=2){const a=(i/mN)*Math.PI*2;
-          const m=new T.Mesh(new T.BoxGeometry(0.10,0.20,0.10),stoneMat);
-          m.position.set(Math.cos(a)*outerR,topY+wallH+0.12,Math.sin(a)*outerR);gW.add(m);
-        }
-        for(let i=0;i<towerN;i++){
-          const a=(i/towerN)*Math.PI*2;
-          const tH=wallH*(1.36+((i*37+castle.ratings.walls)%22)/100);
-          tower(Math.cos(a)*outerR,Math.sin(a)*outerR,topY,tH,spireS,stoneMat,spireH,
-            'Flankenturm','Rundum­sicht und flankierendes Feuer — Bogenschützen können die gesamte Mauer­fläche beschießen.',
-            `Turmhöhe: ~${(tH*3.5).toFixed(1)}m`,gW);
-        }
-        const gh=tag(new T.Mesh(new T.BoxGeometry(0.70,wallH*1.24,0.54),innerMat),
-          'Torhaus','Das Haupttor ist oft der schwächste Punkt. Doppeltore, Fallgitter (Porkullis) und Schießscharten machen es zur tödlichen Falle.');
-        gh.position.set(0,topY+wallH*0.63,outerR+0.02);gh.castShadow=true;gW.add(gh);
-        const go=new T.Mesh(new T.BoxGeometry(0.27,wallH*0.54,0.58),darkMat);
-        go.position.set(0,topY+wallH*0.28,outerR+0.02);gW.add(go);
-      }
-
-      // ── RECT plan walls (gW) ──────────────────────────────────────────
-      if(!isRound&&wallZones.length>0&&!isTowerPlan&&!isMountainPlan){
-        const hw=outerR, hd=outerR*aspect, wt=0.18;
-        const courtMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).multiplyScalar(1.3)});
-        const cf=tag(new T.Mesh(new T.BoxGeometry(hw*2,0.04,hd*2),courtMat),
-          'Innenhof / Bailey','Der Burghof beherbergte Stallungen, Brunnen, Werkstätten und die Wohngebäude der Burgbesatzung.',
-          `Fläche: ~${(hw*2*3.5).toFixed(0)}m × ${(hd*2*3.5).toFixed(0)}m`);
-        cf.position.set(0,topY+0.02,0);gW.add(cf);
-        wallSeg(0,-hd,'x',hw*2+wt,topY,wallH,wt,stoneMat,'Nordmauer',
-          'Gerade Steinmauern mit Zinnenkranz (Merlons). Verteidiger duckten sich hinter Zinnen; Angreifer zielten in die Scharten.',
-          `Höhe: ~${(wallH*3.5).toFixed(1)}m · Dicke: ~${(wt*3.5).toFixed(1)}m`,gW);
-        wallSeg(0, hd,'x',hw*2+wt,topY,wallH,wt,stoneMat,'Südmauer',
-          'Gerade Steinmauern mit Zinnenkranz — oft mit Torhaus in der Mitte.',
-          `Höhe: ~${(wallH*3.5).toFixed(1)}m`,gW);
-        wallSeg(-hw,0,'z',hd*2,topY,wallH,wt,stoneMat,'Westmauer',
-          'Die Mauerstärke entschied, wie lange die Burg einem Katapultbeschuss standhielt.',
-          `Mauerwertung: ${castle.ratings.walls}/100`,gW);
-        wallSeg( hw,0,'z',hd*2,topY,wallH,wt,stoneMat,'Ostmauer',
-          'Die Mauerstärke entschied, wie lange die Burg einem Katapultbeschuss standhielt.',
-          `Mauerwertung: ${castle.ratings.walls}/100`,gW);
-        [[-hw,-hd],[hw,-hd],[hw,hd],[-hw,hd]].forEach(([cx,cz],ci)=>{
-          const tH=wallH*(1.38+((ci*29+castle.ratings.walls)%20)/100);
-          tower(cx,cz,topY,tH,8,stoneMat,spireH,'Eckturm',
-            'Ecktürme sichern die verwundbarsten Punkte. Von hier können Bogenschützen zwei Mauer­abschnitte gleichzeitig decken.',
-            `Höhe: ~${(tH*3.5).toFixed(1)}m`,gW);
-        });
-        if(towerN>4){
-          const extra=Math.min(towerN-4,4);
-          [[-hw*0.5,-hd],[hw*0.5,-hd],[-hw*0.5,hd],[hw*0.5,hd]].slice(0,extra).forEach(([cx,cz])=>{
-            tower(cx,cz,topY,wallH*1.28,8,stoneMat,spireH*0.8,'Zwischenturm',
-              'Zwischentürme verkürzen den Abstand zwischen Eck­türmen — kein toter Winkel bleibt für Angreifer.',
-              undefined,gW);
-          });
-        }
-        const ghH=wallH*1.30;
-        const gh=tag(new T.Mesh(new T.BoxGeometry(0.74,ghH,0.58),innerMat),
-          'Torhaus / Gatehouse',
-          'Das Torhaus ist der gefährlichste Ort für Angreifer: Fallgitter (Porkullis), Schussöffnungen im Boden (Mordlöcher) und flankierende Türme machen es zur Todesfalle.',
-          'Merkmale: Zugbrücke · Fallgitter · Mordlöcher · Flankentürme');
-        gh.position.set(0,topY+ghH/2,hd);gh.castShadow=true;gW.add(gh);
-        const go=new T.Mesh(new T.BoxGeometry(0.28,ghH*0.52,0.62),darkMat);
-        go.position.set(0,topY+ghH*0.27,hd);gW.add(go);
-        tower(-0.46,hd,topY,ghH*0.88,8,innerMat,spireH*0.7,'Torturm',
-          'Flankentürme am Torhaus beschossen Angreifer, die das Tor zu brechen versuchten.',undefined,gW);
-        tower( 0.46,hd,topY,ghH*0.88,8,innerMat,spireH*0.7,'Torturm',
-          'Flankentürme am Torhaus beschossen Angreifer, die das Tor zu brechen versuchten.',undefined,gW);
-      }
-
-      // ── Inner ward (gI) ───────────────────────────────────────────────
-      if(innerZones.length>0&&!isTowerPlan&&!isMountainPlan){
-        const iH=wallH*1.36;
-        if(isRound){
-          const iw=tag(new T.Mesh(new T.CylinderGeometry(innerR,innerR,iH,32,1,true),innerMat),
-            'Innerer Ringwall',
-            'Der innere Ring ist höher als der äußere — ein zweites Verteidigungsband. Selbst wenn der Außenring fällt, kämpft man hier weiter.',
-            `Höhe: ~${(iH*3.5).toFixed(1)}m`);
-          iw.position.y=topY+iH/2;iw.castShadow=true;gI.add(iw);
-          const imN=Math.round(innerR*Math.PI*2/0.31);
-          for(let i=0;i<imN;i+=2){const a=(i/imN)*Math.PI*2;
-            const m=new T.Mesh(new T.BoxGeometry(0.09,0.18,0.09),innerMat);
-            m.position.set(Math.cos(a)*innerR,topY+iH+0.11,Math.sin(a)*innerR);gI.add(m);
-          }
-          const iTN=Math.min(4,innerZones.length+2);
-          for(let i=0;i<iTN;i++){
-            const a=(i/iTN)*Math.PI*2+Math.PI/4;
-            tower(Math.cos(a)*innerR,Math.sin(a)*innerR,topY,iH*1.28,spireS,innerMat,spireH*0.82,
-              'Innerer Turm','Türme des inneren Rings kontrollierten den Burghof und sicherten den Rückzug.',undefined,gI);
-          }
-        } else {
-          const ihw=innerR, ihd=innerR*aspect, iwt=0.14;
-          wallSeg(0,-ihd,'x',ihw*2+iwt,topY,iH,iwt,innerMat,'Innere Nordmauer',
-            'Die innere Mauer ist typischerweise höher als die Außenmauer.',undefined,gI);
-          wallSeg(0, ihd,'x',ihw*2+iwt,topY,iH,iwt,innerMat,'Innere Südmauer',
-            'Letzte Verteidigungslinie vor dem Bergfried.',undefined,gI);
-          wallSeg(-ihw,0,'z',ihd*2,topY,iH,iwt,innerMat,'Innere Westmauer',
-            'Innerwall-Abschnitt — zusammen mit dem Donjon die letzte Stellung.',undefined,gI);
-          wallSeg( ihw,0,'z',ihd*2,topY,iH,iwt,innerMat,'Innere Ostmauer',
-            'Innerwall-Abschnitt.',undefined,gI);
-          [[-ihw,-ihd],[ihw,-ihd],[ihw,ihd],[-ihw,ihd]].forEach(([cx,cz])=>{
-            tower(cx,cz,topY,iH*1.26,8,innerMat,spireH*0.80,'Innerer Eckturm',
-              'Letzter Rückzugspunkt nach dem Fall des äußeren Hofs.',undefined,gI);
-          });
-        }
-      }
-
-      // ── Point-zone features (gK) ──────────────────────────────────────
-      const ps=Math.min(innerR>0?innerR-0.3:outerR-0.4,outerR)*0.82;
-      ptZones.forEach(z=>{
-        const zx=(z.x-50)/50*ps, zz=(z.y-50)/50*ps;
-        const lbl=z.l||'';
-        const isWater=/zistern|cistern|brunnen|see|wasser/i.test(lbl);
-        const isWeak=lbl.includes('⚠');
-        const isSt=(z.a||0)>=7&&!isWeak;
-        if(isWater){
-          const pr=Math.max(0.18,z.r/50*outerR*0.65);
-          const pool=tag(new T.Mesh(new T.CylinderGeometry(pr,pr,0.09,14),moatMat),
-            lbl||'Zisterne / Brunnen',
-            'Wasser­versorgung ist für eine Belagerung lebens­entscheidend. Eine Burg ohne eigenen Brunnen kapituliert meist nach wenigen Wochen.',
-            `Versorgungswertung: ${castle.ratings.supply}/100`);
-          pool.position.set(zx,topY+0.06,zz);gK.add(pool);
-        }
-        if(isSt){
-          const tH2=wallH*1.62+z.a*0.09;
-          const st=tag(new T.Mesh(new T.CylinderGeometry(0.30,0.30,tH2,spireS),isFantasy?glowMat:innerMat),
-            lbl||'Stärke­punkt',
-            'Dieser Bereich hat besonders hohe Verteidigungsstärke — gut befestigt, schwer einnehmbar.',
-            `Stärke: ${z.a||0}/10`);
-          st.position.set(zx,topY+tH2/2,zz);st.castShadow=true;gK.add(st);
-          const sr=new T.Mesh(new T.ConeGeometry(0.36,isFantasy?1.2:0.48,spireS),roofMat);
-          sr.position.set(zx,topY+tH2+(isFantasy?0.64:0.26),zz);gK.add(sr);
-        }
-        if(isWeak){
-          const br=tag(new T.Mesh(new T.BoxGeometry(0.36,0.09,0.36),new T.MeshLambertMaterial({color:new T.Color('#cc2222'),transparent:true,opacity:0.55})),
-            lbl||'Schwachstelle ⚠',
-            'Dieser Punkt ist strukturell schwach — dünne Mauern, schlechter Untergrund oder mangelnde Deckung machen ihn zur Zielscheibe.',
-            'Angriffstipp: Hier mit Rammbock oder Minen ansetzen!');
-          br.position.set(zx,topY+0.07,zz);gK.add(br);
-        }
+      // Build castle from components
+      const components=castle.components||generateComponents(castle);
+      const clickables=[];
+      components.forEach(comp=>{
+        const obj=_buildComponent(comp,sm,dm,rm);
+        if(!obj) return;
+        scene.add(obj);
+        clickables.push(obj);
       });
 
-      // ── Keep / Donjon (gK) ────────────────────────────────────────────
-      if(!isTowerPlan&&!isMountainPlan){
-        if(isRound){
-          const kp=tag(new T.Mesh(new T.CylinderGeometry(0.40,0.45,keepH,spireS),keepMat),
-            'Donjon / Bergfried',
-            'Der Bergfried ist der letzte Rückzugsturm. Hier stand die Besatzung bis zur Kapitulation. Er diente auch als Aussichts­posten und Statussymbol.',
-            `Höhe: ~${(keepH*3.5).toFixed(1)}m · Mauerwertung: ${castle.ratings.walls}/100`);
-          kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
-          const kr=new T.Mesh(new T.ConeGeometry(0.50,isFantasy?1.55:0.70,spireS),roofMat);
-          kr.position.set(0,topY+keepH+(isFantasy?0.82:0.40),0);gK.add(kr);
-        } else {
-          const kw=0.78, kd=kw*Math.min(aspect,1.3);
-          const kp=tag(new T.Mesh(new T.BoxGeometry(kw,keepH,kd),keepMat),
-            'Donjon / Bergfried',
-            'Der quadratische Bergfried ist typisch für normannische und frühmittelalterliche Burgen. Dicke Mauern, wenige Fenster, schwere Eingangstür im ersten Obergeschoss — eine Miniatur­festung in der Festung.',
-            `Höhe: ~${(keepH*3.5).toFixed(1)}m · Grundriss: ${(kw*3.5).toFixed(0)}m × ${(kd*3.5).toFixed(0)}m`);
-          kp.position.set(0,topY+keepH/2,0);kp.castShadow=true;gK.add(kp);
-          [[kw/2,0],[-kw/2,0],[0,kd/2],[0,-kd/2]].forEach(([dx,dz])=>{
-            const cm=new T.Mesh(new T.BoxGeometry(0.13,0.20,0.13),keepMat);
-            cm.position.set(dx,topY+keepH+0.12,dz);gK.add(cm);
-          });
-          const kr=new T.Mesh(new T.ConeGeometry(Math.max(kw,kd)*0.72,0.68,4),roofMat);
-          kr.rotation.y=Math.PI/4;kr.position.set(0,topY+keepH+0.43,0);gK.add(kr);
-        }
+      // ── Camera orbit ──────────────────────────────────────────────────
+      let theta=0.28, phi=0.82, camR=26;
+      const tgt=new T.Vector3(0,3.5,0);
+      function syncCam(){
+        camera.position.set(
+          tgt.x+camR*Math.sin(phi)*Math.sin(theta),
+          tgt.y+camR*Math.cos(phi),
+          tgt.z+camR*Math.sin(phi)*Math.cos(theta));
+        camera.lookAt(tgt);
       }
+      syncCam();
 
-      // ── Eye of Sauron (gK) ────────────────────────────────────────────
-      if(hasEye){
-        const eyeKeepH=isTowerPlan?keepH*3.2:keepH;
-        const ey=topY+eyeKeepH+(isFantasy?2.2:1.5);
-        const eye=tag(new T.Mesh(new T.SphereGeometry(0.40,14,14),glowMat),
-          'Auge Saurons',
-          'Das Auge des Dunklen Herrn — allsehend, niemals schlafend. Es durchdringt Lügen und findet jeden, der den Einen Ring trägt.',
-          'Typ: Fantasy-Festung · Tolkiens Mittelerde');
-        eye.position.set(0,ey,0);gK.add(eye);
-        const pupil=new T.Mesh(new T.SphereGeometry(0.16,10,10),darkMat);
-        pupil.position.set(0,ey,0.32);gK.add(pupil);
-        const epl=new T.PointLight(acCol.getHex(),4.0,9);epl.position.set(0,ey,0);gK.add(epl);
-      }
+      let pDown=false, lastPX=0, lastPY=0, moved=false;
+      const onPD=e=>{pDown=true;moved=false;lastPX=e.clientX;lastPY=e.clientY;
+        try{mount.setPointerCapture(e.pointerId);}catch(_){}
+        renderer.domElement.style.cursor='grabbing';};
+      const onPM=e=>{
+        if(!pDown) return; moved=true;
+        theta-=(e.clientX-lastPX)*0.007;
+        phi=Math.max(0.12,Math.min(1.46,phi-(e.clientY-lastPY)*0.007));
+        lastPX=e.clientX; lastPY=e.clientY; syncCam();};
+      const onPU=e=>{pDown=false;
+        try{mount.releasePointerCapture(e.pointerId);}catch(_){}
+        renderer.domElement.style.cursor='grab';};
+      const onWhl=e=>{e.preventDefault();
+        camR=Math.max(7,Math.min(55,camR+e.deltaY*0.04)); syncCam();};
 
-      // ── TOWER plan: single massive tower (barad_dur, orthanc, schwarzer_bergfried) ──
-      if(isTowerPlan){
-        const isBaradDur=castle.id==='barad_dur';
-        const isOrthanc=castle.id==='orthanc';
-        const tH=keepH*(isBaradDur?3.2:isOrthanc?3.8:2.0);
-        const tR=isBaradDur?1.05:isOrthanc?0.34:0.58;
-        const tSegs=isBaradDur?8:isOrthanc?4:6;
-        const tMat=(isBaradDur||isOrthanc)?darkMat:keepMat;
-        // Main tower body
-        const twr=tag(new T.Mesh(new T.CylinderGeometry(tR*0.88,tR,tH,tSegs),tMat),
-          isBaradDur?'Barad-dûr':isOrthanc?'Orthanc-Turm':'Schwarzer Bergfried',
-          isBaradDur?'Saurons Dunkler Turm — solange der Eine Ring existiert unzerstörbar. Ein ganzer Turm aus reinem Willen zusammengehalten.':
-          isOrthanc?'Aus schwarzem Númenórer-Stein gehauen — keine bekannte Waffe kann ihn beschädigen. Überlebt selbst den Fall von Isengard.':
-          'Massiver Wehrturm mit extrem dicken Mauern — die verbotenen Karten hinter einer Doppelwand eingemauert.',
-          `Höhe: ~${(tH*3.5).toFixed(1)}m`);
-        twr.position.y=topY+tH/2;twr.castShadow=true;gK.add(twr);
-        // Battlements
-        const bN=isOrthanc?4:8;
-        for(let i=0;i<bN;i++){
-          const a=(i/bN)*Math.PI*2+(isOrthanc?Math.PI/4:0);
-          const bt2=new T.Mesh(new T.BoxGeometry(0.13,0.26,0.13),tMat);
-          bt2.position.set(Math.cos(a)*tR*0.82,topY+tH+0.15,Math.sin(a)*tR*0.82);gK.add(bt2);
-        }
-        if(isOrthanc){
-          // Orthanc: 4 distinctive split prongs at top
-          for(let i=0;i<4;i++){
-            const a=(i/4)*Math.PI*2+Math.PI/4;
-            const pr=new T.Mesh(new T.CylinderGeometry(0.055,0.105,tH*0.24,4),darkMat);
-            pr.position.set(Math.cos(a)*tR*0.70,topY+tH+tH*0.12,Math.sin(a)*tR*0.70);gK.add(pr);
-          }
-          // Flooded/ruined Isengard: flat dark disc at base
-          const ruins=tag(new T.Mesh(new T.CylinderGeometry(4.5,4.5,0.06,28),new T.MeshLambertMaterial({color:new T.Color('#060e08'),transparent:true,opacity:0.88})),
-            'Überschwemmtes Isengard','Die Ents öffneten den Fluss Isen — Isengard ertrank. Nur Orthanc selbst überstand die Flut.','');
-          ruins.position.y=topY+0.03;gK.add(ruins);
-        }
-        if(isBaradDur){
-          // Lava pools at base of Barad-dûr
-          for(let i=0;i<4;i++){
-            const a=(i/4)*Math.PI*2;
-            const lp=new T.Mesh(new T.CylinderGeometry(0.38,0.38,0.06,10),lavaMat);
-            lp.position.set(Math.cos(a)*(tR+1.2),topY+0.04,Math.sin(a)*(tR+1.2));gK.add(lp);
-            const lpl2=new T.PointLight(0xff3a00,1.5,4);
-            lpl2.position.set(Math.cos(a)*(tR+1.2),topY+0.3,Math.sin(a)*(tR+1.2));gK.add(lpl2);
-          }
-          // Support buttresses
-          for(let i=0;i<6;i++){
-            const a=(i/6)*Math.PI*2;
-            const bt3=new T.Mesh(new T.BoxGeometry(0.18,tH*0.42,0.18),darkMat);
-            bt3.position.set(Math.cos(a)*(tR+0.08),topY+tH*0.21,Math.sin(a)*(tR+0.08));gK.add(bt3);
-          }
-        }
-        if(!isBaradDur&&!isOrthanc){
-          // Schwarzer Bergfried: hexagonal outer courtyard wall on plateau
-          const cwR=tR+0.95;
-          const cw=tag(new T.Mesh(new T.CylinderGeometry(cwR,cwR,wallH*0.7,6,1,true),stoneMat),
-            'Außenmauer','Sechseckige Umfassungsmauer des Plateaus — auf drei Seiten senkrecht abfallende Klippe. Ein Dutzend Ritter kann hier eine Armee aufhalten.','');
-          cw.position.y=topY+wallH*0.35;gW.add(cw);
-          for(let i=0;i<6;i++){
-            const a=(i/6)*Math.PI*2;
-            const m2=new T.Mesh(new T.BoxGeometry(0.10,0.20,0.10),stoneMat);
-            m2.position.set(Math.cos(a)*cwR,topY+wallH*0.70+0.12,Math.sin(a)*cwR);gW.add(m2);
-          }
-          // Signal fire on wall
-          const fMat2=new T.MeshLambertMaterial({color:new T.Color('#ff8800'),emissive:new T.Color('#ff5500'),emissiveIntensity:2.0});
-          const fb=tag(new T.Mesh(new T.ConeGeometry(0.08,0.24,6),fMat2),'Signalfeuer',
-            'Feuerzeichen nachts, Rauchsignale tagsüber — Code-System nur Ordensritter kennen. Verbindet den Bergfried mit Castle Sorrow und Gravecrest.','');
-          fb.position.set(cwR*0.72,topY+wallH*0.70+0.18,cwR*0.72);gK.add(fb);
-          const fpl3=new T.PointLight(0xff8800,2.5,5);fpl3.position.set(cwR*0.72,topY+wallH*0.70+0.4,cwR*0.72);gK.add(fpl3);
-        }
-        // Eye of Sauron still handled above — but tower plan needs its own keepH offset
-        // Move eye higher for tower plan (if barad_dur)
-      }
-
-      // ── MOUNTAIN plan: Erebor — carved mountain fortress ──────────────
-      if(isMountainPlan){
-        const mH=7.8+(castle.ratings.position/100)*2.5;
-        const mR=5.6;
-        const mtnMat2=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#5a4a35'),0.55)});
-        const snowMat2=new T.MeshLambertMaterial({color:new T.Color('#ddeae6')});
-        // Main mountain cone
-        const mtn=tag(new T.Mesh(new T.ConeGeometry(mR,mH,16),mtnMat2),
-          'Erebor-Massiv','Ein ganzer Berg als Festung — die Bergflanken selbst sind die Außenmauern. Unersteigbar auf allen Seiten außer vorn.',
-          `Positionswertung: ${castle.ratings.position}/100`);
-        mtn.position.y=mH/2;gT.add(mtn);
-        // Snow cap
-        const snow=new T.Mesh(new T.ConeGeometry(mR*0.21,mH*0.17,10),snowMat2);
-        snow.position.y=mH-mH*0.085;gT.add(snow);
-        // Rocky outcrops around base
-        for(let i=0;i<6;i++){
-          const a=(i/6)*Math.PI*2,sc=0.42+((i*41+73)%100)/100*0.50;
-          const rk=new T.Mesh(new T.ConeGeometry(sc*0.75,mH*0.35*sc,7),mtnMat2);
-          rk.position.set(Math.cos(a)*(mR*0.58),mH*0.175*sc,Math.sin(a)*(mR*0.58));gT.add(rk);
-        }
-        // Front gate carved into mountain face
-        const gH=wallH*1.25,gW2=0.72;
-        const gateDepth=mR*0.38;
-        const gateFrame=tag(new T.Mesh(new T.BoxGeometry(gW2*2.5,gH*1.5,0.60),keepMat),
-          'Vordertor Erebor','Einziger bekannter Zugang — massives Steintor in den Fels gehauen, von Zwergenmeistern errichtet. Leicht verteidigbar, schwer zu brechen.',
-          '⚠ Einziger Zugang (frontal)');
-        gateFrame.position.set(0,gH*0.75,gateDepth);gK.add(gateFrame);
-        const gateOpen=new T.Mesh(new T.BoxGeometry(gW2,gH,0.64),darkMat);
-        gateOpen.position.set(0,gH*0.52,gateDepth);gK.add(gateOpen);
-        // Tunnel arch details
-        const archMat=new T.MeshLambertMaterial({color:new T.Color(castle.theme.bg).lerp(new T.Color('#8a7040'),0.7)});
-        for(let s=-1;s<=1;s+=2){
-          const col=new T.Mesh(new T.BoxGeometry(0.18,gH*1.35,0.18),archMat);
-          col.position.set(s*(gW2*0.65),gH*0.68,gateDepth-0.05);gK.add(col);
-        }
-        // Gold glow (Smaugs Schatz tief im Berg)
-        const goldLight=new T.PointLight(0xffaa22,4.0,8);
-        goldLight.position.set(0,gH*0.55,gateDepth-2.2);gK.add(goldLight);
-        const goldLight2=new T.PointLight(0xdd8800,2.0,5);
-        goldLight2.position.set(0.8,gH*0.3,gateDepth-1.5);gK.add(goldLight2);
-        // Smaug-hint: glowing ember mass inside tunnel
-        const embMat=new T.MeshLambertMaterial({color:new T.Color('#ff6600'),emissive:new T.Color('#ff3300'),emissiveIntensity:1.8,transparent:true,opacity:0.65});
-        const emb=tag(new T.Mesh(new T.SphereGeometry(0.42,8,8),embMat),
-          'Schatzberg (Smaugs Lager)','Ein Drache schläft auf einem Berg aus Gold. Er hört jedes Geräusch, riecht jeden fremden Duft — und wartet.','Drache schläft hier.');
-        emb.position.set(0,gH*0.45,gateDepth-2.8);gK.add(emb);
-        const spl=new T.PointLight(0xff4400,2.5,6);spl.position.set(0,gH*0.45,gateDepth-2.8);gK.add(spl);
-        // Secret side door (faint, hard to see)
-        const sdMat=new T.MeshLambertMaterial({color:new T.Color('#cc7733'),transparent:true,opacity:0.45});
-        const sd=tag(new T.Mesh(new T.BoxGeometry(0.22,0.48,0.10),sdMat),
-          'Geheime Seitentür','Nur im letzten Mondlicht von Durins Tag sichtbar. Schlüssel + Mondlicht + der richtige Tag im Jahr — einziger nicht-frontaler Zugang.',
-          '⚠ Schwachstelle: Geheimeingang');
-        sd.position.set(mR*0.34,gH*0.38,-mR*0.34);gK.add(sd);
-        // Camera adjustment: look at mountain center
-        lookAt.set(0,mH*0.38,0);camRadius=18;phi_cam=0.58;positionCamera();
-      }
-
-      // ── Siege machines (gS) — animated catapults, tower, battering ram ──
-      const siegePivots=[];
-      if(!isFantasy&&!hasVolcano){
-        [0,1,2].forEach(i=>{
-          const a=(i/3)*Math.PI*2+(isMesa?0.5:0.3);
-          const dist=outerR+(isMesa?3.8:2.8);
-          const cx=Math.cos(a)*dist,cz=Math.sin(a)*dist;
-          const frame=tag(new T.Mesh(new T.BoxGeometry(0.58,0.22,0.38),siegeMat),
-            'Katapult / Trebuchet',
-            'Belagerungsmaschinen warfen Steine, Brandbomben oder Kadaver (zur Seuchenverbreitung) über Mauern. Ein Trebuchet konnte 150kg-Steine 200m weit schleudern.',
-            'Reichweite: 100–300m · Wurfgewicht: 30–150kg');
-          frame.position.set(cx,topY+0.12,cz);frame.rotation.y=-a;gS.add(frame);
-          const pivot=new T.Group();
-          pivot.position.set(cx,topY+0.22,cz);pivot.rotation.y=-a;gS.add(pivot);
-          const arm=new T.Mesh(new T.CylinderGeometry(0.04,0.04,0.95,5),siegeMat);
-          arm.position.y=0.38;pivot.add(arm);
-          const ball=new T.Mesh(new T.SphereGeometry(0.07,6,6),new T.MeshLambertMaterial({color:new T.Color('#2a2a2a')}));
-          ball.position.y=0.90;pivot.add(ball);
-          const cw=new T.Mesh(new T.BoxGeometry(0.18,0.18,0.18),new T.MeshLambertMaterial({color:new T.Color('#3a2808')}));
-          cw.position.y=-0.28;pivot.add(cw);
-          [-0.24,0.24].forEach(dz=>{
-            const wh=new T.Mesh(new T.TorusGeometry(0.12,0.032,6,12),siegeMat);
-            wh.rotation.y=Math.PI/2;wh.position.set(cx,topY+0.14,cz+dz);gS.add(wh);
-          });
-          siegePivots.push({pivot,offset:i*(Math.PI*2/3)});
-        });
-        // Siege tower
-        const stAngle=Math.PI+0.4,stDist=outerR+2.6;
-        const stGrp=new T.Group();
-        stGrp.position.set(Math.cos(stAngle)*stDist,topY,Math.sin(stAngle)*stDist);
-        stGrp.rotation.y=-stAngle+Math.PI;gS.add(stGrp);
-        const stBody=tag(new T.Mesh(new T.BoxGeometry(0.72,2.8,0.72),woodMat),
-          'Belagerungsturm',
-          'Ein mobiler Holzturm auf Rollen — höher als die Mauer, damit Soldaten von oben übersteigen können. Nasses Leder schützt vor Brandpfeilen.',
-          'Höhe: Über Mauerhöhe · Beweglich auf Rädern');
-        stBody.position.y=1.4;stGrp.add(stBody);
-        for(let f=1;f<=3;f++){const fl=new T.Mesh(new T.BoxGeometry(0.74,0.04,0.74),woodMat);fl.position.y=f*0.78;stGrp.add(fl);}
-        const ramp=new T.Mesh(new T.BoxGeometry(0.62,0.04,0.55),woodMat);
-        ramp.position.set(0,2.76,-0.42);ramp.rotation.x=-Math.PI*0.25;stGrp.add(ramp);
-        for(let r2=0;r2<6;r2++){const rg=new T.Mesh(new T.CylinderGeometry(0.02,0.02,0.58,4),woodMat);rg.rotation.z=Math.PI/2;rg.position.set(0,0.4+r2*0.4,-0.33);stGrp.add(rg);}
-        [[-0.3,-0.3],[0.3,-0.3],[-0.3,0.3],[0.3,0.3]].forEach(([dx,dz])=>{
-          const w=new T.Mesh(new T.TorusGeometry(0.11,0.028,6,10),woodMat);
-          w.rotation.x=Math.PI/2;w.position.set(dx,-0.05,dz);stGrp.add(w);
-        });
-        // Battering ram
-        const rAngle=Math.PI*0.5,ramGrp=new T.Group();
-        ramGrp.position.set(Math.cos(rAngle)*(outerR+1.9),topY,Math.sin(rAngle)*(outerR+1.9));
-        ramGrp.rotation.y=-rAngle+Math.PI;gS.add(ramGrp);
-        const rBody=tag(new T.Mesh(new T.BoxGeometry(0.88,0.45,0.48),woodMat),
-          'Rammbock','Ein schwerer Baumstamm mit eiserner Spitze in einem Holzgehäuse. Der Rhythmus des Rammens entschied über Erfolg oder Misserfolg.',
-          'Material: Holz + Eisen · Bedienung: 40–60 Mann');
-        rBody.position.y=0.12;ramGrp.add(rBody);
-        const rLog=new T.Mesh(new T.CylinderGeometry(0.07,0.07,1.05,6),new T.MeshLambertMaterial({color:new T.Color('#2a1608')}));
-        rLog.rotation.z=Math.PI/2;rLog.position.set(0,0.12,0);ramGrp.add(rLog);
-        const rTip=new T.Mesh(new T.ConeGeometry(0.085,0.22,6),new T.MeshLambertMaterial({color:new T.Color('#333')}));
-        rTip.rotation.z=-Math.PI/2;rTip.position.set(-0.62,0.12,0);ramGrp.add(rTip);
-        [[-0.3,0.18],[0.3,0.18],[-0.3,-0.18],[0.3,-0.18]].forEach(([dx,dz])=>{
-          const w=new T.Mesh(new T.TorusGeometry(0.10,0.026,5,9),woodMat);
-          w.rotation.y=Math.PI/2;w.position.set(dx,-0.1,dz);ramGrp.add(w);
-        });
-        // Camp fires (night mode only, in gFire sub-group)
-        [0,1,2].forEach(i=>{
-          const a=(i/3)*Math.PI*2+0.7,fd=outerR+2.1;
-          const fireMat=new T.MeshLambertMaterial({color:new T.Color('#ff8800'),emissive:new T.Color('#ff5500'),emissiveIntensity:1.8,transparent:true,opacity:0.9});
-          const fire=new T.Mesh(new T.ConeGeometry(0.09,0.28,6),fireMat);
-          fire.position.set(Math.cos(a)*fd,topY+0.2,Math.sin(a)*fd);gFire.add(fire);
-          const fpl=new T.PointLight(0xff5500,2.5,5.5);
-          fpl.position.set(Math.cos(a)*fd,topY+0.38,Math.sin(a)*fd);gFire.add(fpl);
-        });
-      }
-
-      // ── Stars ─────────────────────────────────────────────────────────
-      const sv=[];
-      for(let i=0;i<260;i++){
-        const phi=(i*137.508)*Math.PI/180,r=8+i*0.27;
-        sv.push(Math.cos(phi)*Math.min(r,33),8+i*0.10,Math.sin(phi)*Math.min(r,33));
-      }
-      const sg=new T.BufferGeometry();
-      sg.setAttribute('position',new T.Float32BufferAttribute(sv,3));
-      const starMat=new T.PointsMaterial({color:0xffffff,size:0.065});
-      scene.add(new T.Points(sg,starMat));
-
-      // ── Lighting (stored in refs for day/night switching) ─────────────
-      const ambLight=new T.AmbientLight(
-        isFantasy?acCol.clone().multiplyScalar(0.45).getHex():0x332211,
-        isFantasy?0.65:0.82);
-      scene.add(ambLight);
-      const sunLight=new T.DirectionalLight(isFantasy?acCol.getHex():0xfff0cc,1.55);
-      sunLight.position.set(7,10,5);sunLight.castShadow=true;sunLight.shadow.mapSize.setScalar(1024);scene.add(sunLight);
-      const fillLight=new T.DirectionalLight(acCol.getHex(),0.50);fillLight.position.set(-5,3,-6);scene.add(fillLight);
-      const moonLight=new T.DirectionalLight(0x4466bb,0);moonLight.position.set(-8,12,-4);scene.add(moonLight);
-      if(isFantasy){
-        const mpl=new T.PointLight(acCol.getHex(),1.4,12);mpl.position.set(0,topY+keepH*0.5,0);grp.add(mpl);
-      }
-
-      // ── Raycaster + inspection state ──────────────────────────────────
-      const raycaster=new T.Raycaster();
-      const mouse2D=new T.Vector2();
-      let selectedMesh=null,savedEmissive=null,savedEmissiveI=0;
-      const highlightCol=new T.Color(ac);
-
-      const selectObj=(obj)=>{
-        if(selectedMesh&&selectedMesh.material){
-          selectedMesh.material.emissive=savedEmissive||new T.Color(0,0,0);
-          selectedMesh.material.emissiveIntensity=savedEmissiveI;
-        }
-        if(!obj||!obj.userData||!obj.userData.label){selectedMesh=null;infoRef.current(null);return;}
-        selectedMesh=obj;
-        if(obj.material){
-          savedEmissive=obj.material.emissive?obj.material.emissive.clone():new T.Color(0,0,0);
-          savedEmissiveI=obj.material.emissiveIntensity||0;
-          obj.material.emissive=highlightCol.clone();
-          obj.material.emissiveIntensity=0.55;
-        }
-        infoRef.current({label:obj.userData.label,desc:obj.userData.desc,extra:obj.userData.extra});
+      // ── Raycaster ────────────────────────────────────────────────────
+      const rc=new T.Raycaster();
+      const mouse=new T.Vector2();
+      const onClick=e=>{
+        if(moved) return;
+        const rect=mount.getBoundingClientRect();
+        mouse.set(((e.clientX-rect.left)/rect.width)*2-1,
+                  -((e.clientY-rect.top)/rect.height)*2+1);
+        rc.setFromCamera(mouse,camera);
+        const hits=rc.intersectObjects(clickables,true);
+        if(hits.length){
+          let o=hits[0].object;
+          while(o&&!o.userData?.label) o=o.parent;
+          if(o?.userData?.label) infoRef.current({label:o.userData.label,info:o.userData.info||''});
+          else infoRef.current(null);
+        } else infoRef.current(null);
       };
 
-      const doRaycast=(clientX,clientY)=>{
-        const rect=renderer.domElement.getBoundingClientRect();
-        mouse2D.x=((clientX-rect.left)/rect.width)*2-1;
-        mouse2D.y=-((clientY-rect.top)/rect.height)*2+1;
-        raycaster.setFromCamera(mouse2D,camera);
-        const hits=raycaster.intersectObjects(grp.children,true);
-        selectObj(hits.find(h=>h.object.userData&&h.object.userData.label)?.object||null);
-      };
+      mount.addEventListener('pointerdown',onPD);
+      mount.addEventListener('pointermove',onPM);
+      mount.addEventListener('pointerup',onPU);
+      mount.addEventListener('wheel',onWhl,{passive:false});
+      mount.addEventListener('click',onClick);
 
-      // ── Pointer / touch controls ──────────────────────────────────────
-      const el=renderer.domElement;
-      let drag=false,px=0,py=0,dragMoved=false;
-      const dn=e=>{drag=true;dragMoved=false;px=e.clientX||(e.touches&&e.touches[0].clientX)||0;py=e.clientY||(e.touches&&e.touches[0].clientY)||0;};
-      const mv=e=>{
-        if(!drag)return;
-        const cx=e.clientX||(e.touches&&e.touches[0].clientX)||px;
-        const cy=e.clientY||(e.touches&&e.touches[0].clientY)||py;
-        const dx=cx-px,dy=cy-py;
-        if(Math.abs(dx)>2||Math.abs(dy)>2)dragMoved=true;
-        manualTheta-=dx*0.009;
-        phi_cam=Math.min(1.45,Math.max(0.08,phi_cam+dy*0.008));
-        px=cx;py=cy;positionCamera();
-      };
-      const up=e=>{
-        if(!dragMoved&&drag){
-          const cx=e.clientX||(e.changedTouches&&e.changedTouches[0].clientX)||px;
-          const cy=e.clientY||(e.changedTouches&&e.changedTouches[0].clientY)||py;
-          doRaycast(cx,cy);
-        }
-        drag=false;
-      };
-      const onWheel=e=>{e.preventDefault();camRadius=Math.min(22,Math.max(4,camRadius+e.deltaY*0.025));positionCamera();};
-      el.addEventListener('mousedown',dn);el.addEventListener('mousemove',mv);el.addEventListener('mouseup',up);
-      el.addEventListener('mouseleave',()=>{drag=false;});
-      el.addEventListener('touchstart',dn,{passive:true});el.addEventListener('touchmove',mv,{passive:true});el.addEventListener('touchend',up);
-      el.addEventListener('wheel',onWheel,{passive:false});
-      el.style.cursor='grab';
-
-      // ── Camera preset + screenshot API ───────────────────────────────
-      camCtrlRef.current={
-        goto:(th,ph,r)=>{manualTheta=th-autoTheta;phi_cam=ph;camRadius=r;positionCamera();},
-        screenshot:()=>{
-          renderer.render(scene,camera);
-          const url=renderer.domElement.toDataURL('image/png');
-          const a2=document.createElement('a');a2.href=url;
-          a2.download=`${castle.id}-diorama.png`;a2.click();
-        }
-      };
-
-      // ── Animation loop ────────────────────────────────────────────────
       setReady(true);
-      let lastNight=false;
-      const tick=()=>{
-        animId=requestAnimationFrame(tick);
-        const t=performance.now()*0.001;
-        if(!drag) autoTheta+=0.0018;
-        // Animate catapult arms
-        siegePivots.forEach(({pivot,offset})=>{pivot.rotation.z=Math.sin(t*1.1+offset)*0.6+0.15;});
-        // Day / night switch (only update on change)
-        const isNight=nightRef.current;
-        if(isNight!==lastNight){
-          lastNight=isNight;
-          sunLight.intensity=isNight?0:1.55;
-          fillLight.intensity=isNight?0.1:0.5;
-          moonLight.intensity=isNight?0.95:0;
-          ambLight.intensity=isNight?0.30:(isFantasy?0.65:0.82);
-          scene.background.set(isNight?nightBgCol:bgCol);
-          scene.fog.color.set(isNight?nightBgCol:bgCol);
-          starMat.size=isNight?0.10:0.065;
-        }
-        gFire.visible=isNight;
-        // Build stage visibility
-        const s=stageRef.current;
-        gP.visible=s===1;
-        gW.visible=s>=2;
-        gI.visible=s>=3;
-        gK.visible=s>=4;
-        gS.visible=s>=2&&!isFantasy&&!hasVolcano;
-        positionCamera();
-        renderer.render(scene,camera);
-      };
-      tick();
-    }catch(e){console.error('Diorama error:',e);setReady(true);}};  // end try+init
 
-    init();
-    return()=>{
-      camCtrlRef.current=null;
-      cancelAnimationFrame(animId);
-      // Remove canvas from mount but keep singleton renderer alive for next castle
-      if(renderer&&mount&&mount.contains(renderer.domElement)){mount.removeChild(renderer.domElement);}
-    };
+      const tick=()=>{animId=requestAnimationFrame(tick); renderer.render(scene,camera);};
+      tick();
+
+      return ()=>{
+        cancelAnimationFrame(animId);
+        mount.removeEventListener('pointerdown',onPD);
+        mount.removeEventListener('pointermove',onPM);
+        mount.removeEventListener('pointerup',onPU);
+        mount.removeEventListener('wheel',onWhl);
+        mount.removeEventListener('click',onClick);
+        if(mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
+        // Dispose scene geometry & materials
+        scene.traverse(obj=>{
+          if(obj.geometry) obj.geometry.dispose();
+          if(obj.material){
+            if(Array.isArray(obj.material)) obj.material.forEach(m=>m.dispose());
+            else obj.material.dispose();
+          }
+        });
+      };
+    }catch(e){
+      console.error('CastleDiorama error:',castle.id,e);
+      setReady(true);
+    }
   },[castle.id]);
 
-  const btnSt={background:'rgba(0,0,0,0.72)',border:`1px solid ${ac}30`,color:`${ac}cc`,
-    borderRadius:'4px',cursor:'pointer',padding:'3px 8px',fontSize:'14px',lineHeight:'1.5',
-    transition:'background 0.15s'};
-  const stageLabels=['⛺ Motte & Bailey','🪵 Frühe Steinburg','🧱 Ringwall + Vorburg','🏰 Vollausbau'];
-
   return(
-    <div style={{borderRadius:"8px",overflow:"hidden",
-      border:`1px solid ${ac}22`,boxShadow:`0 4px 32px rgba(0,0,0,0.65),0 0 60px ${ac}08`}}>
-      <div ref={mountRef} style={{width:"100%",minHeight:"300px",background:castle.theme.bg,position:"relative"}}>
-        {/* Loading */}
-        {!ready&&(
-          <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",
-            justifyContent:"center",flexDirection:"column",gap:"10px"}}>
-            <div style={{fontSize:"26px",animation:"spin 0.9s linear infinite"}}>⚙️</div>
-            <div style={{fontSize:"11px",color:ac,letterSpacing:"2px"}}>3D DIORAMA LÄDT …</div>
+    <div style={{position:'relative',width:'100%',background:'#0c0a07',
+      borderRadius:'4px',overflow:'hidden',minHeight:'300px'}}>
+      <div ref={mountRef} style={{width:'100%',minHeight:'300px'}}/>
+      {/* Loading */}
+      {!ready&&(
+        <div style={{position:'absolute',inset:0,display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',gap:'10px',
+          background:'rgba(12,10,7,0.9)'}}>
+          <div style={{width:'32px',height:'32px',border:'2px solid '+ac,
+            borderTopColor:'transparent',borderRadius:'50%',
+            animation:'spin 0.8s linear infinite'}}/>
+          <div style={{fontSize:'11px',color:ac,letterSpacing:'2px',opacity:0.7}}>
+            3D DIORAMA LÄDT
           </div>
-        )}
-        {/* Hint (center top, only when no info shown) */}
-        {ready&&!info&&(
-          <div style={{position:"absolute",top:"8px",left:"50%",transform:"translateX(-50%)",
-            background:"rgba(0,0,0,0.55)",border:`1px solid ${ac}22`,borderRadius:"20px",
-            padding:"3px 11px",fontSize:"10px",color:`${ac}88`,letterSpacing:"1px",
-            pointerEvents:"none",whiteSpace:"nowrap"}}>
-            ↕↔ Drehen · Scrollen = Zoom · Klicken = Infos
-          </div>
-        )}
-        {/* Toolbar — top right */}
-        {ready&&(
-          <div style={{position:"absolute",top:"8px",right:"8px",display:"flex",
-            gap:"4px",flexWrap:"wrap",justifyContent:"flex-end",maxWidth:"210px"}}>
-            <button style={btnSt} title={night?"Tag einschalten":"Nacht einschalten"}
-              onClick={()=>{const n=!night;setNight(n);nightRef.current=n;}}>
-              {night?'☀️':'🌙'}
-            </button>
-            <button style={btnSt} title="Vogelperspektive" onClick={()=>camCtrlRef.current?.goto(Math.PI,0.20,18)}>🦅</button>
-            <button style={btnSt} title="Torhaus-Ansicht" onClick={()=>camCtrlRef.current?.goto(Math.PI,0.72,6)}>🏛</button>
-            <button style={btnSt} title="Bergfried-Ansicht" onClick={()=>camCtrlRef.current?.goto(0,0.60,5)}>🗼</button>
-            <button style={btnSt} title="Überblick" onClick={()=>camCtrlRef.current?.goto(Math.PI,0.52,14.5)}>🔄</button>
-            <button style={btnSt} title="Screenshot speichern" onClick={()=>camCtrlRef.current?.screenshot()}>📸</button>
-          </div>
-        )}
-        {/* Build stage slider — bottom */}
-        {ready&&(
-          <div style={{position:"absolute",bottom:"8px",left:"8px",right:"8px",zIndex:5,
-            background:"rgba(0,0,0,0.68)",borderRadius:"6px",padding:"6px 10px",
-            border:`1px solid ${ac}18`}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"4px"}}>
-              <span style={{fontSize:"10px",color:`${ac}66`,letterSpacing:"1px"}}>BAUSTUFE</span>
-              <span style={{fontSize:"11px",color:ac,fontWeight:"bold"}}>{stageLabels[stage-1]}</span>
-            </div>
-            <input type="range" min="1" max="4" value={stage}
-              onChange={e=>{const v=+e.target.value;setStage(v);stageRef.current=v;}}
-              style={{width:"100%",accentColor:ac,cursor:"pointer"}}/>
-          </div>
-        )}
-        {/* Info overlay on click */}
-        {info&&(
-          <div style={{position:"absolute",bottom:0,left:0,right:0,
-            background:`linear-gradient(0deg,rgba(4,3,2,0.97) 0%,rgba(4,3,2,0.88) 80%,transparent 100%)`,
-            padding:"14px 16px 70px",animation:"fadeIn 0.18s ease"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:"4px"}}>
-              <div style={{fontSize:"13px",fontWeight:"bold",color:ac,letterSpacing:"1px"}}>{info.label}</div>
-              <button onClick={()=>setInfo(null)} style={{background:"none",border:"none",color:`${ac}88`,
-                cursor:"pointer",fontSize:"16px",lineHeight:1,padding:"0 0 0 8px",flexShrink:0}}>✕</button>
-            </div>
-            <div style={{fontSize:"12px",color:"#c8b898",lineHeight:"1.55",marginBottom:info.extra?"5px":"0"}}>
-              {info.desc}
-            </div>
-            {info.extra&&(
-              <div style={{fontSize:"11px",color:`${ac}88`,marginTop:"4px",letterSpacing:"0.5px"}}>
-                {info.extra}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      {/* Footer bar */}
-      <div style={{padding:"6px 14px",background:"rgba(0,0,0,0.55)",
-        borderTop:`1px solid ${ac}18`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-        <div style={{fontSize:"11px",color:`${ac}88`,letterSpacing:"1.5px"}}>
-          🏰 {castle.name.toUpperCase().slice(0,28)}
         </div>
-        <div style={{fontSize:"10px",color:"#4a3820",textAlign:"center"}}>
-          {isRound?'Rundplan':'Rechteckplan'} · {zones.length} Zonen
+      )}
+      {/* Click info overlay */}
+      {ready&&info&&(
+        <div onClick={()=>setInfo(null)} style={{
+          position:'absolute',bottom:0,left:0,right:0,
+          background:'linear-gradient(0deg,rgba(8,6,4,0.97) 0%,rgba(8,6,4,0.85) 70%,transparent 100%)',
+          padding:'18px 16px 16px',cursor:'pointer',userSelect:'none'}}>
+          <div style={{fontSize:'12px',fontWeight:'bold',color:ac,
+            letterSpacing:'1.5px',textTransform:'uppercase',marginBottom:'6px'}}>
+            {info.label}
+          </div>
+          <div style={{fontSize:'11px',color:'#c0a880',lineHeight:'1.6',maxWidth:'520px'}}>
+            {info.info}
+          </div>
+          <div style={{fontSize:'9px',color:'rgba(255,255,255,0.2)',marginTop:'8px',
+            letterSpacing:'1px'}}>KLICK ZUM SCHLIESSEN</div>
         </div>
-        <div style={{fontSize:"10px",color:"#4a3820",textAlign:"right"}}>
-          Mauern {castle.ratings.walls}/100
+      )}
+      {/* Hint */}
+      {ready&&!info&&(
+        <div style={{position:'absolute',bottom:'8px',right:'10px',
+          fontSize:'9px',color:'rgba(255,255,255,0.18)',pointerEvents:'none',
+          letterSpacing:'0.8px'}}>
+          ZIEHEN · ZOOM · KLICK = INFO
         </div>
+      )}
+      {/* Footer */}
+      <div style={{position:'absolute',top:'8px',left:'10px',
+        fontSize:'10px',color:ac,opacity:0.55,letterSpacing:'1.5px',
+        pointerEvents:'none',textTransform:'uppercase'}}>
+        🏰 {castle.name.slice(0,26)}
       </div>
     </div>
   );
 }
+
 
 // ══════════════════════════════════════════════════════════════════════════
 //  MAIN APP
