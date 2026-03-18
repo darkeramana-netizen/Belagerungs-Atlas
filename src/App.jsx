@@ -6058,6 +6058,181 @@ Nach 5-9 Zügen bei guter Strategie: "**[GEFALLEN]**", bei schlechter: "**[GEHAL
 }
 
 // ── Siege Simulator ────────────────────────────────────────────────────────
+// ── Animated Siege View ───────────────────────────────────────────────────
+function AnimatedSiegeView({result,alloc,castle}){
+  const ac=castle.theme.accent;
+  const W=280,H=158,CX=140,CY=78;
+  const ok=result?.success;
+  const hasInf=(alloc?.soldiers||0)>=2;
+  const hasArch=(alloc?.archers||0)>=2;
+  const hasSiege=(alloc?.siege||0)>=2;
+  const hasMin=(alloc?.miners||0)>=1;
+  const hasCav=(alloc?.cavalry||0)>=2;
+  const hasArt=(alloc?.artillery||0)>=1;
+  // animation speed by rating
+  const spd=result?.rating>=7?1.4:result?.rating>=4?1.8:2.4;
+  return(
+    <div style={{marginBottom:"10px",borderRadius:"6px",overflow:"hidden",
+      border:`1px solid ${ok?"rgba(35,90,18,0.28)":"rgba(105,18,10,0.28)"}`,
+      boxShadow:`0 2px 16px rgba(0,0,0,0.5)`}}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",display:"block",maxHeight:"158px"}}>
+        <defs>
+          <radialGradient id="savbg" cx="50%" cy="50%" r="70%">
+            <stop offset="0%" stopColor="#1c1006"/>
+            <stop offset="100%" stopColor="#050302"/>
+          </radialGradient>
+          <radialGradient id="savglow" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stopColor={ac} stopOpacity="0.18"/>
+            <stop offset="100%" stopColor={ac} stopOpacity="0"/>
+          </radialGradient>
+          <style>{`
+            @keyframes sav_ml{0%{transform:translateX(-64px);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateX(0);opacity:.2}}
+            @keyframes sav_mr{0%{transform:translateX(64px);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateX(0);opacity:.2}}
+            @keyframes sav_mt{0%{transform:translateY(-44px);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateY(0);opacity:.2}}
+            @keyframes sav_mb{0%{transform:translateY(44px);opacity:0}15%{opacity:1}80%{opacity:1}100%{transform:translateY(0);opacity:.2}}
+            @keyframes sav_flash{0%,100%{opacity:0}50%{opacity:.85}}
+            @keyframes sav_arr{0%{opacity:0;transform:translate(-32px,18px)}45%{opacity:1}100%{opacity:0;transform:translate(22px,-12px)}}
+            @keyframes sav_dust{0%,100%{opacity:0;transform:scale(.5)}50%{opacity:.4;transform:scale(1)}}
+            @keyframes sav_breach{0%,65%{opacity:0}78%{opacity:1}100%{opacity:.7}}
+            @keyframes sav_retreat{0%,65%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(28px,8px)}}
+            @keyframes sav_pulse{0%,100%{r:4}50%{r:6}}
+            @keyframes sav_canon{0%{opacity:0;transform:scale(.4)}20%{opacity:1;transform:scale(1)}80%{opacity:.6}100%{opacity:0;transform:scale(1.8)}}
+          `}</style>
+        </defs>
+        {/* Ground */}
+        <rect width={W} height={H} fill="url(#savbg)"/>
+        <rect width={W} height={H} fill="url(#savglow)"/>
+        {/* Terrain texture */}
+        {[20,50,80,110,140].map(y=>(
+          <line key={y} x1={10} y1={y} x2={W-10} y2={y} stroke={`${ac}07`} strokeWidth="0.4"/>
+        ))}
+        {/* ── Castle silhouette ── */}
+        {/* Outer moat hint */}
+        <ellipse cx={CX} cy={CY} rx={74} ry={56} fill="none" stroke={`${ac}14`} strokeWidth="0.6" strokeDasharray="2,5"/>
+        {/* Outer wall */}
+        <ellipse cx={CX} cy={CY} rx={56} ry={42} fill={`${ac}07`} stroke={`${ac}44`} strokeWidth="2"/>
+        {/* Wall towers */}
+        {[0,1,2,3,4,5,6,7].map(i=>{
+          const a=(i/8)*Math.PI*2;
+          return <rect key={i} x={CX+56*Math.cos(a)-4} y={CY+42*Math.sin(a)-4}
+            width={8} height={8} rx={1} fill={`${ac}1a`} stroke={`${ac}55`} strokeWidth="1"/>;
+        })}
+        {/* Inner wall */}
+        <ellipse cx={CX} cy={CY} rx={34} ry={26} fill={`${ac}10`} stroke={`${ac}66`} strokeWidth="1.5"/>
+        {/* Keep */}
+        <rect x={CX-12} y={CY-11} width={24} height={22} rx={2}
+          fill={`${ac}16`} stroke={`${ac}88`} strokeWidth="2"/>
+        <rect x={CX-4} y={CY-11} width={8} height={7} rx={1}
+          fill={`${ac}28`} stroke={`${ac}66`} strokeWidth="0.8"/>
+
+        {/* ── Attackers ── */}
+        {/* Infantry left */}
+        {hasInf&&[0,1,2,3,4].map(i=>(
+          <rect key={`il${i}`} x={CX-124+i*6} y={CY-10+i*5} width={7} height={11} rx={1}
+            fill="#cc4433" stroke="#ff5544" strokeWidth="0.6"
+            style={{animation:`sav_ml ${spd}s ${i*0.14}s infinite ease-in`,
+              transformOrigin:`${CX-124+i*6}px ${CY}px`}}/>
+        ))}
+        {/* Infantry right */}
+        {hasInf&&[0,1,2,3,4].map(i=>(
+          <rect key={`ir${i}`} x={CX+117-i*6} y={CY-10+i*5} width={7} height={11} rx={1}
+            fill="#cc4433" stroke="#ff5544" strokeWidth="0.6"
+            style={{animation:`sav_mr ${spd}s ${i*0.14+0.35}s infinite ease-in`,
+              transformOrigin:`${CX+117-i*6}px ${CY}px`}}/>
+        ))}
+        {/* Cavalry — fast from right */}
+        {hasCav&&[0,1,2].map(i=>(
+          <ellipse key={`cv${i}`} cx={CX+126-i*8} cy={CY-18+i*12} rx={9} ry={5}
+            fill="#dd5522" stroke="#ff6633" strokeWidth="0.8"
+            style={{animation:`sav_mr ${spd*0.65}s ${i*0.22}s infinite ease-in`,
+              transformOrigin:`${CX+126-i*8}px ${CY-18+i*12}px`}}/>
+        ))}
+        {/* Siege machines from bottom */}
+        {hasSiege&&[0,1].map(i=>(
+          <g key={`sm${i}`}
+            style={{animation:`sav_mb ${spd*1.6}s ${i*0.7}s infinite linear`,
+              transformOrigin:`${CX-40+i*80}px ${CY+100}px`}}>
+            <rect x={CX-52+i*80} y={CY+85} width={22} height={15} rx={2}
+              fill="rgba(100,75,35,.65)" stroke="#c9a84c" strokeWidth="1.4"/>
+            <rect x={CX-48+i*80} y={CY+80} width={14} height={7} rx={1}
+              fill="rgba(80,58,28,.5)" stroke="#a88030" strokeWidth="1"/>
+            <line x1={CX-48+i*80} y1={CY+80} x2={CX-38+i*80} y2={CY+68}
+              stroke="#c9a84c" strokeWidth="1.8"/>
+            <circle cx={CX-44+i*80} cy={CY+100} r={4} fill="none" stroke="#c9a84c" strokeWidth="1.2"/>
+            <circle cx={CX-34+i*80} cy={CY+100} r={4} fill="none" stroke="#c9a84c" strokeWidth="1.2"/>
+          </g>
+        ))}
+        {/* Arrows */}
+        {hasArch&&[0,1,2,3,4,5].map(i=>(
+          <line key={`ar${i}`}
+            x1={CX-102+i*12} y1={CY+36-i*3}
+            x2={CX-68+i*12} y2={CY+16-i*2}
+            stroke="#c9a84c" strokeWidth="1.3" strokeDasharray="3,2"
+            style={{animation:`sav_arr 1.6s ${i*0.18}s infinite ease-in`,
+              transformOrigin:`${CX-102+i*12}px ${CY+36-i*3}px`}}/>
+        ))}
+        {/* Miners tunnel */}
+        {hasMin&&(
+          <path d={`M ${CX-90} ${CY+52} Q ${CX-38} ${CY+68} ${CX+10} ${CY+56}`}
+            fill="none" stroke="#8b6914" strokeWidth="2.2" strokeDasharray="4,3"
+            style={{animation:`sav_flash 1.8s 0.4s infinite`}}/>
+        )}
+        {/* Artillery flash */}
+        {hasArt&&[0,1].map(i=>(
+          <circle key={`at${i}`} cx={CX-110+i*220} cy={CY+20-i*10} r={8}
+            fill="rgba(255,180,40,0.7)" stroke="rgba(255,220,80,0.9)" strokeWidth="0.5"
+            style={{animation:`sav_canon 1.2s ${i*0.55}s infinite ease-out`}}/>
+        ))}
+
+        {/* ── Wall impacts ── */}
+        {[0,1,2,3,4,5].map(i=>{
+          const a=(i/6)*Math.PI*2;
+          return(
+            <circle key={`imp${i}`} cx={CX+56*Math.cos(a)} cy={CY+42*Math.sin(a)} r={5}
+              fill="rgba(255,130,40,.55)" stroke="rgba(255,200,70,.7)" strokeWidth="0.5"
+              style={{animation:`sav_flash 0.75s ${i*0.13}s infinite ease-out`}}/>
+          );
+        })}
+        {/* Dust clouds */}
+        {[0,1,2].map(i=>(
+          <ellipse key={`ds${i}`} cx={CX-52+i*52} cy={CY+40}
+            rx={14} ry={7} fill="rgba(140,100,60,.3)"
+            style={{animation:`sav_dust 2s ${i*0.55}s infinite ease-in-out`}}/>
+        ))}
+
+        {/* ── Outcome layer ── */}
+        {ok&&(
+          <g style={{animation:`sav_breach ${spd*1.2}s 0s infinite ease`}}>
+            <path d={`M ${CX+50} ${CY-14} L ${CX+40} ${CY+2} L ${CX+54} ${CY+12}`}
+              stroke="#ff6633" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
+            <circle cx={CX+48} cy={CY-2} r={4} fill="rgba(255,100,40,.6)"/>
+            <line x1={CX+3} y1={CY-9} x2={CX+3} y2={CY-27} stroke="#cc3322" strokeWidth="2.2"/>
+            <rect x={CX+3} y={CY-27} width={12} height={8} rx={1}
+              fill="#cc1a0a" stroke="#ff3322" strokeWidth="0.6"/>
+          </g>
+        )}
+        {!ok&&[0,1].map(i=>(
+          <g key={`ret${i}`} style={{animation:`sav_retreat ${spd}s ${i*0.3}s infinite ease`,
+            transformOrigin:`${CX+(i===0?-90:90)}px ${CY}px`}}>
+            <rect x={CX+(i===0?-100:88)} y={CY-8} width={7} height={11} rx={1}
+              fill="#664422" stroke="#885533" strokeWidth="0.6"/>
+            <rect x={CX+(i===0?-108:94)} y={CY-4} width={7} height={11} rx={1}
+              fill="#664422" stroke="#885533" strokeWidth="0.6"/>
+          </g>
+        ))}
+
+        {/* Status bar */}
+        <rect x={0} y={H-18} width={W} height={18} fill="rgba(0,0,0,.45)"/>
+        <text x={CX} y={H-6} textAnchor="middle"
+          fill={ok?`#5aaa42`:`#cc3322`} fontSize="8.5" fontFamily="serif" letterSpacing="1.5">
+          {ok?"⚔️ FESTUNG GEBROCHEN":"🛡️ BELAGERUNG ABGESCHLAGEN"}
+          {result?.daysElapsed?` · ${result.daysElapsed} TAGE`:""}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 function SiegeSimulator({castle,onScore,general,season}){
   const initAlloc=()=>Object.fromEntries(Object.keys(RES).map(k=>[k,0]));
   const [alloc,setAlloc]=useState(initAlloc);
@@ -6113,6 +6288,7 @@ function SiegeSimulator({castle,onScore,general,season}){
         {loading?"⏳ Belagerung läuft…":"⚔️ BELAGERUNG STARTEN"}
       </button>
       {result&&<div style={{marginTop:"12px",padding:"12px",background:result.success?"rgba(22,70,12,.1)":"rgba(85,12,7,.1)",border:`1px solid ${result.success?"rgba(35,95,18,.22)":"rgba(105,18,10,.22)"}`,borderRadius:"4px"}}>
+        <AnimatedSiegeView result={result} alloc={alloc} castle={castle}/>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:"8px"}}>
           <div><div style={{fontSize:"11px",letterSpacing:"2px",color:result.success?"#5aaa42":"#cc3322",marginBottom:"2px"}}>{result.success?"✅ ERFOLG":"❌ GESCHEITERT"}</div><div style={{fontSize:"12px",fontWeight:"bold",color:"#f0e0c0"}}>{result.title}</div>{result.daysElapsed&&<div style={{fontSize:"12px",color:"#b09a70",marginTop:"1px"}}>~{result.daysElapsed} Tage</div>}</div>
           <div style={{textAlign:"center"}}><div style={{fontSize:"22px",fontWeight:"bold",color:rCol(result.rating*10)}}>{result.rating}</div><div style={{fontSize:"11px",color:"#9a8a68"}}>/10</div></div>
