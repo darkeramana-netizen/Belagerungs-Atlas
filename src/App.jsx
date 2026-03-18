@@ -7152,6 +7152,8 @@ function Campaign({castles,onSelect,addScore,general,season}){
 }
 // ── Timeline ───────────────────────────────────────────────────────────────
 function GlobalStats({scores,playStats,castles}){
+  const [atab,setAtab]=useState("overview");
+
   const entries=Object.entries(scores).map(([id,s])=>{
     const c=castles.find(x=>x.id===id);
     return c?{...s,id,castle:c}:null;
@@ -7159,76 +7161,302 @@ function GlobalStats({scores,playStats,castles}){
 
   const total=entries.length;
   const wins=entries.filter(e=>e.won).length;
-  const byRegion=castles.reduce((acc,c)=>{
-    acc[c.region]=(acc[c.region]||0)+1; return acc;
-  },{});
-  const topScored=[...castles].sort((a,b)=>avg(b)-avg(a)).slice(0,5);
-  const mostPlayed=entries.sort((a,b)=>b.rating-a.rating).slice(0,3);
+  const winRate=total>0?Math.round(wins/total*100):0;
+  const avgRatingVal=entries.length>0?Math.round(entries.reduce((a,e)=>a+(e.rating||0),0)/entries.length*10)/10:0;
+
+  const byRegion=castles.reduce((acc,c)=>{acc[c.region]=(acc[c.region]||0)+1;return acc;},{});
+  const byEpoch=castles.reduce((acc,c)=>{acc[c.epoch]=(acc[c.epoch]||0)+1;return acc;},{});
+
+  const topScored=[...castles].sort((a,b)=>avg(b)-avg(a)).slice(0,10);
+  const difficultyRanked=[...castles].sort((a,b)=>avg(b)-avg(a));
+
+  const catKeys=['walls','supply','position','garrison','morale'];
+  const catLabels={walls:'Mauern',supply:'Versorgung',position:'Geländelage',garrison:'Garnison',morale:'Moral'};
+  const catAvgVals=catKeys.map(k=>({
+    k,label:catLabels[k],
+    val:Math.round(castles.reduce((a,c)=>a+c.ratings[k],0)/castles.length),
+  }));
+
+  const generalWinsMap=playStats?.generalWins||{};
+  const generalRanking=[...GENERALS].map(g=>({...g,wins:generalWinsMap[g.id]||0})).sort((a,b)=>b.wins-a.wins);
+
+  const siegedByRegion=Object.keys(byRegion).map(r=>({
+    region:r,total:byRegion[r],
+    sieged:entries.filter(e=>e.castle.region===r).length,
+    won:entries.filter(e=>e.castle.region===r&&e.won).length,
+  })).sort((a,b)=>b.total-a.total);
+
+  const tabBtn=(id,l)=>(
+    <button key={id} onClick={()=>setAtab(id)} style={{
+      padding:"4px 13px",fontSize:"11px",cursor:"pointer",letterSpacing:"1px",
+      background:atab===id?"rgba(201,168,76,0.15)":"rgba(255,255,255,0.02)",
+      border:`1px solid ${atab===id?"rgba(201,168,76,0.4)":"rgba(255,255,255,0.05)"}`,
+      color:atab===id?"#c9a84c":"#6a5a38",borderRadius:"12px",
+    }}>{l}</button>
+  );
 
   return(
-    <div style={{padding:"18px 20px"}}>
-      <div style={{fontSize:"16px",fontWeight:"bold",color:"#f0e6cc",marginBottom:"16px"}}>📊 Globale Statistiken</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"10px",marginBottom:"18px"}}>
-        {[
-          {l:"Burgen gesamt",v:castles.length,icon:"🏰",c:"#c9a84c"},
-          {l:"Historisch",v:castles.filter(c=>c.type==="real").length,icon:"🌍",c:"#8aaa68"},
-          {l:"Fantasy",v:castles.filter(c=>c.type==="fantasy").length,icon:"✦",c:"#9988bb"},
-          {l:"Belagerungen",v:total,icon:"⚔️",c:"#cc8844"},
-          {l:"Siege",v:wins,icon:"✅",c:"#6aaa50"},
-          {l:"Niederlagen",v:total-wins,icon:"❌",c:"#cc5544"},
-        ].map(s=>(
-          <div key={s.l} style={{padding:"12px",background:"rgba(255,255,255,0.02)",
-            border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",textAlign:"center",
-            animation:"fadeIn 0.3s ease"}}>
-            <div style={{fontSize:"20px",marginBottom:"4px"}}>{s.icon}</div>
-            <div style={{fontSize:"22px",fontWeight:"bold",color:s.c}}>{s.v}</div>
-            <div style={{fontSize:"10px",color:"#3a2a14",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
-          </div>
-        ))}
+    <div style={{padding:"16px 20px"}}>
+      {/* Sub-tab header */}
+      <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"16px",flexWrap:"wrap"}}>
+        <div style={{fontSize:"15px",fontWeight:"bold",color:"#f0e6cc",marginRight:"auto"}}>📊 Atlas-Statistiken</div>
+        {tabBtn("overview","Übersicht")}
+        {tabBtn("rankings","Ranglisten")}
+        {tabBtn("analyse","Analyse")}
       </div>
 
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px",marginBottom:"16px"}}>
-        {/* Top rated castles */}
-        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
-          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🏆 TOP-WERTUNGEN</div>
-          {topScored.map((c,i)=>(
-            <div key={c.id} style={{display:"flex",gap:"8px",alignItems:"center",marginBottom:"6px"}}>
-              <div style={{fontSize:"12px",color:i===0?"#c9a84c":i===1?"#888":"#7a5020",width:"16px",fontWeight:"bold"}}>{i+1}</div>
-              <span style={{fontSize:"15px"}}>{c.icon}</span>
-              <div style={{flex:1,fontSize:"12px",color:"#9a8860"}}>{c.name}</div>
-              <div style={{fontSize:"14px",fontWeight:"bold",color:rCol(avg(c))}}>{avg(c)}</div>
+      {/* ── ÜBERSICHT ── */}
+      {atab==="overview"&&<>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px",marginBottom:"12px"}}>
+          {[
+            {l:"Burgen gesamt",v:castles.length,icon:"🏰",c:"#c9a84c"},
+            {l:"Historisch",v:castles.filter(c=>c.type==="real").length,icon:"🌍",c:"#8aaa68"},
+            {l:"Fantasy",v:castles.filter(c=>c.type==="fantasy").length,icon:"✦",c:"#9988bb"},
+            {l:"Belagert",v:total,icon:"⚔️",c:"#cc8844"},
+            {l:"Siege",v:wins,icon:"✅",c:"#6aaa50"},
+            {l:"Niederlagen",v:total-wins,icon:"❌",c:"#cc5544"},
+          ].map(s=>(
+            <div key={s.l} style={{padding:"12px",background:"rgba(255,255,255,0.02)",
+              border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",textAlign:"center"}}>
+              <div style={{fontSize:"18px",marginBottom:"3px"}}>{s.icon}</div>
+              <div style={{fontSize:"21px",fontWeight:"bold",color:s.c}}>{s.v}</div>
+              <div style={{fontSize:"10px",color:"#4a3a1c",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
             </div>
           ))}
         </div>
 
-        {/* Regions */}
-        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
-          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🌍 REGIONEN</div>
-          {Object.entries(byRegion).sort((a,b)=>b[1]-a[1]).map(([region,count])=>(
-            <div key={region} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"5px"}}>
-              <div style={{fontSize:"11px",color:"#7a6a40",flex:1,textTransform:"capitalize"}}>{region}</div>
-              <div style={{flex:2,height:"5px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${(count/castles.length)*100}%`,background:"linear-gradient(90deg,#c9a84c,#aa8830)",borderRadius:"3px"}}/>
+        {/* Atlas progress */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"10px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}}>
+            <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px"}}>🗺️ ATLAS-FORTSCHRITT</div>
+            <div style={{fontSize:"12px",color:"#7a6a40"}}>{total}/{castles.length} ({Math.round(total/castles.length*100)}%)</div>
+          </div>
+          <div style={{height:"7px",background:"rgba(255,255,255,0.04)",borderRadius:"4px",overflow:"hidden",marginBottom:"10px"}}>
+            <div style={{height:"100%",width:`${(total/castles.length)*100}%`,
+              background:"linear-gradient(90deg,#c9a84c,#e8c860)",borderRadius:"4px"}}/>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:"6px"}}>
+            {[
+              {l:"Siegquote",v:`${winRate}%`,c:rCol(winRate)},
+              {l:"Ø Rating",v:avgRatingVal?`${avgRatingVal}/10`:"—",c:rCol(avgRatingVal*10)},
+              {l:"Beststreak",v:playStats?.streak||0,c:"#cc8844"},
+              {l:"Kampagnen",v:playStats?.campaignsDone||0,c:"#9988bb"},
+            ].map(x=>(
+              <div key={x.l} style={{textAlign:"center",padding:"8px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
+                <div style={{fontSize:"16px",fontWeight:"bold",color:x.c}}>{x.v}</div>
+                <div style={{fontSize:"9px",color:"#4a3a20",letterSpacing:"1px",marginTop:"2px"}}>{x.l.toUpperCase()}</div>
               </div>
-              <div style={{fontSize:"11px",color:"#8a7a58",width:"20px",textAlign:"right"}}>{count}</div>
+            ))}
+          </div>
+        </div>
+
+        {/* Win/loss bar */}
+        {total>0&&(
+          <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"10px"}}>
+            <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"8px"}}>⚔️ BELAGERUNGS-BILANZ</div>
+            <div style={{display:"flex",gap:"3px",alignItems:"center",marginBottom:"6px",height:"10px"}}>
+              <div style={{flex:wins,height:"100%",background:"linear-gradient(90deg,rgba(80,160,60,0.5),rgba(100,180,80,0.7))",borderRadius:"4px 0 0 4px",minWidth:"4px"}}/>
+              <div style={{flex:total-wins,height:"100%",background:"linear-gradient(90deg,rgba(160,50,40,0.7),rgba(180,60,50,0.5))",borderRadius:"0 4px 4px 0",minWidth:"4px"}}/>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#6a5a38"}}>
+              <span>✅ {wins} Siege ({winRate}%)</span>
+              <span>❌ {total-wins} Niederlagen</span>
+            </div>
+          </div>
+        )}
+
+        {/* Regions breakdown with progress */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🌍 REGIONEN-ÜBERBLICK</div>
+          {siegedByRegion.map(({region,total:t,sieged,won})=>(
+            <div key={region} style={{marginBottom:"7px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:"6px",marginBottom:"2px"}}>
+                <div style={{fontSize:"11px",color:"#7a6a40",flex:1,textTransform:"capitalize"}}>{region}</div>
+                <div style={{fontSize:"10px",color:"#5a4a28"}}>{sieged}/{t}</div>
+                {won>0&&<div style={{fontSize:"10px",color:"#6aaa50"}}>✅ {won}</div>}
+              </div>
+              <div style={{height:"5px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
+                <div style={{height:"100%",display:"flex",borderRadius:"3px"}}>
+                  <div style={{width:`${won/t*100}%`,background:"rgba(100,180,80,0.55)"}}/>
+                  <div style={{width:`${(sieged-won)/t*100}%`,background:"rgba(180,80,50,0.5)"}}/>
+                  <div style={{flex:1}}/>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div style={{display:"flex",gap:"14px",marginTop:"8px",fontSize:"10px",color:"#4a3a1c"}}>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(100,180,80,0.55)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gewonnen</span>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(180,80,50,0.5)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Verloren</span>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(255,255,255,0.04)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Noch nicht</span>
+          </div>
+        </div>
+      </>}
+
+      {/* ── RANGLISTEN ── */}
+      {atab==="rankings"&&<>
+        {/* Top 10 overall */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🏆 TOP-10 GESAMTWERTUNG</div>
+          {topScored.map((c,i)=>{
+            const played=!!scores[c.id];
+            const medalC=i===0?"#c9a84c":i===1?"#999":i===2?"#7a5020":"#3a2a14";
+            return(
+              <div key={c.id} style={{display:"flex",gap:"8px",alignItems:"center",marginBottom:"5px",
+                padding:"5px 8px",borderRadius:"4px",
+                background:i<3?"rgba(201,168,76,0.04)":"transparent",
+                border:i<3?"1px solid rgba(201,168,76,0.07)":"1px solid transparent"}}>
+                <div style={{fontSize:"12px",color:medalC,width:"18px",textAlign:"center",fontWeight:"bold"}}>{i+1}</div>
+                <span style={{fontSize:"14px"}}>{c.icon}</span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:"12px",color:"#9a8860",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                  <div style={{fontSize:"10px",color:"#5a4a28"}}>{c.region} · {c.epoch}</div>
+                </div>
+                {played&&<span style={{fontSize:"11px"}}>{scores[c.id].won?"✅":"❌"}</span>}
+                <div style={{fontSize:"14px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace",flexShrink:0}}>{avg(c)}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Category leaders 2x2 */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+          {[
+            {k:"walls",l:"🧱 Stärkste Mauern"},
+            {k:"position",l:"⛰️ Beste Geländelage"},
+            {k:"supply",l:"🍖 Beste Versorgung"},
+            {k:"garrison",l:"🏹 Stärkste Garnison"},
+          ].map(({k,l})=>{
+            const top3=[...castles].sort((a,b)=>b.ratings[k]-a.ratings[k]).slice(0,3);
+            return(
+              <div key={k} style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+                <div style={{fontSize:"10px",color:"#c9a84c",letterSpacing:"1px",marginBottom:"8px"}}>{l}</div>
+                {top3.map((c,i)=>(
+                  <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
+                    <div style={{fontSize:"10px",color:i===0?"#c9a84c":"#4a3a20",width:"13px"}}>{i+1}</div>
+                    <span style={{fontSize:"12px"}}>{c.icon}</span>
+                    <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                    <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(c.ratings[k]),fontFamily:"monospace"}}>{c.ratings[k]}</div>
+                  </div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* General leaderboard */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🎖️ GENERAL-RANGLISTE</div>
+          {generalRanking.map((g,i)=>(
+            <div key={g.id} style={{display:"flex",gap:"8px",alignItems:"center",marginBottom:"7px"}}>
+              <div style={{fontSize:"11px",color:i===0?"#c9a84c":i===1?"#888":"#4a3a20",width:"16px",textAlign:"center"}}>{i+1}</div>
+              <span style={{fontSize:"17px"}}>{g.emoji}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:"12px",color:"#9a8860"}}>{g.name}</div>
+                <div style={{fontSize:"10px",color:"#5a4a28"}}>{g.specialty}</div>
+              </div>
+              <div style={{textAlign:"right",minWidth:"40px"}}>
+                <div style={{fontSize:"14px",fontWeight:"bold",color:g.wins>0?"#c9a84c":"#3a2a14"}}>{g.wins}</div>
+                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>SIEGE</div>
+              </div>
+              {g.wins>0&&(
+                <div style={{width:"60px",height:"4px",background:"rgba(255,255,255,0.04)",borderRadius:"2px",overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${(g.wins/Math.max(...generalRanking.map(x=>x.wins),1))*100}%`,
+                    background:"linear-gradient(90deg,#c9a84c,#e8c860)",borderRadius:"2px"}}/>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </div>
+      </>}
 
-      {total>0&&(
-        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
-          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"8px"}}>⚔️ DEINE BELAGERUNGS-BILANZ</div>
-          <div style={{display:"flex",gap:"6px",alignItems:"center",marginBottom:"6px"}}>
-            <div style={{flex:wins/total,height:"8px",background:"rgba(100,180,80,0.6)",borderRadius:"4px 0 0 4px",minWidth:"4px"}}/>
-            <div style={{flex:(total-wins)/total,height:"8px",background:"rgba(180,60,50,0.6)",borderRadius:"0 4px 4px 0",minWidth:"4px"}}/>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#6a5a38"}}>
-            <span>✅ {wins} Siege ({Math.round(wins/total*100)}%)</span>
-            <span>❌ {total-wins} Niederlagen</span>
+      {/* ── ANALYSE ── */}
+      {atab==="analyse"&&<>
+        {/* Category averages across all castles */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"12px"}}>📐 Ø KATEGORIE-WERTUNG — alle {castles.length} Burgen</div>
+          {catAvgVals.map(({k,label,val})=>(
+            <div key={k} style={{marginBottom:"9px"}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
+                <div style={{fontSize:"11px",color:"#8a7a58"}}>{label}</div>
+                <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(val),fontFamily:"monospace"}}>{val}</div>
+              </div>
+              <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${val}%`,
+                  background:`linear-gradient(90deg,${rCol(val)}66,${rCol(val)})`,borderRadius:"3px"}}/>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Epoch distribution */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>📅 EPOCHEN-VERTEILUNG</div>
+          {Object.entries(byEpoch).sort((a,b)=>b[1]-a[1]).map(([ep,cnt])=>{
+            const played=entries.filter(e=>e.castle.epoch===ep).length;
+            return(
+              <div key={ep} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}}>
+                <div style={{fontSize:"11px",color:"#7a6a40",width:"120px",flexShrink:0}}>{ep}</div>
+                <div style={{flex:1,height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden",position:"relative"}}>
+                  <div style={{position:"absolute",height:"100%",width:`${cnt/castles.length*100}%`,background:"rgba(201,168,76,0.2)",borderRadius:"3px"}}/>
+                  <div style={{position:"absolute",height:"100%",width:`${played/castles.length*100}%`,background:"linear-gradient(90deg,#c9a84c,#aa8830)",borderRadius:"3px"}}/>
+                </div>
+                <div style={{fontSize:"10px",color:"#5a4a28",width:"38px",textAlign:"right",fontFamily:"monospace"}}>{played}/{cnt}</div>
+              </div>
+            );
+          })}
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(201,168,76,0.2)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gesamt</span>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"#c9a84c",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Belagert</span>
           </div>
         </div>
-      )}
+
+        {/* Hardest vs Easiest */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+          <div style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+            <div style={{fontSize:"10px",color:"#cc5544",letterSpacing:"1px",marginBottom:"8px"}}>💀 STÄRKSTE FESTUNGEN</div>
+            {difficultyRanked.slice(0,5).map((c,i)=>(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"5px"}}>
+                <div style={{fontSize:"10px",color:"#5a3020",width:"13px"}}>{i+1}</div>
+                <span style={{fontSize:"12px"}}>{c.icon}</span>
+                <div style={{flex:1,fontSize:"11px",color:"#8a7860",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+            <div style={{fontSize:"10px",color:"#8aaa68",letterSpacing:"1px",marginBottom:"8px"}}>🎯 ANGREIFBARSTE ZIELE</div>
+            {[...difficultyRanked].reverse().slice(0,5).map((c,i)=>(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"5px"}}>
+                <div style={{fontSize:"10px",color:"#3a5020",width:"13px"}}>{i+1}</div>
+                <span style={{fontSize:"12px"}}>{c.icon}</span>
+                <div style={{flex:1,fontSize:"11px",color:"#7a8a60",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Additional play stats */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🧮 SPIELER-STATISTIKEN</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:"8px"}}>
+            {[
+              {l:"Belagerungen",v:playStats?.sieges||0,icon:"⚔️"},
+              {l:"Siege",v:playStats?.wins||0,icon:"✅"},
+              {l:"Ges. Tage",v:playStats?.totalDays||0,icon:"📅"},
+              {l:"Entscheidungen",v:playStats?.choicesMade||0,icon:"🎲"},
+              {l:"Bester Bau",v:playStats?.bestBuild?`${playStats.bestBuild} Pkt`:"—",icon:"🏗️"},
+              {l:"Entfernungen",v:playStats?.distancesCalc||0,icon:"📏"},
+            ].map(x=>(
+              <div key={x.l} style={{padding:"8px",background:"rgba(255,255,255,0.015)",borderRadius:"4px",textAlign:"center"}}>
+                <div style={{fontSize:"15px",marginBottom:"2px"}}>{x.icon}</div>
+                <div style={{fontSize:"14px",fontWeight:"bold",color:"#c9a84c"}}>{x.v}</div>
+                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>}
     </div>
   );
 }
