@@ -4096,6 +4096,137 @@ function GenericCastlePlan({castle,ac,sel,onZone}){
   );
 }
 
+// ── Isometric 2.5D castle view ────────────────────────────────────────────
+function IsoCastlePlan({castle,ac,sel,onZone}){
+  const zones=castle.zones;
+  const CX=110,CY=128;
+  const HS=9; // pixels per defense point
+  const defCol=a=>a>=5?"#6aaa50":a>=3?"#c9a84c":"#cc5533";
+  // Project tower zone world coords (0..100, center 50,50) to iso screen
+  const toIso=(wx,wy)=>({
+    sx:CX+(wx-50-(wy-50))*0.55,
+    sy:CY+(wx-50+(wy-50))*0.28
+  });
+  // Sort: outer rings first (painter's algo), towers back-to-front
+  const sorted=[...zones].sort((a,b)=>{
+    const aR=a.r>12,bR=b.r>12;
+    if(aR&&bR) return b.r-a.r;
+    if(aR) return -1;
+    if(bR) return 1;
+    return a.y-b.y;
+  });
+  return(
+    <g>
+      {/* Ground base */}
+      <ellipse cx={CX} cy={CY+12} rx={90} ry={38} fill="rgba(6,4,2,0.95)" stroke={`${ac}1c`} strokeWidth="1"/>
+      <ellipse cx={CX} cy={CY+12} rx={86} ry={34} fill="none" stroke={`${ac}0a`} strokeWidth="0.5"/>
+      {/* Terrain marks */}
+      {[-24,-12,0,12,24].map(d=>(
+        <line key={d} x1={CX-76+Math.abs(d)*0.4} y1={CY+12+d*0.38}
+          x2={CX+76-Math.abs(d)*0.4} y2={CY+12+d*0.38}
+          stroke={`${ac}07`} strokeWidth="0.4"/>
+      ))}
+      {sorted.map(z=>{
+        const isH=sel===z.id;
+        const h=Math.max(z.a,0.6)*HS;
+        const dc=defCol(z.a);
+        if(z.r>12){
+          // RING ZONE — isometric cylinder
+          const rx=z.r*0.68;
+          const ry=z.r*0.33;
+          const battleCount=Math.min(Math.round(rx/5.5),14);
+          return(
+            <g key={z.id} style={{cursor:"pointer"}} onClick={()=>onZone(z.id)}>
+              {/* Front cylinder face */}
+              <path d={[
+                `M ${CX-rx} ${CY}`,
+                `L ${CX-rx} ${CY-h}`,
+                `A ${rx} ${ry} 0 0 1 ${CX+rx} ${CY-h}`,
+                `L ${CX+rx} ${CY}`,
+                `A ${rx} ${ry} 0 0 0 ${CX-rx} ${CY}`,
+                `Z`].join(" ")}
+                fill={isH?`${z.c}22`:`${z.c}0e`}
+                stroke={isH?`${z.c}cc`:`${z.c}44`}
+                strokeWidth={isH?2:0.9}/>
+              {/* Top ellipse */}
+              <ellipse cx={CX} cy={CY-h} rx={rx} ry={ry}
+                fill={isH?`${z.c}38`:`${z.c}1e`}
+                stroke={isH?z.c:`${z.c}99`}
+                strokeWidth={isH?2.5:1.5}/>
+              {/* Battlements */}
+              {Array.from({length:battleCount},(_,i)=>{
+                const ang=(i/battleCount)*Math.PI*2;
+                const bx=CX+rx*Math.cos(ang);
+                const by=CY-h+ry*Math.sin(ang);
+                return <rect key={i} x={bx-1.5} y={by-4} width={3} height={3} rx="0.5"
+                  fill={z.c} opacity={isH?0.65:0.28}/>;
+              })}
+              {/* Defense value bar on right side */}
+              <rect x={CX+rx+3} y={CY-h*0.75} width={4}
+                height={Math.max(h*0.65,3)} rx="1"
+                fill={dc} opacity={0.55}/>
+              {/* Zone label */}
+              <text x={CX} y={CY-h-ry-2} textAnchor="middle"
+                fill={isH?z.c:`${z.c}cc`} fontSize="8" fontFamily="serif">
+                {z.l.replace(/ ⚠+/g,"").slice(0,16)}
+              </text>
+              {/* Weak zone flag */}
+              {z.a<=2&&<text x={CX+rx*0.75} y={CY-h+ry*0.5}
+                textAnchor="middle" fill="#cc4444" fontSize="9">⚠</text>}
+            </g>
+          );
+        } else {
+          // TOWER ZONE — small isometric pillar
+          const pos=toIso(z.x,z.y);
+          const tr=Math.max(z.r,5)*0.55;
+          const try_=tr*0.48;
+          return(
+            <g key={z.id} style={{cursor:"pointer"}} onClick={()=>onZone(z.id)}>
+              {/* Pillar front face */}
+              <path d={[
+                `M ${pos.sx-tr} ${pos.sy}`,
+                `L ${pos.sx-tr} ${pos.sy-h}`,
+                `A ${tr} ${try_} 0 0 1 ${pos.sx+tr} ${pos.sy-h}`,
+                `L ${pos.sx+tr} ${pos.sy}`,
+                `A ${tr} ${try_} 0 0 0 ${pos.sx-tr} ${pos.sy}`,
+                `Z`].join(" ")}
+                fill={isH?`${z.c}32`:`${z.c}1a`}
+                stroke={isH?`${z.c}dd`:`${z.c}66`}
+                strokeWidth={isH?2:1}/>
+              {/* Pillar top */}
+              <ellipse cx={pos.sx} cy={pos.sy-h} rx={tr} ry={try_}
+                fill={isH?`${z.c}52`:`${z.c}2e`}
+                stroke={isH?z.c:`${z.c}aa`}
+                strokeWidth={isH?2.5:1.5}/>
+              {/* Mini battlements */}
+              {Array.from({length:4},(_,i)=>{
+                const ang=(i/4)*Math.PI*2;
+                const bx=pos.sx+tr*0.7*Math.cos(ang);
+                const by=pos.sy-h+try_*0.7*Math.sin(ang);
+                return <rect key={i} x={bx-1.5} y={by-3.5} width={3} height={2.5} rx="0.3"
+                  fill={z.c} opacity={isH?0.72:0.35}/>;
+              })}
+              {/* Label */}
+              <text x={pos.sx} y={pos.sy-h-try_-2} textAnchor="middle"
+                fill={isH?z.c:`${z.c}cc`} fontSize="7.5" fontFamily="serif">
+                {z.l.replace(/ ⚠+/g,"").slice(0,13)}
+              </text>
+              {z.a<=2&&<text x={pos.sx+tr+2} y={pos.sy-h}
+                fill="#cc4444" fontSize="9">⚠</text>}
+            </g>
+          );
+        }
+      })}
+      {/* Legend */}
+      <text x={8} y={196} fill={`${ac}30`} fontSize="7" fontFamily="serif">Höhe = Verteidigungswert</text>
+      {/* Castle name */}
+      <text x={CX} y={196} textAnchor="middle" fill={`${ac}40`} fontSize="9" fontFamily="serif" letterSpacing="1.5">
+        {castle.name.toUpperCase().slice(0,22)}
+      </text>
+    </g>
+  );
+}
+
 // ── BattleMap — top-down floor plan view ──────────────────────────────────
 // ── Terrain description based on castle data ───────────────────────────────
 function getTerrainDesc(castle){
@@ -4184,6 +4315,7 @@ function CastleMapTab({castle}){
   const [zoom,setZoom]=useState(1);
   const [selZone,setSelZone]=useState(null);
   const [attackMode,setAttackMode]=useState(false);
+  const [viewMode,setViewMode]=useState("flat");
   const selZ=sel.zones.find(z=>z.id===selZone);
   const plan=CASTLE_PLANS[sel.id];
   return(
@@ -4216,7 +4348,7 @@ function CastleMapTab({castle}){
                       <div style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
                         {/* Left: SVG with zoom */}
                         <div>
-                          {/* Zoom controls */}
+                          {/* Zoom controls + 3D toggle */}
                           <div style={{display:"flex",gap:"5px",marginBottom:"6px",alignItems:"center"}}>
                             <span style={{fontSize:"11px",color:"#5a4a28"}}>🔍 Zoom:</span>
                             {[{v:0.8,l:"−"},{v:1,l:"1×"},{v:1.5,l:"1.5×"},{v:2,l:"2×"},{v:2.5,l:"2.5×"}].map(z=>(
@@ -4228,9 +4360,19 @@ function CastleMapTab({castle}){
                                 {z.l}
                               </button>
                             ))}
-                            <span style={{marginLeft:"auto",fontSize:"10px",color:"#3a2a14"}}>
-                              {sel.zones.length} Zonen · Klicken zum Erkunden
-                            </span>
+                            <div style={{marginLeft:"auto",display:"flex",gap:"4px",alignItems:"center"}}>
+                              <button onClick={()=>setViewMode(v=>v==="flat"?"iso":"flat")}
+                                style={{padding:"2px 9px",fontSize:"11px",
+                                  background:viewMode==="iso"?`${sel.theme.accent}18`:"rgba(255,255,255,0.02)",
+                                  border:`1px solid ${viewMode==="iso"?sel.theme.accent+"55":"rgba(255,255,255,0.06)"}`,
+                                  color:viewMode==="iso"?sel.theme.accent:"#5a4a28",
+                                  borderRadius:"3px",cursor:"pointer",whiteSpace:"nowrap"}}>
+                                {viewMode==="iso"?"🏰 3D an":"🏰 3D"}
+                              </button>
+                              <span style={{fontSize:"10px",color:"#3a2a14"}}>
+                                {sel.zones.length} Zonen
+                              </span>
+                            </div>
                           </div>
 
                           {/* SVG Container with overflow for zoom */}
@@ -4258,9 +4400,11 @@ function CastleMapTab({castle}){
                                   </radialGradient>
                                 </defs>
                                 <rect width="220" height="200" fill="url(#bg_grad)"/>
-                                {plan
-                                  ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-                                  : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
+                                {viewMode==="iso"
+                                  ? <IsoCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
+                                  : plan
+                                    ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
+                                    : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
                                 }
                                 {/* Attack arrows overlay */}
                                 {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
