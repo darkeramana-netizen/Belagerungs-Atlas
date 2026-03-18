@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import * as THREE from "three";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  ██████╗ █████╗ ███████╗████████╗██╗     ███████╗
@@ -8753,16 +8754,12 @@ function Lexikon({castle,onAsk}){
 // Singleton WebGL renderer — browsers cap WebGL contexts at ~16 per page.
 // Reusing one renderer avoids "blank scene" after navigating many castles.
 let _dioramaRenderer=null;
-function _getRenderer(T){
-  if(_dioramaRenderer){
-    const ctx=_dioramaRenderer.getContext&&_dioramaRenderer.getContext();
-    if(ctx&&!ctx.isContextLost())return _dioramaRenderer;
-    try{_dioramaRenderer.dispose();}catch(_){}
-    _dioramaRenderer=null;
+function _getRenderer(){
+  if(!_dioramaRenderer){
+    _dioramaRenderer=new THREE.WebGLRenderer({antialias:true});
+    _dioramaRenderer.shadowMap.enabled=true;
+    _dioramaRenderer.shadowMap.type=THREE.PCFSoftShadowMap;
   }
-  _dioramaRenderer=new T.WebGLRenderer({antialias:true});
-  _dioramaRenderer.shadowMap.enabled=true;
-  _dioramaRenderer.shadowMap.type=T.PCFSoftShadowMap;
   return _dioramaRenderer;
 }
 //           animated siege machines, day/night, camera presets, build stages, screenshot
@@ -8786,10 +8783,11 @@ function CastleDiorama({castle}){
     let animId,renderer;
     const mount=mountRef.current;
     if(!mount) return;
+    setReady(false);
     infoRef.current(null);
 
     const init=()=>{try{
-      const T=window.THREE;
+      const T=THREE;
       const W=mount.clientWidth||600;
       const H=Math.min(Math.round(W*0.62),440);
 
@@ -8854,7 +8852,7 @@ function CastleDiorama({castle}){
       scene.background=bgCol.clone();
       scene.fog=new T.FogExp2(bgCol.getHex(),0.054);
       const camera=new T.PerspectiveCamera(42,W/H,0.1,130);
-      renderer=_getRenderer(T);
+      renderer=_getRenderer();
       renderer.setSize(W,H);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
       // Move canvas to this castle's mount (detach from previous if needed)
@@ -9523,12 +9521,7 @@ function CastleDiorama({castle}){
       tick();
     }catch(e){console.error('Diorama error:',e);setReady(true);}};  // end try+init
 
-    if(window.THREE){init();}
-    else{
-      const s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-      s.onload=init;s.onerror=()=>setReady(true);document.head.appendChild(s);
-    }
+    init();
     return()=>{
       camCtrlRef.current=null;
       cancelAnimationFrame(animId);
