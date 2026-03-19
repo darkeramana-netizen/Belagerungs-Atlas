@@ -557,13 +557,14 @@ const CASTLES = [
    ],
    wall:{h:6.0, thick:1.3}},
 
-  // ── AUSSENRING: 8 Türme (Oktagon, R=20), Gate bei Segment 2→3 ───────────
+  // ── AUSSENRING: 8 Türme (Oktagon, R=20), Gate bei Segment 3→4 ───────────
   // Türme (r=1.3) sind dicker als Außenmauern (thick=0.8) → stehen an Ecken hervor
-  // Gate-Mittelpunkt zwischen Turm 2 (20,0) und Turm 3 (14.14, 14.14): (17.07, 7.07)
+  // Gate-Mittelpunkt zwischen Turm 3 (14.14,14.14) und Turm 4 (0,20): (7.07, 17.07)
+  // → Segment läuft SO→S, Torhaus erscheint leicht schräg (diagonal) nach SSO gerichtet
   {type:'RING', y:0,
-   gate:{atIndex:2, w:3.5, d:2.5, h:5.5,
-     label:'Haupttor (Barbakane)',
-     info:'Der einzige reguläre Eingang. Absichtlich gewunden: Wer durchbrach, stand in einem engen Korridor mit Fallgattern, Pfeillöchern und Gusserker-Öffnungen. Kein Schwung mehr zum Rammen — die perfekte Falle.'},
+   gate:{atIndex:3, w:5.5, d:4.5, h:7.5,
+     label:'Haupttor – Befestigte Rampe (Barbakane)',
+     info:'Der historische Eingang des Krak: eine lange, überdachte Rampe von Südosten, die absichtlich durch mehrere Engstellen geführt wurde. Fallgatter, Pfeillöcher und enge Kurven machten jeden Durchbruch zum Massaker. Wer das äußere Tor überwand, stand noch lange nicht innen.'},
    points:[
     {x:0,     z:-20,    r:1.3, h:5.5, label:'Außenturm Nord',  info:'Beobachtungsposten für den Nordhang — die einzige Seite, die flach genug für schwere Belagerungsmaschinen war.'},
     {x:14.14, z:-14.14, r:1.3, h:5.5, label:'Außenturm NO',    info:'Flankierungsturm — ermöglichte Kreuzfeuer zwischen Ost- und Nordmauer.'},
@@ -8902,24 +8903,43 @@ function buildSquareTower(p,sm,dm,rm){
   return g;
 }
 
-// GATE: flanking towers + lintel
+// GATE: massives Torhaus mit runden Flankentürmen, tiefem Durchgang und Zinnen
 function buildGate(p,sm,dm){
-  const w=p.w||3.5, d=p.d||2.2, h=p.h||5.0, y=p.y||0;
+  const w=p.w||4.5, d=p.d||3.5, h=p.h||6.0, y=p.y||0;
+  const tR=d*0.52;    // Flankenturm-Radius — breiter als Mauertiefe
+  const tH=h*1.22;    // Flankentürme ragen über Torhaus hinaus
   const g=new THREE.Group();
   g.position.set(p.x, y, p.z);
-  if(p.rotation) g.rotation.y=p.rotation;
+  if(p.rotation!==undefined) g.rotation.y=p.rotation;
   g.userData={label:p.label||'',info:p.info||''};
-  // Two flanking towers
+  // Zwei runde Flankentürme — ragen vorne und hinten über den Torhauskörper hinaus
   [-1,1].forEach(s=>{
-    const tw=new THREE.Mesh(new THREE.BoxGeometry(d,h,d),sm);
-    tw.position.set(s*(w/2-d/2+0.1), h/2, 0); tw.castShadow=true; g.add(tw);
+    const tw=new THREE.Mesh(new THREE.CylinderGeometry(tR,tR*1.06,tH,14),sm);
+    tw.position.set(s*(w/2+tR*0.45), tH/2, 0);
+    tw.castShadow=true; tw.receiveShadow=true; g.add(tw);
+    // Zinnen auf Flankenturm-Dach
+    const nc=8;
+    for(let c=0;c<nc;c++){
+      const a=(c+0.5)*(2*Math.PI/nc);
+      const cm=new THREE.Mesh(new THREE.BoxGeometry(0.42,0.6,0.42),sm);
+      cm.position.set(s*(w/2+tR*0.45)+Math.sin(a)*(tR-0.28), tH+0.3, Math.cos(a)*(tR-0.28));
+      g.add(cm);
+    }
   });
-  // Lintel
-  const lin=new THREE.Mesh(new THREE.BoxGeometry(w,0.5,d),sm);
-  lin.position.y=h*0.72; g.add(lin);
-  // Threshold (bottom fill)
-  const thr=new THREE.Mesh(new THREE.BoxGeometry(w,h*0.35,d),dm||sm);
-  thr.position.y=h*0.175; g.add(thr);
+  // Torhauskörper — massiv und tief
+  const body=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),sm);
+  body.position.y=h/2; body.castShadow=true; body.receiveShadow=true; g.add(body);
+  // Tordurchgang — dunkleres Material schneidet durch die Mitte
+  const pW=w*0.35, pH=h*0.58;
+  const pass=new THREE.Mesh(new THREE.BoxGeometry(pW,pH,d*1.1),dm||sm);
+  pass.position.y=pH/2; g.add(pass);
+  // Zinnen auf Torhaus-Dach
+  const nM=Math.max(3, Math.floor(w/1.05));
+  for(let i=0;i<nM;i++){
+    const cx=-w/2+0.52+i*(w/nM);
+    const cm=new THREE.Mesh(new THREE.BoxGeometry(0.48,0.6,d*0.38),sm);
+    cm.position.set(cx, h+0.3, 0); g.add(cm);
+  }
   return g;
 }
 
