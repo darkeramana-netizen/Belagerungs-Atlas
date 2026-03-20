@@ -45,7 +45,7 @@ export const COORDS = {
 
 export const CASTLES = [
 // ── HISTORISCH ──────────────────────────────────────────────────────────
-{id:"krak",name:"Krak des Chevaliers",sub:"Kreuzritter-Festung",era:"1142–1271",year:1200,loc:"Syrien",type:"real",epoch:"Mittelalter",region:"nahost",icon:"🏰",
+{id:"krak",name:"Krak des Chevaliers",sub:"Kreuzritter-Festung",era:"1142–1271",year:1200,loc:"Syrien",type:"real",epoch:"Mittelalter",region:"nahost",dioramaStyle:"crusader",icon:"🏰",
  theme:{bg:"#1a1205",accent:"#c9a84c",glow:"rgba(201,168,76,0.15)"},
  ratings:{walls:97,supply:85,position:92,garrison:60,morale:70},
  desc:"Doppelringmauer, Zisternen für 5 Jahre — das Meisterwerk der Kreuzritterarchitektur.",
@@ -128,7 +128,8 @@ export const CASTLES = [
  attackTips:["Circumvallation (Belagerungsring)","Rampe am Westsporn bauen","Geduld: Jahre warten"],
  siegeCtx:"73 n.Chr. — Flavius Silva, X. Legion, 15.000 Soldaten. 960 Zeloten. Nur eine Rampe hilft.",defender:"Eleazar ben Yair",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:12,rBot:15.5,h:4.0,label:'Masada-Plateau (Tafelberg)',info:'Senkrechte Klippen auf drei Seiten — 400m Absturz ins Tote Meer. Der Berg selbst ist Masadas einzige Mauer.'},
+ // Mesa-Form: nahezu senkrechte Wände (rTop≈rBot) — deckt alle Türme bei r≤17 ab
+ {type:'GLACIS',x:0,z:0,y:0,rTop:18,rBot:20,h:4.0,label:'Masada-Plateau (Tafelberg)',info:'Senkrechte Klippen auf drei Seiten — 400m Absturz ins Tote Meer. Der Berg selbst ist Masadas einzige Mauer.'},
  {type:'RING',y:4.0,squareTowers:true,
   gate:{atIndex:8,w:2.2,d:1.8,h:3.8,label:'Westtor (Serpentinenweg)',info:'Einziger regulärer Zugang über den gewundenen Fußpfad der Westseite — zugleich die einzige Schwachstelle des Plateaus.'},
   points:[

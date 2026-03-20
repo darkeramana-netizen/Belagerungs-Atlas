@@ -71,10 +71,13 @@ export function getMaterials(style = 'crusader') {
 
 // ── Derive visual style from castle metadata ─────────────────────────────
 export function resolveStyle(castle) {
+  // Explicit per-castle override wins
+  if (castle.dioramaStyle) return castle.dioramaStyle;
   const epoch  = castle.epoch  || '';
   const region = castle.region || '';
-  if (epoch === 'Feudaljapan') return 'japanese';
-  if (region === 'nahost' || (region === 'asien' && epoch !== 'Feudaljapan')) return 'oriental';
+  // Ancient epoch takes precedence over region — Antike nahost castles are NOT Islamic
   if (epoch === 'Antike' || epoch === 'Spätantike') return 'ancient';
+  if (epoch === 'Feudaljapan') return 'japanese';
+  if (region === 'nahost' || (region === 'ostasien' && epoch !== 'Feudaljapan')) return 'oriental';
   return 'crusader';
 }

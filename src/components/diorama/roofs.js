@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 
 // ── European / Crusader: simple cone ─────────────────────────────────────
+// Cone base = r * 1.05 (max 1.2× rule satisfied)
 export function buildConeRoof(r, baseY, mat) {
+  const cR = r * 1.05;
   const cH = r * 1.55;
-  const cone = new THREE.Mesh(new THREE.ConeGeometry(r + 0.14, cH, 18), mat);
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(cR, cH, 18), mat);
   cone.position.y = baseY + cH / 2;
   cone.castShadow = true;
   return cone;
@@ -50,23 +52,23 @@ export function buildPagodaRoof(r, baseY, mat, tiers = 3) {
 }
 
 // ── Oriental / Islamic: dome ─────────────────────────────────────────────
-// Upper hemisphere + small neck cylinder beneath it.
+// Dome radius capped at r * 0.58 (≤ 1.16× tower radius — within 1.2× rule).
 export function buildDomeRoof(r, baseY, mat) {
   const g = new THREE.Group();
-  const dR = r * 0.82;
+  const dR = r * 0.58;   // was 0.82 — smaller, proportionate
 
   // Drum / neck
-  const neck = new THREE.Mesh(new THREE.CylinderGeometry(dR * 0.7, dR * 0.8, r * 0.22, 14), mat);
-  neck.position.y = baseY + r * 0.11;
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(dR * 0.7, dR * 0.8, r * 0.18, 14), mat);
+  neck.position.y = baseY + r * 0.09;
   neck.castShadow = true;
   g.add(neck);
 
-  // Dome — upper hemisphere via phiLength < π
+  // Dome — upper hemisphere
   const dome = new THREE.Mesh(
     new THREE.SphereGeometry(dR, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.56),
     mat,
   );
-  dome.position.y = baseY + r * 0.22;
+  dome.position.y = baseY + r * 0.18;
   dome.castShadow = true;
   g.add(dome);
 
@@ -82,17 +84,18 @@ export function buildFlatRoof(w, d, baseY, mat) {
 }
 
 // ── Japanese: irimoya (入母屋) hip-gable roof for SQUARE towers ───────────
-// Two stacked tiers: each tier = wide overhanging eave plate + 4-sided pyramid body.
+// Two stacked tiers: each tier = eave plate + 4-sided pyramid body.
+// Eave overhang capped so total width ≤ 1.18× tower width (within 1.2× rule).
 export function buildIrimoyaRoof(w, d, baseY, mat, tiers = 2) {
   const g = new THREE.Group();
   for (let t = 0; t < tiers; t++) {
     const scale = 1 - t * 0.36;
-    const tw = (w + 0.32) * scale;
-    const td = (d + 0.32) * scale;
+    const tw = w * scale;           // no extra base padding — keep tight
+    const td = d * scale;
     const yOff = baseY + t * Math.min(w, d) * 0.46 * (1 - t * 0.08);
 
-    // Overhanging eave plate (thin wide box)
-    const eave = new THREE.Mesh(new THREE.BoxGeometry(tw + 0.52, 0.10, td + 0.52), mat);
+    // Eave: only 0.12 overhang per side (≈ 1.12× at tier 0)
+    const eave = new THREE.Mesh(new THREE.BoxGeometry(tw + 0.12, 0.10, td + 0.12), mat);
     eave.position.y = yOff + 0.05;
     eave.castShadow = true;
     g.add(eave);
@@ -104,7 +107,7 @@ export function buildIrimoyaRoof(w, d, baseY, mat, tiers = 2) {
       mat,
     );
     pyramid.position.y = yOff + 0.10 + rH / 2;
-    pyramid.rotation.y = Math.PI / 4; // align to wall axes
+    pyramid.rotation.y = Math.PI / 4;
     pyramid.castShadow = true;
     g.add(pyramid);
   }
@@ -116,10 +119,10 @@ export function buildIrimoyaRoof(w, d, baseY, mat, tiers = 2) {
 export function buildRoofForStyle(style, r, baseY, mat, extra = {}) {
   switch (style) {
     case 'japanese':
-      // Square towers get irimoya; circular fallback = double-tier irimoya from r
+      // Square towers get irimoya; circular fallback uses r * 1.1 (within 1.2× rule)
       return extra.w
         ? buildIrimoyaRoof(extra.w, extra.d || extra.w, baseY, mat)
-        : buildIrimoyaRoof(r * 1.8, r * 1.8, baseY, mat);
+        : buildIrimoyaRoof(r * 1.1, r * 1.1, baseY, mat);
     case 'oriental': return buildDomeRoof(r, baseY, mat);
     case 'ancient':  return null; // flat mud-brick roofs — no visible roof element
     default:         return buildConeRoof(r, baseY, mat);

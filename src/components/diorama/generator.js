@@ -30,8 +30,9 @@ export function generateComponents(castle) {
   const isOriental = region === 'nahost'  || (region === 'asien' && !isJapan);
 
   // ── Tower counts ────────────────────────────────────────────────────────
-  const nOuter = isAncient ? 6 : isModern ? 6 : isHigh ? 10 : isF ? 8 + h1 % 3 : 8;
-  const nInner = isAncient ? 4 : isHigh   ? 6 : isF    ? 5 + h2 % 2 : 5;
+  // Japanese castles have few corner towers (yagura) + one dominant keep
+  const nOuter = isAncient ? 6 : isModern ? 6 : isJapan ? 4 : isHigh ? 10 : isF ? 8 + h1 % 3 : 8;
+  const nInner = isAncient ? 4 : isHigh   ? 6 : isJapan ? 3 : isF    ? 5 + h2 % 2 : 5;
 
   // ── Radii ────────────────────────────────────────────────────────────────
   const outerR = isAncient ? 22 : isModern ? 18 : 20;
@@ -162,8 +163,9 @@ export function generateComponents(castle) {
       return {
         x: +(innerR * Math.sin(α)).toFixed(2),
         z: +(-innerR * Math.cos(α)).toFixed(2),
-        r: isBF ? iTowerR * 1.3 : iTowerR,
-        h: isBF ? iTowerH * (isF ? 1.7 : isJapan ? 1.6 : 1.4) : iTowerH,
+        // Japanese tenshu: much wider and taller than surrounding yagura
+        r: isBF ? iTowerR * (isJapan ? 2.0 : isF ? 1.5 : 1.3) : iTowerR,
+        h: isBF ? iTowerH * (isF ? 1.7 : isJapan ? 2.2 : 1.4) : iTowerH,
         hoarding: !isF && !isJapan && !isModern && garrison > 65,
         label: isBF ? `${bergfriedLabel} – ${castle.name}` : `Innenturm ${i}`,
         info: isBF ? bergfriedInfo : `Innerer Wehrturm. Garrison: ${garrison}/100.`,
