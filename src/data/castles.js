@@ -612,12 +612,14 @@ components:[
    info:'Der Mont Saint-Michel ist ein einzelner Granitfels, entstanden durch präkambrische Ausläufer des Armorikanischen Massivs. Das DodecahedronGeometry-Mesh mit Vertex-Perturbation gibt dem Fels sein unregelmäßiges, lebendiges Profil — ganz anders als ein glatter Kegelstumpf. Die Flut steigt 14m — schnellste in Europa.'},
 
   // ── FELS-SCHICHT 2: Steilerer Mittelhang ─────────────────────────────────
-  {type:'ROCK_FOUNDATION', x:0, z:0, y:4.5, r:11, h:4.5, seed:73,
+  // y=4.0 statt 4.5 → 0.5 Einheiten Überlappung mit Schicht 1 → nahtlose Verbindung
+  {type:'ROCK_FOUNDATION', x:0, z:0, y:4.0, r:11, h:5.0, seed:73,
    label:'Mittelhang (Steiler Granit)',
-   info:'Der zweite Felsring, höher und enger. Der andere Seed (73) erzeugt eine andere Vertex-Perturbation — kein zwei Lagen sehen gleich aus. Auf diesem Abschnitt klammert sich die Bürgerstadt mit engen Gassen und gestapelten Häusern ans Gestein.'},
+   info:'Der zweite Felsring, höher und enger. Der andere Seed (73) erzeugt eine andere Vertex-Perturbation — keine zwei Lagen sehen gleich aus. Auf diesem Abschnitt klammert sich die Bürgerstadt mit engen Gassen und gestapelten Häusern ans Gestein.'},
 
   // ── ABTEI-PLATEAU: Flache Terrasse auf dem Fels ──────────────────────────
-  {type:'PLATEAU', x:0, z:-0.5, y:9, w:13, d:10, h:4,
+  // y=9 = Schicht-2-Top (4.0+5.0). Leicht kompakter (w:12, d:9) um Ränder sauber zu halten.
+  {type:'PLATEAU', x:0, z:-0.5, y:9, w:12, d:9, h:4,
    label:'Abtei-Plateau (Kryptenkomplex)',
    info:'Das Plateau ist kein natürlicher Fels, sondern Jahrhunderte aus Krypten, Pfeilern und Stützmauern: Notre-Dame-Sous-Terre (10. Jh.), Crypte des Gros-Piliers (15. Jh.). Ohne diesen Unterbau wäre der gotische Kirchenbau auf dem spitzen Gipfel unmöglich gewesen. Top bei y=13 — alle Abteigebäude sitzen fest, kein Schweben.'},
 
@@ -675,24 +677,20 @@ components:[
    wall:{h:2.8, thick:0.60}},
 
   // ── CIVILIAN HOUSING: Häuserzeilen der mittelalterlichen Bürgerstadt ──────
-  // Drei Streifen umschließen den Südwesthang, Südhang und Südosthang des Berges.
-  // Jeder Streifen = CIVILIAN_HOUSING-Typ: Häuserreihe mit steilen gotischen Dächern,
-  // Variation pro Haus (seed), optional Schornstein. p.rotation dreht den Streifen.
+  // Positionierung: Streifen liegen im Bereich z=13–14, y=1.5 — knapp unterhalb
+  // der Ringmauerzone (Ring 1 Südturm z=17). Der Fels (r=15, rTop=10.8) endet bei
+  // z≈14.5-15 an der Oberfläche (y≈1.5 bei dieser z-Position). Häuser auf y=1.5
+  // sitzen an der Flanke: Fundamente im Fels (historisch korrekt!), Dächer drüber.
 
-  // Streifen 1: Südhang, untere Ebene (zwischen Ring 1 und Ring 2)
-  {type:'CIVILIAN_HOUSING', x:0, z:13, y:1, count:7, w:1.6, d:2.6, h:2.3, seed:11,
-   label:'Grande Rue — Untere Häuserzeile',
-   info:'Die Grande Rue ist die einzige Straße des Mont — eng, steil, vollgestopft mit Pilgern und Händlern. Die Häuser wachsen übereinander wie Schuppenblättchen an einem Zapfen. Jedes Haus kämpft um seinen Millimeter Fels.'},
+  // Streifen 1: Südhang, untere Ebene — an der Ostflanke des Südzugangs
+  {type:'CIVILIAN_HOUSING', x:6, z:13, y:1.5, count:4, w:1.4, d:1.8, h:2.0, seed:11,
+   label:'Grande Rue — Häuserzeile Ost',
+   info:'Die Grande Rue ist die einzige Straße des Mont — eng, steil, vollgestopft mit Pilgern und Händlern. Die Häuser sind direkt in den Fels gebaut: Fundamente im Granit, Fassaden nach außen. Jedes Haus kämpft um seinen Zentimeter Fels.'},
 
-  // Streifen 2: Osthang, untere Ebene (Ring 1 Ostseite) — gedreht 90°
-  {type:'CIVILIAN_HOUSING', x:13, z:0, y:1, count:5, w:1.5, d:2.4, h:2.1, seed:29, rotation:1.5708,
-   label:'Osthang — Häuserzeile',
-   info:'Die Ostseite war weniger steil und für Pilger leichter zugänglich. Hier siedelten Fischer und Händler die den Warenumschlag für die Klostergemeinschaft abwickelten.'},
-
-  // Streifen 3: Südhang, mittlere Ebene (zwischen Ring 2 und PLATEAU) — leicht kleiner
-  {type:'CIVILIAN_HOUSING', x:0, z:9, y:5.5, count:5, w:1.4, d:2.2, h:2.0, seed:53,
-   label:'Grande Rue — Obere Häuserzeile (mittlere Ebene)',
-   info:'Die obere Häuserreihe direkt unter dem Klosterpräzinkt. Von hier aus beginnt der steile Pilgerweg zum Châtelet-Tor. Diese Häuser gehörten dem Abt — er vermietete sie an wohlhabende Pilger.'},
+  // Streifen 2: Südhang, untere Ebene — Westflanke des Südzugangs
+  {type:'CIVILIAN_HOUSING', x:-6, z:13, y:1.5, count:4, w:1.4, d:1.8, h:2.0, seed:37,
+   label:'Grande Rue — Häuserzeile West',
+   info:'Die Westseite der Grande Rue: Häuser die sich wie Schuppenblättchen an den Felsen lehnen. Die Enge der Gasse — manchmal weniger als 2m breit — schützte bei Wind und Angriff gleichermaßen.'},
 
   // ── LA MERVEILLE (Das Wunder) — Klosterbau an der Nordflanke ─────────────
   // SQUARE_TOWER(noRoof): y=9 = PLATEAU-Basis. d=5 → Südfläche z=-8+2.5=-5.5 = PLATEAU-Nordfläche.
@@ -701,21 +699,13 @@ components:[
    label:'La Merveille (Das Wunder) — Klostergebäude',
    info:'Drei Stockwerke gotischer Kühnheit, gebaut 1211–1228. Almoserie, Rittersaal, Refektorium und Kreuzgang, gestapelt an der Nordflanke des Felsen. Kein normales Fundament — nur die Felswand als Rücken. Das größte gotische Klostergebäude an einer Klippe weltweit.'},
 
-  // ── BUTTRESS SYSTEM: Strebepfeiler für La Merveille ──────────────────────
-  // Separate Strebebögen entlang der Ostseite von La Merveille (x-Achse).
-  // La Merveille hat massive Strebepfeiler — hier simuliert durch BUTTRESS_SYSTEM.
-  {type:'BUTTRESS_SYSTEM', x:0, z:-8, y:9, w:9.5, d:5, h:9, count:3,
-   label:'La Merveille — Strebepfeilersystem',
-   info:'Die massiven Strebepfeiler der Merveille tragen den lateralen Schub des gotischen Gewölbes ab. Ohne diese diagonal angeordneten Stützen würde der Bau an der Nordflanke nach außen kippen — das ist das Grundprinzip gotischer Architektur: Schub nach außen leiten statt nach unten drücken.'},
-
-  // ── ABBEY MODULE: Gotische Abteikirche mit Strebebögen + Flèche ──────────
-  // Auf PLATEAU-Top (y=13). Integrierte flying buttresses (n=3) + Spire (h=18).
-  // Ersetzt: SQUARE_TOWER (Langhaus) + SQUARE_TOWER (Querschiff) + SQUARE_TOWER (Chor)
-  //          + ROUND_TOWER (Spire) — 4 Komponenten in einem.
-  // spireH=18 → Spire-Basis bei y=13+6+6*0.9+0.15≈24.5, Spitzenkopf bei y≈43. ✓
-  {type:'ABBEY_MODULE', x:0, z:-0.5, y:13, w:11, d:4, h:6, spireH:18, buttresses:3,
-   label:'Abteikirche St-Michel — Langhaus, Strebebögen & Flèche',
-   info:'Die Krönung des Mont: gotisches Langhaus (11. Jh., mehrfach umgebaut), integrierte Strebebögen (flying buttresses mit Pinnakeln), und die neugotische Flèche von 1897 mit dem vergoldeten Erzengel Michael (4.5m, 200kg) an der Spitze. 157m über dem Meer. Das ABBEY_MODULE vereint Langhaus, Dach, Strebebögen und Spire in einem Bauteil.'},
+  // ── ABBEY MODULE: Gotische Abteikirche + Flèche ──────────────────────────
+  // Auf PLATEAU-Top (y=13). buttresses:0 — keine herausragenden Stäbe in dieser Ansicht.
+  // Langhaus (w=11, d=4, h=6) + Satteldach + Oktogon-Trommel + Spire (h=18).
+  // Spire-Basis: y=13+6+4*0.9+0.15 ≈ 22.75; Gesamthöhe: ≈40.75 Einheiten.
+  {type:'ABBEY_MODULE', x:0, z:-0.5, y:13, w:11, d:4, h:6, spireH:18, buttresses:0,
+   label:'Abteikirche St-Michel — Langhaus & Flèche (Erzengel Michael)',
+   info:'Die Krönung des Mont: gotisches Langhaus (11. Jh., mehrfach umgebaut) mit Satteldach und Giebelabschlüssen. Die neugotische Flèche von 1897 trägt den vergoldeten Erzengel Michael (4.5m, 200kg) an der Spitze — 157m über dem Meer, sichtbar von 50km. Das ABBEY_MODULE vereint Langhaus, Satteldach, Giebelinfills, Oktogon-Trommel und Spire-Nadel in einem Bauteil.'},
  ]},
 
 // ── FANTASY: MITTELERDE ──────────────────────────────────────────────────

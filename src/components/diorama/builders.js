@@ -459,55 +459,59 @@ export function buildButtressSystem(p, sm, rm) {
 }
 
 // ── ROCK FOUNDATION ───────────────────────────────────────────────────────
-// Irregular rocky hill base using a DodecahedronGeometry (detail=1) with
-// vertex-level perturbation. Replaces the smooth GLACIS cone with a
-// naturalistic, faceted granite-rock silhouette.
+// Irregular rocky hill base with naturalistic granite-rock silhouette.
 //
 // Parameters:
-//   p.r      — footprint radius (default 10)
-//   p.h      — total height of the rock mass (default 4)
-//   p.seed   — deterministic random seed for vertex noise (default 42)
-//   p.detail — dodecahedron subdivision level 0–2 (default 1)
+//   p.r    — footprint radius at base (default 10)
+//   p.h    — total height of the rock mass (default 4)
+//   p.seed — deterministic random seed for vertex noise (default 42)
 //
-// Geometry: DodecahedronGeometry(1, detail) → vertex perturbation → scale(r, h/2, r)
-// The mesh center is placed at y=h/2 so the bottom touches y=0 (group base).
+// Geometry: CylinderGeometry(rTop=r*0.72, r, h, 20, 4) with RADIAL-ONLY
+// vertex perturbation — scaling each vertex's (x,z) while leaving y unchanged.
+// Radial-only perturbation CANNOT flip face normals → zero holes guaranteed.
+// The base ring has near-zero noise (yNorm≈0); the top crown has full noise.
 export function buildRockFoundation(p, gm) {
-  const r      = p.r      || 10;
-  const h      = p.h      || 4;
-  const seed   = p.seed   || 42;
-  const detail = p.detail !== undefined ? p.detail : 1;
-  const y      = Math.max(0, p.y || 0);
+  const r    = p.r    || 10;
+  const h    = p.h    || 4;
+  const seed = p.seed || 42;
+  const y    = Math.max(0, p.y || 0);
 
   const g = new THREE.Group();
   g.position.set(p.x || 0, y, p.z || 0);
   g.userData = { label: p.label || '', info: p.info || '' };
 
-  // Start from a unit dodecahedron (12 pentagonal faces, detail=1 → 80 triangles)
-  const geo = new THREE.DodecahedronGeometry(1.0, detail);
+  // Conical hill: wider base, narrower top (natural rock taper).
+  // 20 radial × 4 height segments provides enough detail for visible faceting.
+  const rTop = r * 0.72;
+  const geo  = new THREE.CylinderGeometry(rTop, r, h, 20, 4);
 
-  // Perturb each vertex for organic rock texture.
-  // Uses sin/cos of vertex index + seed — fully deterministic, no RNG.
-  // Perturbation amplitude scaled by normalized y so the bottom stays roughly flat.
-  const pos = geo.attributes.position;
+  const pos  = geo.attributes.position;
+  // Cap center vertices sit exactly at the cylinder axis (dist ≈ 0).
+  // Perturbing them would break the flat cap — skip them.
+  const skipDist = rTop * 0.35;
+
   for (let i = 0; i < pos.count; i++) {
-    const vx = pos.getX(i);
-    const vy = pos.getY(i);
-    const vz = pos.getZ(i);
+    const vx   = pos.getX(i);
+    const vy   = pos.getY(i);
+    const vz   = pos.getZ(i);
+    const dist = Math.sqrt(vx * vx + vz * vz);
 
-    // Noise in range [-0.13, +0.13] — subtle but visible faceting
-    const noise = Math.sin(i * 7.31 + seed * 0.91) * Math.cos(i * 3.73 + seed * 0.47) * 0.13;
-    // Reduce perturbation near the bottom (vy < -0.5) to keep base stable
-    const amp   = noise * (0.5 + Math.max(0, vy + 0.5) * 0.85);
+    if (dist < skipDist) continue; // skip cap-center vertices
 
-    pos.setXYZ(i, vx + vx * amp, vy + vy * amp * 0.4, vz + vz * amp);
+    // yNorm: 0 at base (minimal noise → stable seam), 1 at top (maximum rocky texture)
+    const yNorm = (vy + h / 2) / h;
+    const noise  = Math.sin(i * 7.31 + seed) * Math.cos(i * 3.73 + seed * 0.47);
+    // Amplitude capped at 0.09 — prevents over-extrusion while keeping visible facets
+    const scale  = 1 + noise * 0.09 * (0.20 + yNorm * 0.80);
+
+    // Radial scale: x and z scale by the same factor → direction preserved, y fixed
+    pos.setXYZ(i, vx * scale, vy, vz * scale);
   }
   pos.needsUpdate = true;
   geo.computeVertexNormals();
 
   const mesh = new THREE.Mesh(geo, gm);
-  // Scale to final hill dimensions: r in x/z, h/2 in y (flatten into hill)
-  mesh.scale.set(r, h / 2, r);
-  mesh.position.y = h / 2;   // sit base on y=0 within group
+  mesh.position.y = h / 2;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   g.add(mesh);
