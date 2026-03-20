@@ -162,7 +162,7 @@ components:[
  attackTips:["Wasserquellen sperren","Diplomatischen Druck aufbauen","Südostseite für Maschinen"],
  siegeCtx:"1209 — 20.000 Kreuzfahrer, 40 Tage Gelübde. Militärisch fast uneinnehmbar — aber durstig.",defender:"Raimund-Roger Trencavel",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:13,rBot:16,h:2.2,label:'Stadthügel von Carcassonne',info:'Carcassonne thront auf einem natürlichen Hügel über dem Aude-Tal. Kein unzugänglicher Berg — aber genug Höhenvorteil für den doppelten Mauerring.'},
+ {type:'GLACIS',x:0,z:0,y:0,rTop:14,rBot:17,h:2.2,label:'Stadthügel von Carcassonne',info:'Carcassonne thront auf einem natürlichen Hügel über dem Aude-Tal. Kein unzugänglicher Berg — aber genug Höhenvorteil für den doppelten Mauerring.'},
  // Äußere Vormauer auf Bodenebene (y:0) — Lices liegen am Hügelfuß, NICHT auf dem Hügel
  {type:'RING',y:0,
   gate:{atIndex:3,w:4.0,d:2.8,h:5.5,label:'Narbonnisches Tor (Äußere Barbakane)',info:'Zwei mächtige Tortürme flankieren den Eingang zum Zwinger. Wer eindrang, stand im Kreuzfeuer beider Mauerringe — die perfekte Zwickmühle.'},
@@ -211,7 +211,6 @@ components:[
  attackTips:["Spion sucht Schwachstellen","Latrinenöffnung als Eingang!","Versorgungsblockade"],
  siegeCtx:"1204 — Philipp II. gegen Gaillard. 3 Monate. Dein Spion berichtet von einer Öffnung...",defender:"Roger de Lacy",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:9,rBot:13,h:3.0,label:'Felssporn über der Seine',info:'Château Gaillard thront auf einem isolierten Felssporn 100m über dem Seine-Knie. Richard I. wählte diesen Ort für seine natürliche Unzugänglichkeit.'},
  {type:'RING',y:0,
   gate:{atIndex:3,w:3.0,d:2.2,h:4.5,label:'Äußeres Vorwerk (Südtor)',info:'Südliches Eingangstor des äußeren Vorwerks — erster von drei Verteidigungsringen. Philip II. brauchte Monate nur um diesen zu überwinden.'},
   points:[
@@ -449,7 +448,7 @@ components:[
  strengths:["Gebirgslage","Wasserautarkie durch Acequia","Alcazaba als militärischer Kern","Hohe Moral"],
  weaknesses:["Politische Erschöpfung","Innere Zerwürfnisse","Langer Krieg der Reconquista"],
  attackTips:["Wasserkanal unterbrechen","Politische Spaltung ausnutzen","Geduld: Jahrzehnte"],
- siegeCtx:"1491 — Ferdinand und Isabella nach 10 Jahren Reconquista. Die Stadt ist militärisch stark — aber politisch gebrochen.",defender:"Sultan Muhammad XII. (Boabdil)"},
+ siegeCtx:"1491 — Ferdinand und Isabella nach 10 Jahren Reconquista. Die Stadt ist militärisch stark — aber politisch gebrochen.",defender:"Sultan Muhammad XII. (Boabdil)",dioramaStyle:"oriental"},
 
 {id:"mehrangarh",name:"Mehrangarh",sub:"Sonnengeburts-Festung",era:"1459–heute",year:1500,loc:"Jodhpur, Indien",type:"real",epoch:"Neuzeit",region:"suedostasien",icon:"🌅",
  theme:{bg:"#140e06",accent:"#dd8833",glow:"rgba(200,120,40,0.18)"},
@@ -475,8 +474,7 @@ components:[
  attackTips:["Landseitig mit Maschinen","Seeweg blockieren","Langer Aushungerungsversuch"],
  siegeCtx:"Owain Glyndŵr 1401 — walisischer Aufstand. Die Burg ist Symbol der englischen Unterdrückung.",defender:"Gouverneur John Bolde",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:10,rBot:13,h:1.8,label:'Caernarvon-Halbinsel (Meeresseite)',info:'Caernarvon liegt auf einer Halbinsel zwischen Menai-Straße und Fluss Seiont — drei Seiten durch Wasser gesichert. Die Burg kontrolliert die einzige Landseite.'},
- {type:'RING',y:1.8,
+ {type:'RING',y:0,
   gate:{atIndex:2,w:5.0,d:4.0,h:8.5,label:"Königstor (King's Gate)",info:"Das aufwändigste Tor Britanniens — geplant mit 5 Fallgattern, 6 Eisentüren und Pfeillöchern aus jedem Winkel. Nie vollständig fertiggestellt. Owain Glyndŵr scheiterte daran."},
   points:[
    {x:0,    z:-10,  r:1.3,h:7.0,label:'Nordturm',              info:'Nördlicher Turm — Blick auf die Menai-Straße.'},
@@ -493,7 +491,7 @@ components:[
    {x:-10,  z:-8.66,r:1.4,h:7.5,label:'Nordwesteckturm',       info:'Eckturm des Oberen Wards.'},
   ],
   wall:{h:6.5,thick:1.1}},
- {type:'WALL',x:-1,z:0,x2:1,z2:0,h:6.0,y:1.8,thick:1.5,label:'Trennmauer (Oberer/Unterer Ward)',info:'Die Mittelmauer teilt Caernarvon in Oberen Ward (Wohnbereich, westlich) und Unteren Ward (östlich). Ein Angreifer der den Unteren Ward nahm, stand vor einem zweiten vollständigen Verteidigungsring.'},
+ {type:'WALL',x:-1,z:0,x2:1,z2:0,h:6.0,y:0,thick:1.5,label:'Trennmauer (Oberer/Unterer Ward)',info:'Die Mittelmauer teilt Caernarvon in Oberen Ward (Wohnbereich, westlich) und Unteren Ward (östlich). Ein Angreifer der den Unteren Ward nahm, stand vor einem zweiten vollständigen Verteidigungsring.'},
 ]},
 
 {id:"rhodes",name:"Rhodos (Johanniterburg)",sub:"Inselfestung der Johanniter",era:"1309–1522",year:1400,loc:"Rhodos, Griechenland",type:"real",epoch:"Mittelalter",region:"nahost",icon:"✝️",
@@ -593,7 +591,7 @@ components:[
  attackTips:["Sprengstoff in den Drain!","Massenschock zur Ablenkung","Gleichzeitiger Tor-Frontalangriff"],
  siegeCtx:"10.000 Uruk-hai. 300 Rohirrim. Eine Nacht. Du weißt vom Abflusskanal.",defender:"König Théoden von Rohan",
 components:[
- {type:'GLACIS',x:-18,z:0,y:0,rTop:6,rBot:10,h:4.0,label:'Fels der Hornburg (Helm-Stein)',info:'Die Hornburg steht auf einem nackten Felsriegel am Ende der Schlucht. Unersteiglich auf drei Seiten — der Fels selbst ist die stärkste Mauer.'},
+ {type:'GLACIS',x:-18,z:0,y:0,rTop:8,rBot:11,h:4.0,label:'Fels der Hornburg (Helm-Stein)',info:'Die Hornburg steht auf einem nackten Felsriegel am Ende der Schlucht. Unersteiglich auf drei Seiten — der Fels selbst ist die stärkste Mauer.'},
  {type:'RING',y:4.0,
   gate:{atIndex:4,w:3.5,d:2.8,h:7.0,label:'Hornburg-Tor',info:'Das Tor der Hornburg — massiv, aber letztlich das einzige schwache Element der Festung. Die Uruk-hai rammten hier, während Sarumans Sprengstoff den Drain sprengte.'},
   points:[

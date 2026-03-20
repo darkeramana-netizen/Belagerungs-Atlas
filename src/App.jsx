@@ -7271,7 +7271,7 @@ export default function App(){
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
-    <div style={{minHeight:"100vh",background:"#060504",color:"#e8dcc8",fontFamily:"'Palatino Linotype','Book Antiqua',Georgia,serif",display:"flex",flexDirection:"column"}}>
+    <div style={{height:"100vh",overflow:"hidden",background:"#060504",color:"#e8dcc8",fontFamily:"'Palatino Linotype','Book Antiqua',Georgia,serif",display:"flex",flexDirection:"column"}}>
       <style>{`
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}

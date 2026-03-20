@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
 // ── European / Crusader: simple cone ─────────────────────────────────────
-// Cone base = r * 1.10; height capped at r * 1.30 (less pointy)
+// Cone base = r * 1.00 (flush with tower wall); height r * 1.20 (compact)
 export function buildConeRoof(r, baseY, mat) {
-  const cR = r * 1.10;
-  const cH = r * 1.30;
+  const cR = r * 1.00;
+  const cH = r * 1.20;
   const cone = new THREE.Mesh(new THREE.ConeGeometry(cR, cH, 18), mat);
   cone.position.y = baseY + cH / 2;
   cone.castShadow = true;
@@ -52,10 +52,10 @@ export function buildPagodaRoof(r, baseY, mat, tiers = 3) {
 }
 
 // ── Oriental / Islamic: dome ─────────────────────────────────────────────
-// Dome radius capped at r * 0.58 (≤ 1.16× tower radius — within 1.2× rule).
+// dR = r * 0.78 — more prominent dome (was 0.58)
 export function buildDomeRoof(r, baseY, mat) {
   const g = new THREE.Group();
-  const dR = r * 0.58;   // was 0.82 — smaller, proportionate
+  const dR = r * 0.78;
 
   // Drum / neck
   const neck = new THREE.Mesh(new THREE.CylinderGeometry(dR * 0.7, dR * 0.8, r * 0.18, 14), mat);
@@ -75,10 +75,11 @@ export function buildDomeRoof(r, baseY, mat) {
   return g;
 }
 
-// ── Ottoman / Mughal: flat parapet roof ──────────────────────────────────
+// ── Flat parapet roof (ancient / Islamic rectangular buildings) ───────────
+// Slab: only 0.05 overhang per side — tight, not overscaled.
 export function buildFlatRoof(w, d, baseY, mat) {
-  const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.28, 0.28, d + 0.28), mat);
-  slab.position.y = baseY + 0.14;
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(w + 0.10, 0.22, d + 0.10), mat);
+  slab.position.y = baseY + 0.11;
   slab.castShadow = true;
   return slab;
 }
@@ -123,17 +124,27 @@ export function buildRoofForStyle(style, r, baseY, mat, extra = {}) {
       return extra.w
         ? buildIrimoyaRoof(extra.w, extra.d || extra.w, baseY, mat)
         : buildIrimoyaRoof(r * 1.1, r * 1.1, baseY, mat);
-    case 'oriental': return buildDomeRoof(r, baseY, mat);
-    case 'ancient': {
-      // Flat mud-brick parapet — very thin CylinderGeometry / box slab
+    case 'oriental':
+      // Square/rectangular buildings (Iwans, halls): flat roof — NOT a dome
+      // Round towers only get the dome
       if (extra.w) return buildFlatRoof(extra.w, extra.d || extra.w, baseY, mat);
+      return buildDomeRoof(r, baseY, mat);
+    case 'ancient': {
+      // Square/rectangular buildings: flat mud-brick slab
+      if (extra.w) return buildFlatRoof(extra.w, extra.d || extra.w, baseY, mat);
+      // Round towers: thin parapet disc, flush with tower top (merlons sit outside it)
       const disc = new THREE.Mesh(
-        new THREE.CylinderGeometry(r * 1.02, r * 1.05, 0.22, 16), mat,
+        new THREE.CylinderGeometry(r * 1.0, r * 1.02, 0.18, 16), mat,
       );
-      disc.position.y = baseY + 0.11;
+      disc.position.y = baseY + 0.09;
       disc.castShadow = true;
       return disc;
     }
-    default:         return buildConeRoof(r, baseY, mat);
+    default: // 'crusader'
+      // Round towers: conical cap
+      if (!extra.w) return buildConeRoof(r, baseY, mat);
+      // Square/rectangular buildings in European style: no separate roof object
+      // (pitched roofs on great halls are typically below parapet level — merlons suffice)
+      return null;
   }
 }
