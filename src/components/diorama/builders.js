@@ -14,7 +14,7 @@ export function buildWall(p, sm, dm, style = 'crusader') {
   const dx = p.x2 - p.x, dz = p.z2 - p.z;
   const len = Math.sqrt(dx * dx + dz * dz);
   const ang = Math.atan2(-dz, dx);
-  const h = p.h || 3, thick = p.thick || 0.75, y = p.y || 0;
+  const h = p.h || 3, thick = p.thick || 0.75, y = Math.max(0, p.y || 0);
 
   if (len < 0.2) return null; // degenerate segment — skip
 
@@ -39,7 +39,7 @@ export function buildWall(p, sm, dm, style = 'crusader') {
 
 // ── ROUND TOWER ──────────────────────────────────────────────────────────
 export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
-  const r = p.r || 1.2, h = p.h || 5, y = p.y || 0;
+  const r = p.r || 1.2, h = p.h || 5, y = Math.max(0, p.y || 0);
 
   const g = new THREE.Group();
   g.position.set(p.x, y, p.z);
@@ -76,7 +76,7 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
 
 // ── SQUARE TOWER ─────────────────────────────────────────────────────────
 export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
-  const w = p.w || 2.5, d = p.d || 2.5, h = p.h || 5.5, y = p.y || 0;
+  const w = p.w || 2.5, d = p.d || 2.5, h = p.h || 5.5, y = Math.max(0, p.y || 0);
 
   const g = new THREE.Group();
   g.position.set(p.x, y, p.z);
@@ -104,7 +104,7 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
 // ── GATE ─────────────────────────────────────────────────────────────────
 // Gatehouse with two round flanking towers, visible passage opening, portcullis bars.
 export function buildGate(p, sm, dm, style = 'crusader') {
-  const w = p.w || 4.5, d = p.d || 3.5, h = p.h || 6.0, y = p.y || 0;
+  const w = p.w || 4.5, d = p.d || 3.5, h = p.h || 6.0, y = Math.max(0, p.y || 0);
   const tR = d * 0.52;   // flanking tower radius
   const tH = h * 1.22;  // flanking towers taller than gatehouse
 
@@ -165,7 +165,7 @@ export function buildGate(p, sm, dm, style = 'crusader') {
 // ── GLACIS ───────────────────────────────────────────────────────────────
 // Sloped stone plinth — CylinderGeometry with different top/bottom radii.
 export function buildGlacis(p, sm) {
-  const rTop = p.rTop || 6, rBot = p.rBot || 9, h = p.h || 3, y = p.y || 0;
+  const rTop = p.rTop || 6, rBot = p.rBot || 9, h = p.h || 3, y = Math.max(0, p.y || 0);
 
   const g = new THREE.Group();
   g.position.set(p.x || 0, y, p.z || 0);
@@ -185,7 +185,7 @@ export function buildGlacis(p, sm) {
 // gate:{atIndex,…} replaces one wall segment with a gatehouse.
 // squareTowers / style='japanese' forces square towers throughout.
 export function buildRing(p, sm, dm, rm, style = 'crusader') {
-  const pts = p.points || [], n = pts.length, y = p.y || 0;
+  const pts = p.points || [], n = pts.length, y = Math.max(0, p.y || 0);
   if (n < 2) return null;
 
   const wH = p.wall?.h || 3;
@@ -198,7 +198,7 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
   g.userData = { label: p.label || '', info: p.info || '' };
 
   pts.forEach((pt, i) => {
-    const ptY = y + (pt.y || 0);
+    const ptY = Math.max(0, y + (pt.y || 0));
     const tR  = pt.r || 1.2; // tower radius / half-width
 
     // ── Tower at this vertex ─────────────────────────────────────────────
@@ -217,21 +217,45 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
     const nxR = nx.r || 1.2;
     const mx  = (pt.x + nx.x) / 2;
     const mz  = (pt.z + nx.z) / 2;
+    const dx  = nx.x - pt.x, dz = nx.z - pt.z;
+    const rawLen = Math.sqrt(dx * dx + dz * dz);
+    const ux  = rawLen > 0 ? dx / rawLen : 0;
+    const uz  = rawLen > 0 ? dz / rawLen : 0;
+    const trim1 = tR  * (useSquare ? 0.82 : 0.88);
+    const trim2 = nxR * (useSquare ? 0.82 : 0.88);
 
     if (gt && gt.atIndex === i) {
       g.add(buildGate(
         { ...gt, x: mx, z: mz, y, rotation: Math.atan2(mx, mz) },
         sm, dm, style,
       ));
+
+      // ── Connecting walls from each adjacent tower to the gatehouse ───────
+      // Connect point = just inside the gatehouse flanking tower (0.62 × gate half-width)
+      const gHW = (gt.w || 4.5) * 0.62;
+      const lx = mx - ux * gHW, lz = mz - uz * gHW; // left flank connection
+      const rx = mx + ux * gHW, rz = mz + uz * gHW; // right flank connection
+
+      const leftLen  = Math.sqrt((lx - pt.x) ** 2 + (lz - pt.z) ** 2);
+      const rightLen = Math.sqrt((nx.x - rx)  ** 2 + (nx.z - rz)  ** 2);
+
+      if (leftLen > trim1 + 0.3) {
+        g.add(buildWall({
+          x: pt.x + ux * trim1, z: pt.z + uz * trim1,
+          x2: lx, z2: lz,
+          h: pt.wallH || wH, y, thick: wT, label: '', info: '',
+        }, sm, dm, style));
+      }
+      if (rightLen > trim2 + 0.3) {
+        g.add(buildWall({
+          x: rx, z: rz,
+          x2: nx.x - ux * trim2, z2: nx.z - uz * trim2,
+          h: pt.wallH || wH, y, thick: wT, label: '', info: '',
+        }, sm, dm, style));
+      }
     } else {
       // Trim wall endpoints to tower surfaces to eliminate Z-fighting overlap
-      const dx = nx.x - pt.x, dz = nx.z - pt.z;
-      const rawLen = Math.sqrt(dx * dx + dz * dz);
-      const trim1  = tR  * (useSquare ? 0.82 : 0.88);
-      const trim2  = nxR * (useSquare ? 0.82 : 0.88);
-
       if (rawLen > trim1 + trim2 + 0.4) {
-        const ux = dx / rawLen, uz = dz / rawLen;
         g.add(buildWall({
           x:  pt.x + ux * trim1,
           z:  pt.z + uz * trim1,

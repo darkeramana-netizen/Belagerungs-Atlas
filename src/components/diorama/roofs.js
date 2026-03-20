@@ -124,7 +124,16 @@ export function buildRoofForStyle(style, r, baseY, mat, extra = {}) {
         ? buildIrimoyaRoof(extra.w, extra.d || extra.w, baseY, mat)
         : buildIrimoyaRoof(r * 1.1, r * 1.1, baseY, mat);
     case 'oriental': return buildDomeRoof(r, baseY, mat);
-    case 'ancient':  return null; // flat mud-brick roofs — no visible roof element
+    case 'ancient': {
+      // Flat mud-brick parapet — very thin CylinderGeometry / box slab
+      if (extra.w) return buildFlatRoof(extra.w, extra.d || extra.w, baseY, mat);
+      const disc = new THREE.Mesh(
+        new THREE.CylinderGeometry(r * 1.02, r * 1.05, 0.22, 16), mat,
+      );
+      disc.position.y = baseY + 0.11;
+      disc.castShadow = true;
+      return disc;
+    }
     default:         return buildConeRoof(r, baseY, mat);
   }
 }
