@@ -94,9 +94,11 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
   const merlons = mkM(squareTowerMerlonPositions(w, d, h), sm);
   if (merlons) g.add(merlons);
 
-  // Style-aware roof (irimoya for japanese, cone for crusader, none for ancient)
-  const roof = buildRoofForStyle(style, Math.max(w, d) / 2, h, rm, { w, d });
-  if (roof) g.add(roof);
+  // Style-aware roof — skipped if p.noRoof is set (e.g. halls, palas buildings)
+  if (!p.noRoof) {
+    const roof = buildRoofForStyle(style, Math.max(w, d) / 2, h, rm, { w, d });
+    if (roof) g.add(roof);
+  }
 
   return g;
 }

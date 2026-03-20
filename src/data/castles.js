@@ -111,7 +111,7 @@ export const CASTLES = [
    wall:{h:3.0, thick:0.8}},
 
   // ── Konventsaal (Großer Saal, Nordteil des Innenhofs) ────────────────────
-  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:2.0, h:3.2, y:3.5,
+  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:2.0, h:3.2, y:3.5, noRoof:true,
    label:'Konventsaal der Johanniter',
    info:'Über 36 Meter langer gotischer Saal mit Kreuzrippengewölben — das kulturelle Herz des Krak. Hier tagte der Ordensrat, wurden Verträge geschlossen und Schlachten geplant. Arabische Bogenformen an den Fenstern zeugen vom kulturellen Austausch trotz Krieg.'},
  ]},
