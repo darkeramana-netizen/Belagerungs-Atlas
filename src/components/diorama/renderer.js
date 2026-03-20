@@ -22,6 +22,7 @@ function makeNoiseTexture(baseHex, seed = 42) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(4, 4);
+  tex.anisotropy = 4; // reduces shimmer at glancing angles
   tex.needsUpdate = true;
   return tex;
 }

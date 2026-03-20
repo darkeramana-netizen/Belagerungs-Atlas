@@ -48,8 +48,10 @@ export default function CastleDiorama({ castle }) {
       const mats  = getMaterials(style);
 
       // ── Ground disc ──────────────────────────────────────────────────────
+      // Offset 0.05 below y=0 to prevent z-fighting with tower/wall base faces.
       const gnd = new T.Mesh(new T.CircleGeometry(55, 48), mats.ground);
       gnd.rotation.x = -Math.PI / 2;
+      gnd.position.y = -0.05;
       gnd.receiveShadow = true;
       scene.add(gnd);
 

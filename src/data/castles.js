@@ -211,7 +211,7 @@ components:[
  attackTips:["Spion sucht Schwachstellen","Latrinenöffnung als Eingang!","Versorgungsblockade"],
  siegeCtx:"1204 — Philipp II. gegen Gaillard. 3 Monate. Dein Spion berichtet von einer Öffnung...",defender:"Roger de Lacy",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:9,rBot:13,h:5.0,label:'Felssporn über der Seine',info:'Château Gaillard thront auf einem isolierten Felssporn 100m über dem Seine-Knie. Richard I. wählte diesen Ort für seine natürliche Unzugänglichkeit.'},
+ {type:'GLACIS',x:0,z:0,y:0,rTop:9,rBot:13,h:3.0,label:'Felssporn über der Seine',info:'Château Gaillard thront auf einem isolierten Felssporn 100m über dem Seine-Knie. Richard I. wählte diesen Ort für seine natürliche Unzugänglichkeit.'},
  {type:'RING',y:0,
   gate:{atIndex:3,w:3.0,d:2.2,h:4.5,label:'Äußeres Vorwerk (Südtor)',info:'Südliches Eingangstor des äußeren Vorwerks — erster von drei Verteidigungsringen. Philip II. brauchte Monate nur um diesen zu überwinden.'},
   points:[
@@ -223,7 +223,7 @@ components:[
    {x:-4.76,z:7,    r:1.0,h:4.0,label:'Vorwerkturm NW', info:'Nordwestturm — Anschluss an Mittelring.'},
   ],
   wall:{h:3.5,thick:0.8}},
- {type:'RING',y:2,
+ {type:'RING',y:0,
   gate:{atIndex:0,w:3.0,d:2.2,h:5.5,label:'Mittlere Enceinte (Südtor)',info:'Das berühmte wellenförmige (corrugated) Mauerwerk — Richards Innovation. Die gebogene Mauer verdoppelte die Abwehrwinkel und eliminierte tote Winkel. Phillip II. stand hier wochenlang.'},
   points:[
    {x:0,    z:6,    r:1.1,h:6.0,label:'Mittlerer Ring S', info:'Südtor der mittleren Enceinte — Eingang nach dem Fall des Vorwerks.'},
@@ -233,7 +233,7 @@ components:[
    {x:4.28, z:1.5,  r:1.1,h:5.5,label:'Mittlerer Ring SO',info:'Südostturm — flankierte das Südtor.'},
   ],
   wall:{h:5.0,thick:1.1}},
- {type:'RING',y:4,
+ {type:'RING',y:0,
   gate:{atIndex:1,w:2.8,d:2.2,h:6.5,label:'Innerer Ring (Hochburg)',info:'Der innerste Ring — Richards stärkster Abschnitt. Zylindrischer Donjon dahinter. Nach dem Fall der Latrinengalerie 1204 sofort aufgegeben.'},
   points:[
    {x:0,    z:-7,   r:1.2,h:7.0,label:'Hochburg N',   info:'Nordturm der Kernburg — Blick über die gesamte Anlage.'},
@@ -242,7 +242,7 @@ components:[
    {x:-4,   z:-12,  r:1.2,h:6.5,label:'Hochburg NW',  info:'Nordwestturm der Kernburg.'},
   ],
   wall:{h:6.0,thick:1.2}},
- {type:'ROUND_TOWER',x:0,z:-14,r:2.0,h:12,y:4,label:'Donjon von Château Gaillard',info:'Richards zylindrischer Donjon — letzter Rückzugspunkt. Der abgerundete Grundriss eliminierte tote Winkel vollständig. Nie durch Sturm eingenommen — fiel durch eine Toilette.'},
+ {type:'ROUND_TOWER',x:0,z:-14,r:2.0,h:12,y:0,label:'Donjon von Château Gaillard',info:'Richards zylindrischer Donjon — letzter Rückzugspunkt. Der abgerundete Grundriss eliminierte tote Winkel vollständig. Nie durch Sturm eingenommen — fiel durch eine Toilette.'},
 ]},
 
 {id:"harlech",name:"Harlech Castle",sub:"Edwardianische Seefestung",era:"1283–1468",year:1400,loc:"Wales, UK",type:"real",epoch:"Hochmittelalter",region:"europa",icon:"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
