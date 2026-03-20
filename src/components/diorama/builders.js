@@ -549,12 +549,13 @@ export function buildPlateau(p, sm) {
 // Sloped stone plinth — CylinderGeometry with different top/bottom radii.
 export function buildGlacis(p, sm) {
   const rTop = p.rTop || 6, rBot = p.rBot || 9, h = p.h || 3, y = Math.max(0, p.y || 0);
+  const segs = p.segs || 32;
 
   const g = new THREE.Group();
   g.position.set(p.x || 0, y, p.z || 0);
   g.userData = { label: p.label || '', info: p.info || '' };
 
-  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, 32), sm);
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, segs), sm);
   mesh.position.y = h / 2;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
