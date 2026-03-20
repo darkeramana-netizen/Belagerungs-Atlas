@@ -162,7 +162,8 @@ components:[
  siegeCtx:"1209 — 20.000 Kreuzfahrer, 40 Tage Gelübde. Militärisch fast uneinnehmbar — aber durstig.",defender:"Raimund-Roger Trencavel",
 components:[
  {type:'GLACIS',x:0,z:0,y:0,rTop:13,rBot:16,h:2.2,label:'Stadthügel von Carcassonne',info:'Carcassonne thront auf einem natürlichen Hügel über dem Aude-Tal. Kein unzugänglicher Berg — aber genug Höhenvorteil für den doppelten Mauerring.'},
- {type:'RING',y:2.2,
+ // Äußere Vormauer auf Bodenebene (y:0) — Lices liegen am Hügelfuß, NICHT auf dem Hügel
+ {type:'RING',y:0,
   gate:{atIndex:3,w:4.0,d:2.8,h:5.5,label:'Narbonnisches Tor (Äußere Barbakane)',info:'Zwei mächtige Tortürme flankieren den Eingang zum Zwinger. Wer eindrang, stand im Kreuzfeuer beider Mauerringe — die perfekte Zwickmühle.'},
   points:[
    {x:0,   z:-22,  r:1.0,h:4.0,label:'Außenturm N',  info:'Nördlicher Endturm der Vormaer — bewachte die Straße Richtung Toulouse.'},
@@ -279,45 +280,58 @@ components:[
  attackTips:["Brandanschlag bei starkem Wind","Irrgarten kartieren lassen","Feuer als Massenwaffe"],
  siegeCtx:"16. Jh. — Verstärkung könnte kommen. Du hast Feuerpfeile, Karten — und Geduld.",defender:"Katsumoto Akamatsu",
 components:[
- {type:'GLACIS',x:0,z:0,y:0,rTop:7,rBot:11,h:2.8,label:'Himeyama-Hügel (Weißer Reiher)',info:'Himeji-jō thront auf dem Himeyama-Hügel. Die weiß verputzten Mauern schimmern von weitem — daher der Name Weißer Reiher.'},
+ // ── LEVEL 1: Himeyama-Hügel (stützt mittleren Ring bei y=2.8) ────────────
+ // rBot=18 liegt INNEN vom äußeren Ring (r=20) → Hügel zwischen den Ringen
+ // rTop=14 deckt den mittleren Ring (r=13) ab → kein Schweben
+ {type:'GLACIS',x:0,z:0,y:0,rTop:14,rBot:18,h:2.8,
+  label:'Himeyama-Hügel (Terasse 1)',
+  info:'Himeji-jō thront auf dem Himeyama-Hügel. Die weiß verputzten Mauern schimmern von weitem — daher der Name Weißer Reiher. Der äußere Ring umschließt den Hügelfuß.'},
+ // ── LEVEL 2: Innerer Burgberg (stützt inneren Ring bei y=5.5) ─────────────
+ // rBot=10, rTop=8 deckt inneren Ring (r=7) ab → top bei y=5.5
+ {type:'GLACIS',x:0,z:0,y:2.8,rTop:8,rBot:10,h:2.7,
+  label:'Innerer Burgberg (Terasse 2)',
+  info:'Höchste Terrasse des Himeyama — hier thront der Tenshu über allem. Nur wer alle 83 Tore überwindet, erreicht diesen Punkt.'},
+ // ── ÄUSSERER RING: 6 Yagura (r=20, y=0, am Hügelfuß) ────────────────────
+ // Reduziert von 8 auf 6 — realistischere Turmdichte für japanischen Kastelltypus
  {type:'RING',y:0,
-  gate:{atIndex:5,w:3.2,d:2.5,h:5.0,label:'Äußeres Burgtor (Hishi-no-Mon)',info:'Das erste von 83 Toren — Himeji hatte für jeden Angreifer 83 separate Gefechte vorbereitet. Kein gerades Stück, kein freies Schussfeld.'},
+  gate:{atIndex:2,w:3.2,d:2.5,h:5.0,label:'Äußeres Burgtor (Hishi-no-Mon)',info:'Das erste von 83 Toren — Himeji hatte für jeden Angreifer 83 separate Gefechte vorbereitet. Kein gerades Stück, kein freies Schussfeld.'},
   points:[
-   {x:0,    z:-20,  r:1.3,h:5.5,label:'Äußerer Ring N',  info:'Nördlicher Flankierungsturm des äußeren Rings.'},
-   {x:14.14,z:-14.14,r:1.3,h:5.5,label:'Äußerer Ring NO', info:'Nordostturm — Irrgartenwege darunter verwirren jeden Angreifer.'},
-   {x:20,   z:0,    r:1.3,h:5.5,label:'Äußerer Ring O',  info:'Ostturm des äußeren Rings.'},
-   {x:14.14,z:14.14,r:1.3,h:5.5,label:'Äußerer Ring SO', info:'Südostturm — flankierte den Haupteingang.'},
-   {x:0,    z:20,   r:1.3,h:5.5,label:'Äußerer Ring S',  info:'Südturm. 83 Tore — 83 Einzelgefechte.'},
-   {x:-14.14,z:14.14,r:1.3,h:5.5,label:'Äußerer Ring SW', info:'Südwestturm.'},
-   {x:-20,  z:0,    r:1.3,h:5.5,label:'Äußerer Ring W',  info:'Westturm.'},
-   {x:-14.14,z:-14.14,r:1.3,h:5.5,label:'Äußerer Ring NW', info:'Nordwestturm — letzter äußerer Flankierungsturm.'},
+   {x:0,     z:-20,  r:1.3,h:5.5,label:'Äußerer Yagura N', info:'Nördlicher Flankierungsyagura des äußeren Rings.'},
+   {x:17.32, z:-10,  r:1.3,h:5.5,label:'Äußerer Yagura NO',info:'Nordostturm — Irrgartenwege darunter verwirren jeden Angreifer.'},
+   {x:17.32, z:10,   r:1.3,h:5.5,label:'Äußerer Yagura SO',info:'Südostturm — flankierte den Haupteingang.'},
+   {x:0,     z:20,   r:1.3,h:5.5,label:'Äußerer Yagura S', info:'Südturm. 83 Tore — 83 Einzelgefechte.'},
+   {x:-17.32,z:10,   r:1.3,h:5.5,label:'Äußerer Yagura SW',info:'Südwestturm.'},
+   {x:-17.32,z:-10,  r:1.3,h:5.5,label:'Äußerer Yagura NW',info:'Nordwestturm — letzter äußerer Flankierungsyagura.'},
   ],
   wall:{h:4.0,thick:0.8}},
+ // ── MITTLERER RING: 6 Yagura (r=13, y=2.8, auf Terasse 1) ────────────────
+ // Reduziert von 8 auf 6 — auf dem Glacis des ersten Hügels, kein Schweben
  {type:'RING',y:2.8,
-  gate:{atIndex:3,w:2.8,d:2.2,h:5.5,label:'Mittleres Burgtor (Ni-no-Mon)',info:'Zweite Burgtor-Ebene — der Weg führt durch Kurven und Engpässe. Angreifer verloren Tempo und Orientierung gleichzeitig.'},
+  gate:{atIndex:2,w:2.8,d:2.2,h:5.5,label:'Mittleres Burgtor (Ni-no-Mon)',info:'Zweite Burgtor-Ebene — der Weg führt durch Kurven und Engpässe. Angreifer verloren Tempo und Orientierung gleichzeitig.'},
   points:[
-   {x:0,    z:-13,  r:1.2,h:6.0,label:'Mittlerer Ring N',  info:'Nordturm der zweiten Umfassungsmauer.'},
-   {x:9.19, z:-9.19,r:1.2,h:6.0,label:'Mittlerer Ring NO', info:'Nordostturm.'},
-   {x:13,   z:0,    r:1.2,h:6.0,label:'Mittlerer Ring O',  info:'Ostturm.'},
-   {x:9.19, z:9.19, r:1.2,h:6.0,label:'Mittlerer Ring SO', info:'Südostturm.'},
-   {x:0,    z:13,   r:1.2,h:6.0,label:'Mittlerer Ring S',  info:'Südtor der mittleren Mauer.'},
-   {x:-9.19,z:9.19, r:1.2,h:6.0,label:'Mittlerer Ring SW', info:'Südwestturm.'},
-   {x:-13,  z:0,    r:1.2,h:6.0,label:'Mittlerer Ring W',  info:'Westturm.'},
-   {x:-9.19,z:-9.19,r:1.2,h:6.0,label:'Mittlerer Ring NW', info:'Nordwestturm.'},
+   {x:0,     z:-13,  r:1.2,h:6.0,label:'Mittlerer Yagura N', info:'Nordturm der zweiten Umfassungsmauer.'},
+   {x:11.26, z:-6.5, r:1.2,h:6.0,label:'Mittlerer Yagura NO',info:'Nordostturm.'},
+   {x:11.26, z:6.5,  r:1.2,h:6.0,label:'Mittlerer Yagura SO',info:'Südostturm.'},
+   {x:0,     z:13,   r:1.2,h:6.0,label:'Mittlerer Yagura S', info:'Südtor der mittleren Mauer.'},
+   {x:-11.26,z:6.5,  r:1.2,h:6.0,label:'Mittlerer Yagura SW',info:'Südwestturm.'},
+   {x:-11.26,z:-6.5, r:1.2,h:6.0,label:'Mittlerer Yagura NW',info:'Nordwestturm.'},
   ],
   wall:{h:5.0,thick:0.9}},
+ // ── INNERER RING: 4 Eckyagura (Hon-maru, r=7, y=5.5, auf Terasse 2) ──────
+ // Reduziert von 6 auf 4 — Hon-maru (Hauptbezirk) mit Ecktürmen
  {type:'RING',y:5.5,
-  gate:{atIndex:2,w:2.5,d:2.0,h:6.5,label:'Innerstes Tor (San-no-Mon)',info:'Drittes und letztes Tor — hier hatten Angreifer bereits 70+ Gefechte hinter sich. Die psychologische Erschöpfung war so groß wie die physische.'},
+  gate:{atIndex:1,w:2.5,d:2.0,h:6.5,label:'Innerstes Tor (San-no-Mon)',info:'Drittes und letztes Tor — hier hatten Angreifer bereits 70+ Gefechte hinter sich. Die psychologische Erschöpfung war so groß wie die physische.'},
   points:[
-   {x:0,    z:-7,   r:1.4,h:7.5,label:'Innerer Ring N',   info:'Nördlicher Kerntum.'},
-   {x:6.12, z:-3.5, r:1.3,h:7.0,label:'Innerer Ring NO',  info:'Nordostturm des Kernbereichs.'},
-   {x:6.12, z:3.5,  r:1.3,h:7.0,label:'Innerer Ring SO',  info:'Südostturm.'},
-   {x:0,    z:7,    r:1.3,h:7.0,label:'Innerer Ring S',   info:'Südturm des Kernbereichs.'},
-   {x:-6.12,z:3.5,  r:1.3,h:7.0,label:'Innerer Ring SW',  info:'Südwestturm.'},
-   {x:-6.12,z:-3.5, r:1.3,h:7.0,label:'Innerer Ring NW',  info:'Nordwestturm.'},
+   {x:0,  z:-7,  r:1.4,h:7.5,label:'Hon-maru Yagura N',info:'Nördlicher Eckturm des Hauptbezirks.'},
+   {x:7,  z:0,   r:1.3,h:7.0,label:'Hon-maru Yagura O',info:'Ostturm — Blick über den gesamten Burghügel.'},
+   {x:0,  z:7,   r:1.3,h:7.0,label:'Hon-maru Yagura S',info:'Südturm des Hauptbezirks.'},
+   {x:-7, z:0,   r:1.3,h:7.0,label:'Hon-maru Yagura W',info:'Westturm — letzter Rückzugspunkt vor dem Tenshu.'},
   ],
   wall:{h:6.0,thick:1.1}},
- {type:'ROUND_TOWER',x:0,z:0,r:2.5,h:15,y:5.5,label:'Tenshu (Hauptturm, 7 Stockwerke)',info:'Der Tenshu von Himeji — sieben Stockwerke, 46m Gesamthöhe. Symbol der Macht des Daimyō, sichtbar von 20km Entfernung. UNESCO-Welterbe. Überstand den 2. Weltkrieg durch reines Glück.'},
+ // ── TENSHU: Hauptturm (7 Stockwerke, y=5.5, auf Terasse 2) ───────────────
+ {type:'SQUARE_TOWER',x:0,z:0,w:4.0,d:3.5,h:15,y:5.5,
+  label:'Tenshu (Hauptturm, 7 Stockwerke)',
+  info:'Der Tenshu von Himeji — sieben Stockwerke, 46m Gesamthöhe. Symbol der Macht des Daimyō, sichtbar von 20km Entfernung. UNESCO-Welterbe. Überstand den 2. Weltkrieg durch reines Glück.'},
 ]},
 
 {id:"alamut",name:"Burg Alamut",sub:"Assassinenfestung",era:"1090–1256",year:1180,loc:"Alborz, Persien",type:"real",epoch:"Mittelalter",region:"nahost",icon:"🗡️",

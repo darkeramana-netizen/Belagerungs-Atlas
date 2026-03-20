@@ -5995,6 +5995,32 @@ function GlobalStats({scores,playStats,castles}){
     won:entries.filter(e=>e.castle.region===r&&e.won).length,
   })).sort((a,b)=>b.total-a.total);
 
+  // ── NEW: type comparison data ──────────────────────────────────────────
+  const realCastles=castles.filter(c=>c.type==="real");
+  const fantasyCastles=castles.filter(c=>c.type==="fantasy");
+  const realEntries=entries.filter(e=>e.castle.type==="real");
+  const fantasyEntries=entries.filter(e=>e.castle.type==="fantasy");
+  const catAvgFor=(list,k)=>list.length>0?Math.round(list.reduce((a,c)=>a+c.ratings[k],0)/list.length):0;
+
+  // ── NEW: records data ──────────────────────────────────────────────────
+  const allCatKeys=['walls','supply','position','garrison','morale'];
+  const recordHigh=allCatKeys.map(k=>({k,label:catLabels[k],castle:[...castles].sort((a,b)=>b.ratings[k]-a.ratings[k])[0]}));
+  const mostBalanced=[...castles].sort((a,b)=>{
+    const varA=allCatKeys.reduce((s,k)=>s+Math.pow(a.ratings[k]-avg(a),2),0);
+    const varB=allCatKeys.reduce((s,k)=>s+Math.pow(b.ratings[k]-avg(b),2),0);
+    return varA-varB;
+  }).slice(0,5);
+  const mostSpecialized=[...castles].sort((a,b)=>{
+    const varA=allCatKeys.reduce((s,k)=>s+Math.pow(a.ratings[k]-avg(a),2),0);
+    const varB=allCatKeys.reduce((s,k)=>s+Math.pow(b.ratings[k]-avg(b),2),0);
+    return varB-varA;
+  }).slice(0,5);
+  const topRating=[...castles].sort((a,b)=>avg(b)-avg(a))[0];
+  const topSingleRating=allCatKeys.reduce((best,k)=>{
+    const topC=[...castles].sort((a,b)=>b.ratings[k]-a.ratings[k])[0];
+    return topC.ratings[k]>(best?best.val:0)?{castle:topC,k,val:topC.ratings[k],label:catLabels[k]}:best;
+  },null);
+
   const tabBtn=(id,l)=>(
     <button key={id} onClick={()=>setAtab(id)} style={{
       padding:"4px 13px",fontSize:"11px",cursor:"pointer",letterSpacing:"1px",
@@ -6012,6 +6038,8 @@ function GlobalStats({scores,playStats,castles}){
         {tabBtn("overview","Übersicht")}
         {tabBtn("rankings","Ranglisten")}
         {tabBtn("analyse","Analyse")}
+        {tabBtn("typen","Typen")}
+        {tabBtn("rekorde","Rekorde")}
       </div>
 
       {/* ── ÜBERSICHT ── */}
@@ -6127,13 +6155,14 @@ function GlobalStats({scores,playStats,castles}){
           })}
         </div>
 
-        {/* Category leaders 2x2 */}
+        {/* Category leaders 2x3 (including morale) */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
           {[
             {k:"walls",l:"🧱 Stärkste Mauern"},
             {k:"position",l:"⛰️ Beste Geländelage"},
             {k:"supply",l:"🍖 Beste Versorgung"},
             {k:"garrison",l:"🏹 Stärkste Garnison"},
+            {k:"morale",l:"❤️ Höchste Moral"},
           ].map(({k,l})=>{
             const top3=[...castles].sort((a,b)=>b.ratings[k]-a.ratings[k]).slice(0,3);
             return(
@@ -6264,6 +6293,187 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             ))}
           </div>
+        </div>
+      </>}
+
+      {/* ── TYPEN ── */}
+      {atab==="typen"&&<>
+        {/* Real vs Fantasy overview */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+          {[
+            {label:"🌍 Historisch",list:realCastles,entries:realEntries,color:"#8aaa68",border:"rgba(138,170,104,0.2)"},
+            {label:"✦ Fantasy",list:fantasyCastles,entries:fantasyEntries,color:"#9988bb",border:"rgba(153,136,187,0.2)"},
+          ].map(({label,list,entries:ent,color,border})=>{
+            const w=ent.filter(e=>e.won).length;
+            const wr=ent.length>0?Math.round(w/ent.length*100):0;
+            return(
+              <div key={label} style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:`1px solid ${border}`,borderRadius:"6px"}}>
+                <div style={{fontSize:"12px",color,letterSpacing:"1px",marginBottom:"10px",fontWeight:"bold"}}>{label}</div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
+                  {[
+                    {l:"Burgen",v:list.length},{l:"Belagert",v:ent.length},
+                    {l:"Siege",v:w},{l:"Siegquote",v:ent.length>0?`${wr}%`:"—"},
+                  ].map(x=>(
+                    <div key={x.l} style={{textAlign:"center",padding:"6px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
+                      <div style={{fontSize:"15px",fontWeight:"bold",color}}>{x.v}</div>
+                      <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Category comparison real vs fantasy */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"12px"}}>📐 KATEGORIE-VERGLEICH: HISTORISCH VS. FANTASY</div>
+          {allCatKeys.map(k=>{
+            const rVal=catAvgFor(realCastles,k);
+            const fVal=catAvgFor(fantasyCastles,k);
+            const maxVal=Math.max(rVal,fVal,1);
+            return(
+              <div key={k} style={{marginBottom:"10px"}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
+                  <div style={{fontSize:"11px",color:"#8a7a58"}}>{catLabels[k]}</div>
+                  <div style={{display:"flex",gap:"10px"}}>
+                    <span style={{fontSize:"11px",color:"#8aaa68",fontFamily:"monospace"}}>🌍 {rVal}</span>
+                    <span style={{fontSize:"11px",color:"#9988bb",fontFamily:"monospace"}}>✦ {fVal}</span>
+                  </div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",gap:"3px"}}>
+                  <div style={{height:"5px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${rVal}%`,background:"rgba(138,170,104,0.6)",borderRadius:"3px"}}/>
+                  </div>
+                  <div style={{height:"5px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
+                    <div style={{height:"100%",width:`${fVal}%`,background:"rgba(153,136,187,0.6)",borderRadius:"3px"}}/>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(138,170,104,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Historisch</span>
+            <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(153,136,187,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Fantasy</span>
+          </div>
+        </div>
+
+        {/* Top 5 per type */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px"}}>
+          {[
+            {label:"🌍 Stärkste hist. Burgen",list:realCastles,color:"#8aaa68"},
+            {label:"✦ Stärkste Fantasy-Burgen",list:fantasyCastles,color:"#9988bb"},
+          ].map(({label,list,color})=>(
+            <div key={label} style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+              <div style={{fontSize:"10px",color,letterSpacing:"1px",marginBottom:"8px"}}>{label}</div>
+              {[...list].sort((a,b)=>avg(b)-avg(a)).slice(0,5).map((c,i)=>(
+                <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
+                  <div style={{fontSize:"10px",color:i===0?color:"#4a3a20",width:"13px"}}>{i+1}</div>
+                  <span style={{fontSize:"12px"}}>{c.icon}</span>
+                  <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                  <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </>}
+
+      {/* ── REKORDE ── */}
+      {atab==="rekorde"&&<>
+        {/* Absolute records */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>🏅 KATEGORIE-REKORDE</div>
+          {recordHigh.map(({k,label,castle:c})=>(
+            <div key={k} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px",padding:"6px 8px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
+              <div style={{fontSize:"10px",color:"#5a4a28",width:"90px",flexShrink:0}}>{label}</div>
+              <span style={{fontSize:"14px"}}>{c.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:"11px",color:"#9a8860",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:"9px",color:"#5a4a28"}}>{c.region} · {c.epoch}</div>
+              </div>
+              <div style={{fontSize:"16px",fontWeight:"bold",color:rCol(c.ratings[k]),fontFamily:"monospace",flexShrink:0}}>{c.ratings[k]}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Most balanced */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"10px",marginBottom:"12px"}}>
+          <div style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+            <div style={{fontSize:"10px",color:"#c9a84c",letterSpacing:"1px",marginBottom:"8px"}}>⚖️ AUSGEWOGENSTE BURGEN</div>
+            {mostBalanced.map((c,i)=>(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
+                <div style={{fontSize:"10px",color:i===0?"#c9a84c":"#4a3a20",width:"13px"}}>{i+1}</div>
+                <span style={{fontSize:"12px"}}>{c.icon}</span>
+                <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{padding:"12px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+            <div style={{fontSize:"10px",color:"#cc8844",letterSpacing:"1px",marginBottom:"8px"}}>🎯 SPEZIALISIERTE BURGEN</div>
+            {mostSpecialized.map((c,i)=>(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
+                <div style={{fontSize:"10px",color:i===0?"#cc8844":"#4a3a20",width:"13px"}}>{i+1}</div>
+                <span style={{fontSize:"12px"}}>{c.icon}</span>
+                <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
+                <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Rating distribution */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",marginBottom:"12px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>📊 GESAMTWERTUNGS-VERTEILUNG</div>
+          {[
+            {range:"90–100",label:"Legendär",color:"#c9a84c"},
+            {range:"75–89",label:"Stark",color:"#8aaa68"},
+            {range:"60–74",label:"Solide",color:"#4488cc"},
+            {range:"40–59",label:"Schwach",color:"#cc8844"},
+            {range:"<40",label:"Verwundbar",color:"#cc5544"},
+          ].map(({range,label,color})=>{
+            const count=castles.filter(c=>{
+              const v=avg(c);
+              if(range==="90–100")return v>=90;
+              if(range==="75–89")return v>=75&&v<90;
+              if(range==="60–74")return v>=60&&v<75;
+              if(range==="40–59")return v>=40&&v<60;
+              return v<40;
+            }).length;
+            const pct=Math.round(count/castles.length*100);
+            return(
+              <div key={range} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"6px"}}>
+                <div style={{fontSize:"10px",color,width:"60px",flexShrink:0}}>{range}</div>
+                <div style={{fontSize:"10px",color:"#5a4a28",width:"55px",flexShrink:0}}>{label}</div>
+                <div style={{flex:1,height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${pct}%`,background:`${color}88`,borderRadius:"3px"}}/>
+                </div>
+                <div style={{fontSize:"10px",color:"#5a4a28",width:"30px",textAlign:"right",fontFamily:"monospace"}}>{count}</div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Fun records */}
+        <div style={{padding:"14px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px"}}>
+          <div style={{fontSize:"11px",color:"#c9a84c",letterSpacing:"2px",marginBottom:"10px"}}>⭐ BESONDERE REKORDE</div>
+          {[
+            {l:"Höchste Gesamtwertung",v:`${avg(topRating)} Punkte`,sub:topRating.name,icon:topRating.icon},
+            {l:"Höchste Einzelwertung",v:`${topSingleRating?.val} (${topSingleRating?.label})`,sub:topSingleRating?.castle.name,icon:topSingleRating?.castle.icon},
+            {l:"Meiste Regionen",v:`${Object.keys(castles.reduce((a,c)=>{a[c.region]=1;return a},{})).length} Regionen`,sub:"Weltweit verteilt",icon:"🌍"},
+            {l:"Früheste Burg",v:`${Math.abs(castles.reduce((b,c)=>c.year<b.year?c:b).year)} v. Chr.`,sub:castles.reduce((b,c)=>c.year<b.year?c:b).name,icon:castles.reduce((b,c)=>c.year<b.year?c:b).icon},
+            {l:"Späteste Burg",v:`${castles.reduce((b,c)=>c.year>b.year?c:b).year} n. Chr.`,sub:castles.reduce((b,c)=>c.year>b.year?c:b).name,icon:castles.reduce((b,c)=>c.year>b.year?c:b).icon},
+          ].map(x=>(
+            <div key={x.l} style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"7px",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.03)"}}>
+              <span style={{fontSize:"15px",flexShrink:0}}>{x.icon}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:"10px",color:"#5a4a28",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                <div style={{fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{x.sub}</div>
+              </div>
+              <div style={{fontSize:"13px",fontWeight:"bold",color:"#c9a84c",flexShrink:0,fontFamily:"monospace",textAlign:"right"}}>{x.v}</div>
+            </div>
+          ))}
         </div>
       </>}
     </div>
