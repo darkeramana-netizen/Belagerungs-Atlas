@@ -69,8 +69,11 @@ export const CASTLES = [
 
   // ── INNENRING: 5 Türme (Pentagon, R=10), auf dem Glacis (y=3.5) ─────────
   // α = π + i·(2π/5): i=0=Süd, i=1=SW, i=2=NW, i=3=NO, i=4=SO
-  // Mauern: buildRing verbindet automatisch alle Punkte (Ring schließt sich)
+  // Gate atIndex:4 = Segment SO→Süd (Torre del Maestre → Torre Grande): historischer Rampeneingang
   {type:'RING', y:3.5,
+   gate:{atIndex:4, w:3.5, d:3.0, h:6.5,
+     label:'Inneres Tor – Rampeneingang (Hochburg)',
+     info:'Der verschlungene Eingang in den Innenhof: eine überdachte Rampe, die in engen Kehren nach oben führt. Drei Fallgatter, enge Kurven, Pfeillöcher von oben — wer den äußeren Ring überlebt hatte, stand hier vor dem nächsten Massaker. Kein Feind hat dieses Tor je durch Sturm gebrochen.'},
    points:[
     {x:0,    z:10,    r:2.3, h:11.5,
      label:'Torre Grande (Großer Turm)',
@@ -86,7 +89,7 @@ export const CASTLES = [
      info:'Überblickte das äußere Ostfeld und deckte das Haupttor von oben — ideal für Bogenschützen, die Eindringlinge im Korridor beschossen.'},
     {x:9.51, z:3.09,  r:1.9, h:9.5,
      label:'Südostturm (Torre del Maestre)',
-     info:'Imposanter Südostturm mit Maschikulierungsreihe. Gemeinsam mit Torre Grande und Wächterturm bildete er die undurchdringliche Südfront des Innenhofs.'},
+     info:'Imposanter Südostturm mit Maschikulierungsreihe. Gemeinsam mit Torre Grande und Wächterturm bildete er die undurchdringliche Südfront des Innenhofs. Flankiert den Rampeneingang zum Innenhof.'},
    ],
    wall:{h:6.0, thick:1.3}},
 
@@ -111,9 +114,19 @@ export const CASTLES = [
    wall:{h:3.0, thick:0.8}},
 
   // ── Konventsaal (Großer Saal, Nordteil des Innenhofs) ────────────────────
-  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:2.0, h:3.2, y:3.5, noRoof:true,
+  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:3.5, h:3.2, y:3.5, noRoof:true,
    label:'Konventsaal der Johanniter',
    info:'Über 36 Meter langer gotischer Saal mit Kreuzrippengewölben — das kulturelle Herz des Krak. Hier tagte der Ordensrat, wurden Verträge geschlossen und Schlachten geplant. Arabische Bogenformen an den Fenstern zeugen vom kulturellen Austausch trotz Krieg.'},
+
+  // ── Johanniterkapelle (Ostteil des Innenhofs, auf Glacis) ─────────────────
+  {type:'SQUARE_TOWER', x:5.5, z:0, w:3.0, d:2.5, h:4.5, y:3.5,
+   label:'Johanniterkapelle',
+   info:'Die Kapelle der Hospitaliter im östlichen Innenhof — ein schlichtes romanisch-gotisches Gebäude mit spitzbögigen Fenstern und Kreuzrippengewölbe. Täglich hörten die Ritter hier die Messe, bevor sie zu ihren Wachdiensten antraten. In ihr wurde der Orden der Johanniter täglich an seinen ursprünglichen Auftrag — Kranken- und Pilgerschutz — erinnert.'},
+
+  // ── Zisternenbecken (Zwinger, Südseite zwischen den Ringen) ───────────────
+  {type:'GLACIS', x:0, z:16, y:0, rTop:3.0, rBot:3.8, h:0.7,
+   label:'Zisternenbecken (Südring)',
+   info:'Eine der Hauptauffangzisternen im Zwinger zwischen den beiden Mauerringen — gefüllt durch Dachrinnen und sorgfältig gebaute Kanäle von den Wehrgangsböden. Das ausgeklügelte Wassersystem des Krak war sein wichtigstes strategisches Geheimnis: genug Wasser für fünf Jahre, selbst bei vollständiger Belagerung. Ohne diese Zisternen hätte der Krak nie 130 Jahre uneingenommen bleiben können.'},
  ]},
 
 {id:"masada",name:"Masada",sub:"Jüdische Bergfestung",era:"73 n.Chr.",year:73,loc:"Judäa",type:"real",epoch:"Antike",region:"nahost",icon:"🪨",
