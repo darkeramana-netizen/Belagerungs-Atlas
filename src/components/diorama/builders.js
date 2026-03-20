@@ -171,6 +171,32 @@ export function buildGate(p, sm, dm, rm, style = 'crusader') {
   return g;
 }
 
+// ── PLATEAU ──────────────────────────────────────────────────────────────
+// Flat stone terrace / abbey platform — solid rectangular block, no battlements,
+// no roof. Used as the foundation platform that buildings sit on top of.
+// Designed for tiered structures like Mont Saint-Michel where the abbey complex
+// rests on a man-made terrace (supported by crypts) rather than the bare rock tip.
+//   p.w, p.d  — footprint dimensions (default 10×10)
+//   p.h       — platform height (default 2)
+//   p.y       — base elevation (same convention as SQUARE_TOWER)
+//   p.x, p.z  — center position (can be offset to shift platform north/south)
+export function buildPlateau(p, sm) {
+  const w = p.w || 10, d = p.d || 10, h = p.h || 2, y = Math.max(0, p.y || 0);
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), sm);
+  body.position.y = h / 2 + 0.002;
+  body.castShadow = true;
+  body.receiveShadow = true;
+  g.add(body);
+
+  return g;
+}
+
 // ── GLACIS ───────────────────────────────────────────────────────────────
 // Sloped stone plinth — CylinderGeometry with different top/bottom radii.
 export function buildGlacis(p, sm) {
@@ -290,6 +316,7 @@ export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null) 
     case 'ROUND_TOWER':  return buildRoundTower(comp, sm, dm, rm, style);
     case 'SQUARE_TOWER': return buildSquareTower(comp, sm, dm, rm, style);
     case 'GATE':         return buildGate(comp, sm, dm, rm, style);
+    case 'PLATEAU':      return buildPlateau(comp, gm || sm);
     case 'GLACIS':       return buildGlacis(comp, gm || sm);
     case 'RING':         return buildRing(comp, sm, dm, rm, style);
     default: return null;
