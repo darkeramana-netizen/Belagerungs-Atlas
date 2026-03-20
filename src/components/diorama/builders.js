@@ -92,9 +92,12 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
   body.receiveShadow = true;
   g.add(body);
 
-  // Battlements (InstancedMesh)
+  // Battlements — raise y-offset by flat-roof slab thickness (0.22) for styles
+  // that add a flat parapet roof, so merlons sit on top rather than clipping through it.
+  const hasFlatRoof = style === 'ancient' || style === 'oriental';
+  const merYOff = hasFlatRoof ? 0.53 : 0.30;
   const mkM = chooseMerlonBuilder(style);
-  const merlons = mkM(squareTowerMerlonPositions(w, d, h), sm);
+  const merlons = mkM(squareTowerMerlonPositions(w, d, h, merYOff), sm);
   if (merlons) g.add(merlons);
 
   // Style-aware roof — skipped if p.noRoof is set (e.g. halls, palas buildings)
@@ -108,7 +111,7 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
 
 // ── GATE ─────────────────────────────────────────────────────────────────
 // Gatehouse with two round flanking towers, visible passage opening, portcullis bars.
-export function buildGate(p, sm, dm, style = 'crusader') {
+export function buildGate(p, sm, dm, rm, style = 'crusader') {
   const w = p.w || 4.5, d = p.d || 3.5, h = p.h || 6.0, y = Math.max(0, p.y || 0);
   const tR = d * 0.52;   // flanking tower radius
   const tH = h * 1.22;  // flanking towers taller than gatehouse
@@ -128,13 +131,19 @@ export function buildGate(p, sm, dm, style = 'crusader') {
     tw.receiveShadow = true;
     g.add(tw);
 
-    // Merlons on flanking towers — offsets into gate-group local space
-    const mkM = chooseMerlonBuilder(style);
-    const merPos = roundTowerMerlonPositions(tR, tH).map(m => ({
-      ...m, x: m.x + cx,
-    }));
-    const merlons = mkM(merPos, sm);
-    if (merlons) g.add(merlons);
+    // Roof — same style as regular round towers (cone, dome, pagoda, etc.)
+    const roof = buildRoofForStyle(style, tR, tH, rm);
+    if (roof) { roof.position.x = cx; g.add(roof); }
+
+    // Merlons — only for 'ancient' (open flat parapet), same as buildRoundTower
+    if (style === 'ancient') {
+      const mkM = chooseMerlonBuilder(style);
+      const merPos = roundTowerMerlonPositions(tR, tH).map(m => ({
+        ...m, x: m.x + cx,
+      }));
+      const merlons = mkM(merPos, sm);
+      if (merlons) g.add(merlons);
+    }
   });
 
   // Gatehouse body
@@ -232,7 +241,7 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
     if (gt && gt.atIndex === i) {
       g.add(buildGate(
         { ...gt, x: mx, z: mz, y, rotation: Math.atan2(mx, mz) },
-        sm, dm, style,
+        sm, dm, rm, style,
       ));
 
       // ── Connecting walls from each adjacent tower to the gatehouse ───────
@@ -285,7 +294,7 @@ export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null) 
     case 'WALL':         return buildWall(comp, sm, dm, style);
     case 'ROUND_TOWER':  return buildRoundTower(comp, sm, dm, rm, style);
     case 'SQUARE_TOWER': return buildSquareTower(comp, sm, dm, rm, style);
-    case 'GATE':         return buildGate(comp, sm, dm, style);
+    case 'GATE':         return buildGate(comp, sm, dm, rm, style);
     case 'GLACIS':       return buildGlacis(comp, gm || sm);
     case 'RING':         return buildRing(comp, sm, dm, rm, style);
     default: return null;

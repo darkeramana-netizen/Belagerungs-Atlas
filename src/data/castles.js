@@ -196,7 +196,7 @@ components:[
    {x:-8.2, z:-10.4,r:1.2,h:6.5,label:'Innenturm NNW',       info:'Nordwestturm — schützte den Zugang zum Château Comtal.'},
   ],
   wall:{h:6.0,thick:1.0}},
- {type:'SQUARE_TOWER',x:-9,z:-6,w:6.5,d:4.5,h:5.5,y:2.2,label:'Château Comtal (Kernburg)',info:'Die Burg in der Burg — ein eigenständiges Kastell mit eigenem Graben und eigenen Mauern im Nordwesten der Stadt. Letzter Rückzugspunkt der Vizegrafen von Carcassonne.'},
+ {type:'SQUARE_TOWER',x:-7,z:-4,w:6.5,d:4.5,h:5.5,y:2.2,label:'Château Comtal (Kernburg)',info:'Die Burg in der Burg — ein eigenständiges Kastell mit eigenem Graben und eigenen Mauern im Nordwesten der Stadt. Letzter Rückzugspunkt der Vizegrafen von Carcassonne.'},
 ]},
 
 {id:"chateau_gaillard",name:"Château Gaillard",sub:"Philipps Nemesis",era:"1196–1204",year:1200,loc:"Normandie, FR",type:"real",epoch:"Mittelalter",region:"europa",icon:"🪖",

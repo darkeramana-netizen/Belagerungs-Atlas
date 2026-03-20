@@ -47,7 +47,9 @@ export function wallMerlonPositions(len, h) {
 }
 
 export function roundTowerMerlonPositions(r, h) {
-  const count = Math.max(8, Math.round(r * 6.2));
+  // Always use an even count so i+=2 produces perfectly uniform angular spacing.
+  const raw = Math.max(8, Math.round(r * 6.2));
+  const count = raw % 2 === 0 ? raw : raw + 1;
   const positions = [];
   for (let i = 0; i < count; i += 2) {
     const a = (i / count) * Math.PI * 2;
@@ -61,7 +63,10 @@ export function roundTowerMerlonPositions(r, h) {
   return positions;
 }
 
-export function squareTowerMerlonPositions(w, d, h) {
+// yOffset: height above tower-top where merlon centres are placed.
+// Use 0.30 (default) when there is no roof slab, 0.53 when a flat-roof slab
+// (thickness 0.22) has been added — keeps merlons clear of the slab geometry.
+export function squareTowerMerlonPositions(w, d, h, yOffset = 0.30) {
   const positions = [];
   [[0, d / 2, false], [0, -d / 2, false], [w / 2, 0, true], [-w / 2, 0, true]]
     .forEach(([ox, oz, isZ]) => {
@@ -69,7 +74,7 @@ export function squareTowerMerlonPositions(w, d, h) {
       for (let t = -(len / 2) + 0.5; t < len / 2 - 0.1; t += 1.1) {
         positions.push({
           x: isZ ? ox : ox + t,
-          y: h + 0.30,
+          y: h + yOffset,
           z: isZ ? oz + t : oz,
           ry: isZ ? Math.PI / 2 : 0,
         });
