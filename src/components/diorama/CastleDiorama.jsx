@@ -7,10 +7,10 @@ import { generateComponents } from './generator.js';
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
   const [ready, setReady] = useState(false);
-  const [info,  setInfo]  = useState(null);
-  // Keep setInfo stable across re-renders so the animation loop can call it
-  const infoRef = useRef(null);
-  infoRef.current = setInfo;
+  const [info,  setInfo]  = useState(null);   // clicked component
+  const [hover, setHover] = useState(null);   // hovered component label
+  const infoRef  = useRef(null); infoRef.current  = setInfo;
+  const hoverRef = useRef(null); hoverRef.current = setHover;
 
   const ac = castle.theme?.accent || '#c9a84c';
 
@@ -20,6 +20,7 @@ export default function CastleDiorama({ castle }) {
     if (!mount) return;
     setReady(false);
     infoRef.current(null);
+    hoverRef.current(null);
 
     try {
       const T = THREE;
@@ -29,10 +30,8 @@ export default function CastleDiorama({ castle }) {
       // ── Renderer (singleton — one WebGL context for the whole app) ───────
       const renderer = getRenderer();
       renderer.setSize(W, H);
-      // DPR clamped to [1, 2] — below 1 causes blurriness, above 2 wastes GPU
       renderer.setPixelRatio(Math.max(1, Math.min(window.devicePixelRatio, 2)));
       if (!mount.contains(renderer.domElement)) mount.appendChild(renderer.domElement);
-      // Pin pixel size explicitly so CSS 100%/100% doesn't rescale the canvas
       renderer.domElement.style.cssText = `display:block;width:${W}px;height:${H}px;cursor:grab;max-width:100%;`;
 
       // ── Scene ────────────────────────────────────────────────────────────
@@ -48,7 +47,6 @@ export default function CastleDiorama({ castle }) {
       const mats  = getMaterials(style);
 
       // ── Ground disc ──────────────────────────────────────────────────────
-      // Offset 0.05 below y=0 to prevent z-fighting with tower/wall base faces.
       const gnd = new T.Mesh(new T.CircleGeometry(55, 48), mats.ground);
       gnd.rotation.x = -Math.PI / 2;
       gnd.position.y = -0.05;
@@ -56,8 +54,7 @@ export default function CastleDiorama({ castle }) {
       scene.add(gnd);
 
       // ── Lighting ─────────────────────────────────────────────────────────
-      const amb  = new T.AmbientLight(0xc8b89a, 2.8);
-      scene.add(amb);
+      scene.add(new T.AmbientLight(0xc8b89a, 2.8));
 
       const sun  = new T.DirectionalLight(0xfff8e8, 5.5);
       sun.position.set(22, 32, 14);
@@ -97,8 +94,7 @@ export default function CastleDiorama({ castle }) {
         ? Math.max(...rings.flatMap(r => (r.points || []).map(pt => Math.sqrt((pt.x || 0) ** 2 + (pt.z || 0) ** 2))))
         : 0;
 
-      // ── Rocky plateau for extreme-position castles (Masada-type) ─────────
-      // Mesa top = y=0 so buildings sit on top. Extends downward as a cliff.
+      // ── Rocky plateau for extreme-position castles ────────────────────────
       const posR = castle.ratings?.position || 50;
       if (posR >= 90 && castle.type !== 'fantasy') {
         const plateauR = maxRingR > 0 ? maxRingR + 3 : 18;
@@ -107,7 +103,7 @@ export default function CastleDiorama({ castle }) {
           new T.CylinderGeometry(plateauR * 0.95, plateauR + 3, mesaH, 36),
           mats.rock,
         );
-        mesa.position.y = -(mesaH / 2); // top surface at y=0
+        mesa.position.y = -(mesaH / 2);
         mesa.receiveShadow = true;
         mesa.castShadow   = true;
         scene.add(mesa);
@@ -127,8 +123,72 @@ export default function CastleDiorama({ castle }) {
       }
       syncCam();
 
-      // ── Orbit controls (pointer-based) ───────────────────────────────────
+      // ── Orbit controls ───────────────────────────────────────────────────
       let pDown = false, lastPX = 0, lastPY = 0, moved = false;
+
+      // ── Hover highlight state ─────────────────────────────────────────────
+      // On hover: clone each mesh's material and apply emissive accent glow.
+      // On leave: restore originals. Uses a Map so clones are cleaned up precisely.
+      let hoveredGroup  = null;
+      const savedMats   = new Map(); // mesh → original material (shared)
+      const accentColor = new THREE.Color(ac);
+
+      function clearHighlight() {
+        if (!hoveredGroup) return;
+        // Restore original shared materials and dispose the clones
+        savedMats.forEach((origMat, mesh) => {
+          mesh.material.dispose();
+          mesh.material = origMat;
+        });
+        savedMats.clear();
+        hoveredGroup = null;
+        hoverRef.current(null);
+        renderer.domElement.style.cursor = pDown ? 'grabbing' : 'grab';
+      }
+
+      function applyHighlight(group) {
+        if (group === hoveredGroup) return;
+        clearHighlight();
+        if (!group) return;
+        hoveredGroup = group;
+        hoverRef.current(group.userData.label);
+        renderer.domElement.style.cursor = 'pointer';
+        group.traverse(obj => {
+          if (obj.isMesh) {
+            savedMats.set(obj, obj.material);
+            const m = obj.material.clone();
+            m.emissive = accentColor.clone().multiplyScalar(0.20);
+            m.emissiveIntensity = 1.0;
+            obj.material = m;
+          }
+        });
+      }
+
+      // ── Raycaster helpers ────────────────────────────────────────────────
+      const rc    = new T.Raycaster();
+      const mouse = new T.Vector2();
+
+      // Traverse up from hit mesh to nearest ancestor with a non-empty label
+      function findLabelGroup(hits) {
+        for (const hit of hits) {
+          let o = hit.object;
+          while (o) {
+            if (o.userData?.label) return o;
+            o = o.parent;
+          }
+        }
+        return null;
+      }
+
+      function castRay(e) {
+        const rect = mount.getBoundingClientRect();
+        mouse.set(
+          ((e.clientX - rect.left) / rect.width)  * 2 - 1,
+          -((e.clientY - rect.top)  / rect.height) * 2 + 1,
+        );
+        rc.setFromCamera(mouse, camera);
+        return rc.intersectObjects(clickables, true);
+      }
 
       const onPD = e => {
         pDown = true; moved = false;
@@ -136,52 +196,52 @@ export default function CastleDiorama({ castle }) {
         try { mount.setPointerCapture(e.pointerId); } catch (_) {}
         renderer.domElement.style.cursor = 'grabbing';
       };
+
       const onPM = e => {
-        if (!pDown) return;
-        moved  = true;
-        theta -= (e.clientX - lastPX) * 0.007;
-        phi    = Math.max(0.12, Math.min(1.46, phi - (e.clientY - lastPY) * 0.007));
-        lastPX = e.clientX; lastPY = e.clientY;
-        syncCam();
+        if (pDown) {
+          moved  = true;
+          theta -= (e.clientX - lastPX) * 0.007;
+          phi    = Math.max(0.12, Math.min(1.46, phi - (e.clientY - lastPY) * 0.007));
+          lastPX = e.clientX; lastPY = e.clientY;
+          syncCam();
+          return;
+        }
+        // Hover raycasting (only when not dragging)
+        const g = findLabelGroup(castRay(e));
+        if (g) applyHighlight(g);
+        else clearHighlight();
       };
+
       const onPU = e => {
         pDown = false;
         try { mount.releasePointerCapture(e.pointerId); } catch (_) {}
-        renderer.domElement.style.cursor = 'grab';
+        renderer.domElement.style.cursor = hoveredGroup ? 'pointer' : 'grab';
       };
+
+      const onLeave = () => clearHighlight();
+
       const onWhl = e => {
         e.preventDefault();
         camR = Math.max(7, Math.min(55, camR + e.deltaY * 0.04));
         syncCam();
       };
 
-      // ── Raycaster (click → info overlay) ────────────────────────────────
-      const rc = new T.Raycaster();
-      const mouse = new T.Vector2();
-
       const onClick = e => {
         if (moved) return;
-        const rect = mount.getBoundingClientRect();
-        mouse.set(
-          ((e.clientX - rect.left) / rect.width)  * 2 - 1,
-          -((e.clientY - rect.top)  / rect.height) * 2 + 1,
-        );
-        rc.setFromCamera(mouse, camera);
-        const hits = rc.intersectObjects(clickables, true);
-        if (hits.length) {
-          let o = hits[0].object;
-          while (o && !o.userData?.label) o = o.parent;
-          infoRef.current(o?.userData?.label ? { label: o.userData.label, info: o.userData.info || '' } : null);
+        const g = findLabelGroup(castRay(e));
+        if (g) {
+          infoRef.current({ label: g.userData.label, info: g.userData.info || '' });
         } else {
           infoRef.current(null);
         }
       };
 
-      mount.addEventListener('pointerdown', onPD);
-      mount.addEventListener('pointermove', onPM);
-      mount.addEventListener('pointerup',   onPU);
-      mount.addEventListener('wheel', onWhl, { passive: false });
-      mount.addEventListener('click', onClick);
+      mount.addEventListener('pointerdown',  onPD);
+      mount.addEventListener('pointermove',  onPM);
+      mount.addEventListener('pointerup',    onPU);
+      mount.addEventListener('pointerleave', onLeave);
+      mount.addEventListener('wheel',        onWhl, { passive: false });
+      mount.addEventListener('click',        onClick);
 
       setReady(true);
 
@@ -192,13 +252,16 @@ export default function CastleDiorama({ castle }) {
       // ── Cleanup ──────────────────────────────────────────────────────────
       return () => {
         cancelAnimationFrame(animId);
-        mount.removeEventListener('pointerdown', onPD);
-        mount.removeEventListener('pointermove', onPM);
-        mount.removeEventListener('pointerup',   onPU);
-        mount.removeEventListener('wheel', onWhl);
-        mount.removeEventListener('click', onClick);
+        mount.removeEventListener('pointerdown',  onPD);
+        mount.removeEventListener('pointermove',  onPM);
+        mount.removeEventListener('pointerup',    onPU);
+        mount.removeEventListener('pointerleave', onLeave);
+        mount.removeEventListener('wheel',        onWhl);
+        mount.removeEventListener('click',        onClick);
+        // Dispose any active cloned highlight materials
+        savedMats.forEach((_, mesh) => { mesh.material?.dispose(); });
+        savedMats.clear();
         if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
-        // Dispose all geometries + materials to free GPU memory
         scene.traverse(obj => {
           if (obj.geometry) obj.geometry.dispose();
           if (obj.material) {
@@ -215,68 +278,99 @@ export default function CastleDiorama({ castle }) {
   }, [castle.id]);
 
   return (
-    <div style={{
-      position: 'relative', width: '100%', background: '#0c0a07',
-      borderRadius: '4px', overflow: 'hidden', minHeight: '300px',
-    }}>
-      <div ref={mountRef} style={{ width: '100%', minHeight: '300px' }} />
+    <div style={{ width: '100%' }}>
 
-      {/* Loading spinner */}
-      {!ready && (
-        <div style={{
-          position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center', gap: '10px',
-          background: 'rgba(12,10,7,0.9)',
-        }}>
+      {/* ── 3D Canvas ─────────────────────────────────────────────────────── */}
+      <div style={{
+        position: 'relative', width: '100%', background: '#0c0a07',
+        borderRadius: info ? '4px 4px 0 0' : '4px',
+        overflow: 'hidden', minHeight: '300px',
+      }}>
+        <div ref={mountRef} style={{ width: '100%', minHeight: '300px' }} />
+
+        {/* Loading spinner */}
+        {!ready && (
           <div style={{
-            width: '32px', height: '32px', border: '2px solid ' + ac,
-            borderTopColor: 'transparent', borderRadius: '50%',
-            animation: 'spin 0.8s linear infinite',
-          }} />
-          <div style={{ fontSize: '11px', color: ac, letterSpacing: '2px', opacity: 0.7 }}>
-            3D DIORAMA LÄDT
+            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center', gap: '10px',
+            background: 'rgba(12,10,7,0.9)',
+          }}>
+            <div style={{
+              width: '32px', height: '32px', border: '2px solid ' + ac,
+              borderTopColor: 'transparent', borderRadius: '50%',
+              animation: 'spin 0.8s linear infinite',
+            }} />
+            <div style={{ fontSize: '11px', color: ac, letterSpacing: '2px', opacity: 0.7 }}>
+              3D DIORAMA LÄDT
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Click info overlay */}
-      {ready && info && (
-        <div onClick={() => setInfo(null)} style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(0deg,rgba(8,6,4,0.97) 0%,rgba(8,6,4,0.85) 70%,transparent 100%)',
-          padding: '18px 16px 16px', cursor: 'pointer', userSelect: 'none',
+        {/* Hover label — bottom-left, unobtrusive */}
+        {ready && hover && (
+          <div style={{
+            position: 'absolute', bottom: '8px', left: '10px',
+            fontSize: '10px', color: ac, letterSpacing: '1px',
+            pointerEvents: 'none', textTransform: 'uppercase',
+            textShadow: '0 1px 6px rgba(0,0,0,0.95)',
+            opacity: 0.9,
+          }}>
+            {hover}
+            <span style={{ color: 'rgba(255,255,255,0.35)', marginLeft: '6px' }}>↙ klick</span>
+          </div>
+        )}
+
+        {/* Interaction hint — only when nothing is hovered/selected */}
+        {ready && !hover && !info && (
+          <div style={{
+            position: 'absolute', bottom: '8px', right: '10px',
+            fontSize: '9px', color: 'rgba(255,255,255,0.18)',
+            pointerEvents: 'none', letterSpacing: '0.8px',
+          }}>
+            ZIEHEN · ZOOM · KLICK = INFO
+          </div>
+        )}
+
+        {/* Castle name badge */}
+        <div style={{
+          position: 'absolute', top: '8px', left: '10px',
+          fontSize: '10px', color: ac, opacity: 0.55,
+          letterSpacing: '1.5px', pointerEvents: 'none', textTransform: 'uppercase',
         }}>
-          <div style={{ fontSize: '12px', fontWeight: 'bold', color: ac, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px' }}>
-            {info.label}
+          🏰 {castle.name.slice(0, 26)}
+        </div>
+      </div>
+
+      {/* ── Info panel — BELOW the canvas, never blocks the view ────────────── */}
+      {ready && info && (
+        <div
+          onClick={() => setInfo(null)}
+          style={{
+            background: 'linear-gradient(180deg,rgba(14,11,8,0.98) 0%,rgba(10,8,5,0.98) 100%)',
+            border: `1px solid ${ac}28`,
+            borderTop: `2px solid ${ac}55`,
+            borderRadius: '0 0 4px 4px',
+            padding: '13px 16px 11px',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '11px', fontWeight: 'bold', color: ac, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px' }}>
+                {info.label}
+              </div>
+              <div style={{ fontSize: '11px', color: '#c0a880', lineHeight: '1.65' }}>
+                {info.info}
+              </div>
+            </div>
+            <div style={{ fontSize: '15px', color: `${ac}66`, flexShrink: 0, marginTop: '1px', fontWeight: 'bold' }}>✕</div>
           </div>
-          <div style={{ fontSize: '11px', color: '#c0a880', lineHeight: '1.6', maxWidth: '520px' }}>
-            {info.info}
-          </div>
-          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.2)', marginTop: '8px', letterSpacing: '1px' }}>
+          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.18)', marginTop: '8px', letterSpacing: '1px' }}>
             KLICK ZUM SCHLIESSEN
           </div>
         </div>
       )}
-
-      {/* Interaction hint */}
-      {ready && !info && (
-        <div style={{
-          position: 'absolute', bottom: '8px', right: '10px',
-          fontSize: '9px', color: 'rgba(255,255,255,0.18)',
-          pointerEvents: 'none', letterSpacing: '0.8px',
-        }}>
-          ZIEHEN · ZOOM · KLICK = INFO
-        </div>
-      )}
-
-      {/* Castle name badge */}
-      <div style={{
-        position: 'absolute', top: '8px', left: '10px',
-        fontSize: '10px', color: ac, opacity: 0.55,
-        letterSpacing: '1.5px', pointerEvents: 'none', textTransform: 'uppercase',
-      }}>
-        🏰 {castle.name.slice(0, 26)}
-      </div>
     </div>
   );
 }
