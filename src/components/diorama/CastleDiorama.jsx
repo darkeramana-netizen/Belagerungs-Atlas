@@ -29,9 +29,11 @@ export default function CastleDiorama({ castle }) {
       // ── Renderer (singleton — one WebGL context for the whole app) ───────
       const renderer = getRenderer();
       renderer.setSize(W, H);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      // DPR clamped to [1, 2] — below 1 causes blurriness, above 2 wastes GPU
+      renderer.setPixelRatio(Math.max(1, Math.min(window.devicePixelRatio, 2)));
       if (!mount.contains(renderer.domElement)) mount.appendChild(renderer.domElement);
-      renderer.domElement.style.cssText = 'display:block;width:100%;height:100%;cursor:grab;';
+      // Pin pixel size explicitly so CSS 100%/100% doesn't rescale the canvas
+      renderer.domElement.style.cssText = `display:block;width:${W}px;height:${H}px;cursor:grab;max-width:100%;`;
 
       // ── Scene ────────────────────────────────────────────────────────────
       const scene = new T.Scene();

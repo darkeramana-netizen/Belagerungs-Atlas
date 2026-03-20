@@ -330,7 +330,8 @@ components:[
   ],
   wall:{h:6.0,thick:1.1}},
  // ── TENSHU: Hauptturm (7 Stockwerke, y=5.5, auf Terasse 2) ───────────────
- {type:'SQUARE_TOWER',x:0,z:0,w:4.0,d:3.5,h:15,y:5.5,
+ // w=5.0 ist ~1.9× die Eck-Yagura (side≈2.6) — dominiert das Zentrum klar
+ {type:'SQUARE_TOWER',x:0,z:0,w:5.0,d:4.5,h:17,y:5.5,
   label:'Tenshu (Hauptturm, 7 Stockwerke)',
   info:'Der Tenshu von Himeji — sieben Stockwerke, 46m Gesamthöhe. Symbol der Macht des Daimyō, sichtbar von 20km Entfernung. UNESCO-Welterbe. Überstand den 2. Weltkrieg durch reines Glück.'},
 ]},
