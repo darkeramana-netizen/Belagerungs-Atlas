@@ -52,10 +52,13 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
   body.receiveShadow = true;
   g.add(body);
 
-  // Battlements (InstancedMesh)
-  const mkM = chooseMerlonBuilder(style);
-  const merlons = mkM(roundTowerMerlonPositions(r, h), sm);
-  if (merlons) g.add(merlons);
+  // Battlements — only for 'ancient' style (open flat parapet).
+  // Roofed styles (cone, dome, pagoda) conflict visually with crenels.
+  if (style === 'ancient') {
+    const mkM = chooseMerlonBuilder(style);
+    const merlons = mkM(roundTowerMerlonPositions(r, h), sm);
+    if (merlons) g.add(merlons);
+  }
 
   // Hoarding — wooden gallery (European non-fantasy, high-garrison castles)
   if (p.hoarding && style === 'crusader') {
