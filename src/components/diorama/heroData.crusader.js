@@ -196,12 +196,12 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Gegenstueck am oestlichen Abschnitt des aeusseren Rings fuer Wachwechsel und schnelle Verstaerkung.',
       },
       {
-        type: 'GABLED_HALL', x: -8.8, z: 9.0, y: 2.04, w: 5.2, d: 2.4, h: 2.2, roofH: 1.0, slitCount: 1, doorSide: 'front', doorOffset: 0.2, rotation: -0.42, chimneyCount: 1,
+        type: 'GABLED_HALL', x: -8.8, z: 9.0, y: 2.40, w: 5.2, d: 2.4, h: 2.2, roofH: 1.0, slitCount: 1, doorSide: 'front', doorOffset: 0.2, rotation: -0.42, chimneyCount: 1,
         label: 'Stall- und Werkhaus des aeusseren Werks',
         info: 'Auch der aeussere Hof war kein leerer Schiessplatz. Kleine Stall- und Werkbauten machten den Krak im Alltag erst funktionsfaehig.',
       },
       {
-        type: 'GABLED_HALL', x: 8.8, z: 9.1, y: 2.04, w: 5.0, d: 2.3, h: 2.2, roofH: 0.95, slitCount: 1, doorSide: 'front', doorOffset: -0.2, rotation: 0.42, chimneyCount: 1,
+        type: 'GABLED_HALL', x: 8.8, z: 9.1, y: 2.40, w: 5.0, d: 2.3, h: 2.2, roofH: 0.95, slitCount: 1, doorSide: 'front', doorOffset: -0.2, rotation: 0.42, chimneyCount: 1,
         label: 'Backhaus und Vorratshaus',
         info: 'Ein kleiner Ofen- und Vorratsbau im aeusseren Werk ergaenzt den grossen Hallen- und Magazinkern der Hochburg.',
       },

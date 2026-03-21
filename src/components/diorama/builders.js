@@ -33,14 +33,14 @@ function makePolygonExtrude(points, height, scale = 1) {
 function addGabledRoof(g, w, d, h, sm, rm, opts = {}) {
   const roofH = opts.roofH || d * 0.82;
   const roofT = opts.roofT || 0.18;
-  const overhangW = opts.overhangW || 0.24;
-  const overhangD = opts.overhangD || 0.12;
+  const overhangW = opts.overhangW || 0.16;
+  const overhangD = opts.overhangD || 0.06;
   const slopeLen = Math.sqrt((d / 2) ** 2 + roofH ** 2);
   const pitchAng = Math.atan2(roofH, d / 2);
   const roofMat = rm || sm;
 
   [-1, 1].forEach(side => {
-    const slope = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW + 0.18, roofT, slopeLen + overhangD), roofMat);
+    const slope = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW, roofT, slopeLen + overhangD), roofMat);
     slope.position.set(0, h + roofH / 2, side * d / 4);
     slope.rotation.x = side * pitchAng;
     slope.castShadow = true;
@@ -48,27 +48,18 @@ function addGabledRoof(g, w, d, h, sm, rm, opts = {}) {
     g.add(slope);
   });
 
-  const ridge = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW + 0.1, roofT * 1.25, 0.22), roofMat);
+  const ridge = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW + 0.04, roofT * 1.15, 0.18), roofMat);
   ridge.position.y = h + roofH + roofT * 0.62;
   ridge.castShadow = true;
   ridge.receiveShadow = true;
   g.add(ridge);
 
   [-1, 1].forEach(endSide => {
-    const gable = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.26, roofT * 1.8), roofH + 0.02, d + overhangD + 0.08), sm);
-    gable.position.set(endSide * (w / 2 + overhangW * 0.55), h + roofH / 2, 0);
+    const gable = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.18, roofT * 1.2), roofH, d + overhangD), sm);
+    gable.position.set(endSide * (w / 2 + overhangW * 0.4), h + roofH / 2, 0);
     gable.castShadow = true;
     gable.receiveShadow = true;
     g.add(gable);
-  });
-
-  // Close tiny side gaps between slopes and gable infills on narrow halls.
-  [-1, 1].forEach(side => {
-    const seam = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW + 0.22, Math.max(0.08, roofT * 0.65), 0.10), roofMat);
-    seam.position.set(0, h + roofH * 0.52, side * (d / 2 + overhangD / 2));
-    seam.castShadow = true;
-    seam.receiveShadow = true;
-    g.add(seam);
   });
 
   return roofH;
