@@ -1,4 +1,107 @@
 export const HERO_DIORAMAS_CRUSADER = {
+  krak: {
+    style: 'crusader',
+    fidelityLabel: 'quellenbasiert',
+    historicalMode: 'surveyed',
+    sourceConfidence: 'hoch',
+    focus: { x: 0, y: 8, z: 1 },
+    cameraRadius: 44,
+    terrainModel: 'custom',
+    notes: 'Krak wird hier als Burgberg mit asymmetrischem Nordhang, massiver innerer Glacis und ansteigender Torrampe gelesen. Das Ziel ist eine glaubwuerdigere Topografie, nicht nur ein sauberer Ringplan.',
+    sources: ['Paul Deschamps, Les Chateaux des Croises', 'historische Grundrisse des Krak des Chevaliers'],
+    components: [
+      {
+        type: 'TERRAIN_STACK', x: 0, z: 1, y: 0,
+        footprint: [
+          { x: -23, z: -18 }, { x: -18, z: -22 }, { x: -5, z: -24 }, { x: 11, z: -22 }, { x: 20, z: -16 }, { x: 24, z: -3 },
+          { x: 22, z: 12 }, { x: 16, z: 21 }, { x: 2, z: 24 }, { x: -12, z: 21 }, { x: -21, z: 12 }, { x: -24, z: -2 },
+        ],
+        layers: [{ scale: 1.18, h: 1.2 }, { scale: 1.08, h: 1.2 }, { scale: 1.01, h: 1.0 }],
+        label: 'Burgberg des Krak',
+        info: 'Der Krak sitzt nicht auf flacher Ebene, sondern auf einem vorgelagerten Hoehenruecken. Das Diorama staffelt den Burgberg deshalb in unregelmaessigen Fels- und Schuttschichten.',
+      },
+      {
+        type: 'TERRAIN_STACK', x: 0, z: 1, y: 3.4,
+        footprint: [
+          { x: -14.5, z: -12.5 }, { x: -11, z: -15.5 }, { x: -2, z: -16.5 }, { x: 7.5, z: -14.8 }, { x: 12.8, z: -10.8 },
+          { x: 14.2, z: -1 }, { x: 13, z: 8.5 }, { x: 8.8, z: 13.6 }, { x: 0.4, z: 15.2 }, { x: -8.2, z: 13.7 }, { x: -13.4, z: 8.2 }, { x: -15.2, z: -0.8 },
+        ],
+        layers: [{ scale: 1.05, h: 0.9 }, { scale: 0.98, h: 0.8 }],
+        label: 'Oberes Felsplateau',
+        info: 'Auf dem angehobenen inneren Plateau sitzt der staerkste Teil des Krak. Die Hochburg erhebt sich ueber dem aeusseren Ring und zwingt Angreifer in mehrfach gebrochene Anstiege.',
+      },
+      {
+        type: 'DITCH', x: 0, z: 1, y: 3.3, rTop: 18.8, rBot: 17.2, h: 0.7,
+        label: 'Trockengraben und Zwingerzone',
+        info: 'Zwischen aeusserem und innerem Werk lag kein bequemer Hof, sondern ein kontrollierter Annaeherungsraum im Kreuzfeuer beider Ringe.',
+      },
+      {
+        type: 'GLACIS', x: 0, z: 0, y: 4.9, rTop: 11, rBot: 15, h: 3.5,
+        label: 'Glacis (Massiver Steinsockel)',
+        info: 'Das ikonischste Merkmal des Krak: ein nach aussen geneigter Sockel, ueber den der Innenring thront. Katapultsteine prallen ab, Minen finden keinen Ansatz. Dieser Sockel machte die Suedmauer nahezu unzerstoerbar.',
+      },
+      {
+        type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.4, y2: 1.5, w: 4.6, thick: 0.24,
+        label: 'Aeussere Torrampe',
+        info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
+      },
+      {
+        type: 'SLOPE_PATH', x1: 9.5, z1: 12.8, x2: 5.8, z2: 8.8, y1: 2.1, y2: 5.4, w: 2.8, thick: 0.22,
+        label: 'Gedeckte Innenrampe',
+        info: 'Nach dem aeusseren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussoeffnungen.',
+      },
+      {
+        type: 'RING', y: 4.9,
+        gate: {
+          atIndex: 4, w: 3.5, d: 3.0, h: 6.5,
+          label: 'Inneres Tor - Rampeneingang (Hochburg)',
+          info: 'Der verschlungene Eingang in den Innenhof: eine ueberdachte Rampe, die in engen Kehren nach oben fuehrt.',
+        },
+        points: [
+          { x: 0, z: 10, r: 2.3, h: 11.5, label: 'Torre Grande (Grosser Turm)', info: 'Der maechtigste Turm des Krak und letzter Rueckzugspunkt der Johanniter.' },
+          { x: -9.51, z: 3.09, r: 2.0, h: 10.0, label: 'Suedwestturm (Waechterturm)', info: 'Einer der drei massiven Suedtuerme mit senkrechten Abwurfwinkeln auf Angreifer am Mauerfuss.' },
+          { x: -5.88, z: -8.09, r: 1.5, h: 7.5, label: 'Nordwestturm (Innen)', info: 'Verbindungsturm zwischen Sued- und Nordmauer des Innenhofs.' },
+          { x: 5.88, z: -8.09, r: 1.5, h: 7.5, label: 'Nordostturm (Innen)', info: 'Ueberblickte das aeussere Ostfeld und deckte das Haupttor von oben.' },
+          { x: 9.51, z: 3.09, r: 1.9, h: 9.5, label: 'Suedostturm (Torre del Maestre)', info: 'Flankiert den Rampeneingang zum Innenhof und schliesst die starke Suedfront.' },
+        ],
+        wall: { h: 6.0, thick: 1.3 },
+      },
+      {
+        type: 'RING', y: 1.3,
+        gate: {
+          atIndex: 3, w: 5.5, d: 4.5, h: 7.5,
+          label: 'Haupttor - Befestigte Rampe (Barbakane)',
+          info: 'Der historische Eingang des Krak fuehrte ueber eine lange, ueberdachte Rampe mit mehreren Engstellen.',
+        },
+        points: [
+          { x: 0, z: -20, r: 1.3, h: 5.5, label: 'Aussenturm Nord', info: 'Beobachtungsposten fuer den Nordhang.' },
+          { x: 14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NO', info: 'Flankierungsturm fuer Kreuzfeuer zwischen Ost- und Nordmauer.' },
+          { x: 20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm Ost', info: 'Turm neben dem Haupttor mit Deckung des Torzugangs.' },
+          { x: 14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SO', info: 'Suedoestlicher Flankierungsturm des Torbereichs.' },
+          { x: 0, z: 20, r: 1.3, h: 5.5, label: 'Aussenturm Sued', info: 'Suedturm des aeusseren Rings direkt unter der Glacis-Front.' },
+          { x: -14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SW', info: 'Suedwestturm mit Sichtlinie ueber das Vorgelaende.' },
+          { x: -20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm West', info: 'Westturm, teilweise im Felsgelaende eingebettet.' },
+          { x: -14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NW', info: 'Nordwestturm zur Sicherung des kritischen Nordhangs.' },
+        ],
+        wall: { h: 3.0, thick: 0.8 },
+      },
+      {
+        type: 'SQUARE_TOWER', x: 0, z: -5.5, w: 9, d: 3.5, h: 3.2, y: 4.9, noRoof: true,
+        label: 'Konventsaal der Johanniter',
+        info: 'Der lange gotische Saal bildet das kulturelle Herz des Krak innerhalb der Hochburg.',
+      },
+      {
+        type: 'SQUARE_TOWER', x: 5.5, z: 0, w: 3.0, d: 2.5, h: 4.5, y: 4.9,
+        label: 'Johanniterkapelle',
+        info: 'Kapelle der Hospitaliter im oestlichen Innenhof mit schlichter romanisch-gotischer Formensprache.',
+      },
+      {
+        type: 'GLACIS', x: 0, z: 16, y: 1.1, rTop: 3.0, rBot: 3.8, h: 0.7,
+        label: 'Zisternenbecken (Suedring)',
+        info: 'Eine der Hauptauffangzisternen im Zwinger zwischen den beiden Mauerringen.',
+      },
+    ],
+  },
   chateau_gaillard: {
     style: 'crusader',
     fidelityLabel: 'hero-burg',
