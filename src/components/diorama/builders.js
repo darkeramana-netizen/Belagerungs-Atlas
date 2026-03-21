@@ -74,6 +74,10 @@ export function buildWall(p, sm, dm, style = 'crusader') {
 // ── ROUND TOWER ──────────────────────────────────────────────────────────
 export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
   const r = p.r || 1.2, h = p.h || 5, y = Math.max(0, p.y || 0);
+  const plinthH = p.plinthH || Math.max(0.22, h * 0.09);
+  const plinthTop = p.plinthTopScale || 1.18;
+  const plinthBot = p.plinthBottomScale || 1.22;
+  const plinthDrop = p.plinthDrop || 0;
 
   const g = new THREE.Group();
   g.position.set(p.x, y, p.z);
@@ -86,8 +90,8 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
   body.receiveShadow = true;
   g.add(body);
 
-  const plinth = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.18, r * 1.22, Math.max(0.22, h * 0.09), 18), sm);
-  plinth.position.y = Math.max(0.11, h * 0.045);
+  const plinth = new THREE.Mesh(new THREE.CylinderGeometry(r * plinthTop, r * plinthBot, plinthH, 18), sm);
+  plinth.position.y = Math.max(plinthH / 2 - plinthDrop, h * 0.045 - plinthDrop);
   plinth.castShadow = true;
   plinth.receiveShadow = true;
   g.add(plinth);
