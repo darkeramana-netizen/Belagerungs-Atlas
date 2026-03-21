@@ -53,12 +53,17 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Das ikonischste Merkmal des Krak: ein nach aussen geneigter Sockel, ueber den der Innenring thront. Katapultsteine prallen ab, Minen finden keinen Ansatz. Dieser Sockel machte die Suedmauer nahezu unzerstoerbar.',
       },
       {
+        type: 'PLATEAU', x: 0.6, z: 0.2, y: 4.86, w: 29.4, d: 24.2, h: 0.18,
+        label: 'Uebergangsring unter dem Glacis',
+        info: 'Ein flacher Uebergangsring verbindet den oberen Burgberg mit dem massiven Glacis-Sockel und schliesst die Fuge zwischen beiden Baukoerpern.',
+      },
+      {
         type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.55, y2: 2.0, w: 4.6, thick: 0.24,
         label: 'Aeussere Torrampe',
         info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
       },
       {
-        type: 'SLOPE_PATH', x1: 10.8, z1: 10.2, x2: 7.6, z2: 6.1, y1: 2.15, y2: 7.98, w: 2.0, thick: 0.14,
+        type: 'SLOPE_PATH', x1: 10.8, z1: 10.2, x2: 7.6, z2: 6.1, y1: 2.55, y2: 8.22, w: 2.35, thick: 0.28, useStone: true, sideWalls: true, railH: 0.34,
         label: 'Gedeckte Innenrampe',
         info: 'Nach dem aeusseren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussoeffnungen.',
       },
