@@ -662,6 +662,18 @@ export function buildSlopePath(p, gm) {
   mesh.receiveShadow = true;
   g.add(mesh);
 
+  if (p.sideWalls) {
+    const railH = p.railH || Math.max(0.22, thick * 1.8);
+    const railT = p.railT || 0.12;
+    [-1, 1].forEach(side => {
+      const rail = new THREE.Mesh(new THREE.BoxGeometry(len, railH, railT), gm);
+      rail.position.set(0, railH / 2 + thick * 0.2, side * (width / 2 - railT / 2));
+      rail.castShadow = true;
+      rail.receiveShadow = true;
+      g.add(rail);
+    });
+  }
+
   return g;
 }
 
@@ -905,7 +917,7 @@ export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, 
     case 'BUTTRESS_SYSTEM':  return buildButtressSystem(comp, sm, rm);
     case 'ROCK_FOUNDATION':  return buildRockFoundation(comp, gm || sm);
     case 'TERRAIN_STACK':    return buildTerrainStack(comp, gm || sm);
-    case 'SLOPE_PATH':       return buildSlopePath(comp, gm || sm);
+    case 'SLOPE_PATH':       return buildSlopePath(comp, comp.useStone ? sm : (gm || sm));
     case 'DITCH':            return buildDitch(comp, gm || sm);
     case 'WATER_PLANE':      return buildWaterPlane(comp, wm || dm || sm);
     case 'PLATEAU':          return buildPlateau(comp, gm || sm);
