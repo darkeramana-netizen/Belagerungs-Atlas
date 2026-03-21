@@ -192,8 +192,10 @@ export function getRenderer() {
     _renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: false });
     _renderer.shadowMap.enabled = true;
     _renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    _renderer.physicallyCorrectLights = true;
+    _renderer.outputColorSpace = THREE.SRGBColorSpace;
     _renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    _renderer.toneMappingExposure = 1.32;
+    _renderer.toneMappingExposure = 1.18;
   }
   return _renderer;
 }
@@ -224,7 +226,7 @@ const PALETTES = {
     stone: () => mkMasonryMat(0xc9bda6, 0x8f826d, 11),
     rock: () => mkRockMat(0x8a7a60, 0x5d4f3f, 22),
     dark: () => mkMat(0x2f251c, 0.97, 0.01, 12, 8),
-    roof: () => mkRoofMat(0x2a231d, 0x16110d, 15),
+    roof: () => mkRoofMat(0x3a332c, 0x211a15, 15),
     wood: () => mkMat(0x5a3d22, 0.9, 0.02, 19, 18),
     ground: () => mkRockMat(0x7d7158, 0x5f533e, 25),
     gate: () => mkMat(0x4a3a2a, 0.96, 0.02, 18, 12),
@@ -318,11 +320,11 @@ export function getScenePreset(style = 'crusader') {
     default:
       return {
         background: 0x0a0806,
-        fog: { color: 0x0a0806, density: 0.016 },
-        ambient: { color: 0xcfc0ab, intensity: 1.95 },
-        sun: { color: 0xfff0d8, intensity: 5.8, position: [22, 34, 14] },
-        fill: { color: 0x7f95af, intensity: 1.15, position: [-18, 12, -22] },
-        rim: { color: 0x8f7c63, intensity: 1.0, position: [4, 8, -26] },
+        fog: { color: 0x0a0806, density: 0.0135 },
+        ambient: { color: 0xd8ccba, intensity: 2.2 },
+        sun: { color: 0xffefda, intensity: 6.2, position: [22, 35, 14] },
+        fill: { color: 0x8ea2b8, intensity: 1.35, position: [-18, 12, -22] },
+        rim: { color: 0xa38966, intensity: 1.1, position: [4, 8, -26] },
       };
   }
 }

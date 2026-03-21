@@ -216,6 +216,31 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Ein kleiner Ofen- und Vorratsbau im aeusseren Werk ergaenzt den grossen Hallen- und Magazinkern der Hochburg.',
       },
       {
+        type: 'SQUARE_TOWER', x: -6.8, z: 8.1, y: 4.22, w: 0.85, d: 0.65, h: 0.42, noRoof: true,
+        label: 'Futterkisten Westhof',
+        info: 'Vorratskisten fuer Stalltiere und Marschproviant im westlichen Wirtschaftshof.',
+      },
+      {
+        type: 'SQUARE_TOWER', x: -6.2, z: 9.3, y: 4.22, w: 0.82, d: 0.62, h: 0.38, noRoof: true,
+        label: 'Werkkisten Westhof',
+        info: 'Werk- und Materialstapel fuer Reparaturen an Wehrgang und Toren.',
+      },
+      {
+        type: 'SQUARE_TOWER', x: 6.3, z: 9.4, y: 4.22, w: 0.9, d: 0.68, h: 0.42, noRoof: true,
+        label: 'Holzstapel Osthof',
+        info: 'Brennholz und Bauholz fuer Backhaus, Werkhof und winterliche Versorgung.',
+      },
+      {
+        type: 'SQUARE_TOWER', x: 6.9, z: 8.2, y: 4.22, w: 0.82, d: 0.62, h: 0.36, noRoof: true,
+        label: 'Vorratsstapel Osthof',
+        info: 'Kleiner Lagerstapel im aeußeren Hof als Teil der Alltagslogistik.',
+      },
+      {
+        type: 'GABLED_HALL', x: 0.7, z: 3.2, w: 1.9, d: 1.3, h: 1.45, y: 8.30, roofH: 0.62, doorSide: 'front', slitCount: 0, chimneyCount: 0, gableStyle: 'triangular',
+        label: 'Hofunterstand',
+        info: 'Kleiner Unterstand im inneren Hof fuer Werkzeug, Ersatzteile und Wachdienstmaterial.',
+      },
+      {
         type: 'GLACIS', x: 0, z: 16, y: 1.72, rTop: 3.0, rBot: 3.8, h: 0.7,
         label: 'Zisternenbecken (Suedring)',
         info: 'Eine der Hauptauffangzisternen im Zwinger zwischen den beiden Mauerringen.',
