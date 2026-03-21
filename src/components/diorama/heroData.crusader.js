@@ -43,9 +43,9 @@ export const HERO_DIORAMAS_CRUSADER = {
       {
         type: 'TERRAIN_STACK', x: 0.4, z: 0.1, y: 4.92,
         footprint: [
-          { x: -14.8, z: -11.8 }, { x: -11.4, z: -14.9 }, { x: -1.8, z: -16.2 }, { x: 7.8, z: -14.8 },
-          { x: 12.5, z: -10.4 }, { x: 13.7, z: -1.2 }, { x: 12.8, z: 8.2 }, { x: 8.9, z: 13.0 },
-          { x: 0.8, z: 14.6 }, { x: -7.6, z: 13.2 }, { x: -12.2, z: 8.0 }, { x: -14.8, z: -0.8 },
+          { x: -13.6, z: -10.4 }, { x: -10.4, z: -13.2 }, { x: -1.6, z: -14.4 }, { x: 6.8, z: -13.1 },
+          { x: 10.9, z: -9.1 }, { x: 11.8, z: -1.0 }, { x: 11.2, z: 7.0 }, { x: 7.8, z: 11.6 },
+          { x: 0.8, z: 12.9 }, { x: -6.8, z: 11.8 }, { x: -10.8, z: 7.0 }, { x: -13.6, z: -0.6 },
         ],
         layers: [
           { scale: 1.04, h: 0.78 },
@@ -63,7 +63,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
       },
       {
-        type: 'SLOPE_PATH', x1: 10.4, z1: 10.4, x2: 6.8, z2: 5.7, y1: 2.95, y2: 8.14, w: 2.7, thick: 0.42, useStone: true, sideWalls: true, railH: 0.42, railT: 0.16,
+        type: 'SLOPE_PATH', x1: 11.7, z1: 11.1, x2: 8.9, z2: 4.9, y1: 3.4, y2: 8.55, w: 3.2, thick: 0.58, useStone: true, sideWalls: true, railH: 0.52, railT: 0.18,
         label: 'Gedeckte Innenrampe',
         info: 'Nach dem aeusseren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussoeffnungen.',
       },
