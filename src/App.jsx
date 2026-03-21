@@ -5193,7 +5193,7 @@ function Compare({castles,init}){
                 <span style={{fontSize:"11px",color:c1.theme.accent}}>{c1.name.split(" ")[0]}</span>
               </div>
               <div style={{display:"flex",gap:"5px",alignItems:"center"}}>
-                <div style={{width:"20px",height:"2px",background:c2.theme.accent,borderRadius:"1px",borderTop:"2px dashed "+c2.theme.accent,height:"0"}}/>
+                <div style={{width:"20px",borderTop:"2px dashed "+c2.theme.accent,borderRadius:"1px",height:"0"}}/>
                 <span style={{fontSize:"11px",color:c2.theme.accent}}>{c2.name.split(" ")[0]}</span>
               </div>
             </div>
