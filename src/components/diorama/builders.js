@@ -35,6 +35,7 @@ function addGabledRoof(g, w, d, h, sm, rm, opts = {}) {
   const roofT = opts.roofT || 0.18;
   const overhangW = opts.overhangW || 0.16;
   const overhangD = opts.overhangD || 0.06;
+  const gableStyle = opts.gableStyle || 'block';
   const slopeLen = Math.sqrt((d / 2) ** 2 + roofH ** 2);
   const pitchAng = Math.atan2(roofH, d / 2);
   const roofMat = rm || sm;
@@ -54,13 +55,37 @@ function addGabledRoof(g, w, d, h, sm, rm, opts = {}) {
   ridge.receiveShadow = true;
   g.add(ridge);
 
-  [-1, 1].forEach(endSide => {
-    const gable = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.18, roofT * 1.2), roofH, d + overhangD), sm);
-    gable.position.set(endSide * (w / 2 + overhangW * 0.4), h + roofH / 2, 0);
-    gable.castShadow = true;
-    gable.receiveShadow = true;
-    g.add(gable);
-  });
+  if (gableStyle === 'triangular') {
+    const gableSpan = d + overhangD;
+    const gableT = Math.max(0.16, roofT * 1.2);
+    const triShape = new THREE.Shape();
+    triShape.moveTo(-gableSpan / 2, 0);
+    triShape.lineTo(0, roofH);
+    triShape.lineTo(gableSpan / 2, 0);
+    triShape.closePath();
+
+    [-1, 1].forEach(endSide => {
+      const triGeo = new THREE.ExtrudeGeometry(triShape, { depth: gableT, bevelEnabled: false });
+      triGeo.rotateY(Math.PI / 2);
+      const gable = new THREE.Mesh(triGeo, sm);
+      gable.position.set(
+        endSide * (w / 2 + overhangW * 0.40 - gableT * 0.5 * endSide),
+        h,
+        0,
+      );
+      gable.castShadow = true;
+      gable.receiveShadow = true;
+      g.add(gable);
+    });
+  } else {
+    [-1, 1].forEach(endSide => {
+      const gable = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.18, roofT * 1.2), roofH, d + overhangD), sm);
+      gable.position.set(endSide * (w / 2 + overhangW * 0.4), h + roofH / 2, 0);
+      gable.castShadow = true;
+      gable.receiveShadow = true;
+      g.add(gable);
+    });
+  }
 
   return roofH;
 }
@@ -314,6 +339,8 @@ export function buildGabledHall(p, sm, dm, rm) {
     roofH: p.roofH,
     roofT: p.roofT,
     overhangW: p.overhangW,
+    overhangD: p.overhangD,
+    gableStyle: p.gableStyle,
   });
 
   if (chimneyCount > 0) {

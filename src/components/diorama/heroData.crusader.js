@@ -156,17 +156,17 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Unsichtbar-stabile Trageflaeche fuer die Hofbauten, damit Hallen und Kleinobjekte sauber aufliegen.',
       },
       {
-        type: 'GABLED_HALL', x: 0.0, z: -5.5, w: 8.8, d: 3.5, h: 3.2, y: 8.34, roofH: 1.9, buttressPairs: 3, slitCount: 2, doorSide: 'front', doorW: 0.9, chimneyCount: 2,
+        type: 'GABLED_HALL', x: 0.0, z: -5.5, w: 8.8, d: 3.5, h: 3.2, y: 8.34, roofH: 1.9, buttressPairs: 3, slitCount: 2, doorSide: 'front', doorW: 0.9, chimneyCount: 2, gableStyle: 'triangular',
         label: 'Konventsaal der Johanniter',
         info: 'Der lange Saal der Johanniter bildet das zeremonielle und politische Herz der Hochburg. Ein eigener Hallenbau macht den Innenhof nun lesbarer als bewohnte Ordensburg.',
       },
       {
-        type: 'GABLED_HALL', x: 4.9, z: -0.5, w: 2.9, d: 2.4, h: 3.8, y: 8.34, roofH: 1.55, slitCount: 1, doorSide: 'front', doorOffset: -0.2, porch: true,
+        type: 'GABLED_HALL', x: 4.9, z: -0.5, w: 2.9, d: 2.4, h: 3.8, y: 8.34, roofH: 1.55, slitCount: 1, doorSide: 'front', doorOffset: -0.2, porch: true, gableStyle: 'triangular',
         label: 'Johanniterkapelle',
         info: 'Die Kapelle der Hospitaliter erscheint hier als eigener kleiner Sakralbau mit Vorbau, statt nur als austauschbarer Block im Hof zu verschwinden.',
       },
       {
-        type: 'GABLED_HALL', x: -2.8, z: 1.7, w: 3.5, d: 2.4, h: 2.5, y: 8.30, roofH: 1.15, doorSide: 'front', slitCount: 0,
+        type: 'GABLED_HALL', x: -2.8, z: 1.7, w: 3.5, d: 2.4, h: 2.5, y: 8.30, roofH: 1.15, doorSide: 'front', slitCount: 0, gableStyle: 'triangular',
         label: 'Kasernen- und Magazinbau',
         info: 'Niedriger Wirtschafts- und Magazintrakt im inneren Hof. Solche Nebengebaeude machen den Krak als bewohnte Ordensburg lesbarer und brechen die Leere im Hof.',
       },
@@ -196,12 +196,12 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Gegenstueck am oestlichen Abschnitt des aeusseren Rings fuer Wachwechsel und schnelle Verstaerkung.',
       },
       {
-        type: 'GABLED_HALL', x: -8.8, z: 9.0, y: 2.40, w: 5.2, d: 2.4, h: 2.2, roofH: 1.0, slitCount: 1, doorSide: 'front', doorOffset: 0.2, rotation: -0.42, chimneyCount: 1,
+        type: 'GABLED_HALL', x: -8.8, z: 9.0, y: 3.10, w: 5.2, d: 2.4, h: 2.2, roofH: 1.0, slitCount: 1, doorSide: 'front', doorOffset: 0.2, rotation: -0.42, chimneyCount: 1, gableStyle: 'triangular',
         label: 'Stall- und Werkhaus des aeusseren Werks',
         info: 'Auch der aeussere Hof war kein leerer Schiessplatz. Kleine Stall- und Werkbauten machten den Krak im Alltag erst funktionsfaehig.',
       },
       {
-        type: 'GABLED_HALL', x: 8.8, z: 9.1, y: 2.40, w: 5.0, d: 2.3, h: 2.2, roofH: 0.95, slitCount: 1, doorSide: 'front', doorOffset: -0.2, rotation: 0.42, chimneyCount: 1,
+        type: 'GABLED_HALL', x: 8.8, z: 9.1, y: 3.10, w: 5.0, d: 2.3, h: 2.2, roofH: 0.95, slitCount: 1, doorSide: 'front', doorOffset: -0.2, rotation: 0.42, chimneyCount: 1, gableStyle: 'triangular',
         label: 'Backhaus und Vorratshaus',
         info: 'Ein kleiner Ofen- und Vorratsbau im aeusseren Werk ergaenzt den grossen Hallen- und Magazinkern der Hochburg.',
       },
