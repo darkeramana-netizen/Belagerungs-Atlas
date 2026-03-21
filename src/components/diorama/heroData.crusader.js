@@ -58,32 +58,43 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Der Krak-Sockel wird hier nicht mehr als runder Kegel gelesen, sondern als polygonaler, an die Hochburg angepasster Steinmantel. So schliesst der Glacis sauber an den Burgberg an und traegt den inneren Ring glaubwuerdiger.',
       },
       {
-        type: 'TERRAIN_STACK', x: 0.3, z: 0.0, y: 8.02,
+        type: 'TERRAIN_STACK', x: -9.5, z: 3.1, y: 7.96,
         footprint: [
-          { x: -6.8, z: -2.0 }, { x: -5.8, z: -4.8 }, { x: -1.2, z: -6.0 }, { x: 4.8, z: -5.2 },
-          { x: 8.3, z: -2.6 }, { x: 9.2, z: 1.2 }, { x: 8.6, z: 5.4 }, { x: 5.8, z: 8.8 },
-          { x: 0.2, z: 10.1 }, { x: -5.2, z: 8.8 }, { x: -8.2, z: 5.0 }, { x: -9.0, z: 1.0 },
+          { x: -2.0, z: -1.2 }, { x: -1.2, z: -2.2 }, { x: 0.3, z: -2.4 }, { x: 1.6, z: -1.4 },
+          { x: 1.9, z: 0.3 }, { x: 1.4, z: 1.8 }, { x: -0.1, z: 2.4 }, { x: -1.7, z: 1.6 },
         ],
         layers: [
-          { scale: 1.0, h: 0.16 },
-          { scale: 0.98, h: 0.12 },
+          { scale: 1.0, h: 0.2 },
+          { scale: 0.94, h: 0.18 },
         ],
-        label: 'Oberes Tragplateau der Hochburg',
-        info: 'Flacher Tragbereich unter Ringmauer und Hofbauten, damit die Hochburg als zusammenhaengender massiver Sockel statt als schwebende Einzelform gelesen wird.',
+        label: 'Felsstuetze unter dem Suedwestturm',
+        info: 'Kleine lokale Felsstuetze direkt unter dem Waechterturm statt eines rundum sichtbaren Podests.',
       },
       {
-        type: 'TERRAIN_STACK', x: 0.2, z: 2.6, y: 8.12,
+        type: 'TERRAIN_STACK', x: 0.0, z: 9.8, y: 7.98,
         footprint: [
-          { x: -10.6, z: -0.4 }, { x: -8.4, z: -3.2 }, { x: -3.2, z: -4.2 }, { x: 3.4, z: -3.2 },
-          { x: 8.6, z: -0.4 }, { x: 10.6, z: 3.2 }, { x: 9.4, z: 7.2 }, { x: 5.6, z: 10.6 },
-          { x: 0.2, z: 11.8 }, { x: -5.2, z: 10.6 }, { x: -9.2, z: 7.0 }, { x: -10.8, z: 3.2 },
+          { x: -2.3, z: -1.5 }, { x: -1.4, z: -2.5 }, { x: 0.1, z: -2.8 }, { x: 1.8, z: -1.9 },
+          { x: 2.3, z: -0.2 }, { x: 1.8, z: 1.7 }, { x: 0.4, z: 2.7 }, { x: -1.6, z: 2.4 },
         ],
         layers: [
-          { scale: 1.0, h: 0.18 },
-          { scale: 0.97, h: 0.14 },
+          { scale: 1.0, h: 0.22 },
+          { scale: 0.95, h: 0.18 },
         ],
-        label: 'Lokaler Tragkern der Tuerme',
-        info: 'Zusätzlicher polygonaler Tragkern direkt unter den schwebenden Hochburg-Tuermen. Er stuetzt die Schwerpunkte der Tuerme, ohne wieder ein rundum sichtbares Podest zu bilden.',
+        label: 'Felsstuetze unter dem Torre Grande',
+        info: 'Lokaler Felskeil unter dem grossen Suedturm, damit die Auflage wie Teil des Berges statt wie eine Scheibe wirkt.',
+      },
+      {
+        type: 'TERRAIN_STACK', x: 9.5, z: 3.1, y: 7.96,
+        footprint: [
+          { x: -1.9, z: -1.3 }, { x: -1.0, z: -2.3 }, { x: 0.6, z: -2.5 }, { x: 1.8, z: -1.6 },
+          { x: 2.0, z: 0.1 }, { x: 1.4, z: 1.8 }, { x: -0.2, z: 2.4 }, { x: -1.7, z: 1.5 },
+        ],
+        layers: [
+          { scale: 1.0, h: 0.2 },
+          { scale: 0.94, h: 0.18 },
+        ],
+        label: 'Felsstuetze unter dem Suedostturm',
+        info: 'Lokale Bergstuetze unter der Torre del Maestre, damit der Turm sauber auf dem Glacis steht.',
       },
       {
         type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.55, y2: 2.0, w: 4.6, thick: 0.24,
@@ -91,7 +102,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
       },
       {
-        type: 'RING', y: 8.46,
+        type: 'RING', y: 8.12,
         gate: {
           atIndex: 4, w: 3.5, d: 3.0, h: 6.5,
           label: 'Inneres Tor - Rampeneingang (Hochburg)',
@@ -126,32 +137,32 @@ export const HERO_DIORAMAS_CRUSADER = {
         wall: { h: 3.0, thick: 0.8 },
       },
       {
-        type: 'SQUARE_TOWER', x: 0, z: -5.4, w: 8.6, d: 3.2, h: 3.2, y: 8.5, noRoof: true,
+        type: 'SQUARE_TOWER', x: 0, z: -5.4, w: 8.6, d: 3.2, h: 3.2, y: 8.16, noRoof: true,
         label: 'Konventsaal der Johanniter',
         info: 'Der lange gotische Saal bildet das kulturelle Herz des Krak innerhalb der Hochburg.',
       },
       {
-        type: 'SQUARE_TOWER', x: 4.9, z: -0.4, w: 2.7, d: 2.2, h: 4.1, y: 8.52,
+        type: 'SQUARE_TOWER', x: 4.9, z: -0.4, w: 2.7, d: 2.2, h: 4.1, y: 8.16,
         label: 'Johanniterkapelle',
         info: 'Kapelle der Hospitaliter im oestlichen Innenhof mit schlichter romanisch-gotischer Formensprache.',
       },
       {
-        type: 'SQUARE_TOWER', x: -2.6, z: 1.6, w: 3.2, d: 2.2, h: 2.6, y: 8.52,
+        type: 'SQUARE_TOWER', x: -2.6, z: 1.6, w: 3.2, d: 2.2, h: 2.6, y: 8.16,
         label: 'Kasernen- und Magazinbau',
         info: 'Niedriger Wirtschafts- und Magazintrakt im inneren Hof. Solche Nebengebaeude machen den Krak als bewohnte Ordensburg lesbarer und brechen die Leere im Hof.',
       },
       {
-        type: 'SQUARE_TOWER', x: 0.5, z: 0.8, w: 1.5, d: 1.5, h: 0.95, y: 8.48, noRoof: true,
+        type: 'SQUARE_TOWER', x: 0.5, z: 0.8, w: 1.5, d: 1.5, h: 0.95, y: 8.14, noRoof: true,
         label: 'Innenhof-Zisterne',
         info: 'Kleine sichtbare Hofzisterne als Erinnerung daran, dass Wasserwirtschaft im Krak ueberlebenswichtig war.',
       },
       {
-        type: 'SQUARE_TOWER', x: -1.2, z: 4.4, w: 1.2, d: 0.8, h: 0.45, y: 8.48, noRoof: true,
+        type: 'SQUARE_TOWER', x: -1.2, z: 4.4, w: 1.2, d: 0.8, h: 0.45, y: 8.14, noRoof: true,
         label: 'Lagerkisten und Vorratsstapel',
         info: 'Niedrige Vorratsstapel und Hofgut brechen die Leere im Innenbereich und lassen die Burg bewohnt wirken.',
       },
       {
-        type: 'SQUARE_TOWER', x: 1.0, z: 4.1, w: 1.0, d: 0.7, h: 0.38, y: 8.48, noRoof: true,
+        type: 'SQUARE_TOWER', x: 1.0, z: 4.1, w: 1.0, d: 0.7, h: 0.38, y: 8.14, noRoof: true,
         label: 'Werkhof',
         info: 'Kleiner Werk- und Lagerbereich im Hof vor dem inneren Mauerzug.',
       },
