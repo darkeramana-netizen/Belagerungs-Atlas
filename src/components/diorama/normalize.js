@@ -1,6 +1,7 @@
 import { generateComponents } from './generator.js';
 import { HERO_DIORAMAS } from './heroData.js';
 import { resolveStyle } from './renderer.js';
+import { enhanceComponentsForRealism, deriveFidelityLabels } from './fidelity.js';
 
 function getComponentCenter(comp) {
   if (Array.isArray(comp.points) && comp.points.length) {
@@ -43,8 +44,10 @@ function inferHistoricalMode(castle, diorama) {
 
 export function getDioramaModel(castle) {
   const diorama = { ...(castle.diorama || {}), ...(HERO_DIORAMAS[castle.id] || {}) };
-  const components = diorama.components || castle.components || generateComponents(castle);
+  const baseComponents = diorama.components || castle.components || generateComponents(castle);
   const style = diorama.style || castle.dioramaStyle || resolveStyle(castle);
+  const historicalMode = inferHistoricalMode(castle, diorama);
+  const components = enhanceComponentsForRealism(castle, baseComponents, style, historicalMode);
   const radius = components.length ? Math.max(...components.map(getComponentRadius)) : 18;
   const centroid = components.length
     ? components.reduce((acc, comp) => {
@@ -54,6 +57,14 @@ export function getDioramaModel(castle) {
       return acc;
     }, { x: 0, z: 0 })
     : { x: 0, z: 0 };
+
+  const fidelity = deriveFidelityLabels(
+    castle,
+    historicalMode,
+    components,
+    diorama.fidelityLabel,
+    diorama.sourceConfidence,
+  );
 
   return {
     id: castle.id,
@@ -66,9 +77,9 @@ export function getDioramaModel(castle) {
       z: diorama.focus?.z ?? centroid.z / Math.max(components.length, 1),
     },
     cameraRadius: diorama.cameraRadius || Math.max(28, radius * 2.45),
-    historicalMode: inferHistoricalMode(castle, diorama),
-    fidelityLabel: diorama.fidelityLabel || (castle.type === 'real' ? 'quellenbasiert' : 'stilisiert'),
-    sourceConfidence: diorama.sourceConfidence || (castle.type === 'real' ? 'mittel' : 'niedrig'),
+    historicalMode,
+    fidelityLabel: fidelity.fidelityLabel,
+    sourceConfidence: fidelity.sourceConfidence,
     notes: diorama.notes || castle.desc || '',
     sources: diorama.sources || [],
     terrainModel: diorama.terrainModel || (components.some(comp => comp.type === 'TERRAIN_STACK') ? 'custom' : 'basic'),
