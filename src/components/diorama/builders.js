@@ -30,6 +30,40 @@ function makePolygonExtrude(points, height, scale = 1) {
   return geo;
 }
 
+function addGabledRoof(g, w, d, h, sm, rm, opts = {}) {
+  const roofH = opts.roofH || d * 0.82;
+  const roofT = opts.roofT || 0.18;
+  const overhangW = opts.overhangW || 0.24;
+  const slopeLen = Math.sqrt((d / 2) ** 2 + roofH ** 2);
+  const pitchAng = Math.atan2(roofH, d / 2);
+  const roofMat = rm || sm;
+
+  [-1, 1].forEach(side => {
+    const slope = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW, roofT, slopeLen), roofMat);
+    slope.position.set(0, h + roofH / 2, side * d / 4);
+    slope.rotation.x = side * pitchAng;
+    slope.castShadow = true;
+    slope.receiveShadow = true;
+    g.add(slope);
+  });
+
+  const ridge = new THREE.Mesh(new THREE.BoxGeometry(w + overhangW + 0.1, roofT * 1.25, 0.22), roofMat);
+  ridge.position.y = h + roofH + roofT * 0.62;
+  ridge.castShadow = true;
+  ridge.receiveShadow = true;
+  g.add(ridge);
+
+  [-1, 1].forEach(endSide => {
+    const gable = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.16, roofT), roofH, d), sm);
+    gable.position.set(endSide * (w / 2 + overhangW * 0.45), h + roofH / 2, 0);
+    gable.castShadow = true;
+    gable.receiveShadow = true;
+    g.add(gable);
+  });
+
+  return roofH;
+}
+
 // ── WALL ─────────────────────────────────────────────────────────────────
 // Connects (x,z) → (x2,z2) with auto-rotated box + InstancedMesh battlements.
 export function buildWall(p, sm, dm, style = 'crusader') {
@@ -123,6 +157,10 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
     }
   }
 
+  if (p.hoarding && style !== 'japanese') {
+    g.add(buildHoarding(r * 1.02, h - 0.28, dm || sm));
+  }
+
   // Battlements — only for 'ancient' style (open flat parapet).
   // Roofed styles (cone, dome, pagoda) conflict visually with crenels.
   if (style === 'ancient') {
@@ -201,6 +239,178 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
 
 // ── GATE ─────────────────────────────────────────────────────────────────
 // Gatehouse with two round flanking towers, visible passage opening, portcullis bars.
+export function buildGabledHall(p, sm, dm, rm) {
+  const w = p.w || 6.2;
+  const d = p.d || 3.2;
+  const h = p.h || 3.0;
+  const y = Math.max(0, p.y || 0);
+  const buttressPairs = p.buttressPairs || 0;
+  const slitCount = p.slitCount || 0;
+  const doorSide = p.doorSide || 'front';
+  const doorW = p.doorW || Math.max(0.5, w * 0.1);
+  const doorH = p.doorH || Math.max(1.0, h * 0.52);
+  const chimneyCount = p.chimneyCount || 0;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  const plinth = new THREE.Mesh(new THREE.BoxGeometry(w * 1.04, Math.max(0.18, h * 0.08), d * 1.04), sm);
+  plinth.position.y = Math.max(0.09, h * 0.04);
+  plinth.castShadow = true;
+  plinth.receiveShadow = true;
+  g.add(plinth);
+
+  const body = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), sm);
+  body.position.y = h / 2 + 0.002;
+  body.castShadow = true;
+  body.receiveShadow = true;
+  g.add(body);
+
+  if (buttressPairs > 0) {
+    const step = w / (buttressPairs + 1);
+    const buttH = h * 0.7;
+    const buttW = Math.max(0.22, w * 0.04);
+    const buttD = Math.max(0.24, d * 0.12);
+    for (let bi = 0; bi < buttressPairs; bi++) {
+      const bx = -w / 2 + (bi + 1) * step;
+      [-1, 1].forEach(side => {
+        const butt = new THREE.Mesh(new THREE.BoxGeometry(buttW, buttH, buttD), sm);
+        butt.position.set(bx, buttH / 2, side * (d / 2 + buttD / 2 - 0.02));
+        butt.castShadow = true;
+        butt.receiveShadow = true;
+        g.add(butt);
+      });
+    }
+  }
+
+  if (slitCount > 0) {
+    const step = w / (slitCount + 1);
+    for (let wi = 0; wi < slitCount; wi++) {
+      const wx = -w / 2 + (wi + 1) * step;
+      [-1, 1].forEach(side => {
+        const slit = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.12, w * 0.035), h * 0.22, 0.06), dm || sm);
+        slit.position.set(wx, h * 0.56, side * (d / 2 + 0.01));
+        g.add(slit);
+      });
+    }
+  }
+
+  const door = new THREE.Mesh(new THREE.BoxGeometry(
+    doorSide === 'left' || doorSide === 'right' ? 0.07 : doorW,
+    doorH,
+    doorSide === 'left' || doorSide === 'right' ? doorW : 0.07,
+  ), dm || sm);
+  const doorOffset = p.doorOffset || 0;
+  if (doorSide === 'back') door.position.set(doorOffset, doorH / 2, -(d / 2 + 0.01));
+  else if (doorSide === 'left') door.position.set(-(w / 2 + 0.01), doorH / 2, doorOffset);
+  else if (doorSide === 'right') door.position.set(w / 2 + 0.01, doorH / 2, doorOffset);
+  else door.position.set(doorOffset, doorH / 2, d / 2 + 0.01);
+  g.add(door);
+
+  const roofH = addGabledRoof(g, w, d, h, sm, rm, {
+    roofH: p.roofH,
+    roofT: p.roofT,
+    overhangW: p.overhangW,
+  });
+
+  if (chimneyCount > 0) {
+    for (let ci = 0; ci < chimneyCount; ci++) {
+      const cx = chimneyCount === 1
+        ? w * 0.22
+        : -w * 0.22 + (ci * (w * 0.44 / Math.max(1, chimneyCount - 1)));
+      const chimney = new THREE.Mesh(new THREE.BoxGeometry(0.18, Math.max(0.6, h * 0.28), 0.18), sm);
+      chimney.position.set(cx, h + roofH * 0.6, -d * 0.12);
+      chimney.castShadow = true;
+      chimney.receiveShadow = true;
+      g.add(chimney);
+    }
+  }
+
+  if (p.porch) {
+    const porchW = p.porchW || Math.max(0.9, doorW * 1.6);
+    const porchD = p.porchD || 0.9;
+    const porchH = p.porchH || 0.7;
+    const porch = new THREE.Mesh(new THREE.BoxGeometry(porchW, porchH, porchD), sm);
+    porch.castShadow = true;
+    porch.receiveShadow = true;
+    const hood = new THREE.Mesh(new THREE.BoxGeometry(porchW + 0.08, 0.14, porchD + 0.08), rm || sm);
+    hood.castShadow = true;
+    hood.receiveShadow = true;
+
+    if (doorSide === 'back') {
+      porch.position.set(doorOffset, porchH / 2, -(d / 2 + porchD / 2));
+      hood.position.set(doorOffset, porchH + 0.07, -(d / 2 + porchD / 2));
+    } else if (doorSide === 'left') {
+      porch.rotation.y = Math.PI / 2;
+      hood.rotation.y = Math.PI / 2;
+      porch.position.set(-(w / 2 + porchD / 2), porchH / 2, doorOffset);
+      hood.position.set(-(w / 2 + porchD / 2), porchH + 0.07, doorOffset);
+    } else if (doorSide === 'right') {
+      porch.rotation.y = Math.PI / 2;
+      hood.rotation.y = Math.PI / 2;
+      porch.position.set(w / 2 + porchD / 2, porchH / 2, doorOffset);
+      hood.position.set(w / 2 + porchD / 2, porchH + 0.07, doorOffset);
+    } else {
+      porch.position.set(doorOffset, porchH / 2, d / 2 + porchD / 2);
+      hood.position.set(doorOffset, porchH + 0.07, d / 2 + porchD / 2);
+    }
+    g.add(porch);
+    g.add(hood);
+  }
+
+  return g;
+}
+
+export function buildStairway(p, sm) {
+  const w = p.w || 3.4;
+  const d = p.d || 5.0;
+  const h = p.h || 2.0;
+  const steps = Math.max(2, p.steps || 6);
+  const landingD = p.landingD || 0;
+  const cheekT = p.cheekT || 0.16;
+  const cheekH = p.cheekH || Math.max(0.32, h * 0.36);
+  const y = Math.max(0, p.y || 0);
+  const stepH = h / steps;
+  const stepD = d / steps;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  for (let si = 0; si < steps; si++) {
+    const depth = Math.max(stepD, d - si * stepD);
+    const step = new THREE.Mesh(new THREE.BoxGeometry(w, stepH, depth), sm);
+    step.position.set(0, stepH * (si + 0.5), -si * stepD / 2);
+    step.castShadow = true;
+    step.receiveShadow = true;
+    g.add(step);
+  }
+
+  if (landingD > 0) {
+    const landing = new THREE.Mesh(new THREE.BoxGeometry(w, stepH, landingD), sm);
+    landing.position.set(0, h - stepH / 2 + 0.01, -(d / 2 + landingD / 2));
+    landing.castShadow = true;
+    landing.receiveShadow = true;
+    g.add(landing);
+  }
+
+  if (p.sideWalls !== false) {
+    const fullDepth = d + landingD;
+    [-1, 1].forEach(side => {
+      const cheek = new THREE.Mesh(new THREE.BoxGeometry(cheekT, cheekH, fullDepth), sm);
+      cheek.position.set(side * (w / 2 - cheekT / 2), cheekH / 2, -landingD / 2);
+      cheek.castShadow = true;
+      cheek.receiveShadow = true;
+      g.add(cheek);
+    });
+  }
+
+  return g;
+}
+
 export function buildGate(p, sm, dm, rm, style = 'crusader') {
   const w = p.w || 4.5, d = p.d || 3.5, h = p.h || 6.0, y = Math.max(0, p.y || 0);
   const tR = d * 0.52;   // flanking tower radius
@@ -926,6 +1136,8 @@ export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, 
     case 'WALL':             return buildWall(comp, sm, dm, style);
     case 'ROUND_TOWER':      return buildRoundTower(comp, sm, dm, rm, style);
     case 'SQUARE_TOWER':     return buildSquareTower(comp, sm, dm, rm, style);
+    case 'GABLED_HALL':      return buildGabledHall(comp, sm, dm, rm);
+    case 'STAIRWAY':         return buildStairway(comp, sm);
     case 'GATE':             return buildGate(comp, sm, dm, rm, style);
     case 'ABBEY_MODULE':     return buildAbbeyModule(comp, sm, rm);
     case 'CIVILIAN_HOUSING': return buildCivilianHousing(comp, sm, rm);
