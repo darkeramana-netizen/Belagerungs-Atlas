@@ -36,7 +36,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Zwischen aeusserem und innerem Werk lag kein bequemer Hof, sondern ein kontrollierter Annaeherungsraum im Kreuzfeuer beider Ringe.',
       },
       {
-        type: 'PLATEAU', x: 0, z: 1.2, y: 1.42, w: 31.5, d: 24.5, h: 0.42,
+        type: 'PLATEAU', x: 0, z: 1.2, y: 1.52, w: 31.5, d: 24.5, h: 0.38,
         label: 'Aeusserer Hofterrassenring',
         info: 'Der Raum zwischen den Ringen war keine rohe Boeschungsflaeche. Eine lesbare Hofterrasse stabilisiert hier den Zwinger und die Bewegungsflaechen des aeusseren Werks.',
       },
@@ -46,22 +46,22 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Das ikonischste Merkmal des Krak: ein nach aussen geneigter Sockel, ueber den der Innenring thront. Katapultsteine prallen ab, Minen finden keinen Ansatz. Dieser Sockel machte die Suedmauer nahezu unzerstoerbar.',
       },
       {
-        type: 'PLATEAU', x: 0.8, z: -0.6, y: 5.08, w: 16.4, d: 13.6, h: 0.34,
+        type: 'PLATEAU', x: 0.8, z: -0.6, y: 8.42, w: 16.4, d: 13.6, h: 0.3,
         label: 'Innere Hofplatte',
         info: 'Der Innenhof der Hochburg liest sich hier bewusst als gebaute Plattform statt als ausgehhoehlte Mulde. So werden Konventsaal, Kapelle und Wehrgang klarer voneinander getrennt.',
       },
       {
-        type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.4, y2: 1.5, w: 4.6, thick: 0.24,
+        type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.55, y2: 2.0, w: 4.6, thick: 0.24,
         label: 'Aeussere Torrampe',
         info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
       },
       {
-        type: 'SLOPE_PATH', x1: 9.5, z1: 12.8, x2: 5.8, z2: 8.8, y1: 2.1, y2: 5.4, w: 2.8, thick: 0.22,
+        type: 'SLOPE_PATH', x1: 9.5, z1: 12.8, x2: 5.8, z2: 8.8, y1: 2.05, y2: 8.5, w: 2.8, thick: 0.22,
         label: 'Gedeckte Innenrampe',
         info: 'Nach dem aeusseren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussoeffnungen.',
       },
       {
-        type: 'RING', y: 4.9,
+        type: 'RING', y: 8.72,
         gate: {
           atIndex: 4, w: 3.5, d: 3.0, h: 6.5,
           label: 'Inneres Tor - Rampeneingang (Hochburg)',
@@ -77,7 +77,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         wall: { h: 6.0, thick: 1.3 },
       },
       {
-        type: 'RING', y: 1.3,
+        type: 'RING', y: 1.98,
         gate: {
           atIndex: 3, w: 5.5, d: 4.5, h: 7.5,
           label: 'Haupttor - Befestigte Rampe (Barbakane)',
@@ -96,27 +96,27 @@ export const HERO_DIORAMAS_CRUSADER = {
         wall: { h: 3.0, thick: 0.8 },
       },
       {
-        type: 'SQUARE_TOWER', x: 0, z: -5.5, w: 9, d: 3.5, h: 3.2, y: 4.9, noRoof: true,
+        type: 'SQUARE_TOWER', x: 0, z: -5.5, w: 9, d: 3.5, h: 3.2, y: 8.78, noRoof: true,
         label: 'Konventsaal der Johanniter',
         info: 'Der lange gotische Saal bildet das kulturelle Herz des Krak innerhalb der Hochburg.',
       },
       {
-        type: 'SQUARE_TOWER', x: 5.5, z: 0, w: 3.0, d: 2.5, h: 4.5, y: 4.9,
+        type: 'SQUARE_TOWER', x: 5.5, z: 0, w: 3.0, d: 2.5, h: 4.5, y: 8.78,
         label: 'Johanniterkapelle',
         info: 'Kapelle der Hospitaliter im oestlichen Innenhof mit schlichter romanisch-gotischer Formensprache.',
       },
       {
-        type: 'SQUARE_TOWER', x: -4.7, z: 3.8, w: 3.6, d: 2.2, h: 2.6, y: 5.0, noRoof: true,
+        type: 'SQUARE_TOWER', x: -3.2, z: 2.8, w: 3.8, d: 2.6, h: 2.9, y: 8.82,
         label: 'Kasernen- und Magazinbau',
         info: 'Niedriger Wirtschafts- und Magazintrakt im inneren Hof. Solche Nebengebaeude machen den Krak als bewohnte Ordensburg lesbarer und brechen die Leere im Hof.',
       },
       {
-        type: 'ROUND_TOWER', x: -7.9, z: 6.9, r: 0.82, h: 3.7, y: 1.45,
+        type: 'ROUND_TOWER', x: -9.1, z: 7.2, r: 0.88, h: 4.0, y: 2.02,
         label: 'Vorturm des Zwingers',
         info: 'Kleiner Flankierungsturm im aeusseren Werk, der den suedwestlichen Hof und den Rampenansatz lesbarer staffelt.',
       },
       {
-        type: 'GLACIS', x: 0, z: 16, y: 1.1, rTop: 3.0, rBot: 3.8, h: 0.7,
+        type: 'GLACIS', x: 0, z: 16, y: 1.72, rTop: 3.0, rBot: 3.8, h: 0.7,
         label: 'Zisternenbecken (Suedring)',
         info: 'Eine der Hauptauffangzisternen im Zwinger zwischen den beiden Mauerringen.',
       },
