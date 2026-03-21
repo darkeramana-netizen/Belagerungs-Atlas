@@ -56,75 +56,86 @@ export const CASTLES = [
  weaknesses:["Nordflankenzugang","Garnison oft 200 statt 2000","Nahrungsabhängig von außen"],
  attackTips:["Nordwall zuerst","Vollständige Einkreisung","Versorgung kappen","Brief-Fälschung!"],
  siegeCtx:"1271 — Du befehligst Baibars' 8.000 Mann. 200 erschöpfte Ritter halten die Burg.",defender:"Grandmaster Bertrand de Blanquefort",
- // ═══ KRAK DES CHEVALIERS — RING-LAYOUT ════════════════════════════════════
- // Alle Koordinaten exakt vorberechnet: x=R·sin(α), z=-R·cos(α)
- // INNER_RING: Pentagon (N=5), Radius 10, Startpunkt Süd → Torre Grande dominiert
- // OUTER_RING: Oktagon (N=8), Radius 20, Gate bei Segment 2→3 (Ostseite)
- // Mauern werden vom buildRing-System automatisch verbunden (letzter Turm → erster)
+diorama:{
+ style:'crusader',
+ fidelityLabel:'quellenbasiert',
+ historicalMode:'surveyed',
+ sourceConfidence:'hoch',
+ focus:{x:0,y:8,z:1},
+ cameraRadius:44,
+ terrainModel:'custom',
+ notes:'Krak wird hier als Burgberg mit asymmetrischem Nordhang, massiver innerer Glacis und ansteigender Torrampe gelesen. Das Ziel ist eine glaubwürdigere Topografie, nicht nur ein sauberer Ringplan.',
+ sources:['Paul Deschamps, Les Châteaux des Croisés','historische Grundrisse des Krak des Chevaliers'],
  components:[
-  // ── Glacis: angeschrägter Sockel unter dem Innenring ─────────────────────
-  {type:'GLACIS', x:0, z:0, y:0, rTop:11, rBot:15, h:3.5,
+  {type:'TERRAIN_STACK',x:0,z:1,y:0,
+   footprint:[
+    {x:-23,z:-18},{x:-18,z:-22},{x:-5,z:-24},{x:11,z:-22},{x:20,z:-16},{x:24,z:-3},
+    {x:22,z:12},{x:16,z:21},{x:2,z:24},{x:-12,z:21},{x:-21,z:12},{x:-24,z:-2}
+   ],
+   layers:[
+    {scale:1.18,h:1.2},
+    {scale:1.08,h:1.2},
+    {scale:1.01,h:1.0}
+   ],
+   label:'Burgberg des Krak',
+   info:'Der Krak sitzt nicht auf flacher Ebene, sondern auf einem vorgelagerten Höhenrücken. Das Diorama staffelt den Burgberg deshalb in unregelmäßigen Fels- und Schuttschichten.'},
+  {type:'TERRAIN_STACK',x:0,z:1,y:3.4,
+   footprint:[
+    {x:-14.5,z:-12.5},{x:-11,z:-15.5},{x:-2,z:-16.5},{x:7.5,z:-14.8},{x:12.8,z:-10.8},
+    {x:14.2,z:-1},{x:13,z:8.5},{x:8.8,z:13.6},{x:0.4,z:15.2},{x:-8.2,z:13.7},{x:-13.4,z:8.2},{x:-15.2,z:-0.8}
+   ],
+   layers:[
+    {scale:1.05,h:0.9},
+    {scale:0.98,h:0.8}
+   ],
+   label:'Oberes Felsplateau',
+   info:'Auf dem angehobenen inneren Plateau sitzt der stärkste Teil des Krak. Die Hochburg erhebt sich über dem äußeren Ring und zwingt Angreifer in mehrfach gebrochene Anstiege.'},
+  {type:'DITCH',x:0,z:1,y:3.3,rTop:18.8,rBot:17.2,h:0.7,
+   label:'Trockengraben und Zwingerzone',
+   info:'Zwischen äußerem und innerem Werk lag kein bequemer Hof, sondern ein kontrollierter Annäherungsraum im Kreuzfeuer beider Ringe.'},
+  {type:'GLACIS', x:0, z:0, y:4.9, rTop:11, rBot:15, h:3.5,
    label:'Glacis (Massiver Steinsockel)',
    info:'Das ikonischste Merkmal des Krak: ein nach außen geneigter Sockel, über den der Innenring thront. Katapultsteine prallen ab, Minen finden keinen Ansatz. Dieser Sockel machte die Südmauer nahezu unzerstörbar — nur Hunger bezwang den Krak.'},
-
-  // ── INNENRING: 5 Türme (Pentagon, R=10), auf dem Glacis (y=3.5) ─────────
-  // α = π + i·(2π/5): i=0=Süd, i=1=SW, i=2=NW, i=3=NO, i=4=SO
-  // Gate atIndex:4 = Segment SO→Süd (Torre del Maestre → Torre Grande): historischer Rampeneingang
-  {type:'RING', y:3.5,
+  {type:'SLOPE_PATH',x1:21,z1:18,x2:10.5,z2:12.2,y1:0.4,y2:1.5,w:4.6,thick:0.24,
+   label:'Äußere Torrampe',
+   info:'Der Zugang zum Krak verlief nicht frontal, sondern über eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.'},
+  {type:'SLOPE_PATH',x1:9.5,z1:12.8,x2:5.8,z2:8.8,y1:2.1,y2:5.4,w:2.8,thick:0.22,
+   label:'Gedeckte Innenrampe',
+   info:'Nach dem äußeren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussöffnungen.'},
+  {type:'RING', y:4.9,
    gate:{atIndex:4, w:3.5, d:3.0, h:6.5,
      label:'Inneres Tor – Rampeneingang (Hochburg)',
      info:'Der verschlungene Eingang in den Innenhof: eine überdachte Rampe, die in engen Kehren nach oben führt. Drei Fallgatter, enge Kurven, Pfeillöcher von oben — wer den äußeren Ring überlebt hatte, stand hier vor dem nächsten Massaker. Kein Feind hat dieses Tor je durch Sturm gebrochen.'},
    points:[
-    {x:0,    z:10,    r:2.3, h:11.5,
-     label:'Torre Grande (Großer Turm)',
-     info:'Der mächtigste Turm des Krak — dreistöckig, mit eigenem Brunnen. Letzter Rückzugspunkt der Johanniter. 1271 hielten sie ihn noch, als die äußere Mauer bereits gefallen war. Erst ein gefälschter Brief des Sultans brachte die Übergabe.'},
-    {x:-9.51,z:3.09,  r:2.0, h:10.0,
-     label:'Südwestturm (Wächterturm)',
-     info:'Einer der drei massiven Südtürme. Maschikulierungen (Gusserker) ermöglichten senkrechten Beschuss auf Angreifer am Mauerfuß — Steine, Öl und Pech.'},
-    {x:-5.88,z:-8.09, r:1.5, h:7.5,
-     label:'Nordwestturm (Innen)',
-     info:'Verbindungsturm zwischen Süd- und Nordmauer des Innenhofs — weniger exponiert, wichtig für den gedeckten Wehrgang.'},
-    {x:5.88, z:-8.09, r:1.5, h:7.5,
-     label:'Nordostturm (Innen)',
-     info:'Überblickte das äußere Ostfeld und deckte das Haupttor von oben — ideal für Bogenschützen, die Eindringlinge im Korridor beschossen.'},
-    {x:9.51, z:3.09,  r:1.9, h:9.5,
-     label:'Südostturm (Torre del Maestre)',
-     info:'Imposanter Südostturm mit Maschikulierungsreihe. Gemeinsam mit Torre Grande und Wächterturm bildete er die undurchdringliche Südfront des Innenhofs. Flankiert den Rampeneingang zum Innenhof.'},
+    {x:0,    z:10,    r:2.3, h:11.5,label:'Torre Grande (Großer Turm)',info:'Der mächtigste Turm des Krak — dreistöckig, mit eigenem Brunnen. Letzter Rückzugspunkt der Johanniter. 1271 hielten sie ihn noch, als die äußere Mauer bereits gefallen war. Erst ein gefälschter Brief des Sultans brachte die Übergabe.'},
+    {x:-9.51,z:3.09,  r:2.0, h:10.0,label:'Südwestturm (Wächterturm)',info:'Einer der drei massiven Südtürme. Maschikulierungen (Gusserker) ermöglichten senkrechten Beschuss auf Angreifer am Mauerfuß — Steine, Öl und Pech.'},
+    {x:-5.88,z:-8.09, r:1.5, h:7.5,label:'Nordwestturm (Innen)',info:'Verbindungsturm zwischen Süd- und Nordmauer des Innenhofs — weniger exponiert, wichtig für den gedeckten Wehrgang.'},
+    {x:5.88, z:-8.09, r:1.5, h:7.5,label:'Nordostturm (Innen)',info:'Überblickte das äußere Ostfeld und deckte das Haupttor von oben — ideal für Bogenschützen, die Eindringlinge im Korridor beschossen.'},
+    {x:9.51, z:3.09,  r:1.9, h:9.5,label:'Südostturm (Torre del Maestre)',info:'Imposanter Südostturm mit Maschikulierungsreihe. Gemeinsam mit Torre Grande und Wächterturm bildete er die undurchdringliche Südfront des Innenhofs. Flankiert den Rampeneingang zum Innenhof.'},
    ],
    wall:{h:6.0, thick:1.3}},
-
-  // ── AUSSENRING: 8 Türme (Oktagon, R=20), Gate bei Segment 3→4 ───────────
-  // Türme (r=1.3) sind dicker als Außenmauern (thick=0.8) → stehen an Ecken hervor
-  // Gate-Mittelpunkt zwischen Turm 3 (14.14,14.14) und Turm 4 (0,20): (7.07, 17.07)
-  // → Segment läuft SO→S, Torhaus erscheint leicht schräg (diagonal) nach SSO gerichtet
-  {type:'RING', y:0,
+  {type:'RING', y:1.3,
    gate:{atIndex:3, w:5.5, d:4.5, h:7.5,
      label:'Haupttor – Befestigte Rampe (Barbakane)',
      info:'Der historische Eingang des Krak: eine lange, überdachte Rampe von Südosten, die absichtlich durch mehrere Engstellen geführt wurde. Fallgatter, Pfeillöcher und enge Kurven machten jeden Durchbruch zum Massaker. Wer das äußere Tor überwand, stand noch lange nicht innen.'},
    points:[
-    {x:0,     z:-20,    r:1.3, h:5.5, label:'Außenturm Nord',  info:'Beobachtungsposten für den Nordhang — die einzige Seite, die flach genug für schwere Belagerungsmaschinen war.'},
-    {x:14.14, z:-14.14, r:1.3, h:5.5, label:'Außenturm NO',    info:'Flankierungsturm — ermöglichte Kreuzfeuer zwischen Ost- und Nordmauer.'},
-    {x:20,    z:0,      r:1.3, h:5.5, label:'Außenturm Ost',   info:'Turm neben dem Haupttor — deckte den Torzugang von Norden.'},
-    {x:14.14, z:14.14,  r:1.3, h:5.5, label:'Außenturm SO',    info:'Südöstlicher Flankierungsturm — sicherte den Torbereich von Süden.'},
-    {x:0,     z:20,     r:1.3, h:5.5, label:'Außenturm Süd',   info:'Südturm des äußeren Rings — liegt direkt unter der mächtigen Glacis-Front.'},
-    {x:-14.14,z:14.14,  r:1.3, h:5.5, label:'Außenturm SW',    info:'Südwestturm — Sichtlinie auf das gesamte Vorgelände Richtung Tal.'},
-    {x:-20,   z:0,      r:1.3, h:5.5, label:'Außenturm West',  info:'Westturm, in Felsgelände eingebettet — die Westseite war teilweise aus dem Fels gehauen.'},
-    {x:-14.14,z:-14.14, r:1.3, h:5.5, label:'Außenturm NW',    info:'Nordwestturm — gemeinsam mit dem Nordturm bewachte er den kritischen Nordhang.'},
+    {x:0,     z:-20,    r:1.3, h:5.5,label:'Außenturm Nord',info:'Beobachtungsposten für den Nordhang — die einzige Seite, die flach genug für schwere Belagerungsmaschinen war.'},
+    {x:14.14, z:-14.14, r:1.3, h:5.5,label:'Außenturm NO',info:'Flankierungsturm — ermöglichte Kreuzfeuer zwischen Ost- und Nordmauer.'},
+    {x:20,    z:0,      r:1.3, h:5.5,label:'Außenturm Ost',info:'Turm neben dem Haupttor — deckte den Torzugang von Norden.'},
+    {x:14.14, z:14.14,  r:1.3, h:5.5,label:'Außenturm SO',info:'Südöstlicher Flankierungsturm — sicherte den Torbereich von Süden.'},
+    {x:0,     z:20,     r:1.3, h:5.5,label:'Außenturm Süd',info:'Südturm des äußeren Rings — liegt direkt unter der mächtigen Glacis-Front.'},
+    {x:-14.14,z:14.14,  r:1.3, h:5.5,label:'Außenturm SW',info:'Südwestturm — Sichtlinie auf das gesamte Vorgelände Richtung Tal.'},
+    {x:-20,   z:0,      r:1.3, h:5.5,label:'Außenturm West',info:'Westturm, in Felsgelände eingebettet — die Westseite war teilweise aus dem Fels gehauen.'},
+    {x:-14.14,z:-14.14, r:1.3, h:5.5,label:'Außenturm NW',info:'Nordwestturm — gemeinsam mit dem Nordturm bewachte er den kritischen Nordhang.'},
    ],
    wall:{h:3.0, thick:0.8}},
-
-  // ── Konventsaal (Großer Saal, Nordteil des Innenhofs) ────────────────────
-  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:3.5, h:3.2, y:3.5, noRoof:true,
+  {type:'SQUARE_TOWER', x:0, z:-5.5, w:9, d:3.5, h:3.2, y:4.9, noRoof:true,
    label:'Konventsaal der Johanniter',
    info:'Über 36 Meter langer gotischer Saal mit Kreuzrippengewölben — das kulturelle Herz des Krak. Hier tagte der Ordensrat, wurden Verträge geschlossen und Schlachten geplant. Arabische Bogenformen an den Fenstern zeugen vom kulturellen Austausch trotz Krieg.'},
-
-  // ── Johanniterkapelle (Ostteil des Innenhofs, auf Glacis) ─────────────────
-  {type:'SQUARE_TOWER', x:5.5, z:0, w:3.0, d:2.5, h:4.5, y:3.5,
+  {type:'SQUARE_TOWER', x:5.5, z:0, w:3.0, d:2.5, h:4.5, y:4.9,
    label:'Johanniterkapelle',
    info:'Die Kapelle der Hospitaliter im östlichen Innenhof — ein schlichtes romanisch-gotisches Gebäude mit spitzbögigen Fenstern und Kreuzrippengewölbe. Täglich hörten die Ritter hier die Messe, bevor sie zu ihren Wachdiensten antraten. In ihr wurde der Orden der Johanniter täglich an seinen ursprünglichen Auftrag — Kranken- und Pilgerschutz — erinnert.'},
-
-  // ── Zisternenbecken (Zwinger, Südseite zwischen den Ringen) ───────────────
-  {type:'GLACIS', x:0, z:16, y:0, rTop:3.0, rBot:3.8, h:0.7,
+  {type:'GLACIS', x:0, z:16, y:1.1, rTop:3.0, rBot:3.8, h:0.7,
    label:'Zisternenbecken (Südring)',
    info:'Eine der Hauptauffangzisternen im Zwinger zwischen den beiden Mauerringen — gefüllt durch Dachrinnen und sorgfältig gebaute Kanäle von den Wehrgangsböden. Das ausgeklügelte Wassersystem des Krak war sein wichtigstes strategisches Geheimnis: genug Wasser für fünf Jahre, selbst bei vollständiger Belagerung. Ohne diese Zisternen hätte der Krak nie 130 Jahre uneingenommen bleiben können.'},
  ]},
@@ -140,28 +151,62 @@ export const CASTLES = [
  weaknesses:["Westlicher Geländesporn","Keine Entsatzmöglichkeit","Zu wenig Verteidiger"],
  attackTips:["Circumvallation (Belagerungsring)","Rampe am Westsporn bauen","Geduld: Jahre warten"],
  siegeCtx:"73 n.Chr. — Flavius Silva, X. Legion, 15.000 Soldaten. 960 Zeloten. Nur eine Rampe hilft.",defender:"Eleazar ben Yair",
-components:[
- // Mesa-Form: nahezu senkrechte Wände (rTop≈rBot) — deckt alle Türme bei r≤17 ab
- {type:'GLACIS',x:0,z:0,y:0,rTop:18,rBot:20,h:4.0,label:'Masada-Plateau (Tafelberg)',info:'Senkrechte Klippen auf drei Seiten — 400m Absturz ins Tote Meer. Der Berg selbst ist Masadas einzige Mauer.'},
- {type:'RING',y:4.0,squareTowers:true,
-  gate:{atIndex:8,w:2.2,d:1.8,h:3.8,label:'Westtor (Serpentinenweg)',info:'Einziger regulärer Zugang über den gewundenen Fußpfad der Westseite — zugleich die einzige Schwachstelle des Plateaus.'},
-  points:[
-   {x:0,    z:-17,  r:0.85,h:4.5,label:'Nordturm',       info:'Beobachtet das nördliche Ufer des Toten Meers und die Belagerungswerke der X. Legion.'},
-   {x:6.4,  z:-13.7,r:0.8, h:4.0,label:'Nordostturm',    info:'Flankierungsturm — antike Kasamattenmauer folgt dem Plateau-Rand.'},
-   {x:10.5, z:-5.3, r:0.8, h:4.0,label:'Ostturm Nord',   info:'Östliche Steilseite — 400m senkrechter Abfall. Hier war kein Angriff möglich.'},
-   {x:10.5, z:5.3,  r:0.8, h:4.0,label:'Ostturm Süd',    info:'Senkrechter Abfall ins Salzwasser. Die Natur ersetzte die Mauer.'},
-   {x:6.4,  z:13.7, r:0.8, h:4.0,label:'Südostturm',     info:'Südöstliche Ecke — direkter Blick auf das Tote Meer 400m tiefer.'},
-   {x:0,    z:17,   r:0.85,h:4.5,label:'Südturm',        info:'Südende des Plateaus — der schmalste und gefährdetste Punkt.'},
-   {x:-6.4, z:13.7, r:0.8, h:4.0,label:'Südwestturm',    info:'Kontrolle über den westlichen Serpentinenweg — Silvas Hauptangriffsachse.'},
-   {x:-10.5,z:5.3,  r:0.85,h:4.5,label:'Westturm Süd',   info:'Über dem westlichen Geländesporn — der Punkt den Flavius Silva anvisierte.'},
-   {x:-10.5,z:-5.3, r:0.85,h:4.5,label:'Westturm Nord',  info:'Direkt über dem Ansatzpunkt der römischen Belagerungsrampe.'},
-   {x:-6.4, z:-13.7,r:0.8, h:4.0,label:'Nordwestturm',   info:'Nordwestecke — Blick auf die komplette Circumvallation der X. Legion.'},
-  ],
-  wall:{h:3.0,thick:0.9}},
- {type:'SQUARE_TOWER',x:0,z:-12,w:5.5,d:2.5,h:2.8,y:4.0,label:'Herodianischer Nordpalast',info:'Dreistufige Palastanlage auf Felsvorsprüngen — Herodes nutzte Masada als luxuriösen Rückzugsort. Architektonisches Meisterwerk des 1. Jh. v. Chr.'},
- {type:'SQUARE_TOWER',x:-3.5,z:0,w:7,d:2,h:1.8,y:4.0,label:'Magazingebäude (Zehn Speicher)',info:'Zehn lange Lagerhäuser mit Vorräten für Jahre. 12 in den Fels gehauene Zisternen speicherten 40.000 m³ Regenwasser.'},
- {type:'GLACIS',x:-16,z:2,y:0,rTop:3,rBot:6.5,h:3.5,label:'Silvas Belagerungsrampe (Westsporn)',info:'73 n.Chr.: Flavius Silva ließ die X. Legion einen Erdwall an den westlichen Geländesporn aufschütten — die einzige Stelle wo das Plateau erreichbar war. Nach Wochen war die Rampe fertig. Masada fiel.'},
-]},
+diorama:{
+ style:'ancient',
+ fidelityLabel:'topografisch',
+ historicalMode:'surveyed',
+ sourceConfidence:'hoch',
+ focus:{x:-2,y:8,z:-1},
+ cameraRadius:42,
+ terrainModel:'custom',
+ notes:'Masada wird hier als länglicher Felsrücken mit Westsporn dargestellt, nicht als idealisierte Kreisburg.',
+ sources:['Josephus, De Bello Judaico','Yigael Yadin, Masada excavations'],
+ components:[
+  {type:'TERRAIN_STACK',x:0,z:0,y:0,
+   footprint:[
+    {x:-18.5,z:-13.8},{x:-13.5,z:-17.2},{x:-2.4,z:-18.8},{x:9.8,z:-17.1},{x:16.4,z:-12.8},
+    {x:18.2,z:-3.2},{x:17.5,z:8.8},{x:12.2,z:16.7},{x:1.2,z:18.6},{x:-10.6,z:17.1},
+    {x:-16.2,z:10.8},{x:-18.4,z:0.8}
+   ],
+   layers:[
+    {scale:1.16,h:1.5},
+    {scale:1.08,h:1.5},
+    {scale:1.02,h:1.4},
+    {scale:0.97,h:1.2},
+    {scale:0.93,h:0.8}
+   ],
+   label:'Masada-Plateau (Tafelberg)',
+   info:'Das Diorama zeigt Masada als längliches Plateau mit steilen Flanken. Die unregelmäßige Silhouette ist absichtlich gewählt, weil die eigentliche Stärke der Festung das Gelände und nicht eine perfekte Mauergeometrie war.'},
+  {type:'TERRAIN_STACK',x:-21,z:1.6,y:0,
+   footprint:[
+    {x:-2.8,z:-3.4},{x:1.8,z:-5.0},{x:5.6,z:-3.7},{x:7.2,z:0.2},{x:5.0,z:3.8},{x:0.1,z:4.8},{x:-3.6,z:2.4}
+   ],
+   layers:[
+    {scale:1.05,h:1.0},
+    {scale:0.98,h:0.9},
+    {scale:0.9,h:0.8}
+   ],
+   label:'Silvas Belagerungsrampe (Westsporn)',
+   info:'Hier setzte Flavius Silva an. Der Westsporn war die einzige Stelle, an der Römer eine Rampe bis an die Plateaukante treiben konnten.'},
+  {type:'RING',y:6.4,squareTowers:true,
+   gate:{atIndex:8,w:2.2,d:1.8,h:3.8,label:'Westtor (Serpentinenweg)',info:'Einziger regulärer Zugang über den gewundenen Fußpfad der Westseite — zugleich die einzige Schwachstelle des Plateaus.'},
+   points:[
+    {x:0,    z:-17,  r:0.85,h:4.5,label:'Nordturm',       info:'Beobachtet das nördliche Ufer des Toten Meers und die Belagerungswerke der X. Legion.'},
+    {x:6.4,  z:-13.7,r:0.8, h:4.0,label:'Nordostturm',    info:'Flankierungsturm — antike Kasamattenmauer folgt dem Plateau-Rand.'},
+    {x:10.5, z:-5.3, r:0.8, h:4.0,label:'Ostturm Nord',   info:'Östliche Steilseite — 400m senkrechter Abfall. Hier war kein Angriff möglich.'},
+    {x:10.5, z:5.3,  r:0.8, h:4.0,label:'Ostturm Süd',    info:'Senkrechter Abfall ins Salzwasser. Die Natur ersetzte die Mauer.'},
+    {x:6.4,  z:13.7, r:0.8, h:4.0,label:'Südostturm',     info:'Südöstliche Ecke — direkter Blick auf das Tote Meer 400m tiefer.'},
+    {x:0,    z:17,   r:0.85,h:4.5,label:'Südturm',        info:'Südende des Plateaus — der schmalste und gefährdetste Punkt.'},
+    {x:-6.4, z:13.7, r:0.8, h:4.0,label:'Südwestturm',    info:'Kontrolle über den westlichen Serpentinenweg — Silvas Hauptangriffsachse.'},
+    {x:-10.5,z:5.3,  r:0.85,h:4.5,label:'Westturm Süd',   info:'Über dem westlichen Geländesporn — der Punkt, den Flavius Silva anvisierte.'},
+    {x:-10.5,z:-5.3, r:0.85,h:4.5,label:'Westturm Nord',  info:'Direkt über dem Ansatzpunkt der römischen Belagerungsrampe.'},
+    {x:-6.4, z:-13.7,r:0.8, h:4.0,label:'Nordwestturm',   info:'Nordwestecke — Blick auf die komplette Circumvallation der X. Legion.'},
+   ],
+   wall:{h:3.0,thick:0.9}},
+  {type:'PLATEAU',x:1.5,z:-12.8,w:6.8,d:2.6,h:0.5,y:6.5,label:'Nordpalast-Terrasse',info:'Der Nordpalast lag terrassiert an der Felskante. Diese vorgelagerte Plattform macht den dramatischen Sitz über dem Abgrund im Diorama lesbarer.'},
+  {type:'SQUARE_TOWER',x:1.5,z:-12.8,w:5.5,d:2.5,h:2.8,y:7.0,label:'Herodianischer Nordpalast',info:'Dreistufige Palastanlage auf Felsvorsprüngen — Herodes nutzte Masada als luxuriösen Rückzugsort. Architektonisches Meisterwerk des 1. Jh. v. Chr.'},
+  {type:'SQUARE_TOWER',x:-3.5,z:0,w:7,d:2,h:1.8,y:6.4,noRoof:true,label:'Magazingebäude (Zehn Speicher)',info:'Zehn lange Lagerhäuser mit Vorräten für Jahre. 12 in den Fels gehauene Zisternen speicherten 40.000 m³ Regenwasser.'},
+ ]},
 
 {id:"carcassonne",name:"Carcassonne",sub:"Doppelmauerstadt",era:"12.–13. Jh.",year:1200,loc:"Frankreich",type:"real",epoch:"Mittelalter",region:"europa",icon:"🏯",
  theme:{bg:"#140f08",accent:"#d4a855",glow:"rgba(200,150,70,0.15)"},
@@ -222,40 +267,7 @@ components:[
  strengths:["Dreigliedrige Verteidigung","Wellenförmige Mauer (Corrugated)","Felssporposition"],
  weaknesses:["Latrinenöffnung in der Kapelle","Versorgungsrisiko","Kleine Garnison"],
  attackTips:["Spion sucht Schwachstellen","Latrinenöffnung als Eingang!","Versorgungsblockade"],
- siegeCtx:"1204 — Philipp II. gegen Gaillard. 3 Monate. Dein Spion berichtet von einer Öffnung...",defender:"Roger de Lacy",
-components:[
- {type:'RING',y:0,
-  gate:{atIndex:3,w:3.0,d:2.2,h:4.5,label:'Äußeres Vorwerk (Südtor)',info:'Südliches Eingangstor des äußeren Vorwerks — erster von drei Verteidigungsringen. Philip II. brauchte Monate nur um diesen zu überwinden.'},
-  points:[
-   {x:0,    z:3,    r:1.0,h:4.5,label:'Vorwerkturm N',  info:'Nördlicher Anschlussturm — verbindet äußeres Vorwerk mit der mittleren Enceinte.'},
-   {x:4.76, z:7,    r:1.0,h:4.0,label:'Vorwerkturm NO', info:'Flankenturm des äußeren Vorwerks.'},
-   {x:4.76, z:15,   r:1.0,h:4.0,label:'Vorwerkturm SO', info:'Südöstlicher Eckturm des äußeren Vorwerks.'},
-   {x:0,    z:19,   r:1.0,h:4.5,label:'Vorwerkturm S',  info:'Südlichster Punkt — hier lag der Zugang vom Städtchen Petit-Andelys.'},
-   {x:-4.76,z:15,   r:1.0,h:4.0,label:'Vorwerkturm SW', info:'Südwestturm des äußeren Vorwerks.'},
-   {x:-4.76,z:7,    r:1.0,h:4.0,label:'Vorwerkturm NW', info:'Nordwestturm — Anschluss an Mittelring.'},
-  ],
-  wall:{h:3.5,thick:0.8}},
- {type:'RING',y:0,
-  gate:{atIndex:0,w:3.0,d:2.2,h:5.5,label:'Mittlere Enceinte (Südtor)',info:'Das berühmte wellenförmige (corrugated) Mauerwerk — Richards Innovation. Die gebogene Mauer verdoppelte die Abwehrwinkel und eliminierte tote Winkel. Phillip II. stand hier wochenlang.'},
-  points:[
-   {x:0,    z:6,    r:1.1,h:6.0,label:'Mittlerer Ring S', info:'Südtor der mittleren Enceinte — Eingang nach dem Fall des Vorwerks.'},
-   {x:-4.28,z:1.5,  r:1.1,h:5.5,label:'Mittlerer Ring SW',info:'Wellenförmige Mauerführung — Richards corrugated wall.'},
-   {x:-2.64,z:-5.5, r:1.1,h:5.5,label:'Mittlerer Ring NW',info:'Die Latrine — ein kleines Fenster in der Kapellenmauer. Ein französischer Soldat kroch hindurch.'},
-   {x:2.64, z:-5.5, r:1.1,h:5.5,label:'Mittlerer Ring NO',info:'Nordostturm der mittleren Enceinte.'},
-   {x:4.28, z:1.5,  r:1.1,h:5.5,label:'Mittlerer Ring SO',info:'Südostturm — flankierte das Südtor.'},
-  ],
-  wall:{h:5.0,thick:1.1}},
- {type:'RING',y:0,
-  gate:{atIndex:1,w:2.8,d:2.2,h:6.5,label:'Innerer Ring (Hochburg)',info:'Der innerste Ring — Richards stärkster Abschnitt. Zylindrischer Donjon dahinter. Nach dem Fall der Latrinengalerie 1204 sofort aufgegeben.'},
-  points:[
-   {x:0,    z:-7,   r:1.2,h:7.0,label:'Hochburg N',   info:'Nordturm der Kernburg — Blick über die gesamte Anlage.'},
-   {x:4,    z:-12,  r:1.2,h:6.5,label:'Hochburg NO',  info:'Nordostturm.'},
-   {x:0,    z:-17,  r:1.2,h:6.5,label:'Hochburg S',   info:'Südtor der Kernburg — direkt am Abgrund des Felssporns.'},
-   {x:-4,   z:-12,  r:1.2,h:6.5,label:'Hochburg NW',  info:'Nordwestturm der Kernburg.'},
-  ],
-  wall:{h:6.0,thick:1.2}},
- {type:'ROUND_TOWER',x:0,z:-14,r:2.0,h:12,y:0,label:'Donjon von Château Gaillard',info:'Richards zylindrischer Donjon — letzter Rückzugspunkt. Der abgerundete Grundriss eliminierte tote Winkel vollständig. Nie durch Sturm eingenommen — fiel durch eine Toilette.'},
-]},
+ siegeCtx:"1204 — Philipp II. gegen Gaillard. 3 Monate. Dein Spion berichtet von einer Öffnung...",defender:"Roger de Lacy"},
 
 {id:"harlech",name:"Harlech Castle",sub:"Edwardianische Seefestung",era:"1283–1468",year:1400,loc:"Wales, UK",type:"real",epoch:"Hochmittelalter",region:"europa",icon:"🏴󠁧󠁢󠁷󠁬󠁳󠁿",
  theme:{bg:"#0d1015",accent:"#8899cc",glow:"rgba(100,120,180,0.15)"},
@@ -291,62 +303,7 @@ components:[
  strengths:["83 Tore = 83 Gefechte","Irrgartensystem","Psychologische Verwirrung"],
  weaknesses:["Holz = Brandgefahr","Gegen Artillerie obsolet"],
  attackTips:["Brandanschlag bei starkem Wind","Irrgarten kartieren lassen","Feuer als Massenwaffe"],
- siegeCtx:"16. Jh. — Verstärkung könnte kommen. Du hast Feuerpfeile, Karten — und Geduld.",defender:"Katsumoto Akamatsu",
-components:[
- // ── LEVEL 1: Himeyama-Hügel (stützt mittleren Ring bei y=2.8) ────────────
- // rBot=18 liegt INNEN vom äußeren Ring (r=20) → Hügel zwischen den Ringen
- // rTop=14 deckt den mittleren Ring (r=13) ab → kein Schweben
- {type:'GLACIS',x:0,z:0,y:0,rTop:14,rBot:18,h:2.8,
-  label:'Himeyama-Hügel (Terasse 1)',
-  info:'Himeji-jō thront auf dem Himeyama-Hügel. Die weiß verputzten Mauern schimmern von weitem — daher der Name Weißer Reiher. Der äußere Ring umschließt den Hügelfuß.'},
- // ── LEVEL 2: Innerer Burgberg (stützt inneren Ring bei y=5.5) ─────────────
- // rBot=10, rTop=8 deckt inneren Ring (r=7) ab → top bei y=5.5
- {type:'GLACIS',x:0,z:0,y:2.8,rTop:8,rBot:10,h:2.7,
-  label:'Innerer Burgberg (Terasse 2)',
-  info:'Höchste Terrasse des Himeyama — hier thront der Tenshu über allem. Nur wer alle 83 Tore überwindet, erreicht diesen Punkt.'},
- // ── ÄUSSERER RING: 6 Yagura (r=20, y=0, am Hügelfuß) ────────────────────
- // Reduziert von 8 auf 6 — realistischere Turmdichte für japanischen Kastelltypus
- {type:'RING',y:0,
-  gate:{atIndex:2,w:3.2,d:2.5,h:5.0,label:'Äußeres Burgtor (Hishi-no-Mon)',info:'Das erste von 83 Toren — Himeji hatte für jeden Angreifer 83 separate Gefechte vorbereitet. Kein gerades Stück, kein freies Schussfeld.'},
-  points:[
-   {x:0,     z:-20,  r:1.3,h:5.5,label:'Äußerer Yagura N', info:'Nördlicher Flankierungsyagura des äußeren Rings.'},
-   {x:17.32, z:-10,  r:1.3,h:5.5,label:'Äußerer Yagura NO',info:'Nordostturm — Irrgartenwege darunter verwirren jeden Angreifer.'},
-   {x:17.32, z:10,   r:1.3,h:5.5,label:'Äußerer Yagura SO',info:'Südostturm — flankierte den Haupteingang.'},
-   {x:0,     z:20,   r:1.3,h:5.5,label:'Äußerer Yagura S', info:'Südturm. 83 Tore — 83 Einzelgefechte.'},
-   {x:-17.32,z:10,   r:1.3,h:5.5,label:'Äußerer Yagura SW',info:'Südwestturm.'},
-   {x:-17.32,z:-10,  r:1.3,h:5.5,label:'Äußerer Yagura NW',info:'Nordwestturm — letzter äußerer Flankierungsyagura.'},
-  ],
-  wall:{h:4.0,thick:0.8}},
- // ── MITTLERER RING: 6 Yagura (r=13, y=2.8, auf Terasse 1) ────────────────
- // Reduziert von 8 auf 6 — auf dem Glacis des ersten Hügels, kein Schweben
- {type:'RING',y:2.8,
-  gate:{atIndex:2,w:2.8,d:2.2,h:5.5,label:'Mittleres Burgtor (Ni-no-Mon)',info:'Zweite Burgtor-Ebene — der Weg führt durch Kurven und Engpässe. Angreifer verloren Tempo und Orientierung gleichzeitig.'},
-  points:[
-   {x:0,     z:-13,  r:1.2,h:6.0,label:'Mittlerer Yagura N', info:'Nordturm der zweiten Umfassungsmauer.'},
-   {x:11.26, z:-6.5, r:1.2,h:6.0,label:'Mittlerer Yagura NO',info:'Nordostturm.'},
-   {x:11.26, z:6.5,  r:1.2,h:6.0,label:'Mittlerer Yagura SO',info:'Südostturm.'},
-   {x:0,     z:13,   r:1.2,h:6.0,label:'Mittlerer Yagura S', info:'Südtor der mittleren Mauer.'},
-   {x:-11.26,z:6.5,  r:1.2,h:6.0,label:'Mittlerer Yagura SW',info:'Südwestturm.'},
-   {x:-11.26,z:-6.5, r:1.2,h:6.0,label:'Mittlerer Yagura NW',info:'Nordwestturm.'},
-  ],
-  wall:{h:5.0,thick:0.9}},
- // ── INNERER RING: 4 Eckyagura (Hon-maru, r=7, y=5.5, auf Terasse 2) ──────
- // Reduziert von 6 auf 4 — Hon-maru (Hauptbezirk) mit Ecktürmen
- {type:'RING',y:5.5,
-  gate:{atIndex:1,w:2.5,d:2.0,h:6.5,label:'Innerstes Tor (San-no-Mon)',info:'Drittes und letztes Tor — hier hatten Angreifer bereits 70+ Gefechte hinter sich. Die psychologische Erschöpfung war so groß wie die physische.'},
-  points:[
-   {x:0,  z:-7,  r:1.4,h:7.5,label:'Hon-maru Yagura N',info:'Nördlicher Eckturm des Hauptbezirks.'},
-   {x:7,  z:0,   r:1.3,h:7.0,label:'Hon-maru Yagura O',info:'Ostturm — Blick über den gesamten Burghügel.'},
-   {x:0,  z:7,   r:1.3,h:7.0,label:'Hon-maru Yagura S',info:'Südturm des Hauptbezirks.'},
-   {x:-7, z:0,   r:1.3,h:7.0,label:'Hon-maru Yagura W',info:'Westturm — letzter Rückzugspunkt vor dem Tenshu.'},
-  ],
-  wall:{h:6.0,thick:1.1}},
- // ── TENSHU: Hauptturm (7 Stockwerke, y=5.5, auf Terasse 2) ───────────────
- // w=5.0 ist ~1.9× die Eck-Yagura (side≈2.6) — dominiert das Zentrum klar
- {type:'SQUARE_TOWER',x:0,z:0,w:5.0,d:4.5,h:17,y:5.5,
-  label:'Tenshu (Hauptturm, 7 Stockwerke)',
-  info:'Der Tenshu von Himeji — sieben Stockwerke, 46m Gesamthöhe. Symbol der Macht des Daimyō, sichtbar von 20km Entfernung. UNESCO-Welterbe. Überstand den 2. Weltkrieg durch reines Glück.'},
-]},
+ siegeCtx:"16. Jh. — Verstärkung könnte kommen. Du hast Feuerpfeile, Karten — und Geduld.",defender:"Katsumoto Akamatsu"},
 
 {id:"alamut",name:"Burg Alamut",sub:"Assassinenfestung",era:"1090–1256",year:1180,loc:"Alborz, Persien",type:"real",epoch:"Mittelalter",region:"nahost",icon:"🗡️",
  theme:{bg:"#0e0c08",accent:"#8866aa",glow:"rgba(120,80,150,0.15)"},
@@ -370,62 +327,7 @@ components:[
  strengths:["Dreifaches Mauersystem","Wassergraben","Griechisches Feuer","Bosporus schützt"],
  weaknesses:["Kerkaporta offen gelassen","7.000 vs. 80.000","Urbans Riesenkanone"],
  attackTips:["Kerkaporta durch Spionage lokalisieren","Riesenkanone auf Mauern","Graben füllen"],
- siegeCtx:"Mehmed II. 1453 — 80.000 vs. 7.000. Urbans Kanone schussbereit. Spion kennt das Kerkaporta.",defender:"Konstantinos XI. Palaiologos",
-components:[
- {type:'RING',y:0,squareTowers:true,
-  gate:{atIndex:1,w:2.0,d:1.5,h:3.5,label:'Kerkaporta (das vergessene Tor)',info:'DAS Tor das die Geschichte veränderte. 1453 offen gelassen — türkische Truppen strömten hindurch. 1000 Jahre Byzantinisches Reich endeten durch eine vergessene Tür.'},
-  points:[
-   {x:0,   z:-22,  r:0.8,h:3.2,label:'Proteichisma N (Vormaer)',       info:'Äußerste Mauer: die niedrige Proteichisma als erste Abwehrlinie. Davor lag ein 18m breiter und 6m tiefer Graben.'},
-   {x:2.6, z:-16,  r:0.8,h:3.2,label:'Proteichisma NNO',               info:'Türme der Proteichisma — eng gereiht, um den Peribolos (Zwinger) zu überwachen.'},
-   {x:3,   z:-8,   r:0.8,h:3.2,label:'Proteichisma Mitte-N',           info:'Mittlerer Abschnitt der Proteichisma.'},
-   {x:3,   z:0,    r:0.8,h:3.2,label:'Proteichisma Mitte',             info:'Zentraler Abschnitt der Landmauer — hier konzentrierten sich Mehmeds Angriffe.'},
-   {x:3,   z:8,    r:0.8,h:3.2,label:'Proteichisma Mitte-S',           info:'Südlicher Mittelteil.'},
-   {x:2.6, z:16,   r:0.8,h:3.2,label:'Proteichisma SSO',               info:'Südlicher Abschnitt der äußeren Vormauer.'},
-   {x:0,   z:22,   r:0.8,h:3.2,label:'Proteichisma S (Marmara-Ende)',  info:'Südende der Landmauern — hier treffen sie auf die Seemauer am Marmarameer.'},
-   {x:-2.6,z:16,   r:0.8,h:3.2,label:'Proteichisma SSW',               info:'Südwestabschnitt.'},
-   {x:-3,  z:8,    r:0.8,h:3.2,label:'Proteichisma W-S',               info:'Westlicher Südteil — dem Angriffsfeld zugewandt.'},
-   {x:-3,  z:0,    r:0.8,h:3.2,label:'Proteichisma W-Mitte',           info:'Westmitte.'},
-   {x:-3,  z:-8,   r:0.8,h:3.2,label:'Proteichisma W-N',               info:'Westnordteil.'},
-   {x:-2.6,z:-16,  r:0.8,h:3.2,label:'Proteichisma NNW',               info:'Nordwestabschnitt — nahe Kerkaporta.'},
-  ],
-  wall:{h:2.5,thick:0.6}},
- {type:'RING',y:0,squareTowers:true,
-  gate:{atIndex:3,w:3.0,d:2.2,h:6.0,label:'Mittlere Mauer (Mittleres Tor)',info:'Zweite Mauerlinie — Teil des dreifachen Mauerwerks. Höher als die Proteichisma, bewacht den Peribolos (Zwinger zwischen den Mauern).'},
-  points:[
-   {x:0,   z:-20,  r:1.0,h:5.5,label:'Mittelmauer N',      info:'Nördlicher Turm der mittleren Mauerlinie.'},
-   {x:4,   z:-14,  r:1.0,h:5.5,label:'Mittelmauer NNO',    info:''},
-   {x:5,   z:-6,   r:1.0,h:5.5,label:'Mittelmauer NO',     info:''},
-   {x:5,   z:0,    r:1.0,h:5.5,label:'Mittelmauer O-Mitte',info:'Zentrales Segment der mittleren Mauer.'},
-   {x:5,   z:6,    r:1.0,h:5.5,label:'Mittelmauer SO',     info:''},
-   {x:4,   z:14,   r:1.0,h:5.5,label:'Mittelmauer SSO',    info:''},
-   {x:0,   z:20,   r:1.0,h:5.5,label:'Mittelmauer S',      info:'Südende der mittleren Mauer.'},
-   {x:-4,  z:14,   r:1.0,h:5.5,label:'Mittelmauer SSW',    info:''},
-   {x:-5,  z:6,    r:1.0,h:5.5,label:'Mittelmauer SW',     info:''},
-   {x:-5,  z:0,    r:1.0,h:5.5,label:'Mittelmauer W-Mitte',info:''},
-   {x:-5,  z:-6,   r:1.0,h:5.5,label:'Mittelmauer NW',     info:''},
-   {x:-4,  z:-14,  r:1.0,h:5.5,label:'Mittelmauer NNW',    info:'Nahe dem Kerkaporta-Bereich.'},
-  ],
-  wall:{h:5.0,thick:0.8}},
- {type:'RING',y:0,squareTowers:true,
-  gate:{atIndex:4,w:4.0,d:3.0,h:10.0,label:'Innere Hauptmauer (Großes Stadttor)',info:'Die eigentliche Theodosianische Hauptmauer — fast 12m hoch, 6m dick, mit 96 Türmen. Hielt 29 Belagerungen stand. Gefallen 1453 durch Urbans Riesenkanone und die vergessene Kerkaporta.'},
-  points:[
-   {x:0,   z:-18,  r:1.4,h:9.0, label:'Hauptmauer N',       info:'Nördlichster Turm der Hauptmauer — Blachernae-Abschnitt. Hier war die Mauer am schwächsten (neuere Bauphase).'},
-   {x:5.5, z:-12,  r:1.4,h:9.5, label:'Hauptmauer NNO',     info:'Turm der Hauptmauer.'},
-   {x:7,   z:-4,   r:1.4,h:10,  label:'Hauptmauer NO',      info:'Dieser Abschnitt wurde von Urbans Kanone beschossen.'},
-   {x:7,   z:0,    r:1.4,h:10,  label:'Hauptmauer O-Mitte', info:'Mesoteichion — das kritische Mittelstück. Hier brachen die Osmanen 1453 durch.'},
-   {x:7,   z:4,    r:1.4,h:10,  label:'Hauptmauer SO',      info:'Südöstlicher Abschnitt des Mesoteichion.'},
-   {x:5.5, z:12,   r:1.4,h:9.5, label:'Hauptmauer SSO',     info:''},
-   {x:0,   z:18,   r:1.4,h:9.0, label:'Hauptmauer S',       info:'Südende der Theodosianischen Mauer — Übergang zur Seemauer am Marmarameer.'},
-   {x:-5.5,z:12,   r:1.4,h:9.5, label:'Hauptmauer SSW',     info:''},
-   {x:-7,  z:4,    r:1.4,h:10,  label:'Hauptmauer SW',      info:''},
-   {x:-7,  z:0,    r:1.4,h:10,  label:'Hauptmauer W-Mitte', info:''},
-   {x:-7,  z:-4,   r:1.4,h:10,  label:'Hauptmauer NW',      info:''},
-   {x:-5.5,z:-12,  r:1.4,h:9.5, label:'Hauptmauer NNW',     info:'Blachernae-Abschnitt — schwächste Stelle der Hauptmauer, direkt neben Kerkaporta.'},
-   {x:-2,  z:-16,  r:1.6,h:11,  label:'Blachernae-Palast-Turm',info:'Sonderturm des Blachernae-Kaiserpalastes — kaiserliche Residenz der letzten Byzantiner.'},
-   {x:2,   z:-16,  r:1.4,h:9.5, label:'Hauptmauer NNO 2',   info:''},
-  ],
-  wall:{h:8.5,thick:1.5}},
-]},
+ siegeCtx:"Mehmed II. 1453 — 80.000 vs. 7.000. Urbans Kanone schussbereit. Spion kennt das Kerkaporta.",defender:"Konstantinos XI. Palaiologos"},
 
 {id:"coucy",name:"Château de Coucy",sub:"Größter Donjon Europas",era:"1225–1917",year:1300,loc:"Aisne, Frankreich",type:"real",epoch:"Hochmittelalter",region:"europa",icon:"🗼",
  theme:{bg:"#10100c",accent:"#aa9955",glow:"rgba(160,140,70,0.15)"},

@@ -8,6 +8,28 @@ import {
 import { buildRoofForStyle } from './roofs.js';
 import { buildHoarding, buildOriel } from './details.js';
 
+function createFootprintShape(points, scale = 1) {
+  const shape = new THREE.Shape();
+  points.forEach((pt, idx) => {
+    const x = (pt.x || 0) * scale;
+    const z = -(pt.z || 0) * scale;
+    if (idx === 0) shape.moveTo(x, z);
+    else shape.lineTo(x, z);
+  });
+  shape.closePath();
+  return shape;
+}
+
+function makePolygonExtrude(points, height, scale = 1) {
+  const geo = new THREE.ExtrudeGeometry(createFootprintShape(points, scale), {
+    depth: height,
+    bevelEnabled: false,
+  });
+  geo.rotateX(-Math.PI / 2);
+  geo.computeVertexNormals();
+  return geo;
+}
+
 // ── WALL ─────────────────────────────────────────────────────────────────
 // Connects (x,z) → (x2,z2) with auto-rotated box + InstancedMesh battlements.
 export function buildWall(p, sm, dm, style = 'crusader') {
@@ -519,6 +541,109 @@ export function buildRockFoundation(p, gm) {
   return g;
 }
 
+// —— TERRAIN STACK ————————————————————————————————————————————————————————————————
+// Stacks several irregular polygon slabs to approximate mesas, ridges and cliff belts.
+export function buildTerrainStack(p, gm) {
+  const layers = p.layers || [];
+  const footprint = p.footprint || p.points || [];
+  const y = Math.max(0, p.y || 0);
+  if (!footprint.length || !layers.length) return null;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  let currentY = 0;
+  layers.forEach(layer => {
+    const h = layer.h || layer.height || 1;
+    const mesh = new THREE.Mesh(
+      makePolygonExtrude(footprint, h, layer.scale || 1),
+      gm,
+    );
+    mesh.position.y = currentY;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    g.add(mesh);
+    currentY += h;
+  });
+
+  return g;
+}
+
+// —— SLOPE PATH ————————————————————————————————————————————————————————————————
+// A simple sloped road or ramp between two elevations, useful for gate approaches.
+export function buildSlopePath(p, gm) {
+  const x1 = p.x1 ?? 0;
+  const z1 = p.z1 ?? 0;
+  const x2 = p.x2 ?? 0;
+  const z2 = p.z2 ?? 0;
+  const y1 = Math.max(0, p.y1 || 0);
+  const y2 = Math.max(0, p.y2 || 0);
+  const width = p.w || 2.2;
+  const thick = p.thick || 0.18;
+  const dx = x2 - x1;
+  const dz = z2 - z1;
+  const len = Math.sqrt(dx * dx + dz * dz);
+  if (len < 0.2) return null;
+
+  const g = new THREE.Group();
+  g.position.set((x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2);
+  g.rotation.y = Math.atan2(-dz, dx);
+  g.rotation.z = -Math.atan2(y2 - y1, len);
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(len, thick, width), gm);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  g.add(mesh);
+
+  return g;
+}
+
+// —— DITCH ———————————————————————————————————————————————————————————————————————
+// Visual moat / ditch / cut in front of walls; represented as a low dark trench.
+export function buildDitch(p, gm) {
+  const rTop = p.rTop || 8;
+  const rBot = p.rBot || 6.8;
+  const h = p.h || 0.9;
+  const segs = p.segs || 32;
+  const y = Math.max(0, p.y || 0);
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, segs, 1, true), gm);
+  mesh.position.y = -h / 2 + 0.04;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  g.add(mesh);
+
+  return g;
+}
+
+// —— WATER PLANE ————————————————————————————————————————————————————————————————
+// Simple water surface for harbors, estuaries and moats.
+export function buildWaterPlane(p, wm) {
+  const w = p.w || 20;
+  const d = p.d || 12;
+  const y = p.y || 0;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, d, 1, 1), wm);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.receiveShadow = true;
+  g.add(mesh);
+
+  return g;
+}
+
 // ── PLATEAU ──────────────────────────────────────────────────────────────
 // Flat stone terrace / abbey platform — solid rectangular block, no battlements,
 // no roof. Used as the foundation platform that buildings sit on top of.
@@ -659,7 +784,7 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
 
 // ── Component dispatcher ──────────────────────────────────────────────────
 // gm (rock/ground material) is used for GLACIS; falls back to sm if not provided.
-export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null) {
+export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, wm = null) {
   switch (comp.type) {
     case 'WALL':             return buildWall(comp, sm, dm, style);
     case 'ROUND_TOWER':      return buildRoundTower(comp, sm, dm, rm, style);
@@ -669,6 +794,10 @@ export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null) 
     case 'CIVILIAN_HOUSING': return buildCivilianHousing(comp, sm, rm);
     case 'BUTTRESS_SYSTEM':  return buildButtressSystem(comp, sm, rm);
     case 'ROCK_FOUNDATION':  return buildRockFoundation(comp, gm || sm);
+    case 'TERRAIN_STACK':    return buildTerrainStack(comp, gm || sm);
+    case 'SLOPE_PATH':       return buildSlopePath(comp, gm || sm);
+    case 'DITCH':            return buildDitch(comp, gm || sm);
+    case 'WATER_PLANE':      return buildWaterPlane(comp, wm || dm || sm);
     case 'PLATEAU':          return buildPlateau(comp, gm || sm);
     case 'GLACIS':           return buildGlacis(comp, gm || sm);
     case 'RING':             return buildRing(comp, sm, dm, rm, style);

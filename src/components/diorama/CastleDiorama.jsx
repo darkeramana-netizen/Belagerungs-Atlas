@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import { getRenderer, getMaterials, resolveStyle } from './renderer.js';
+import { getRenderer, getMaterials, getScenePreset, resolveStyle } from './renderer.js';
 import { buildComponent } from './builders.js';
 import { generateComponents } from './generator.js';
+import { getDioramaModel } from './normalize.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -13,6 +14,7 @@ export default function CastleDiorama({ castle }) {
   const hoverRef = useRef(null); hoverRef.current = setHover;
 
   const ac = castle.theme?.accent || '#c9a84c';
+  const model = useMemo(() => getDioramaModel(castle), [castle]);
 
   useEffect(() => {
     let animId;
@@ -36,15 +38,16 @@ export default function CastleDiorama({ castle }) {
 
       // ── Scene ────────────────────────────────────────────────────────────
       const scene = new T.Scene();
-      scene.background = new T.Color(0x0c0a07);
-      scene.fog = new T.FogExp2(0x0c0a07, 0.016);
 
       // ── Camera ───────────────────────────────────────────────────────────
       const camera = new T.PerspectiveCamera(52, W / H, 0.1, 200);
 
       // ── Materials (style-aware palette) ─────────────────────────────────
-      const style = resolveStyle(castle);
+      const style = model.style || resolveStyle(castle);
       const mats  = getMaterials(style);
+      const scenePreset = getScenePreset(style);
+      scene.background = new T.Color(scenePreset.background);
+      scene.fog = new T.FogExp2(scenePreset.fog.color, scenePreset.fog.density);
 
       // ── Ground disc ──────────────────────────────────────────────────────
       const gnd = new T.Mesh(new T.CircleGeometry(55, 48), mats.ground);
@@ -54,10 +57,10 @@ export default function CastleDiorama({ castle }) {
       scene.add(gnd);
 
       // ── Lighting ─────────────────────────────────────────────────────────
-      scene.add(new T.AmbientLight(0xc8b89a, 2.8));
+      scene.add(new T.AmbientLight(scenePreset.ambient.color, scenePreset.ambient.intensity));
 
-      const sun  = new T.DirectionalLight(0xfff8e8, 5.5);
-      sun.position.set(22, 32, 14);
+      const sun  = new T.DirectionalLight(scenePreset.sun.color, scenePreset.sun.intensity);
+      sun.position.set(...scenePreset.sun.position);
       sun.castShadow = true;
       sun.shadow.mapSize.set(2048, 2048);
       sun.shadow.camera.near = 1;
@@ -66,9 +69,13 @@ export default function CastleDiorama({ castle }) {
       sun.shadow.camera.top   =  40; sun.shadow.camera.bottom = -40;
       scene.add(sun);
 
-      const fill = new T.DirectionalLight(0x9ab0cc, 1.8);
-      fill.position.set(-18, 12, -22);
+      const fill = new T.DirectionalLight(scenePreset.fill.color, scenePreset.fill.intensity);
+      fill.position.set(...scenePreset.fill.position);
       scene.add(fill);
+
+      const rim = new T.DirectionalLight(scenePreset.rim.color, scenePreset.rim.intensity);
+      rim.position.set(...scenePreset.rim.position);
+      scene.add(rim);
 
       // ── Anti-gravity: ensure no object sinks below the ground plane ──────
       function snapToGround(obj) {
@@ -77,11 +84,11 @@ export default function CastleDiorama({ castle }) {
       }
 
       // ── Build castle ─────────────────────────────────────────────────────
-      const components = castle.components || generateComponents(castle);
+      const components = model.components || generateComponents(castle);
       const clickables  = [];
 
       components.forEach(comp => {
-        const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock);
+        const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock, mats.water);
         if (!obj) return;
         snapToGround(obj);
         scene.add(obj);
@@ -96,7 +103,7 @@ export default function CastleDiorama({ castle }) {
 
       // ── Rocky plateau for extreme-position castles ────────────────────────
       const posR = castle.ratings?.position || 50;
-      if (posR >= 90 && castle.type !== 'fantasy') {
+      if (model.terrainModel !== 'custom' && posR >= 90 && castle.type !== 'fantasy') {
         const plateauR = maxRingR > 0 ? maxRingR + 3 : 18;
         const mesaH = 3.5;
         const mesa = new T.Mesh(
@@ -110,8 +117,12 @@ export default function CastleDiorama({ castle }) {
       }
 
       let theta = Math.PI * 0.85, phi = 0.78;
-      let camR  = maxRingR > 0 ? Math.max(26, maxRingR * 2.4) : (castle.components ? 32 : 26);
-      const tgt = new T.Vector3(0, maxRingR > 12 ? 8 : 4, 0);
+      let camR  = model.cameraRadius || (maxRingR > 0 ? Math.max(26, maxRingR * 2.4) : (castle.components ? 32 : 26));
+      const tgt = new T.Vector3(
+        model.focus?.x || 0,
+        model.focus?.y || (maxRingR > 12 ? 8 : 4),
+        model.focus?.z || 0,
+      );
 
       function syncCam() {
         camera.position.set(
@@ -275,7 +286,18 @@ export default function CastleDiorama({ castle }) {
       console.error('CastleDiorama error:', castle.id, e);
       setReady(true);
     }
-  }, [castle.id]);
+  }, [
+    castle.id,
+    castle.type,
+    castle.ratings?.position,
+    model.cameraRadius,
+    model.components,
+    model.focus?.x,
+    model.focus?.y,
+    model.focus?.z,
+    model.style,
+    model.terrainModel,
+  ]);
 
   return (
     <div style={{ width: '100%' }}>
@@ -338,6 +360,33 @@ export default function CastleDiorama({ castle }) {
           letterSpacing: '1.5px', pointerEvents: 'none', textTransform: 'uppercase',
         }}>
           🏰 {castle.name.slice(0, 26)}
+        </div>
+
+        <div style={{
+          position: 'absolute', top: '8px', right: '10px',
+          display: 'flex', gap: '6px', alignItems: 'center',
+          fontSize: '9px', color: '#f0ddbc',
+          pointerEvents: 'none',
+        }}>
+          <span style={{
+            padding: '4px 6px',
+            borderRadius: '999px',
+            background: 'rgba(15,11,7,0.76)',
+            border: `1px solid ${ac}33`,
+            textTransform: 'uppercase',
+            letterSpacing: '0.8px',
+          }}>
+            {model.fidelityLabel}
+          </span>
+          <span style={{
+            padding: '4px 6px',
+            borderRadius: '999px',
+            background: 'rgba(15,11,7,0.76)',
+            color: '#c6b28a',
+            letterSpacing: '0.6px',
+          }}>
+            Quelle: {model.sourceConfidence}
+          </span>
         </div>
       </div>
 
