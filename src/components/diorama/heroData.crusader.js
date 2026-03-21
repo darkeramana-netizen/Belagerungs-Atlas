@@ -60,14 +60,13 @@ export const HERO_DIORAMAS_CRUSADER = {
       {
         type: 'TERRAIN_STACK', x: 0.3, z: 0.0, y: 8.02,
         footprint: [
-          { x: -12.2, z: -9.8 }, { x: -9.4, z: -12.6 }, { x: -1.1, z: -13.2 }, { x: 6.6, z: -12.0 },
-          { x: 11.0, z: -7.8 }, { x: 12.0, z: -0.6 }, { x: 10.8, z: 7.2 }, { x: 7.5, z: 11.2 },
-          { x: 0.4, z: 12.5 }, { x: -6.8, z: 11.2 }, { x: -10.6, z: 6.8 }, { x: -12.0, z: -0.3 },
+          { x: -10.0, z: -8.0 }, { x: -7.6, z: -10.0 }, { x: -0.8, z: -10.6 }, { x: 5.6, z: -9.7 },
+          { x: 8.9, z: -6.5 }, { x: 9.7, z: -0.5 }, { x: 8.7, z: 5.8 }, { x: 6.1, z: 8.9 },
+          { x: 0.4, z: 9.8 }, { x: -5.4, z: 8.9 }, { x: -8.5, z: 5.4 }, { x: -9.8, z: -0.2 },
         ],
         layers: [
-          { scale: 1.06, h: 0.24 },
-          { scale: 1.02, h: 0.2 },
-          { scale: 0.99, h: 0.16 },
+          { scale: 1.0, h: 0.14 },
+          { scale: 0.98, h: 0.1 },
         ],
         label: 'Oberes Tragplateau der Hochburg',
         info: 'Flacher Tragbereich unter Ringmauer und Hofbauten, damit die Hochburg als zusammenhaengender massiver Sockel statt als schwebende Einzelform gelesen wird.',
@@ -83,7 +82,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Nach dem aeusseren Tor begann erst der eigentliche Zwangsweg: eine gedeckte, enge Rampe mit Kehren, Fallgittern und Schussoeffnungen.',
       },
       {
-        type: 'RING', y: 8.42,
+        type: 'RING', y: 8.3,
         gate: {
           atIndex: 4, w: 3.5, d: 3.0, h: 6.5,
           label: 'Inneres Tor - Rampeneingang (Hochburg)',
@@ -118,32 +117,32 @@ export const HERO_DIORAMAS_CRUSADER = {
         wall: { h: 3.0, thick: 0.8 },
       },
       {
-        type: 'SQUARE_TOWER', x: 0, z: -5.4, w: 8.6, d: 3.2, h: 3.2, y: 8.46, noRoof: true,
+        type: 'SQUARE_TOWER', x: 0, z: -5.4, w: 8.6, d: 3.2, h: 3.2, y: 8.34, noRoof: true,
         label: 'Konventsaal der Johanniter',
         info: 'Der lange gotische Saal bildet das kulturelle Herz des Krak innerhalb der Hochburg.',
       },
       {
-        type: 'SQUARE_TOWER', x: 4.9, z: -0.4, w: 2.7, d: 2.2, h: 4.1, y: 8.48,
+        type: 'SQUARE_TOWER', x: 4.9, z: -0.4, w: 2.7, d: 2.2, h: 4.1, y: 8.36,
         label: 'Johanniterkapelle',
         info: 'Kapelle der Hospitaliter im oestlichen Innenhof mit schlichter romanisch-gotischer Formensprache.',
       },
       {
-        type: 'SQUARE_TOWER', x: -2.6, z: 1.6, w: 3.2, d: 2.2, h: 2.6, y: 8.48,
+        type: 'SQUARE_TOWER', x: -2.6, z: 1.6, w: 3.2, d: 2.2, h: 2.6, y: 8.36,
         label: 'Kasernen- und Magazinbau',
         info: 'Niedriger Wirtschafts- und Magazintrakt im inneren Hof. Solche Nebengebaeude machen den Krak als bewohnte Ordensburg lesbarer und brechen die Leere im Hof.',
       },
       {
-        type: 'SQUARE_TOWER', x: 0.5, z: 0.8, w: 1.5, d: 1.5, h: 0.95, y: 8.44, noRoof: true,
+        type: 'SQUARE_TOWER', x: 0.5, z: 0.8, w: 1.5, d: 1.5, h: 0.95, y: 8.32, noRoof: true,
         label: 'Innenhof-Zisterne',
         info: 'Kleine sichtbare Hofzisterne als Erinnerung daran, dass Wasserwirtschaft im Krak ueberlebenswichtig war.',
       },
       {
-        type: 'SQUARE_TOWER', x: -1.2, z: 4.4, w: 1.2, d: 0.8, h: 0.45, y: 8.44, noRoof: true,
+        type: 'SQUARE_TOWER', x: -1.2, z: 4.4, w: 1.2, d: 0.8, h: 0.45, y: 8.32, noRoof: true,
         label: 'Lagerkisten und Vorratsstapel',
         info: 'Niedrige Vorratsstapel und Hofgut brechen die Leere im Innenbereich und lassen die Burg bewohnt wirken.',
       },
       {
-        type: 'SQUARE_TOWER', x: 1.0, z: 4.1, w: 1.0, d: 0.7, h: 0.38, y: 8.44, noRoof: true,
+        type: 'SQUARE_TOWER', x: 1.0, z: 4.1, w: 1.0, d: 0.7, h: 0.38, y: 8.32, noRoof: true,
         label: 'Werkhof',
         info: 'Kleiner Werk- und Lagerbereich im Hof vor dem inneren Mauerzug.',
       },
