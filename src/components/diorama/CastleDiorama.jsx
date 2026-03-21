@@ -91,6 +91,9 @@ export default function CastleDiorama({ castle }) {
         const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock, mats.water);
         if (!obj) return;
         snapToGround(obj);
+        if (!['TERRAIN_STACK', 'ROCK_FOUNDATION', 'PLATEAU', 'GLACIS', 'DITCH', 'WATER_PLANE', 'SLOPE_PATH'].includes(comp.type)) {
+          obj.position.y += 0.04;
+        }
         scene.add(obj);
         clickables.push(obj);
       });

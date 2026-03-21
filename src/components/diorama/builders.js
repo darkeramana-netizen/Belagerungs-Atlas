@@ -679,11 +679,17 @@ export function buildDitch(p, gm) {
   if (p.rotation) g.rotation.y = p.rotation;
   g.userData = { label: p.label || '', info: p.info || '' };
 
-  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, segs, 1, true), gm);
-  mesh.position.y = -h / 2 + 0.04;
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBot, h, segs), gm);
+  mesh.position.y = -h / 2 + 0.03;
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   g.add(mesh);
+
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(rTop * 1.01, rTop * 1.02, 0.08, segs), gm);
+  rim.position.y = 0.01;
+  rim.castShadow = true;
+  rim.receiveShadow = true;
+  g.add(rim);
 
   return g;
 }

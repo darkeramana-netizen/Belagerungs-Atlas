@@ -36,9 +36,19 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Zwischen aeusserem und innerem Werk lag kein bequemer Hof, sondern ein kontrollierter Annaeherungsraum im Kreuzfeuer beider Ringe.',
       },
       {
+        type: 'PLATEAU', x: 0, z: 1.2, y: 1.42, w: 31.5, d: 24.5, h: 0.42,
+        label: 'Aeusserer Hofterrassenring',
+        info: 'Der Raum zwischen den Ringen war keine rohe Boeschungsflaeche. Eine lesbare Hofterrasse stabilisiert hier den Zwinger und die Bewegungsflaechen des aeusseren Werks.',
+      },
+      {
         type: 'GLACIS', x: 0, z: 0, y: 4.9, rTop: 11, rBot: 15, h: 3.5,
         label: 'Glacis (Massiver Steinsockel)',
         info: 'Das ikonischste Merkmal des Krak: ein nach aussen geneigter Sockel, ueber den der Innenring thront. Katapultsteine prallen ab, Minen finden keinen Ansatz. Dieser Sockel machte die Suedmauer nahezu unzerstoerbar.',
+      },
+      {
+        type: 'PLATEAU', x: 0.8, z: -0.6, y: 5.08, w: 16.4, d: 13.6, h: 0.34,
+        label: 'Innere Hofplatte',
+        info: 'Der Innenhof der Hochburg liest sich hier bewusst als gebaute Plattform statt als ausgehhoehlte Mulde. So werden Konventsaal, Kapelle und Wehrgang klarer voneinander getrennt.',
       },
       {
         type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.4, y2: 1.5, w: 4.6, thick: 0.24,
@@ -94,6 +104,16 @@ export const HERO_DIORAMAS_CRUSADER = {
         type: 'SQUARE_TOWER', x: 5.5, z: 0, w: 3.0, d: 2.5, h: 4.5, y: 4.9,
         label: 'Johanniterkapelle',
         info: 'Kapelle der Hospitaliter im oestlichen Innenhof mit schlichter romanisch-gotischer Formensprache.',
+      },
+      {
+        type: 'SQUARE_TOWER', x: -4.7, z: 3.8, w: 3.6, d: 2.2, h: 2.6, y: 5.0, noRoof: true,
+        label: 'Kasernen- und Magazinbau',
+        info: 'Niedriger Wirtschafts- und Magazintrakt im inneren Hof. Solche Nebengebaeude machen den Krak als bewohnte Ordensburg lesbarer und brechen die Leere im Hof.',
+      },
+      {
+        type: 'ROUND_TOWER', x: -7.9, z: 6.9, r: 0.82, h: 3.7, y: 1.45,
+        label: 'Vorturm des Zwingers',
+        info: 'Kleiner Flankierungsturm im aeusseren Werk, der den suedwestlichen Hof und den Rampenansatz lesbarer staffelt.',
       },
       {
         type: 'GLACIS', x: 0, z: 16, y: 1.1, rTop: 3.0, rBot: 3.8, h: 0.7,
