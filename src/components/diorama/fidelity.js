@@ -47,6 +47,88 @@ function mkLabel(base, castle) {
   return `${base} – ${castle.name}`;
 }
 
+function isHabitationComp(comp) {
+  if (comp.type === 'GABLED_HALL' || comp.type === 'CIVILIAN_HOUSING') return true;
+  if (comp.type === 'SQUARE_TOWER' && (comp.noRoof || (comp.h || 0) <= 3.2)) return true;
+  return false;
+}
+
+function compRadius(comp) {
+  if (comp.type === 'GABLED_HALL' || comp.type === 'SQUARE_TOWER' || comp.type === 'PLATEAU') {
+    return Math.max(comp.w || 2, comp.d || 2) * 0.5;
+  }
+  if (comp.type === 'CIVILIAN_HOUSING') {
+    const count = comp.count || 5;
+    const hw = comp.w || 1.8;
+    return Math.max(1.5, (count * hw) * 0.35);
+  }
+  return Math.max(comp.r || 1, 1);
+}
+
+function applySpatialSafetyRules(components) {
+  const rings = components.filter(c => c.type === 'RING' && Array.isArray(c.points) && c.points.length >= 3);
+  const glacis = components.filter(c => c.type === 'GLACIS');
+  const plateaus = components.filter(c => c.type === 'PLATEAU');
+  const habitations = components.filter(isHabitationComp);
+
+  habitations.forEach(comp => {
+    comp.y = Math.max(0.04, comp.y || 0);
+
+    const r = compRadius(comp);
+
+    // Grounding rule: if a plateau sits under the building center, snap above it.
+    const support = plateaus.find(p => {
+      const dx = (comp.x || 0) - (p.x || 0);
+      const dz = (comp.z || 0) - (p.z || 0);
+      return Math.hypot(dx, dz) <= Math.max(1.4, compRadius(p) * 0.92);
+    });
+    if (support) {
+      const topY = (support.y || 0) + (support.h || 0);
+      comp.y = Math.max(comp.y, topY + 0.04);
+    }
+
+    // Glacis-clearance rule: keep buildings outside the sloped plinth zone.
+    glacis.forEach(gl => {
+      const gx = gl.x || 0;
+      const gz = gl.z || 0;
+      const dx = (comp.x || 0) - gx;
+      const dz = (comp.z || 0) - gz;
+      const dist = Math.hypot(dx, dz);
+      const keepOut = (gl.rBot || gl.rTop || 0) + r + 0.35;
+      if (keepOut > 0 && dist < keepOut) {
+        const ux = dist > 0.001 ? dx / dist : 1;
+        const uz = dist > 0.001 ? dz / dist : 0;
+        const push = keepOut - dist;
+        comp.x = +(comp.x + ux * push).toFixed(2);
+        comp.z = +(comp.z + uz * push).toFixed(2);
+      }
+      const glTop = (gl.y || 0) + (gl.h || 0);
+      if (dist < (gl.rTop || 0) + r + 0.2) {
+        comp.y = Math.max(comp.y, glTop + 0.05);
+      }
+    });
+
+    // Anti-wall clipping: push habitation buildings off main ring wall bands.
+    rings.forEach(ring => {
+      const center = centerOfRing(ring);
+      const dx = (comp.x || 0) - center.x;
+      const dz = (comp.z || 0) - center.z;
+      const dist = Math.hypot(dx, dz);
+      const wallBand = Math.max(0.7, (ring.wall?.thick || 0.8) * 1.15) + r;
+      const nearWall = Math.abs(dist - center.avgR) < wallBand;
+      if (nearWall) {
+        const ux = dist > 0.001 ? dx / dist : 1;
+        const uz = dist > 0.001 ? dz / dist : 0;
+        const targetR = center.avgR + wallBand + 0.28;
+        comp.x = +(center.x + ux * targetR).toFixed(2);
+        comp.z = +(center.z + uz * targetR).toFixed(2);
+      }
+    });
+  });
+
+  return components;
+}
+
 export function enhanceComponentsForRealism(castle, inputComponents, style, historicalMode) {
   const components = inputComponents.map(c => ({ ...c }));
   const rings = findRings(components);
@@ -212,9 +294,12 @@ export function enhanceComponentsForRealism(castle, inputComponents, style, hist
     });
   }
 
-  // 6) Meta flags for UI/later audits.
+  // 6) Spatial safety pass for terrain and wall clearance.
+  applySpatialSafetyRules(components);
+
+  // 7) Meta flags for UI/later audits.
   components.realismMeta = {
-    pass: 'v1',
+    pass: 'v2',
     historicalMode,
     detailLevel: walls >= 75 || garrison >= 70 ? 'high' : 'medium',
   };

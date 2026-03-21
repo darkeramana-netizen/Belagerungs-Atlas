@@ -196,7 +196,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Gegenstueck am oestlichen Abschnitt des aeusseren Rings fuer Wachwechsel und schnelle Verstaerkung.',
       },
       {
-        type: 'PLATEAU', x: -10.2, z: 10.6, y: 4.62, w: 5.3, d: 2.7, h: 0.36, rotation: -0.52,
+        type: 'PLATEAU', x: -10.2, z: 10.6, y: 3.90, w: 5.3, d: 2.7, h: 1.20, rotation: -0.52,
         label: 'Fundament Stall- und Werkhaus',
         info: 'Kleines steinernes Fundamentplateau, damit der Baukoerper sauber auf dem ansteigenden Terrain sitzt.',
       },
@@ -206,7 +206,7 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Auch der aeussere Hof war kein leerer Schiessplatz. Kleine Stall- und Werkbauten machten den Krak im Alltag erst funktionsfaehig.',
       },
       {
-        type: 'PLATEAU', x: 10.0, z: 10.7, y: 4.62, w: 5.1, d: 2.7, h: 0.36, rotation: 0.52,
+        type: 'PLATEAU', x: 10.0, z: 10.7, y: 3.90, w: 5.1, d: 2.7, h: 1.20, rotation: 0.52,
         label: 'Fundament Backhaus und Vorratshaus',
         info: 'Leicht angehobenes Fundament fuer den oestlichen Wirtschaftsbereich.',
       },
