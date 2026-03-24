@@ -4,14 +4,28 @@ import { getRenderer, getMaterials, getScenePreset, resolveStyle } from './rende
 import { buildComponent } from './builders.js';
 import { generateComponents } from './generator.js';
 import { getDioramaModel } from './normalize.js';
+import { buildCollisionWorld } from './CollisionSystem.js';
+import { FirstPersonController } from './FirstPersonController.js';
+import { buildScaleDummy } from './ScaleDummy.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
-  const [ready, setReady] = useState(false);
-  const [info,  setInfo]  = useState(null);   // clicked component
-  const [hover, setHover] = useState(null);   // hovered component label
-  const infoRef  = useRef(null); infoRef.current  = setInfo;
-  const hoverRef = useRef(null); hoverRef.current = setHover;
+  const [ready,    setReady]    = useState(false);
+  const [info,     setInfo]     = useState(null);
+  const [hover,    setHover]    = useState(null);
+  const [fpsMode,  setFpsMode]  = useState(false);
+  const [showDummy, setShowDummy] = useState(false);
+
+  const infoRef   = useRef(null); infoRef.current   = setInfo;
+  const hoverRef  = useRef(null); hoverRef.current  = setHover;
+  // Refs used inside the animation-loop closure (no re-render needed)
+  const fpsModeRef   = useRef(false);
+  const showDummyRef = useRef(false);
+  const fpsCtrlRef   = useRef(null);
+  const dummyRef     = useRef(null);
+  // Expose toggle functions to buttons outside useEffect
+  const toggleFpsRef   = useRef(null);
+  const toggleDummyRef = useRef(null);
 
   const ac = castle.theme?.accent || '#c9a84c';
   const model = useMemo(() => getDioramaModel(castle), [castle]);
@@ -117,6 +131,54 @@ export default function CastleDiorama({ castle }) {
         scene.add(mesa);
       }
 
+      // ── Collision world (invisible — FPS only) ────────────────────────────
+      const colWorld = buildCollisionWorld(components);
+      scene.add(colWorld);
+
+      // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
+      const dummy = buildScaleDummy();
+      dummy.visible = false;
+      // Place just outside the outermost ring, at ground level
+      const dummySpawnZ = (maxRingR > 0 ? maxRingR : 18) * 1.08;
+      dummy.position.set(0, 0, dummySpawnZ);
+      scene.add(dummy);
+      dummyRef.current = dummy;
+
+      // ── FPS controller ────────────────────────────────────────────────────
+      const fpsCtrl = new FirstPersonController(camera, colWorld, renderer.domElement);
+      fpsCtrl.onExit = () => {
+        fpsModeRef.current = false;
+        setFpsMode(false);
+        renderer.domElement.style.cursor = 'grab';
+        syncCam(); // restore orbit camera
+      };
+      fpsCtrlRef.current = fpsCtrl;
+
+      // Default FPS spawn: just outside the main entrance, facing the castle
+      const fpsSpawnPos = new T.Vector3(0, 0, (maxRingR > 0 ? maxRingR : 18) * 1.12);
+
+      // ── Toggle helpers exposed to React buttons ───────────────────────────
+      toggleFpsRef.current = () => {
+        if (fpsModeRef.current) {
+          fpsCtrl.disable();
+          fpsModeRef.current = false;
+          setFpsMode(false);
+          renderer.domElement.style.cursor = 'grab';
+          syncCam();
+        } else {
+          fpsModeRef.current = true;
+          setFpsMode(true);
+          renderer.domElement.style.cursor = 'none';
+          fpsCtrl.enable(fpsSpawnPos, Math.PI);
+        }
+      };
+
+      toggleDummyRef.current = () => {
+        showDummyRef.current = !showDummyRef.current;
+        dummy.visible = showDummyRef.current;
+        setShowDummy(showDummyRef.current);
+      };
+
       let theta = Math.PI * 0.85, phi = 0.78;
       let camR  = model.cameraRadius || (maxRingR > 0 ? Math.max(26, maxRingR * 2.4) : (castle.components ? 32 : 26));
       const tgt = new T.Vector3(
@@ -203,6 +265,7 @@ export default function CastleDiorama({ castle }) {
       }
 
       const onPD = e => {
+        if (fpsModeRef.current) return; // orbit disabled in FPS mode
         pDown = true; moved = false;
         lastPX = e.clientX; lastPY = e.clientY;
         try { mount.setPointerCapture(e.pointerId); } catch (_) {}
@@ -210,6 +273,7 @@ export default function CastleDiorama({ castle }) {
       };
 
       const onPM = e => {
+        if (fpsModeRef.current) return;
         if (pDown) {
           moved  = true;
           theta -= (e.clientX - lastPX) * 0.007;
@@ -234,12 +298,13 @@ export default function CastleDiorama({ castle }) {
 
       const onWhl = e => {
         e.preventDefault();
+        if (fpsModeRef.current) return;
         camR = Math.max(7, Math.min(55, camR + e.deltaY * 0.04));
         syncCam();
       };
 
       const onClick = e => {
-        if (moved) return;
+        if (fpsModeRef.current || moved) return;
         const g = findLabelGroup(castRay(e));
         if (g) {
           infoRef.current({ label: g.userData.label, info: g.userData.info || '' });
@@ -257,12 +322,25 @@ export default function CastleDiorama({ castle }) {
 
       setReady(true);
 
+      // ── Orbit-input guards (disabled in FPS mode) ─────────────────────────
+      // (applied inline in onPD / onPM via fpsModeRef check)
+
       // ── Render loop ──────────────────────────────────────────────────────
-      const tick = () => { animId = requestAnimationFrame(tick); renderer.render(scene, camera); };
+      let lastT = performance.now();
+      const tick = () => {
+        animId = requestAnimationFrame(tick);
+        const now = performance.now();
+        const dt  = Math.min((now - lastT) / 1000, 0.05);
+        lastT = now;
+        if (fpsModeRef.current) fpsCtrl.update(dt);
+        renderer.render(scene, camera);
+      };
       tick();
 
       // ── Cleanup ──────────────────────────────────────────────────────────
       return () => {
+        fpsCtrl.dispose();
+        fpsModeRef.current = false;
         cancelAnimationFrame(animId);
         mount.removeEventListener('pointerdown',  onPD);
         mount.removeEventListener('pointermove',  onPM);
@@ -345,13 +423,71 @@ export default function CastleDiorama({ castle }) {
         )}
 
         {/* Interaction hint — only when nothing is hovered/selected */}
-        {ready && !hover && !info && (
+        {ready && !hover && !info && !fpsMode && (
           <div style={{
             position: 'absolute', bottom: '8px', right: '10px',
             fontSize: '9px', color: 'rgba(255,255,255,0.18)',
             pointerEvents: 'none', letterSpacing: '0.8px',
           }}>
             ZIEHEN · ZOOM · KLICK = INFO
+          </div>
+        )}
+
+        {/* FPS mode overlay — crosshair + controls hint */}
+        {fpsMode && (
+          <>
+            {/* Crosshair */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              pointerEvents: 'none',
+            }}>
+              <div style={{ position: 'relative', width: 18, height: 18 }}>
+                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1.5, background: 'rgba(255,255,255,0.82)', transform: 'translateY(-50%)' }} />
+                <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1.5, background: 'rgba(255,255,255,0.82)', transform: 'translateX(-50%)' }} />
+              </div>
+            </div>
+            {/* Controls hint */}
+            <div style={{
+              position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
+              fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '1px',
+              pointerEvents: 'none',
+            }}>
+              WASD BEWEGEN · SHIFT RENNEN · LEERTASTE SPRINGEN · ESC VERLASSEN
+            </div>
+          </>
+        )}
+
+        {/* Sprint-1 controls: FPS button + Scale Dummy toggle */}
+        {ready && (
+          <div style={{
+            position: 'absolute', bottom: '32px', left: '10px',
+            display: 'flex', gap: '5px', alignItems: 'center',
+          }}>
+            <button
+              onClick={() => toggleFpsRef.current?.()}
+              style={{
+                padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
+                background: fpsMode ? 'rgba(180,100,30,0.85)' : 'rgba(15,11,7,0.78)',
+                border: `1px solid ${fpsMode ? '#e8a44a' : 'rgba(201,168,76,0.28)'}`,
+                color: fpsMode ? '#fff' : '#c9a84c', borderRadius: '999px',
+                cursor: 'pointer', textTransform: 'uppercase',
+              }}
+            >
+              {fpsMode ? '⬛ Orbit' : '👁 Erste Person'}
+            </button>
+            <button
+              onClick={() => toggleDummyRef.current?.()}
+              style={{
+                padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
+                background: showDummy ? 'rgba(180,60,0,0.75)' : 'rgba(15,11,7,0.78)',
+                border: `1px solid ${showDummy ? '#ff6622' : 'rgba(201,168,76,0.22)'}`,
+                color: showDummy ? '#fff' : 'rgba(255,255,255,0.38)', borderRadius: '999px',
+                cursor: 'pointer', textTransform: 'uppercase',
+              }}
+            >
+              {showDummy ? '▣ Dummy' : '□ Maßstab 1:1'}
+            </button>
           </div>
         )}
 
