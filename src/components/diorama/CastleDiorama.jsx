@@ -465,7 +465,7 @@ export default function CastleDiorama({ castle }) {
             display: 'flex', gap: '5px', alignItems: 'center',
           }}>
             <button
-              onClick={() => toggleFpsRef.current?.()}
+              onClick={e => { e.currentTarget.blur(); toggleFpsRef.current?.(); }}
               style={{
                 padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
                 background: fpsMode ? 'rgba(180,100,30,0.85)' : 'rgba(15,11,7,0.78)',
@@ -477,7 +477,7 @@ export default function CastleDiorama({ castle }) {
               {fpsMode ? '⬛ Orbit' : '👁 Erste Person'}
             </button>
             <button
-              onClick={() => toggleDummyRef.current?.()}
+              onClick={e => { e.currentTarget.blur(); toggleDummyRef.current?.(); }}
               style={{
                 padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
                 background: showDummy ? 'rgba(180,60,0,0.75)' : 'rgba(15,11,7,0.78)',
