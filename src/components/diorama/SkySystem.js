@@ -11,25 +11,26 @@ import { Sky } from 'three/examples/jsm/objects/Sky.js';
 //   sky.setSunElevation(15);          // degrees above horizon (0-90)
 
 const SKY_PRESETS = {
+  // Lower rayleigh + higher turbidity = darker, dustier sky — no blown whites
   crusader: {
-    turbidity: 5.5, rayleigh: 2.2, mieCoef: 0.006, mieG: 0.82,
+    turbidity: 4.0,  rayleigh: 1.2, mieCoef: 0.008, mieG: 0.80,
     elevation: 22, azimuth: 175,
-    fogColor: new THREE.Color(0x9cb8cc), fogDensity: 0.010,
+    fogColor: new THREE.Color(0x8aacbe), fogDensity: 0.009,
   },
   japanese: {
-    turbidity: 8.0, rayleigh: 1.4, mieCoef: 0.020, mieG: 0.75,
+    turbidity: 6.5,  rayleigh: 0.9, mieCoef: 0.022, mieG: 0.74,
     elevation: 12, azimuth: 165,
-    fogColor: new THREE.Color(0x8ba8ae), fogDensity: 0.012,
+    fogColor: new THREE.Color(0x7a9aa6), fogDensity: 0.011,
   },
   oriental: {
-    turbidity: 10.0, rayleigh: 3.0, mieCoef: 0.015, mieG: 0.78,
+    turbidity: 8.0,  rayleigh: 1.8, mieCoef: 0.018, mieG: 0.76,
     elevation: 30, azimuth: 190,
-    fogColor: new THREE.Color(0xd4a868), fogDensity: 0.013,
+    fogColor: new THREE.Color(0xc09858), fogDensity: 0.012,
   },
   ancient: {
-    turbidity: 7.0, rayleigh: 2.8, mieCoef: 0.010, mieG: 0.80,
+    turbidity: 6.0,  rayleigh: 1.6, mieCoef: 0.012, mieG: 0.78,
     elevation: 38, azimuth: 185,
-    fogColor: new THREE.Color(0xc0a87c), fogDensity: 0.012,
+    fogColor: new THREE.Color(0xb09868), fogDensity: 0.011,
   },
 };
 

@@ -8,6 +8,11 @@ import {
   makeMasonryRoughnessMap,
 } from './ProceduralTextures.js';
 
+// Max anisotropy is set once the renderer singleton exists; used by all
+// texture factories below so we don't need to pass it through every call.
+let _maxAniso = 4;
+function aniso() { return _maxAniso; }
+
 function makeTextureFromNoise(baseHex, seed = 42, amplitude = 24, alpha = 255) {
   const size = 128;
   const px = new Uint8Array(size * size * 4);
@@ -30,7 +35,7 @@ function makeTextureFromNoise(baseHex, seed = 42, amplitude = 24, alpha = 255) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(4, 4);
-  tex.anisotropy = 4;
+  tex.anisotropy = aniso();
   tex.needsUpdate = true;
   return tex;
 }
@@ -72,7 +77,7 @@ function makeMasonryTexture(baseHex, mortarHex, seed = 21, amplitude = 18) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(2.4, 2.4);
-  tex.anisotropy = 4;
+  tex.anisotropy = aniso();
   tex.needsUpdate = true;
   return tex;
 }
@@ -106,7 +111,7 @@ function makeStrataTexture(baseHex, accentHex, seed = 31, amplitude = 20) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(3.2, 2.2);
-  tex.anisotropy = 4;
+  tex.anisotropy = aniso();
   tex.needsUpdate = true;
   return tex;
 }
@@ -146,57 +151,57 @@ function makeRoofTileTexture(baseHex, seamHex, seed = 13) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(2.4, 2.4);
-  tex.anisotropy = 4;
+  tex.anisotropy = aniso();
   tex.needsUpdate = true;
   return tex;
 }
 
 function mkStoneMat(hex, seed = 42) {
   return new THREE.MeshStandardMaterial({
-    map:          makeTextureFromNoise(hex, seed, 8),     // was 24 — reduces speckle
-    normalMap:    makeStoneNormalMap(seed, 1.2, 256, 2),  // strength 2.6→1.2, repeat 3→2
-    normalScale:  new THREE.Vector2(0.35, 0.35),          // was (1.0,1.0)
-    roughnessMap: makeStoneRoughnessMap(seed + 5, 0.87, 256, 2),
-    roughness: 0.87,
-    metalness: 0.02,
-    envMapIntensity: 0.30,
+    map:          makeTextureFromNoise(hex, seed, 8),
+    normalMap:    makeStoneNormalMap(seed, 1.2, 256, 2),
+    normalScale:  new THREE.Vector2(0.35, 0.35),
+    roughnessMap: makeStoneRoughnessMap(seed + 5, 0.85, 256, 2),
+    roughness:    0.85,
+    metalness:    0.0,
+    envMapIntensity: 0.12,
   });
 }
 
 function mkMasonryMat(hex, mortarHex, seed = 42) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color(hex),
-    map:          makeMasonryTexture(hex, mortarHex, seed, 8),  // amplitude 16→8
-    normalMap:    makeMasonryNormalMap(seed, 1.5, 256, 2),      // strength 3.2→1.5
-    normalScale:  new THREE.Vector2(0.45, 0.45),                // was (1.0,1.0)
-    roughnessMap: makeMasonryRoughnessMap(seed + 7, 0.88, 256, 2),
-    roughness: 0.88,
-    metalness: 0.01,
-    envMapIntensity: 0.25,
+    color:        new THREE.Color(hex),
+    map:          makeMasonryTexture(hex, mortarHex, seed, 8),
+    normalMap:    makeMasonryNormalMap(seed, 1.5, 256, 2),
+    normalScale:  new THREE.Vector2(0.45, 0.45),
+    roughnessMap: makeMasonryRoughnessMap(seed + 7, 0.85, 256, 2),
+    roughness:    0.85,
+    metalness:    0.0,
+    envMapIntensity: 0.10,
   });
 }
 
 function mkRockMat(hex, accentHex, seed = 71) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color(hex),
-    map:         makeStrataTexture(hex, accentHex, seed, 14),  // amplitude 18→14
-    normalMap:   makeRockNormalMap(seed, 1.4, 256, 2),         // strength 3.0→1.4
-    normalScale: new THREE.Vector2(0.45, 0.45),                // was (1.0,1.0)
-    roughness: 0.96,
-    metalness: 0.0,
-    envMapIntensity: 0.15,
+    color:       new THREE.Color(hex),
+    map:         makeStrataTexture(hex, accentHex, seed, 14),
+    normalMap:   makeRockNormalMap(seed, 1.4, 256, 2),
+    normalScale: new THREE.Vector2(0.45, 0.45),
+    roughness:   0.96,
+    metalness:   0.0,
+    envMapIntensity: 0.07,
   });
 }
 
 function mkRoofMat(hex, seamHex, seed = 11) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color(hex),
+    color:       new THREE.Color(hex),
     map:         makeRoofTileTexture(hex, seamHex, seed),
-    normalMap:   makeStoneNormalMap(seed + 3, 0.8, 256, 2),  // strength 1.5→0.8
-    normalScale: new THREE.Vector2(0.35, 0.35),               // was (0.7,0.7)
-    roughness: 0.86,
-    metalness: 0.02,
-    envMapIntensity: 0.20,
+    normalMap:   makeStoneNormalMap(seed + 3, 0.8, 256, 2),
+    normalScale: new THREE.Vector2(0.35, 0.35),
+    roughness:   0.90,
+    metalness:   0.0,
+    envMapIntensity: 0.08,
   });
 }
 
@@ -213,20 +218,21 @@ export function getRenderer() {
     _renderer.physicallyCorrectLights = true;
     _renderer.outputColorSpace = THREE.SRGBColorSpace;
     _renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    _renderer.toneMappingExposure = 1.0;
+    _renderer.toneMappingExposure = 0.70;   // was 1.0 — prevents blown-out whites
+    _maxAniso = _renderer.capabilities.getMaxAnisotropy();
   }
   return _renderer;
 }
 
-export function mkMat(hex, rough = 0.8, metal = 0.05, seed = 12, textureAmp = 14) {
+export function mkMat(hex, rough = 0.85, metal = 0.0, seed = 12, textureAmp = 14) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color(hex),
+    color:       new THREE.Color(hex),
     map:         makeTextureFromNoise(hex, seed, Math.min(textureAmp, 10)),
-    normalMap:   makeWoodNormalMap(seed, 0.9, 256, 2),   // strength 1.6→0.9
-    normalScale: new THREE.Vector2(0.30, 0.30),           // was (0.5,0.5)
+    normalMap:   makeWoodNormalMap(seed, 0.9, 256, 2),
+    normalScale: new THREE.Vector2(0.30, 0.30),
     roughness:   rough,
     metalness:   metal,
-    envMapIntensity: 0.15,
+    envMapIntensity: 0.08,
   });
 }
 
@@ -311,40 +317,39 @@ export function getScenePreset(style = 'crusader') {
   switch (style) {
     case 'japanese':
       return {
-        // sky params (used by SkySystem.buildSky, kept here for reference)
         useSky: true,
         fog: { color: 0x8ba8ae, density: 0.010 },
-        ambient: { color: 0xd7ddd7, intensity: 1.6 },
-        sun: { color: 0xf9f2df, intensity: 3.8, position: [18, 28, 16] },
-        fill: { color: 0x95aeb3, intensity: 1.1, position: [-15, 10, -20] },
-        rim: { color: 0x5f7d88, intensity: 0.55, position: [0, 8, -24] },
+        ambient: { color: 0xd7ddd7, intensity: 0.50 },
+        sun: { color: 0xf9f2df, intensity: 2.6, position: [18, 28, 16] },
+        fill: { color: 0x95aeb3, intensity: 0.38, position: [-15, 10, -20] },
+        rim: { color: 0x5f7d88, intensity: 0.20, position: [0, 8, -24] },
       };
     case 'oriental':
       return {
         useSky: true,
         fog: { color: 0xd4a868, density: 0.011 },
-        ambient: { color: 0xd7c9aa, intensity: 1.7 },
-        sun: { color: 0xffefcf, intensity: 4.0, position: [26, 30, 12] },
-        fill: { color: 0x8ca0b0, intensity: 1.0, position: [-14, 10, -18] },
-        rim: { color: 0x7b5b36, intensity: 0.7, position: [10, 6, -25] },
+        ambient: { color: 0xd7c9aa, intensity: 0.55 },
+        sun: { color: 0xffefcf, intensity: 2.9, position: [26, 30, 12] },
+        fill: { color: 0x8ca0b0, intensity: 0.35, position: [-14, 10, -18] },
+        rim: { color: 0x7b5b36, intensity: 0.25, position: [10, 6, -25] },
       };
     case 'ancient':
       return {
         useSky: true,
         fog: { color: 0xc0a87c, density: 0.010 },
-        ambient: { color: 0xcfbea3, intensity: 1.65 },
-        sun: { color: 0xffe4ba, intensity: 3.8, position: [24, 29, 10] },
-        fill: { color: 0x8798aa, intensity: 0.90, position: [-18, 11, -16] },
-        rim: { color: 0x74563a, intensity: 0.55, position: [6, 7, -24] },
+        ambient: { color: 0xcfbea3, intensity: 0.52 },
+        sun: { color: 0xffe4ba, intensity: 2.7, position: [24, 29, 10] },
+        fill: { color: 0x8798aa, intensity: 0.32, position: [-18, 11, -16] },
+        rim: { color: 0x74563a, intensity: 0.20, position: [6, 7, -24] },
       };
     default: // crusader
       return {
         useSky: true,
         fog: { color: 0x9cb8cc, density: 0.009 },
-        ambient: { color: 0xd8ccba, intensity: 1.5 },
-        sun: { color: 0xffefda, intensity: 4.5, position: [22, 35, 14] },
-        fill: { color: 0x8ea2b8, intensity: 0.95, position: [-18, 12, -22] },
-        rim: { color: 0xa38966, intensity: 0.80, position: [4, 8, -26] },
+        ambient: { color: 0xd8ccba, intensity: 0.55 },
+        sun: { color: 0xfff0dc, intensity: 2.8, position: [22, 35, 14] },
+        fill: { color: 0x8ea2b8, intensity: 0.40, position: [-18, 12, -22] },
+        rim: { color: 0xa38966, intensity: 0.30, position: [4, 8, -26] },
       };
   }
 }

@@ -87,7 +87,7 @@ function normalMapFromFn(heightFn, size, strength, repeat) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(repeat, repeat);
-  tex.anisotropy = 4;
+  tex.anisotropy = 8;
   tex.needsUpdate = true;
   return tex;
 }
@@ -115,7 +115,7 @@ function roughnessMapFromFn(roughFn, size, repeat) {
   const tex = new THREE.DataTexture(px, size, size, THREE.RGBAFormat);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(repeat, repeat);
-  tex.anisotropy = 4;
+  tex.anisotropy = 8;
   tex.needsUpdate = true;
   return tex;
 }

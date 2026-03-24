@@ -88,6 +88,8 @@ export default function CastleDiorama({ castle }) {
       sun.shadow.camera.far  = 120;
       sun.shadow.camera.left  = -40; sun.shadow.camera.right  = 40;
       sun.shadow.camera.top   =  40; sun.shadow.camera.bottom = -40;
+      sun.shadow.bias       = -0.0008;   // prevents shadow acne on flat walls
+      sun.shadow.normalBias =  0.02;     // prevents self-shadowing artefacts
       scene.add(sun);
 
       const fill = new T.DirectionalLight(scenePreset.fill.color, scenePreset.fill.intensity);
