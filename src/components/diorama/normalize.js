@@ -81,6 +81,7 @@ export function getDioramaModel(castle) {
       y: diorama.focus?.y ?? 4,
       z: diorama.focus?.z ?? centroid.z / Math.max(components.length, 1),
     },
+    scale: diorama.scale || 1.0,
     cameraRadius: diorama.cameraRadius || Math.max(28, radius * 2.45),
     historicalMode,
     fidelityLabel: fidelity.fidelityLabel,

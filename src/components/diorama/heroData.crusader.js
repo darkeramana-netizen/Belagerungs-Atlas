@@ -111,18 +111,18 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
       },
       {
-        type: 'RING', y: 8.12,
+        type: 'RING', y: 8.12, matVariant: 'limestone',
         gate: {
           atIndex: 4, w: 3.5, d: 3.0, h: 6.5,
           label: 'Inneres Tor - Rampeneingang (Hochburg)',
           info: 'Der verschlungene Eingang in den Innenhof: eine ueberdachte Rampe, die in engen Kehren nach oben fuehrt.',
         },
         points: [
-          { x: 0, z: 10, r: 2.3, h: 11.5, plinthH: 1.2, plinthDrop: 0.62, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 3.0, skirtTopScale: 1.34, skirtBottomScale: 1.54, label: 'Torre Grande (Grosser Turm)', info: 'Der maechtigste Turm des Krak und letzter Rueckzugspunkt der Johanniter.' },
-          { x: -9.51, z: 3.09, r: 2.0, h: 10.0, plinthH: 1.02, plinthDrop: 0.56, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 2.8, skirtTopScale: 1.34, skirtBottomScale: 1.52, label: 'Suedwestturm (Waechterturm)', info: 'Einer der drei massiven Suedtuerme mit senkrechten Abwurfwinkeln auf Angreifer am Mauerfuss.' },
+          { x: 0, z: 10, r: 2.3, h: 11.5, noRoof: true, plinthH: 1.2, plinthDrop: 0.62, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 3.0, skirtTopScale: 1.34, skirtBottomScale: 1.54, label: 'Torre Grande (Grosser Turm)', info: 'Der maechtigste Turm des Krak und letzter Rueckzugspunkt der Johanniter.' },
+          { x: -9.51, z: 3.09, r: 2.0, h: 10.0, noRoof: true, plinthH: 1.02, plinthDrop: 0.56, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 2.8, skirtTopScale: 1.34, skirtBottomScale: 1.52, label: 'Suedwestturm (Waechterturm)', info: 'Einer der drei massiven Suedtuerme mit senkrechten Abwurfwinkeln auf Angreifer am Mauerfuss.' },
           { x: -5.88, z: -8.09, r: 1.5, h: 7.5, label: 'Nordwestturm (Innen)', info: 'Verbindungsturm zwischen Sued- und Nordmauer des Innenhofs.' },
           { x: 5.88, z: -8.09, r: 1.5, h: 7.5, label: 'Nordostturm (Innen)', info: 'Ueberblickte das aeussere Ostfeld und deckte das Haupttor von oben.' },
-          { x: 9.51, z: 3.09, r: 1.9, h: 9.5, plinthH: 0.98, plinthDrop: 0.54, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 2.7, skirtTopScale: 1.34, skirtBottomScale: 1.5, label: 'Suedostturm (Torre del Maestre)', info: 'Flankiert den Rampeneingang zum Innenhof und schliesst die starke Suedfront.' },
+          { x: 9.51, z: 3.09, r: 1.9, h: 9.5, noRoof: true, plinthH: 0.98, plinthDrop: 0.54, plinthTopScale: 1.2, plinthBottomScale: 1.34, skirtH: 2.7, skirtTopScale: 1.34, skirtBottomScale: 1.5, label: 'Suedostturm (Torre del Maestre)', info: 'Flankiert den Rampeneingang zum Innenhof und schliesst die starke Suedfront.' },
         ],
         wall: { h: 6.0, thick: 1.3 },
       },
@@ -136,14 +136,14 @@ export const HERO_DIORAMAS_CRUSADER = {
         points: [
           { x: 0, z: -20, r: 1.3, h: 5.5, label: 'Aussenturm Nord', info: 'Beobachtungsposten fuer den Nordhang.' },
           { x: 14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NO', info: 'Flankierungsturm fuer Kreuzfeuer zwischen Ost- und Nordmauer.' },
-          { x: 20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm Ost', info: 'Turm neben dem Haupttor mit Deckung des Torzugangs.' },
-          { x: 14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SO', info: 'Suedoestlicher Flankierungsturm des Torbereichs.' },
-          { x: 0, z: 20, r: 1.3, h: 5.5, label: 'Aussenturm Sued', info: 'Suedturm des aeusseren Rings direkt unter der Glacis-Front.' },
+          { x: 20, z: 0, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm Ost', info: 'Turm neben dem Haupttor mit Deckung des Torzugangs.' },
+          { x: 14.14, z: 14.14, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm SO', info: 'Suedoestlicher Flankierungsturm des Torbereichs.' },
+          { x: 0, z: 20, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm Sued', info: 'Suedturm des aeusseren Rings direkt unter der Glacis-Front.' },
           { x: -14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SW', info: 'Suedwestturm mit Sichtlinie ueber das Vorgelaende.' },
           { x: -20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm West', info: 'Westturm, teilweise im Felsgelaende eingebettet.' },
           { x: -14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NW', info: 'Nordwestturm zur Sicherung des kritischen Nordhangs.' },
         ],
-        wall: { h: 3.0, thick: 0.8 },
+        wall: { h: 3.0, thick: 0.8, buttresses: true },
       },
       {
         type: 'STAIRWAY', x: 0.5, z: 5.8, y: 5.02, w: 6.2, d: 6.0, h: 3.0, steps: 6, landingD: 1.0,
@@ -294,15 +294,52 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Der suedlichste Aussenturm direkt uber dem Glacis – seine Pechnasen deckten den kritischsten Abschnitt der gesamten Verteidigung.',
       },
 
+      // ── HOLZKAMPFGALERIEN (HOARDINGS / HURDEN) ───────────────────────────
+      // Provisorische Holzgalerien, in die Steckloecher der Mauerkrone gehängt.
+      // Schichten aus Brettern mit Absturzoeffnungen im Boden ermoeglichten
+      // senkrechten Beschuss direkt am Mauerfuss – ohne Kopf riskieren zu muessen.
+      //
+      // Innenring (y=14.12):
+      //   Wandabschnitt SO→Grande  (4, SO): Mitte (4.76, 6.55), rot ≈ +0.628
+      //   Wandabschnitt Grande→SW  (0→1):   Mitte (-4.76, 6.55), rot ≈ -0.628
+      // Aussenring (y=4.98):
+      //   Wandabschnitt Sued→SW    (4→5):   Mitte (-7.07, 17.07), rot ≈ -0.393
+      {
+        type: 'HOARDING',
+        x: 4.76, z: 6.55, y: 14.12,
+        w: 6.5, d: 1.20, h: 1.40,
+        rotation: Math.atan2(0.588, 0.809),
+        label: 'Hurde – Suedostmauer Innenring (Richtung Torre Grande)',
+        info: 'Die holzernen Kampfgalerien (Hurden) der suedlichen Innenringmauer konnten bei Belagerung in wenigen Stunden eingehängt werden. Sie gaben Bogenschuetzen und Steinwerfern eine komplett ueberdachte Stellungslinie ueber dem freien Abfall der Hangmauer.',
+      },
+      {
+        type: 'HOARDING',
+        x: -4.76, z: 6.55, y: 14.12,
+        w: 6.5, d: 1.20, h: 1.40,
+        rotation: Math.atan2(-0.588, 0.809),
+        label: 'Hurde – Suedwestmauer Innenring (Grande–Suedwestturm)',
+        info: 'Der symmetrische Gegenabschnitt der Suedfront schloss die Lucke zwischen Torre Grande und dem Waechterturm. Zusammen mit den Pechnasen auf den Tuermen entstand eine lueckenlose Beschusslinie ueber die gesamte Suedfront des Innenrings.',
+      },
+      {
+        type: 'HOARDING',
+        x: -7.07, z: 17.07, y: 4.98,
+        w: 8.0, d: 1.10, h: 1.30,
+        rotation: Math.atan2(-0.383, 0.924),
+        label: 'Hurde – Suedwestmauer Aussenring (Sued–SW)',
+        info: 'Die laengste zusammenhaengende Holzkampfgalerie des aeusseren Mauerguertels sicherte den exponierten Suedwesthang. Von hier aus konnten Angreifer, die sich am Glacis vorbeigekaempft hatten, noch einmal unter kombiniertes Bogenfeuer von Mauer und Galerie genommen werden.',
+      },
+
       // ── ZUGBRUECKE (DRAWBRIDGE) ───────────────────────────────────────────
       // Der historische Zugang fuehrte ueber eine auskragende Zugbruecke vor
       // der Barbakane. Rampe (SLOPE_PATH) endet bei (~10.5, ~12.2); die Bruecke
       // spannt den Zwischenraum zum Torturm bei (14.14, 14.14).
       {
+        // Gate atIndex:3 → Mittelpunkt zwischen SO (14.14,14.14) und Sued (0,20) = (7.07,17.07)
+        // Bruecke zeigt von (7.07,17.07) zur SLOPE_PATH-Endpunkt (10.5,12.2)
         type: 'DRAWBRIDGE',
-        x: 14.14, z: 14.14, y: 1.98,
-        w: 4.6, d: 3.6, angle: 0, pitD: 1.3, pitH: 0.55,
-        rotation: Math.atan2(10.5 - 14.14, 12.2 - 14.14),
+        x: 7.07, z: 17.07, y: 2.05,
+        w: 4.8, d: 5.5, angle: 0, pitD: 1.6, pitH: 0.60,
+        rotation: Math.atan2(10.5 - 7.07, 12.2 - 17.07),
         label: 'Zugbruecke – Haupttor (Barbakane)',
         info: 'Vor dem Haupttor lag kein freier Platz, sondern eine Zugbruecke uber den Zwinggraben. Sie bildete die erste mechanische Barriere im mehrstufigen Eingangsystem und konnte bei Alarm hochgezogen werden, bevor Angreifer das Tor erreichten.',
       },

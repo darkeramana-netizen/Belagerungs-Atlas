@@ -6,7 +6,7 @@ import {
   squareTowerMerlonPositions,
 } from './battlements.js';
 import { buildRoofForStyle } from './roofs.js';
-import { buildHoarding, buildOriel } from './details.js';
+import { buildHoarding as buildTowerHoarding, buildOriel } from './details.js';
 
 // ── scaleComp ─────────────────────────────────────────────────────────────
 // Returns a shallow-copied component definition with every spatial value
@@ -176,6 +176,40 @@ export function buildWall(p, sm, dm, style = 'crusader') {
   const merlons = mkM(wallMerlonPositions(len, h), sm);
   if (merlons) g.add(merlons);
 
+  // ── Pilaster buttresses (optional) ────────────────────────────────────
+  // Triggered by p.buttresses = true.  Adds rectangular masonry pilasters
+  // projecting from both wall faces at even intervals to reinforce long runs.
+  if (p.buttresses) {
+    const bCount = Math.max(1, Math.round(len / 3.5)) - 1; // interior spacing only
+    if (bCount > 0) {
+      const bStep = len / (bCount + 1);
+      const bW    = thick * 0.54;    // pilaster width along wall
+      const bD    = thick * 0.42;    // projection depth beyond wall face
+      const bH    = h * 0.78;       // pilaster height (sits below coping)
+
+      for (let i = 0; i < bCount; i++) {
+        const bx = -len / 2 + (i + 1) * bStep;
+
+        [-1, 1].forEach(side => {
+          const bz = side * (thick / 2 + bD / 2);
+
+          // Pilaster body
+          const pilaster = new THREE.Mesh(new THREE.BoxGeometry(bW, bH, bD), sm);
+          pilaster.position.set(bx, bH / 2 + 0.02, bz);
+          pilaster.castShadow = true;
+          pilaster.receiveShadow = true;
+          g.add(pilaster);
+
+          // Pilaster cap / impost
+          const cap = new THREE.Mesh(new THREE.BoxGeometry(bW + 0.06, 0.14, bD + 0.06), sm);
+          cap.position.set(bx, bH + 0.07, bz);
+          cap.castShadow = true;
+          g.add(cap);
+        });
+      }
+    }
+  }
+
   return g;
 }
 
@@ -232,7 +266,7 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
   }
 
   if (p.hoarding && style !== 'japanese') {
-    g.add(buildHoarding(r * 1.02, h - 0.28, dm || sm));
+    g.add(buildTowerHoarding(r * 1.02, h - 0.28, dm || sm));
   }
 
   // Battlements — only for 'ancient' style (open flat parapet).
@@ -248,9 +282,12 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
     g.add(buildOriel(r * 0.95, h * 0.55, 0, 0, dm));
   }
 
-  // Style-aware roof
-  const roof = buildRoofForStyle(style, r, h, rm);
-  if (roof) g.add(roof);
+  // Style-aware roof — skipped when p.noRoof is set (e.g. towers with
+  // MACHICOLATION galleries, where the machicoulis replaces the conical cap).
+  if (!p.noRoof) {
+    const roof = buildRoofForStyle(style, r, h, rm);
+    if (roof) g.add(roof);
+  }
 
   return g;
 }
@@ -1120,9 +1157,10 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
   const pts = p.points || [], n = pts.length, y = Math.max(0, p.y || 0);
   if (n < 2) return null;
 
-  const wH = p.wall?.h || 3;
-  const wT = p.wall?.thick || 0.8;
-  const gt = p.gate;
+  const wH   = p.wall?.h         || 3;
+  const wT   = p.wall?.thick     || 0.8;
+  const wBut = p.wall?.buttresses || false;
+  const gt   = p.gate;
   // Japanese castles always use square towers (Yagura are rectangular)
   const useSquare = p.squareTowers || style === 'japanese';
 
@@ -1175,14 +1213,14 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
         g.add(buildWall({
           x: pt.x + ux * trim1, z: pt.z + uz * trim1,
           x2: lx, z2: lz,
-          h: pt.wallH || wH, y, thick: wT, label: '', info: '',
+          h: pt.wallH || wH, y, thick: wT, buttresses: wBut, label: '', info: '',
         }, sm, dm, style));
       }
       if (rightLen > trim2 + 0.3) {
         g.add(buildWall({
           x: rx, z: rz,
           x2: nx.x - ux * trim2, z2: nx.z - uz * trim2,
-          h: pt.wallH || wH, y, thick: wT, label: '', info: '',
+          h: pt.wallH || wH, y, thick: wT, buttresses: wBut, label: '', info: '',
         }, sm, dm, style));
       }
     } else {
@@ -1196,6 +1234,7 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
           h: pt.wallH || wH,
           y,
           thick: wT,
+          buttresses: wBut,
           label: '', info: '',
         }, sm, dm, style));
       }
@@ -1419,31 +1458,174 @@ export function buildDrawbridge(p, sm, dm) {
   return g;
 }
 
+// ── HOARDING (Holzkampfgalerie / Hurden) ──────────────────────────────────
+// Temporary wooden fighting gallery projecting outward from a wall-walk.
+// Brackets fit into putlog holes in the wall face; floor planks span them.
+// Provides covered positions with drop-slots directly below the wall base.
+//
+// Parameters:
+//   p.w        — total gallery width along wall (default 6.0)
+//   p.d        — projection depth from wall face (default 1.20)
+//   p.h        — front/side panel height (default 1.40)
+//   p.count    — bay divisions; 0 = auto (default 0)
+//   p.y        — base elevation (wall-walk surface level)
+//   dm         — wood material (dark); falls back to sm if not provided
+export function buildHoarding(p, sm, dm) {
+  const y    = Math.max(0, p.y || 0);
+  const w    = p.w || 6.0;
+  const d    = p.d || 1.20;
+  const h    = p.h || 1.40;
+  const wMat = dm || sm;
+
+  const count  = p.count || Math.max(2, Math.round(w / 1.5));
+  const bayW   = w / count;
+  const floorT = 0.10;
+  const panelT = 0.10;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  // ── Floor slab ─────────────────────────────────────────────────────────
+  const floor = new THREE.Mesh(new THREE.BoxGeometry(w, floorT, d), wMat);
+  floor.position.set(0, floorT / 2, d / 2);
+  floor.castShadow = true;
+  floor.receiveShadow = true;
+  g.add(floor);
+
+  // Cross-plank grain lines visible from above
+  const plankCount = Math.max(2, Math.round(d / 0.28));
+  for (let pi = 0; pi < plankCount; pi++) {
+    const pz = (pi + 0.5) * (d / plankCount);
+    const grain = new THREE.Mesh(
+      new THREE.BoxGeometry(w, floorT * 0.20, 0.05), sm,
+    );
+    grain.position.set(0, floorT + floorT * 0.10, pz);
+    g.add(grain);
+  }
+
+  // ── Bracket beams at each bay boundary ────────────────────────────────
+  for (let i = 0; i <= count; i++) {
+    const bx = -w / 2 + i * bayW;
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, d + 0.18), wMat);
+    beam.position.set(bx, -0.07, d / 2);
+    beam.castShadow = true;
+    g.add(beam);
+  }
+
+  // ── Front parapet panel ────────────────────────────────────────────────
+  const panel = new THREE.Mesh(new THREE.BoxGeometry(w, h, panelT), wMat);
+  panel.position.set(0, floorT + h / 2, d + panelT / 2);
+  panel.castShadow = true;
+  g.add(panel);
+
+  // Arrow-slit crosses on front face (sm = lighter stone-like contrast)
+  for (let i = 0; i < count; i++) {
+    const cx = -w / 2 + (i + 0.5) * bayW;
+    const slitY = floorT + h * 0.58;
+    const slitZ = d + panelT + 0.01; // proud of panel outer face
+    const vs = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.30, 0.04), sm);
+    vs.position.set(cx, slitY, slitZ);
+    g.add(vs);
+    const hs = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.07, 0.04), sm);
+    hs.position.set(cx, slitY, slitZ);
+    g.add(hs);
+  }
+
+  // ── Sloped roof (outer edge slightly lower — runoff angle) ────────────
+  const roofT  = 0.08;
+  const dropH  = 0.18;
+  const roofSpan = Math.sqrt(d * d + dropH * dropH);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 0.10, roofT, roofSpan + 0.10), wMat);
+  roof.rotation.x = Math.atan2(dropH, d);
+  roof.position.set(0, floorT + h + roofT / 2 - dropH / 2, d / 2);
+  roof.castShadow = true;
+  g.add(roof);
+
+  // ── Side walls ────────────────────────────────────────────────────────
+  [-1, 1].forEach(side => {
+    const sw = new THREE.Mesh(new THREE.BoxGeometry(panelT, h, d), wMat);
+    sw.position.set(side * (w / 2 + panelT / 2), floorT + h / 2, d / 2);
+    sw.castShadow = true;
+    g.add(sw);
+  });
+
+  return g;
+}
+
+// ── Material variant cache + helper ──────────────────────────────────────
+// Clones a base material and applies a named surface variant so individual
+// components (or whole RINGs) can look visually distinct without requiring
+// fully separate texture assets.
+//
+// Supported variants:
+//   'limestone'  — lighter, creamier (freshly quarried Crusader ashlar)
+//   'worn'       — darker, rougher   (weathered exposed surfaces)
+//   'volcanic'   — very dark basalt  (some Syrian/Near-East tower types)
+//   'sandstone'  — warm reddish tint (sun-baked desert construction)
+const _variantCache = new Map();
+function applyVariant(mat, variant) {
+  const key = mat.uuid + ':' + variant;
+  if (_variantCache.has(key)) return _variantCache.get(key);
+  const v   = mat.clone();
+  const col = v.color.clone();
+  switch (variant) {
+    case 'limestone':
+      col.multiplyScalar(1.14);
+      col.r = Math.min(1, col.r * 1.03);
+      v.roughness = Math.max(0.30, (v.roughness || 0.8) - 0.08);
+      break;
+    case 'worn':
+      col.multiplyScalar(0.78);
+      v.roughness = Math.min(1.0, (v.roughness || 0.8) + 0.10);
+      break;
+    case 'volcanic':
+      col.multiplyScalar(0.52);
+      v.roughness = Math.min(1.0, (v.roughness || 0.8) + 0.14);
+      break;
+    case 'sandstone':
+      col.r = Math.min(1, col.r * 1.10);
+      col.g = Math.min(1, col.g * 1.03);
+      col.b = Math.max(0, col.b * 0.84);
+      v.roughness = Math.min(1.0, (v.roughness || 0.8) + 0.06);
+      break;
+    default: break;
+  }
+  v.color.copy(col);
+  v.needsUpdate = true;
+  _variantCache.set(key, v);
+  return v;
+}
+
 // ── Component dispatcher ──────────────────────────────────────────────────
 // gm (rock/ground material) is used for GLACIS; falls back to sm if not provided.
 // scale: optional global metre-scale multiplier (1.0 = no change, use scaleComp)
+// comp.matVariant — optional string passed to applyVariant() to tint sm
 export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, wm = null, scale = 1.0) {
-  const c = scale !== 1.0 ? scaleComp(comp, scale) : comp;
+  const c  = scale !== 1.0 ? scaleComp(comp, scale) : comp;
+  const s  = c.matVariant ? applyVariant(sm, c.matVariant) : sm;
   switch (c.type) {
-    case 'WALL':             return buildWall(c, sm, dm, style);
-    case 'ROUND_TOWER':      return buildRoundTower(c, sm, dm, rm, style);
-    case 'SQUARE_TOWER':     return buildSquareTower(c, sm, dm, rm, style);
-    case 'GABLED_HALL':      return buildGabledHall(c, sm, dm, rm);
-    case 'STAIRWAY':         return buildStairway(c, sm);
-    case 'GATE':             return buildGate(c, sm, dm, rm, style);
-    case 'ABBEY_MODULE':     return buildAbbeyModule(c, sm, rm);
-    case 'CIVILIAN_HOUSING': return buildCivilianHousing(c, sm, rm);
-    case 'BUTTRESS_SYSTEM':  return buildButtressSystem(c, sm, rm);
-    case 'MACHICOLATION':    return buildMachicolation(c, sm);
-    case 'DRAWBRIDGE':       return buildDrawbridge(c, sm, dm);
-    case 'ROCK_FOUNDATION':  return buildRockFoundation(c, gm || sm);
-    case 'TERRAIN_STACK':    return buildTerrainStack(c, gm || sm);
-    case 'SLOPE_PATH':       return buildSlopePath(c, c.useStone ? sm : (gm || sm));
-    case 'DITCH':            return buildDitch(c, gm || sm);
-    case 'WATER_PLANE':      return buildWaterPlane(c, wm || dm || sm);
-    case 'PLATEAU':          return buildPlateau(c, gm || sm);
-    case 'GLACIS':           return buildGlacis(c, gm || sm);
-    case 'RING':             return buildRing(c, sm, dm, rm, style);
+    case 'WALL':             return buildWall(c, s, dm, style);
+    case 'ROUND_TOWER':      return buildRoundTower(c, s, dm, rm, style);
+    case 'SQUARE_TOWER':     return buildSquareTower(c, s, dm, rm, style);
+    case 'GABLED_HALL':      return buildGabledHall(c, s, dm, rm);
+    case 'STAIRWAY':         return buildStairway(c, s);
+    case 'GATE':             return buildGate(c, s, dm, rm, style);
+    case 'ABBEY_MODULE':     return buildAbbeyModule(c, s, rm);
+    case 'CIVILIAN_HOUSING': return buildCivilianHousing(c, s, rm);
+    case 'BUTTRESS_SYSTEM':  return buildButtressSystem(c, s, rm);
+    case 'MACHICOLATION':    return buildMachicolation(c, s);
+    case 'HOARDING':         return buildHoarding(c, s, dm);
+    case 'DRAWBRIDGE':       return buildDrawbridge(c, s, dm);
+    case 'ROCK_FOUNDATION':  return buildRockFoundation(c, gm || s);
+    case 'TERRAIN_STACK':    return buildTerrainStack(c, gm || s);
+    case 'SLOPE_PATH':       return buildSlopePath(c, c.useStone ? s : (gm || s));
+    case 'DITCH':            return buildDitch(c, gm || s);
+    case 'WATER_PLANE':      return buildWaterPlane(c, wm || dm || s);
+    case 'PLATEAU':          return buildPlateau(c, gm || s);
+    case 'GLACIS':           return buildGlacis(c, gm || s);
+    case 'RING':             return buildRing(c, s, dm, rm, style);
     default: return null;
   }
 }

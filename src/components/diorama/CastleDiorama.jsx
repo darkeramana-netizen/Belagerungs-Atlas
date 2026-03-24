@@ -84,11 +84,12 @@ export default function CastleDiorama({ castle }) {
       }
 
       // ── Build castle ─────────────────────────────────────────────────────
-      const components = model.components || generateComponents(castle);
+      const components  = model.components || generateComponents(castle);
+      const globalScale = model.scale || 1.0;
       const clickables  = [];
 
       components.forEach(comp => {
-        const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock, mats.water);
+        const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock, mats.water, globalScale);
         if (!obj) return;
         snapToGround(obj);
         scene.add(obj);
@@ -295,6 +296,7 @@ export default function CastleDiorama({ castle }) {
     model.focus?.x,
     model.focus?.y,
     model.focus?.z,
+    model.scale,
     model.style,
     model.terrainModel,
   ]);

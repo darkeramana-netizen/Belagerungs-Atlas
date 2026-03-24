@@ -72,6 +72,46 @@ function applySpatialSafetyRules(components, options = {}) {
   const plateaus = components.filter(c => c.type === 'PLATEAU');
   const habitations = components.filter(isHabitationComp);
 
+  // ── Glacis-Snap ─────────────────────────────────────────────────────────
+  // A GLACIS whose base sits above the outer ring base would float visually.
+  // Clamp glacis.y to at most the outer ring's y + 0.15 so it merges cleanly
+  // into the wall foot.  Skipped for surveyed layouts (authored positions win).
+  if (allowLateralShift && rings.length) {
+    const outerRingY = rings[0].y || 0;
+    glacis.forEach(gl => {
+      if ((gl.y || 0) > outerRingY + 0.18) {
+        gl.y = outerRingY + 0.12;
+      }
+    });
+  }
+
+  // ── Attachment y-floor (HOARDING / MACHICOLATION / DRAWBRIDGE) ──────────
+  // For procedurally placed attachment components, guarantee they sit at or
+  // above the wall-walk / ring base level so they never clip downward through
+  // the structure they're attached to.
+  //   HOARDING / MACHICOLATION  → y-floor = nearest ring's (y + wall.h)
+  //   DRAWBRIDGE                → y-floor = outer ring base y - 0.08
+  if (allowLateralShift && rings.length) {
+    const attachTypes = new Set(['HOARDING', 'MACHICOLATION']);
+    components.forEach(comp => {
+      if (attachTypes.has(comp.type)) {
+        // Find the ring whose wall-walk level is closest above the component's y
+        const wallWalkY = rings.reduce((best, ring) => {
+          const ww = (ring.y || 0) + (ring.wall?.h || 3);
+          return Math.abs(ww - (comp.y || 0)) < Math.abs(best - (comp.y || 0)) ? ww : best;
+        }, Infinity);
+        if (isFinite(wallWalkY)) {
+          comp.y = Math.max(comp.y || 0, wallWalkY - 0.12);
+        }
+      }
+
+      if (comp.type === 'DRAWBRIDGE') {
+        const baseY = rings[0].y || 0;
+        comp.y = Math.max(comp.y || 0, baseY - 0.08);
+      }
+    });
+  }
+
   habitations.forEach(comp => {
     comp.y = Math.max(0.04, comp.y || 0);
 
