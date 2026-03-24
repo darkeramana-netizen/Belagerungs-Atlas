@@ -7,6 +7,7 @@ import { getDioramaModel } from './normalize.js';
 import { initPhysicsWorld } from './PhysicsWorld.js';
 import { RapierFPSController } from './RapierFPSController.js';
 import { buildScaleDummy } from './ScaleDummy.js';
+import { buildSky } from './SkySystem.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -57,14 +58,17 @@ export default function CastleDiorama({ castle }) {
       const scene = new T.Scene();
 
       // ── Camera ───────────────────────────────────────────────────────────
-      const camera = new T.PerspectiveCamera(52, W / H, 0.1, 200);
+      const camera = new T.PerspectiveCamera(52, W / H, 0.1, 6000);
 
       // ── Materials (style-aware palette) ─────────────────────────────────
       const style = model.style || resolveStyle(castle);
       const mats  = getMaterials(style);
       const scenePreset = getScenePreset(style);
-      scene.background = new T.Color(scenePreset.background);
-      scene.fog = new T.FogExp2(scenePreset.fog.color, scenePreset.fog.density);
+
+      // ── Sky (Preetham model) + environment map ────────────────────────────
+      const skySystem = buildSky(renderer, scene, style);
+      scene.environment = skySystem.envMap;   // IBL reflections on all PBR mats
+      scene.fog = new T.FogExp2(skySystem.fogColor, skySystem.fogDensity);
 
       // ── Ground disc ──────────────────────────────────────────────────────
       const gnd = new T.Mesh(new T.CircleGeometry(55, 48), mats.ground);
@@ -345,6 +349,8 @@ export default function CastleDiorama({ castle }) {
       cleanupFns.push(() => {
         fpsCtrl.dispose();
         physWorld.dispose();
+        skySystem.dispose();
+        scene.environment = null;
         fpsModeRef.current = false;
         mount.removeEventListener('pointerdown',  onPD);
         mount.removeEventListener('pointermove',  onPM);

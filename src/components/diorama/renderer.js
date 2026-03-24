@@ -1,4 +1,12 @@
 import * as THREE from 'three';
+import {
+  makeStoneNormalMap,
+  makeMasonryNormalMap,
+  makeRockNormalMap,
+  makeWoodNormalMap,
+  makeStoneRoughnessMap,
+  makeMasonryRoughnessMap,
+} from './ProceduralTextures.js';
 
 function makeTextureFromNoise(baseHex, seed = 42, amplitude = 24, alpha = 255) {
   const size = 128;
@@ -145,57 +153,67 @@ function makeRoofTileTexture(baseHex, seamHex, seed = 13) {
 
 function mkStoneMat(hex, seed = 42) {
   return new THREE.MeshStandardMaterial({
-    map: makeTextureFromNoise(hex, seed, 24),
-    bumpMap: makeTextureFromNoise(0x7f7f7f, seed + 101, 42),
-    bumpScale: 0.08,
-    roughness: 0.84,
+    map:          makeTextureFromNoise(hex, seed, 24),
+    normalMap:    makeStoneNormalMap(seed, 2.6, 256, 3),
+    normalScale:  new THREE.Vector2(1.0, 1.0),
+    roughnessMap: makeStoneRoughnessMap(seed + 5, 0.87, 256, 3),
+    roughness: 0.87,
     metalness: 0.02,
+    envMapIntensity: 0.30,
   });
 }
 
 function mkMasonryMat(hex, mortarHex, seed = 42) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map: makeMasonryTexture(hex, mortarHex, seed, 16),
-    bumpMap: makeMasonryTexture(0x868686, 0x646464, seed + 41, 26),
-    bumpScale: 0.06,
-    roughness: 0.9,
+    map:          makeMasonryTexture(hex, mortarHex, seed, 16),
+    normalMap:    makeMasonryNormalMap(seed, 3.2, 256, 2),
+    normalScale:  new THREE.Vector2(1.0, 1.0),
+    roughnessMap: makeMasonryRoughnessMap(seed + 7, 0.88, 256, 2),
+    roughness: 0.88,
     metalness: 0.01,
+    envMapIntensity: 0.25,
   });
 }
 
 function mkRockMat(hex, accentHex, seed = 71) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map: makeStrataTexture(hex, accentHex, seed, 18),
-    bumpMap: makeStrataTexture(0x7d7d7d, 0x5f5f5f, seed + 19, 30),
-    bumpScale: 0.1,
+    map:         makeStrataTexture(hex, accentHex, seed, 18),
+    normalMap:   makeRockNormalMap(seed, 3.0, 256, 2.5),
+    normalScale: new THREE.Vector2(1.0, 1.0),
     roughness: 0.96,
     metalness: 0.0,
+    envMapIntensity: 0.15,
   });
 }
 
 function mkRoofMat(hex, seamHex, seed = 11) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map: makeRoofTileTexture(hex, seamHex, seed),
-    bumpMap: makeRoofTileTexture(0x8c8c8c, 0x4d4d4d, seed + 23),
-    bumpScale: 0.045,
+    map:         makeRoofTileTexture(hex, seamHex, seed),
+    normalMap:   makeStoneNormalMap(seed + 3, 1.5, 256, 2.4),
+    normalScale: new THREE.Vector2(0.7, 0.7),
     roughness: 0.86,
     metalness: 0.02,
+    envMapIntensity: 0.20,
   });
 }
 
 let _renderer = null;
 export function getRenderer() {
   if (!_renderer) {
-    _renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: false });
+    _renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      logarithmicDepthBuffer: false,
+      powerPreference: 'high-performance',
+    });
     _renderer.shadowMap.enabled = true;
     _renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     _renderer.physicallyCorrectLights = true;
     _renderer.outputColorSpace = THREE.SRGBColorSpace;
     _renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    _renderer.toneMappingExposure = 1.18;
+    _renderer.toneMappingExposure = 1.0;
   }
   return _renderer;
 }
@@ -203,11 +221,12 @@ export function getRenderer() {
 export function mkMat(hex, rough = 0.8, metal = 0.05, seed = 12, textureAmp = 14) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map: makeTextureFromNoise(hex, seed, textureAmp),
-    bumpMap: makeTextureFromNoise(0x7f7f7f, seed + 27, textureAmp * 1.2),
-    bumpScale: 0.03,
-    roughness: rough,
-    metalness: metal,
+    map:         makeTextureFromNoise(hex, seed, textureAmp),
+    normalMap:   makeWoodNormalMap(seed, 1.6, 256, 2),
+    normalScale: new THREE.Vector2(0.5, 0.5),
+    roughness:   rough,
+    metalness:   metal,
+    envMapIntensity: 0.15,
   });
 }
 
@@ -292,39 +311,40 @@ export function getScenePreset(style = 'crusader') {
   switch (style) {
     case 'japanese':
       return {
-        background: 0x0b1010,
-        fog: { color: 0x0b1010, density: 0.013 },
-        ambient: { color: 0xd7ddd7, intensity: 2.3 },
-        sun: { color: 0xf9f2df, intensity: 4.8, position: [18, 28, 16] },
-        fill: { color: 0x95aeb3, intensity: 1.6, position: [-15, 10, -20] },
-        rim: { color: 0x5f7d88, intensity: 0.75, position: [0, 8, -24] },
+        // sky params (used by SkySystem.buildSky, kept here for reference)
+        useSky: true,
+        fog: { color: 0x8ba8ae, density: 0.010 },
+        ambient: { color: 0xd7ddd7, intensity: 1.6 },
+        sun: { color: 0xf9f2df, intensity: 3.8, position: [18, 28, 16] },
+        fill: { color: 0x95aeb3, intensity: 1.1, position: [-15, 10, -20] },
+        rim: { color: 0x5f7d88, intensity: 0.55, position: [0, 8, -24] },
       };
     case 'oriental':
       return {
-        background: 0x120d08,
-        fog: { color: 0x120d08, density: 0.014 },
-        ambient: { color: 0xd7c9aa, intensity: 2.5 },
-        sun: { color: 0xffefcf, intensity: 5.3, position: [26, 30, 12] },
-        fill: { color: 0x8ca0b0, intensity: 1.4, position: [-14, 10, -18] },
-        rim: { color: 0x7b5b36, intensity: 0.9, position: [10, 6, -25] },
+        useSky: true,
+        fog: { color: 0xd4a868, density: 0.011 },
+        ambient: { color: 0xd7c9aa, intensity: 1.7 },
+        sun: { color: 0xffefcf, intensity: 4.0, position: [26, 30, 12] },
+        fill: { color: 0x8ca0b0, intensity: 1.0, position: [-14, 10, -18] },
+        rim: { color: 0x7b5b36, intensity: 0.7, position: [10, 6, -25] },
       };
     case 'ancient':
       return {
-        background: 0x100b07,
-        fog: { color: 0x100b07, density: 0.015 },
-        ambient: { color: 0xcfbea3, intensity: 2.45 },
-        sun: { color: 0xffe4ba, intensity: 5.0, position: [24, 29, 10] },
-        fill: { color: 0x8798aa, intensity: 1.25, position: [-18, 11, -16] },
-        rim: { color: 0x74563a, intensity: 0.75, position: [6, 7, -24] },
+        useSky: true,
+        fog: { color: 0xc0a87c, density: 0.010 },
+        ambient: { color: 0xcfbea3, intensity: 1.65 },
+        sun: { color: 0xffe4ba, intensity: 3.8, position: [24, 29, 10] },
+        fill: { color: 0x8798aa, intensity: 0.90, position: [-18, 11, -16] },
+        rim: { color: 0x74563a, intensity: 0.55, position: [6, 7, -24] },
       };
-    default:
+    default: // crusader
       return {
-        background: 0x0a0806,
-        fog: { color: 0x0a0806, density: 0.0135 },
-        ambient: { color: 0xd8ccba, intensity: 2.2 },
-        sun: { color: 0xffefda, intensity: 6.2, position: [22, 35, 14] },
-        fill: { color: 0x8ea2b8, intensity: 1.35, position: [-18, 12, -22] },
-        rim: { color: 0xa38966, intensity: 1.1, position: [4, 8, -26] },
+        useSky: true,
+        fog: { color: 0x9cb8cc, density: 0.009 },
+        ambient: { color: 0xd8ccba, intensity: 1.5 },
+        sun: { color: 0xffefda, intensity: 4.5, position: [22, 35, 14] },
+        fill: { color: 0x8ea2b8, intensity: 0.95, position: [-18, 12, -22] },
+        rim: { color: 0xa38966, intensity: 0.80, position: [4, 8, -26] },
       };
   }
 }
