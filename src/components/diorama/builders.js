@@ -8,6 +8,54 @@ import {
 import { buildRoofForStyle } from './roofs.js';
 import { buildHoarding, buildOriel } from './details.js';
 
+// ── scaleComp ─────────────────────────────────────────────────────────────
+// Returns a shallow-copied component definition with every spatial value
+// multiplied by `s`. Used by the dispatcher's `scale` parameter so a single
+// castle can be rendered at a different metric scale without touching heroData.
+// Convention: 1 unit = 1 metre going forward.
+export function scaleComp(comp, s) {
+  if (!s || s === 1) return comp;
+  const c = { ...comp };
+
+  // Position / simple scalars
+  const scalarKeys = ['x','y','z','w','d','h','r','rTop','rBot',
+                       'x1','z1','y1','x2','z2','y2',
+                       'pitD','pitH','overhang','gallH','corbH'];
+  scalarKeys.forEach(k => { if (c[k] !== undefined) c[k] *= s; });
+
+  // Tower points (RING)
+  if (Array.isArray(c.points)) {
+    c.points = c.points.map(pt => {
+      const np = { ...pt };
+      ['x','y','z','r','h'].forEach(k => { if (np[k] !== undefined) np[k] *= s; });
+      return np;
+    });
+  }
+  // Polygon footprint (TERRAIN_STACK)
+  if (Array.isArray(c.footprint)) {
+    c.footprint = c.footprint.map(pt => ({
+      ...pt,
+      x: (pt.x || 0) * s,
+      z: (pt.z || 0) * s,
+    }));
+  }
+  // Layer heights (TERRAIN_STACK)
+  if (Array.isArray(c.layers)) {
+    c.layers = c.layers.map(l => ({ ...l, h: (l.h || l.height || 0.5) * s }));
+  }
+  // Gate sub-object
+  if (c.gate) {
+    c.gate = { ...c.gate };
+    ['w','d','h'].forEach(k => { if (c.gate[k] !== undefined) c.gate[k] *= s; });
+  }
+  // Wall config inside RING
+  if (c.wall) {
+    c.wall = { ...c.wall };
+    ['h','thick'].forEach(k => { if (c.wall[k] !== undefined) c.wall[k] *= s; });
+  }
+  return c;
+}
+
 function createFootprintShape(points, scale = 1) {
   const shape = new THREE.Shape();
   points.forEach((pt, idx) => {
@@ -1157,27 +1205,245 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
   return g;
 }
 
+// ── MACHICOLATION (Pechnasen) ─────────────────────────────────────────────
+// Stone gallery projecting outward from the top of a tower or wall with floor
+// openings (meurtrières) through which defenders could drop projectiles.
+//
+// mode:'round' (default) — ring of corbels around a cylindrical tower
+// mode:'wall'            — linear gallery along a wall segment
+//
+// Parameters:
+//   p.r        — tower radius (round mode, default 2.0)
+//   p.w        — gallery length (wall mode, default 8.0)
+//   p.overhang — how far floor slab projects outward (default 0.50)
+//   p.gallH    — outer parapet height (default 0.48)
+//   p.corbH    — corbel block height below floor (default 0.30)
+//   p.floorT   — floor slab thickness (default 0.15)
+//   p.count    — number of corbel/slot pairs; 0 = auto (default 0)
+//   p.slotRatio — fraction of arc/span that is open slot (default 0.40)
+//   p.y        — base elevation (hinge point at top of wall/tower)
+export function buildMachicolation(p, sm) {
+  const y       = Math.max(0, p.y || 0);
+  const overhang = p.overhang  || 0.50;
+  const gallH   = p.gallH     || 0.48;
+  const corbH   = p.corbH     || 0.30;
+  const floorT  = p.floorT    || 0.15;
+  const slotR   = p.slotRatio !== undefined ? p.slotRatio : 0.40;
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  if (p.mode === 'wall') {
+    // ── Linear gallery ──────────────────────────────────────────────────
+    const w     = p.w || 8.0;
+    const count = p.count || Math.max(2, Math.round(w / 1.35));
+    const step  = w / count;
+    const cW    = step * (1 - slotR);          // corbel/slab width
+    const rOut  = overhang;                    // z offset from wall face
+
+    for (let i = 0; i < count; i++) {
+      const cx = -w / 2 + (i + 0.5) * step;
+
+      // Floor slab
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(cW, floorT, overhang), sm);
+      slab.position.set(cx, corbH + floorT / 2, rOut / 2);
+      slab.castShadow = true;
+      g.add(slab);
+
+      // Corbel (angled bracket) below slab — tapers toward wall face
+      const corb = new THREE.Mesh(new THREE.BoxGeometry(cW * 0.82, corbH, overhang * 0.58), sm);
+      corb.position.set(cx, corbH / 2, rOut * 0.71);
+      corb.castShadow = true;
+      g.add(corb);
+    }
+
+    // Continuous outer parapet on top of the gallery
+    const parapet = new THREE.Mesh(new THREE.BoxGeometry(w, gallH, 0.20), sm);
+    parapet.position.set(0, corbH + floorT + gallH / 2, rOut + 0.10);
+    parapet.castShadow = true;
+    g.add(parapet);
+
+  } else {
+    // ── Circular gallery (round tower) ───────────────────────────────────
+    const r     = p.r || 2.0;
+    const rMid  = r + overhang / 2;
+    const circ  = 2 * Math.PI * rMid;
+    const count = p.count || Math.max(6, Math.round(circ / 1.30));
+    const cW    = (circ / count) * (1 - slotR);
+
+    for (let i = 0; i < count; i++) {
+      const ang = (i / count) * Math.PI * 2;
+      const sx  = Math.sin(ang);
+      const sz  = Math.cos(ang);
+
+      // Floor slab segment
+      const slab = new THREE.Mesh(new THREE.BoxGeometry(cW, floorT, overhang), sm);
+      slab.position.set(sx * rMid, corbH + floorT / 2, sz * rMid);
+      slab.rotation.y = -ang;
+      slab.castShadow = true;
+      g.add(slab);
+
+      // Corbel below (angled toward tower face)
+      const corb = new THREE.Mesh(new THREE.BoxGeometry(cW * 0.80, corbH, overhang * 0.55), sm);
+      corb.position.set(sx * (r + overhang * 0.72), corbH / 2, sz * (r + overhang * 0.72));
+      corb.rotation.y = -ang;
+      corb.castShadow = true;
+      g.add(corb);
+    }
+
+    // Outer parapet ring
+    const segs = count * 2;
+    const rOut = r + overhang + 0.10;
+    const parapet = new THREE.Mesh(
+      new THREE.CylinderGeometry(rOut, rOut, gallH, segs),
+      sm,
+    );
+    parapet.position.y = corbH + floorT + gallH / 2;
+    parapet.castShadow = true;
+    g.add(parapet);
+  }
+
+  return g;
+}
+
+// ── DRAWBRIDGE (Zugbrücke) ────────────────────────────────────────────────
+// Modular drawbridge: hinged wooden platform + chains + gate-wall recess.
+// Hinge sits at the gate wall face (local z = 0); bridge extends toward z+.
+//
+// Parameters:
+//   p.w       — bridge width (default 3.2)
+//   p.d       — bridge span / length (default 3.6)
+//   p.h       — deck plank thickness (default 0.20)
+//   p.angle   — raise angle in radians: 0 = flat, Math.PI/2 = vertical (default 0)
+//   p.pitD    — depth of the pit in front of gate (0 = none, default 1.0)
+//   p.pitH    — pit box height below ground (default 0.50)
+//   p.chains  — show chains (default true when angle > 0)
+//   p.y       — base elevation of the hinge
+export function buildDrawbridge(p, sm, dm) {
+  const w     = p.w    || 3.2;
+  const d     = p.d    || 3.6;
+  const thick = p.h    || 0.20;
+  const angle = p.angle !== undefined ? p.angle : 0;
+  const pitD  = p.pitD !== undefined ? p.pitD : 1.0;
+  const pitH  = p.pitH || 0.50;
+  const showChains = p.chains !== false && angle > 0.04;
+  const plankMat = dm || sm;
+  const y     = Math.max(0, p.y || 0);
+
+  const g = new THREE.Group();
+  g.position.set(p.x || 0, y, p.z || 0);
+  if (p.rotation) g.rotation.y = p.rotation;
+  g.userData = { label: p.label || '', info: p.info || '' };
+
+  // ── Bridge deck (hinged at z=0, extends to z=d when flat) ──────────────
+  const deckPivot = new THREE.Group(); // rotation around x-axis at hinge
+  deckPivot.rotation.x = -angle;
+  g.add(deckPivot);
+
+  // Main deck slab
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(w, thick, d), sm);
+  deck.position.set(0, thick / 2, d / 2);
+  deck.castShadow = true;
+  deck.receiveShadow = true;
+  deckPivot.add(deck);
+
+  // Planks across the deck (visible grain lines)
+  const plankCount = Math.max(3, Math.round(d / 0.42));
+  for (let pi = 0; pi < plankCount; pi++) {
+    const pz = (pi + 0.5) * (d / plankCount);
+    const plank = new THREE.Mesh(
+      new THREE.BoxGeometry(w + 0.06, thick * 0.22, 0.20), plankMat,
+    );
+    plank.position.set(0, thick + thick * 0.11, pz);
+    deckPivot.add(plank);
+  }
+
+  // Side beams (structural rails along the length)
+  [-1, 1].forEach(side => {
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(0.16, thick * 1.5, d), sm);
+    beam.position.set(side * (w / 2 - 0.08), thick * 0.75, d / 2);
+    beam.castShadow = true;
+    deckPivot.add(beam);
+  });
+
+  // ── Chains (only visible when bridge is raised) ──────────────────────
+  if (showChains) {
+    const chainR    = 0.045;
+    const attachH   = 1.70; // chain attaches this high on gate wall (above hinge)
+    // Tip of bridge in world-local space after rotation
+    const tipY = d * Math.sin(angle);
+    const tipZ = d * Math.cos(angle);
+
+    [-1, 1].forEach(side => {
+      const ox = side * (w / 2 - 0.24);
+      const ax = ox, ay = attachH, az = -0.08; // gate anchor
+      const bx = ox, by = tipY + thick,  bz = tipZ;   // bridge tip
+
+      const dx = bx - ax, dy = by - ay, dz = bz - az;
+      const len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (len < 0.2) return;
+
+      const chain = new THREE.Mesh(
+        new THREE.CylinderGeometry(chainR, chainR, len, 4), sm,
+      );
+      chain.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
+      chain.quaternion.setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0),
+        new THREE.Vector3(dx / len, dy / len, dz / len),
+      );
+      chain.castShadow = true;
+      g.add(chain);
+    });
+  }
+
+  // ── Pit / recess in front of gate ─────────────────────────────────────
+  // Visible when bridge is down — the dark box below represents the water/void.
+  if (pitD > 0) {
+    const pit = new THREE.Mesh(
+      new THREE.BoxGeometry(w + 1.0, pitH, pitD), dm || sm,
+    );
+    pit.position.set(0, -pitH / 2 + 0.03, pitD / 2 + 0.08);
+    pit.receiveShadow = true;
+    g.add(pit);
+
+    // Pit rim (narrow raised edge around the pit)
+    const rim = new THREE.Mesh(
+      new THREE.BoxGeometry(w + 1.2, 0.10, pitD + 0.2), sm,
+    );
+    rim.position.set(0, 0.05, pitD / 2 + 0.08);
+    g.add(rim);
+  }
+
+  return g;
+}
+
 // ── Component dispatcher ──────────────────────────────────────────────────
 // gm (rock/ground material) is used for GLACIS; falls back to sm if not provided.
-export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, wm = null) {
-  switch (comp.type) {
-    case 'WALL':             return buildWall(comp, sm, dm, style);
-    case 'ROUND_TOWER':      return buildRoundTower(comp, sm, dm, rm, style);
-    case 'SQUARE_TOWER':     return buildSquareTower(comp, sm, dm, rm, style);
-    case 'GABLED_HALL':      return buildGabledHall(comp, sm, dm, rm);
-    case 'STAIRWAY':         return buildStairway(comp, sm);
-    case 'GATE':             return buildGate(comp, sm, dm, rm, style);
-    case 'ABBEY_MODULE':     return buildAbbeyModule(comp, sm, rm);
-    case 'CIVILIAN_HOUSING': return buildCivilianHousing(comp, sm, rm);
-    case 'BUTTRESS_SYSTEM':  return buildButtressSystem(comp, sm, rm);
-    case 'ROCK_FOUNDATION':  return buildRockFoundation(comp, gm || sm);
-    case 'TERRAIN_STACK':    return buildTerrainStack(comp, gm || sm);
-    case 'SLOPE_PATH':       return buildSlopePath(comp, comp.useStone ? sm : (gm || sm));
-    case 'DITCH':            return buildDitch(comp, gm || sm);
-    case 'WATER_PLANE':      return buildWaterPlane(comp, wm || dm || sm);
-    case 'PLATEAU':          return buildPlateau(comp, gm || sm);
-    case 'GLACIS':           return buildGlacis(comp, gm || sm);
-    case 'RING':             return buildRing(comp, sm, dm, rm, style);
+// scale: optional global metre-scale multiplier (1.0 = no change, use scaleComp)
+export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, wm = null, scale = 1.0) {
+  const c = scale !== 1.0 ? scaleComp(comp, scale) : comp;
+  switch (c.type) {
+    case 'WALL':             return buildWall(c, sm, dm, style);
+    case 'ROUND_TOWER':      return buildRoundTower(c, sm, dm, rm, style);
+    case 'SQUARE_TOWER':     return buildSquareTower(c, sm, dm, rm, style);
+    case 'GABLED_HALL':      return buildGabledHall(c, sm, dm, rm);
+    case 'STAIRWAY':         return buildStairway(c, sm);
+    case 'GATE':             return buildGate(c, sm, dm, rm, style);
+    case 'ABBEY_MODULE':     return buildAbbeyModule(c, sm, rm);
+    case 'CIVILIAN_HOUSING': return buildCivilianHousing(c, sm, rm);
+    case 'BUTTRESS_SYSTEM':  return buildButtressSystem(c, sm, rm);
+    case 'MACHICOLATION':    return buildMachicolation(c, sm);
+    case 'DRAWBRIDGE':       return buildDrawbridge(c, sm, dm);
+    case 'ROCK_FOUNDATION':  return buildRockFoundation(c, gm || sm);
+    case 'TERRAIN_STACK':    return buildTerrainStack(c, gm || sm);
+    case 'SLOPE_PATH':       return buildSlopePath(c, c.useStone ? sm : (gm || sm));
+    case 'DITCH':            return buildDitch(c, gm || sm);
+    case 'WATER_PLANE':      return buildWaterPlane(c, wm || dm || sm);
+    case 'PLATEAU':          return buildPlateau(c, gm || sm);
+    case 'GLACIS':           return buildGlacis(c, gm || sm);
+    case 'RING':             return buildRing(c, sm, dm, rm, style);
     default: return null;
   }
 }
