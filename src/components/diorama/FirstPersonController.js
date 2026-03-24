@@ -177,6 +177,11 @@ export class FirstPersonController {
 
   _onKD(e) {
     this._k[e.code] = true;
+    // Prevent browser defaults (scroll on Space, arrow-key scroll, etc.)
+    if (['Space','KeyW','KeyA','KeyS','KeyD',
+         'ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) {
+      e.preventDefault();
+    }
     if (e.code === 'Escape') {
       this.disable();
       if (this.onExit) this.onExit();

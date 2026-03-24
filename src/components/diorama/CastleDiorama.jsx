@@ -4,8 +4,8 @@ import { getRenderer, getMaterials, getScenePreset, resolveStyle } from './rende
 import { buildComponent } from './builders.js';
 import { generateComponents } from './generator.js';
 import { getDioramaModel } from './normalize.js';
-import { buildCollisionWorld } from './CollisionSystem.js';
-import { FirstPersonController } from './FirstPersonController.js';
+import { initPhysicsWorld } from './PhysicsWorld.js';
+import { RapierFPSController } from './RapierFPSController.js';
 import { buildScaleDummy } from './ScaleDummy.js';
 
 export default function CastleDiorama({ castle }) {
@@ -32,13 +32,16 @@ export default function CastleDiorama({ castle }) {
 
   useEffect(() => {
     let animId;
+    let cleanupFns = [];        // collected in async setup, called in cleanup
+    let cancelled  = false;
+
     const mount = mountRef.current;
     if (!mount) return;
     setReady(false);
     infoRef.current(null);
     hoverRef.current(null);
 
-    try {
+    (async () => { try {
       const T = THREE;
       const W = mount.clientWidth || 700;
       const H = Math.min(Math.round(W * 0.60), 460);
@@ -131,9 +134,10 @@ export default function CastleDiorama({ castle }) {
         scene.add(mesa);
       }
 
-      // ── Collision world (invisible — FPS only) ────────────────────────────
-      const colWorld = buildCollisionWorld(components);
-      scene.add(colWorld);
+      // ── Physics world (Rapier — async WASM init) ──────────────────────────
+      if (cancelled) return;
+      const physWorld = await initPhysicsWorld(components);
+      if (cancelled) { physWorld.dispose(); return; }
 
       // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
       const dummy = buildScaleDummy();
@@ -144,8 +148,8 @@ export default function CastleDiorama({ castle }) {
       scene.add(dummy);
       dummyRef.current = dummy;
 
-      // ── FPS controller ────────────────────────────────────────────────────
-      const fpsCtrl = new FirstPersonController(camera, colWorld, renderer.domElement);
+      // ── FPS controller (Rapier capsule controller) ────────────────────────
+      const fpsCtrl = new RapierFPSController(camera, physWorld, renderer.domElement);
       fpsCtrl.onExit = () => {
         fpsModeRef.current = false;
         setFpsMode(false);
@@ -337,18 +341,17 @@ export default function CastleDiorama({ castle }) {
       };
       tick();
 
-      // ── Cleanup ──────────────────────────────────────────────────────────
-      return () => {
+      // ── Register async-phase cleanup ─────────────────────────────────────
+      cleanupFns.push(() => {
         fpsCtrl.dispose();
+        physWorld.dispose();
         fpsModeRef.current = false;
-        cancelAnimationFrame(animId);
         mount.removeEventListener('pointerdown',  onPD);
         mount.removeEventListener('pointermove',  onPM);
         mount.removeEventListener('pointerup',    onPU);
         mount.removeEventListener('pointerleave', onLeave);
         mount.removeEventListener('wheel',        onWhl);
         mount.removeEventListener('click',        onClick);
-        // Dispose any active cloned highlight materials
         savedMats.forEach((_, mesh) => { mesh.material?.dispose(); });
         savedMats.clear();
         if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
@@ -360,11 +363,18 @@ export default function CastleDiorama({ castle }) {
           }
         });
         Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); });
-      };
+      });
+
     } catch (e) {
       console.error('CastleDiorama error:', castle.id, e);
       setReady(true);
-    }
+    } })(); // end async IIFE
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(animId);
+      cleanupFns.forEach(fn => fn());
+    };
   }, [
     castle.id,
     castle.type,
@@ -465,7 +475,7 @@ export default function CastleDiorama({ castle }) {
             display: 'flex', gap: '5px', alignItems: 'center',
           }}>
             <button
-              onClick={() => toggleFpsRef.current?.()}
+              onClick={e => { e.currentTarget.blur(); toggleFpsRef.current?.(); }}
               style={{
                 padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
                 background: fpsMode ? 'rgba(180,100,30,0.85)' : 'rgba(15,11,7,0.78)',
@@ -477,7 +487,7 @@ export default function CastleDiorama({ castle }) {
               {fpsMode ? '⬛ Orbit' : '👁 Erste Person'}
             </button>
             <button
-              onClick={() => toggleDummyRef.current?.()}
+              onClick={e => { e.currentTarget.blur(); toggleDummyRef.current?.(); }}
               style={{
                 padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
                 background: showDummy ? 'rgba(180,60,0,0.75)' : 'rgba(15,11,7,0.78)',
