@@ -153,10 +153,10 @@ function makeRoofTileTexture(baseHex, seamHex, seed = 13) {
 
 function mkStoneMat(hex, seed = 42) {
   return new THREE.MeshStandardMaterial({
-    map:          makeTextureFromNoise(hex, seed, 24),
-    normalMap:    makeStoneNormalMap(seed, 2.6, 256, 3),
-    normalScale:  new THREE.Vector2(1.0, 1.0),
-    roughnessMap: makeStoneRoughnessMap(seed + 5, 0.87, 256, 3),
+    map:          makeTextureFromNoise(hex, seed, 8),     // was 24 — reduces speckle
+    normalMap:    makeStoneNormalMap(seed, 1.2, 256, 2),  // strength 2.6→1.2, repeat 3→2
+    normalScale:  new THREE.Vector2(0.35, 0.35),          // was (1.0,1.0)
+    roughnessMap: makeStoneRoughnessMap(seed + 5, 0.87, 256, 2),
     roughness: 0.87,
     metalness: 0.02,
     envMapIntensity: 0.30,
@@ -166,9 +166,9 @@ function mkStoneMat(hex, seed = 42) {
 function mkMasonryMat(hex, mortarHex, seed = 42) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map:          makeMasonryTexture(hex, mortarHex, seed, 16),
-    normalMap:    makeMasonryNormalMap(seed, 3.2, 256, 2),
-    normalScale:  new THREE.Vector2(1.0, 1.0),
+    map:          makeMasonryTexture(hex, mortarHex, seed, 8),  // amplitude 16→8
+    normalMap:    makeMasonryNormalMap(seed, 1.5, 256, 2),      // strength 3.2→1.5
+    normalScale:  new THREE.Vector2(0.45, 0.45),                // was (1.0,1.0)
     roughnessMap: makeMasonryRoughnessMap(seed + 7, 0.88, 256, 2),
     roughness: 0.88,
     metalness: 0.01,
@@ -179,9 +179,9 @@ function mkMasonryMat(hex, mortarHex, seed = 42) {
 function mkRockMat(hex, accentHex, seed = 71) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map:         makeStrataTexture(hex, accentHex, seed, 18),
-    normalMap:   makeRockNormalMap(seed, 3.0, 256, 2.5),
-    normalScale: new THREE.Vector2(1.0, 1.0),
+    map:         makeStrataTexture(hex, accentHex, seed, 14),  // amplitude 18→14
+    normalMap:   makeRockNormalMap(seed, 1.4, 256, 2),         // strength 3.0→1.4
+    normalScale: new THREE.Vector2(0.45, 0.45),                // was (1.0,1.0)
     roughness: 0.96,
     metalness: 0.0,
     envMapIntensity: 0.15,
@@ -192,8 +192,8 @@ function mkRoofMat(hex, seamHex, seed = 11) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
     map:         makeRoofTileTexture(hex, seamHex, seed),
-    normalMap:   makeStoneNormalMap(seed + 3, 1.5, 256, 2.4),
-    normalScale: new THREE.Vector2(0.7, 0.7),
+    normalMap:   makeStoneNormalMap(seed + 3, 0.8, 256, 2),  // strength 1.5→0.8
+    normalScale: new THREE.Vector2(0.35, 0.35),               // was (0.7,0.7)
     roughness: 0.86,
     metalness: 0.02,
     envMapIntensity: 0.20,
@@ -221,9 +221,9 @@ export function getRenderer() {
 export function mkMat(hex, rough = 0.8, metal = 0.05, seed = 12, textureAmp = 14) {
   return new THREE.MeshStandardMaterial({
     color: new THREE.Color(hex),
-    map:         makeTextureFromNoise(hex, seed, textureAmp),
-    normalMap:   makeWoodNormalMap(seed, 1.6, 256, 2),
-    normalScale: new THREE.Vector2(0.5, 0.5),
+    map:         makeTextureFromNoise(hex, seed, Math.min(textureAmp, 10)),
+    normalMap:   makeWoodNormalMap(seed, 0.9, 256, 2),   // strength 1.6→0.9
+    normalScale: new THREE.Vector2(0.30, 0.30),           // was (0.5,0.5)
     roughness:   rough,
     metalness:   metal,
     envMapIntensity: 0.15,
