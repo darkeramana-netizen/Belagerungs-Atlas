@@ -287,6 +287,17 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
   if (!p.noRoof) {
     const roof = buildRoofForStyle(style, r, h, rm);
     if (roof) g.add(roof);
+  } else {
+    // Fighting platform: flat stone disc seals the open tower top.
+    // Sits just inside the parapetBand collar (r * 1.04) so it reads as a
+    // solid Kampfboden visible from above without clashing with the band.
+    const disc = new THREE.Mesh(
+      new THREE.CylinderGeometry(r * 0.97, r * 0.99, 0.16, 18), sm,
+    );
+    disc.position.y = h + 0.08;
+    disc.castShadow = true;
+    disc.receiveShadow = true;
+    g.add(disc);
   }
 
   return g;
