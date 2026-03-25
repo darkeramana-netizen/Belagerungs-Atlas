@@ -77,13 +77,13 @@ func _slope_path(comp: Dictionary) -> Node3D:
 	var dx  := x2 - x1
 	var dz  := z2 - z1
 	var dy  := y2 - y1
-	var len := sqrt(dx*dx + dz*dz + dy*dy)
-	if len < 0.1:
+	var seg_len := sqrt(dx*dx + dz*dz + dy*dy)
+	if seg_len < 0.1:
 		return root
 
 	var mi := MeshInstance3D.new()
 	var bm := BoxMesh.new()
-	bm.size = Vector3(sw, 0.14, len)
+	bm.size = Vector3(sw, 0.14, seg_len)
 	mi.mesh = bm
 	mi.material_override = _mat_stone
 	mi.position = Vector3((x1+x2)*0.5, (y1+y2)*0.5, (z1+z2)*0.5)
