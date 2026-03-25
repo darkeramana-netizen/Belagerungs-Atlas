@@ -104,6 +104,10 @@ export class ChunkManager {
 
     // NatureSystem interface: .size controls scatter outer radius
     this.size = 200;
+
+    // Bind so callers can destructure without losing 'this' context
+    // (NatureSystem does: const { size, getHeightAt } = terrain)
+    this.getHeightAt = this.getHeightAt.bind(this);
   }
 
   // ── Height at any world coordinate ─────────────────────────────────────────
