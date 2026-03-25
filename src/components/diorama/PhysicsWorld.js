@@ -35,6 +35,61 @@ function addCylinder(world, cx, cy, cz, r, hh) {
   world.createCollider(col, body);
 }
 
+// ── Hollow tower: approximate the open-ended cylindrical shell with N box segments ──
+// Matches the visual hollow geometry from buildRoundTower (same shellT / entArcW formulas).
+function addHollowTower(world, cx, cz, baseY, r, h, entAngle, entArcW) {
+  const shellT  = Math.max(0.18, r * 0.22);
+  const rMid    = r - shellT / 2;       // radius to centre of shell
+  const segs    = 10;                    // arc segments (excluding the entrance gap)
+  const restArc = Math.PI * 2 - entArcW;
+  const segArc  = restArc / segs;
+  const hh      = (h + 0.5) / 2;
+  const cy      = baseY + hh;
+
+  for (let i = 0; i < segs; i++) {
+    const ang     = entAngle + entArcW / 2 + (i + 0.5) * segArc;
+    const segLen  = 2 * rMid * Math.sin(segArc / 2);
+    const bx      = cx + Math.sin(ang) * rMid;
+    const bz      = cz + Math.cos(ang) * rMid;
+    const sinA = Math.sin(-ang / 2), cosA = Math.cos(-ang / 2);
+    const desc = RAPIER.RigidBodyDesc.fixed()
+      .setTranslation(bx, cy, bz)
+      .setRotation({ x: 0, y: sinA, z: 0, w: cosA });
+    const body = world.createRigidBody(desc);
+    world.createCollider(RAPIER.ColliderDesc.cuboid(segLen / 2, hh, shellT / 2), body);
+  }
+}
+
+// ── Physics trimesh from a THREE.BufferGeometry (world-space position) ────────
+// Used for helix ramp colliders emitted by buildRoundTower's spiral staircase.
+function addTrimeshFromMesh(world, mesh) {
+  const geo = mesh.geometry;
+  if (!geo) return;
+
+  // Ensure position attribute exists and is Float32
+  const posAttr = geo.getAttribute('position');
+  if (!posAttr) return;
+
+  // Clone vertex data and apply the mesh's world matrix
+  mesh.updateWorldMatrix(true, false);
+  const mat = mesh.matrixWorld;
+  const raw = posAttr.array;
+  const verts = new Float32Array(raw.length);
+  for (let i = 0; i < raw.length; i += 3) {
+    const x = raw[i], y = raw[i + 1], z = raw[i + 2];
+    verts[i]     = mat.elements[0] * x + mat.elements[4] * y + mat.elements[8]  * z + mat.elements[12];
+    verts[i + 1] = mat.elements[1] * x + mat.elements[5] * y + mat.elements[9]  * z + mat.elements[13];
+    verts[i + 2] = mat.elements[2] * x + mat.elements[6] * y + mat.elements[10] * z + mat.elements[14];
+  }
+
+  const idxAttr = geo.getIndex();
+  if (!idxAttr) return;
+  const indices = new Uint32Array(idxAttr.array);
+
+  const body = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
+  world.createCollider(RAPIER.ColliderDesc.trimesh(verts, indices), body);
+}
+
 // Build a wall box between two 2-D points at given y-base.
 function addWallBox(world, x1, z1, x2, z2, h, thick, baseY) {
   const dx = x2 - x1, dz = z2 - z1;
@@ -55,9 +110,10 @@ function addWallBox(world, x1, z1, x2, z2, h, thick, baseY) {
  *
  * @param {Array}   components  — same array used by buildCollisionWorld()
  * @param {object|null} terrainData — optional { heights, segs, size } from TerrainSystem
+ * @param {THREE.Mesh[]} [physRamps=[]] — invisible ramp meshes from CastleEngine.physicsRamps
  * @returns {Promise<{world: RAPIER.World, RAPIER: object, step: Function, dispose: Function}>}
  */
-export async function initPhysicsWorld(components, terrainData = null) {
+export async function initPhysicsWorld(components, terrainData = null, physRamps = []) {
   await RAPIER.init();
 
   const gravity = { x: 0.0, y: -22.0, z: 0.0 };
@@ -158,20 +214,41 @@ export async function initPhysicsWorld(components, terrainData = null) {
         comp.h || 3, comp.thick || 0.75, y);
     }
 
-    // ── ROUND_TOWER ───────────────────────────────────────────────────────
+    // ── ROUND_TOWER — hollow arc-segment shell (matches visual geometry) ──────
     if (comp.type === 'ROUND_TOWER') {
       const r  = comp.r || 1.2;
       const h  = comp.h || 5;
-      const hh = (h + 0.5) / 2;
-      addCylinder(world, comp.x || 0, y + hh, comp.z || 0, r + 0.06, hh);
+      // Compute the same entrance parameters as buildRoundTower
+      const entW    = Math.max(0.8, r * 0.70);
+      const entArcW = Math.asin(Math.min(0.98, entW / (2 * r))) * 2;
+      const entAng  = comp.entranceAngle ?? 0;
+      addHollowTower(world, comp.x || 0, comp.z || 0, y, r, h, entAng, entArcW);
+      // Floor slab
+      const shellT = Math.max(0.18, r * 0.22);
+      addCylinder(world, comp.x || 0, y + 0.07, comp.z || 0, r - shellT, 0.07);
     }
 
-    // ── Box-shaped structures (non-gate) ──────────────────────────────────
+    // ── Box-shaped structures — hollow face panels (matches visual geometry) ──
     if (['SQUARE_TOWER', 'GABLED_HALL', 'ABBEY_MODULE'].includes(comp.type)) {
       const w  = comp.w || 3, d = comp.d || 3, h = comp.h || 5;
       const ry = comp.rotation || 0;
-      const cy = y + (h + 0.4) / 2;
-      addBox(world, comp.x || 0, cy, comp.z || 0, (w + 0.1) / 2, (h + 0.4) / 2, (d + 0.1) / 2, ry);
+      const cy = y + h / 2 + 0.002;
+      const shellT = Math.max(0.15, Math.min(w, d) * 0.18);
+      // Four hollow face boxes instead of one solid box
+      const faces = [
+        [0,  d / 2 - shellT / 2, w,     ry],    // front (+z)
+        [0, -(d / 2 - shellT / 2), w,   ry],    // back  (-z)
+        [ w / 2 - shellT / 2, 0,  d, ry + Math.PI / 2], // right (+x)
+        [-(w / 2 - shellT / 2), 0, d, ry + Math.PI / 2], // left  (-x)
+      ];
+      for (const [dx, dz, fw, fry] of faces) {
+        const fx = (comp.x || 0) + dx * Math.cos(ry) - dz * Math.sin(ry);
+        const fz = (comp.z || 0) + dx * Math.sin(ry) + dz * Math.cos(ry);
+        addBox(world, fx, cy, fz, fw / 2, (h + 0.4) / 2, shellT / 2, fry);
+      }
+      // Floor slab
+      addBox(world, comp.x || 0, y + 0.06, comp.z || 0,
+        (w - shellT * 2) / 2, 0.06, (d - shellT * 2) / 2, ry);
     }
 
     // ── GATE — split into piers + lintel so passage is passable ───────────
@@ -275,6 +352,16 @@ export async function initPhysicsWorld(components, terrainData = null) {
       }
     }
   });
+
+  // ── Physics ramp trimeshes (helix ramps for spiral stairs, slope ramps for stair flights)
+  for (const ramp of physRamps) {
+    try {
+      addTrimeshFromMesh(world, ramp);
+    } catch (e) {
+      // trimesh creation can fail on degenerate geometry — log and skip
+      console.warn('[PhysicsWorld] trimesh ramp skipped:', e.message);
+    }
+  }
 
   return {
     world,

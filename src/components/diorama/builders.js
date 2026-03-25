@@ -8,6 +8,36 @@ import {
 import { buildRoofForStyle } from './roofs.js';
 import { buildHoarding as buildTowerHoarding, buildOriel } from './details.js';
 
+// ── Physics-ramp geometry helper ───────────────────────────────────────────────
+// Produces a helical strip BufferGeometry that Rapier can use as a trimesh collider
+// for the spiral staircase inside a round tower.
+// The resulting mesh is invisible in the scene but has userData.isPhysicsRamp = true.
+function makeHelixRampGeometry(rInner, h, stepsN, turns, entAngle) {
+  const rI = Math.max(0.1, rInner * 0.12); // inner edge (near centre column)
+  const rO = rInner * 0.94;                // outer edge (near shell wall)
+  const verts = [];
+  const idx   = [];
+
+  for (let i = 0; i <= stepsN; i++) {
+    const t   = i / stepsN;
+    const ang = entAngle + Math.PI + t * turns * Math.PI * 2;
+    const y   = t * (h - 1.0) + 0.14;
+    verts.push(
+      Math.sin(ang) * rI, y, Math.cos(ang) * rI,
+      Math.sin(ang) * rO, y, Math.cos(ang) * rO,
+    );
+    if (i > 0) {
+      const b = (i - 1) * 2;
+      idx.push(b, b + 2, b + 1);
+      idx.push(b + 1, b + 2, b + 3);
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+  geo.setIndex(idx);
+  return geo;
+}
+
 // ── scaleComp ─────────────────────────────────────────────────────────────
 // Returns a shallow-copied component definition with every spatial value
 // multiplied by `s`. Used by the dispatcher's `scale` parameter so a single
@@ -334,6 +364,19 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
     g.add(stairIM);
   }
 
+  // ── Physics helix ramp (invisible — used by Rapier trimesh collider) ──────
+  // Mirrors the spiral staircase so the physics capsule can walk up/down
+  // smoothly without bouncing on individual step edges.
+  const ramps = [];
+  if (h >= 4.0) {
+    const stepsN = Math.ceil(h / 0.26);
+    const turns  = h / 3.2;
+    const rampGeo = makeHelixRampGeometry(rInner, h, stepsN, turns, entAngle);
+    const rampMesh = new THREE.Mesh(rampGeo); // no material — physics-only
+    rampMesh.position.set(p.x, Math.max(0, p.y || 0), p.z);
+    ramps.push(rampMesh);
+  }
+
   const plinth = new THREE.Mesh(new THREE.CylinderGeometry(r * plinthTop, r * plinthBot, plinthH, 18), sm);
   plinth.position.y = Math.max(plinthH / 2 - plinthDrop, h * 0.045 - plinthDrop);
   plinth.castShadow = true;
@@ -399,7 +442,7 @@ export function buildRoundTower(p, sm, dm, rm, style = 'crusader') {
     g.add(disc);
   }
 
-  return g;
+  return { group: g, ramps };
 }
 
 // ── SQUARE TOWER ─────────────────────────────────────────────────────────
@@ -775,7 +818,19 @@ export function buildStairFlight(p, sm) {
     g.add(cheek);
   });
 
-  return g;
+  // ── Physics slope ramp (invisible trimesh for smooth capsule movement) ──────
+  // A flat inclined slab slightly above the step surface so Rapier's capsule
+  // slides continuously instead of bouncing on individual step edges.
+  const slopeGeo = new THREE.BoxGeometry(w * 0.92, 0.06, slopeLen);
+  const slopeMesh = new THREE.Mesh(slopeGeo);
+  slopeMesh.position.set(
+    (p.x || 0),
+    (p.y || 0) + totalH / 2,
+    (p.z || 0) + totalD / 2,
+  );
+  slopeMesh.rotation.set(pitch, p.rotation || 0, 0); // same pitch as cheeks
+
+  return { group: g, ramps: [slopeMesh] };
 }
 
 export function buildGate(p, sm, dm, rm, style = 'crusader') {
@@ -788,15 +843,38 @@ export function buildGate(p, sm, dm, rm, style = 'crusader') {
   if (p.rotation !== undefined) g.rotation.y = p.rotation;
   g.userData = { label: p.label || '', info: p.info || '' };
 
-  // Flanking towers
+  // Flanking towers — hollow (Principle 2: Interior Logic)
+  // Each tower uses the same open-ended arc-gap shell as buildRoundTower.
+  // Entrance faces inward (+z toward passage) so the player can enter from the courtyard.
+  const tShellT   = Math.max(0.15, tR * 0.22);
+  const tEntW     = Math.max(0.7, tR * 0.70);
+  const tEntArcW  = Math.asin(Math.min(0.98, tEntW / (2 * tR))) * 2;
+  const tEntAngle = 0; // entrance on +z (facing the passage)
+
+  const smDS = (sm && typeof sm.clone === 'function') ? sm.clone() : sm;
+  if (smDS !== sm) smDS.side = THREE.DoubleSide;
+
   [-1, 1].forEach(s => {
     const cx = s * (w / 2 + tR * 0.45);
 
-    const tw = new THREE.Mesh(new THREE.CylinderGeometry(tR, tR * 1.06, tH, 14), sm);
+    // Hollow cylindrical shell with entrance gap facing passage
+    const tw = new THREE.Mesh(
+      new THREE.CylinderGeometry(tR, tR * 1.06, tH, 14, 1, true,
+        tEntAngle + tEntArcW / 2, Math.PI * 2 - tEntArcW),
+      smDS,
+    );
     tw.position.set(cx, tH / 2 + 0.002, 0);
     tw.castShadow = true;
     tw.receiveShadow = true;
     g.add(tw);
+
+    // Floor slab inside flanking tower
+    const tFloor = new THREE.Mesh(
+      new THREE.CylinderGeometry(tR - tShellT, (tR * 1.06) - tShellT, 0.12, 14), sm,
+    );
+    tFloor.position.set(cx, 0.06, 0);
+    tFloor.receiveShadow = true;
+    g.add(tFloor);
 
     // Roof — same style as regular round towers (cone, dome, pagoda, etc.)
     const roof = buildRoofForStyle(style, tR, tH, rm);
@@ -894,7 +972,7 @@ export function buildGate(p, sm, dm, rm, style = 'crusader') {
   const merlons = mkM(squareTowerMerlonPositions(w, d, h), sm);
   if (merlons) g.add(merlons);
 
-  return g;
+  return { group: g, ramps: [] };
 }
 
 // ── ABBEY MODULE ─────────────────────────────────────────────────────────
@@ -1904,31 +1982,44 @@ function applyVariant(mat, variant) {
 // gm (rock/ground material) is used for GLACIS; falls back to sm if not provided.
 // scale: optional global metre-scale multiplier (1.0 = no change, use scaleComp)
 // comp.matVariant — optional string passed to applyVariant() to tint sm
+// ── buildComponent ────────────────────────────────────────────────────────────
+// Public dispatcher.  Always returns { group: THREE.Group, ramps: THREE.Mesh[] }
+// or null for unknown/invalid components.
+// `ramps` contains invisible physics-slope meshes (helix for spiral stairs,
+// inclined slab for stair flights) that CastleEngine forwards to PhysicsWorld.
 export function buildComponent(comp, sm, dm, rm, style = 'crusader', gm = null, wm = null, scale = 1.0) {
   const c  = scale !== 1.0 ? scaleComp(comp, scale) : comp;
   const s  = c.matVariant ? applyVariant(sm, c.matVariant) : sm;
+
+  let raw;
   switch (c.type) {
-    case 'WALL':             return buildWall(c, s, dm, style);
-    case 'ROUND_TOWER':      return buildRoundTower(c, s, dm, rm, style);
-    case 'SQUARE_TOWER':     return buildSquareTower(c, s, dm, rm, style);
-    case 'GABLED_HALL':      return buildGabledHall(c, s, dm, rm);
-    case 'STAIRWAY':         return buildStairway(c, s);
-    case 'STAIR_FLIGHT':     return buildStairFlight(c, s);
-    case 'GATE':             return buildGate(c, s, dm, rm, style);
-    case 'ABBEY_MODULE':     return buildAbbeyModule(c, s, rm);
-    case 'CIVILIAN_HOUSING': return buildCivilianHousing(c, s, rm);
-    case 'BUTTRESS_SYSTEM':  return buildButtressSystem(c, s, rm);
-    case 'MACHICOLATION':    return buildMachicolation(c, s);
-    case 'HOARDING':         return buildHoarding(c, s, dm);
-    case 'DRAWBRIDGE':       return buildDrawbridge(c, s, dm);
-    case 'ROCK_FOUNDATION':  return buildRockFoundation(c, gm || s);
-    case 'TERRAIN_STACK':    return buildTerrainStack(c, gm || s);
-    case 'SLOPE_PATH':       return buildSlopePath(c, c.useStone ? s : (gm || s));
-    case 'DITCH':            return buildDitch(c, gm || s);
-    case 'WATER_PLANE':      return buildWaterPlane(c, wm || dm || s);
-    case 'PLATEAU':          return buildPlateau(c, gm || s);
-    case 'GLACIS':           return buildGlacis(c, gm || s);
-    case 'RING':             return buildRing(c, s, dm, rm, style);
-    default: return null;
+    case 'WALL':             raw = buildWall(c, s, dm, style);              break;
+    case 'ROUND_TOWER':      raw = buildRoundTower(c, s, dm, rm, style);    break;
+    case 'SQUARE_TOWER':     raw = buildSquareTower(c, s, dm, rm, style);   break;
+    case 'GABLED_HALL':      raw = buildGabledHall(c, s, dm, rm);           break;
+    case 'STAIRWAY':         raw = buildStairway(c, s);                     break;
+    case 'STAIR_FLIGHT':     raw = buildStairFlight(c, s);                  break;
+    case 'GATE':             raw = buildGate(c, s, dm, rm, style);          break;
+    case 'ABBEY_MODULE':     raw = buildAbbeyModule(c, s, rm);              break;
+    case 'CIVILIAN_HOUSING': raw = buildCivilianHousing(c, s, rm);         break;
+    case 'BUTTRESS_SYSTEM':  raw = buildButtressSystem(c, s, rm);           break;
+    case 'MACHICOLATION':    raw = buildMachicolation(c, s);                break;
+    case 'HOARDING':         raw = buildHoarding(c, s, dm);                 break;
+    case 'DRAWBRIDGE':       raw = buildDrawbridge(c, s, dm);               break;
+    case 'ROCK_FOUNDATION':  raw = buildRockFoundation(c, gm || s);         break;
+    case 'TERRAIN_STACK':    raw = buildTerrainStack(c, gm || s);           break;
+    case 'SLOPE_PATH':       raw = buildSlopePath(c, c.useStone ? s : (gm || s)); break;
+    case 'DITCH':            raw = buildDitch(c, gm || s);                  break;
+    case 'WATER_PLANE':      raw = buildWaterPlane(c, wm || dm || s);       break;
+    case 'PLATEAU':          raw = buildPlateau(c, gm || s);                break;
+    case 'GLACIS':           raw = buildGlacis(c, gm || s);                 break;
+    case 'RING':             raw = buildRing(c, s, dm, rm, style);          break;
+    default:                 return null;
   }
+
+  if (!raw) return null;
+  // Normalise: builders that already return { group, ramps } pass through;
+  // builders that return a plain THREE.Group are wrapped.
+  if (raw.isObject3D) return { group: raw, ramps: [] };
+  return { group: raw.group ?? raw, ramps: raw.ramps ?? [] };
 }

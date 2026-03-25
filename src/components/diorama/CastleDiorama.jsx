@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { getRenderer, getMaterials, getScenePreset, resolveStyle, mkTerrainMat } from './renderer.js';
-import { buildComponent } from './builders.js';
+// buildComponent is used internally by CastleEngine — no direct import needed here
 import { generateComponents } from './generator.js';
 import { getDioramaModel } from './normalize.js';
 import { initPhysicsWorld } from './PhysicsWorld.js';
@@ -9,8 +9,9 @@ import { RapierFPSController } from './RapierFPSController.js';
 import { buildScaleDummy } from './ScaleDummy.js';
 import { buildSky } from './SkySystem.js';
 import { buildNature }     from './NatureSystem.js';
-import { ChunkManager }   from './ChunkManager.js';
-import { validateDiorama, printValidationReport } from './DioramaValidator.js';
+import { ChunkManager }    from './ChunkManager.js';
+import { CastleEngine }    from './CastleEngine.js';
+import { validateDiorama, printValidationReport, autoCorrectReachability } from './DioramaValidator.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -97,24 +98,18 @@ export default function CastleDiorama({ castle }) {
       rim.position.set(...scenePreset.rim.position);
       scene.add(rim);
 
-      // ── Anti-gravity: ensure no object sinks below the ground plane ──────
-      function snapToGround(obj) {
-        const box = new THREE.Box3().setFromObject(obj);
-        if (box.min.y < 0) obj.position.y -= box.min.y;
-      }
-
-      // ── Build castle ─────────────────────────────────────────────────────
+      // ── Build castle via CastleEngine (registry-based, reconstructBurg-capable) ──
       const components  = model.components || generateComponents(castle);
       const globalScale = model.scale || 1.0;
-      const clickables  = [];
 
-      components.forEach(comp => {
-        const obj = buildComponent(comp, mats.stone, mats.dark, mats.roof, style, mats.rock, mats.water, globalScale);
-        if (!obj) return;
-        snapToGround(obj);
-        scene.add(obj);
-        clickables.push(obj);
+      const engine = new CastleEngine({
+        scene, style, globalScale,
+        mats: { stone: mats.stone, dark: mats.dark, roof: mats.roof,
+                rock: mats.rock, water: mats.water },
       });
+      engine.buildAll(components);
+      const clickables = engine.clickables;
+      cleanupFns.push(() => engine.dispose());
 
       // ── Auto-scale camera from outermost ring radius ─────────────────────
       const rings    = components.filter(c => c.type === 'RING');
@@ -130,10 +125,21 @@ export default function CastleDiorama({ castle }) {
         ? Math.min(...rings.map(r => r.y ?? 0))
         : 0;
 
-      // ── Principle 3 – Validation: reachability + snap connectivity ────────
+      // ── Principle 3 + 5 – Validation + Auto-Correction ────────────────────
+      // First pass: validate the authored components
       const validationReport = validateDiorama(components, { castleBaseY });
-      printValidationReport(validationReport, castle.id || 'unknown');
-      setValReport(validationReport);
+      // Auto-inject stairs for any levels that are unreachable
+      const correctedComponents = autoCorrectReachability(components, validationReport);
+      if (correctedComponents !== components) {
+        // Second pass: rebuild with the auto-corrected set and re-validate
+        engine.reconstructBurg(correctedComponents);
+        const correctedReport = validateDiorama(correctedComponents, { castleBaseY });
+        printValidationReport(correctedReport, castle.id || 'unknown');
+        setValReport(correctedReport);
+      } else {
+        printValidationReport(validationReport, castle.id || 'unknown');
+        setValReport(validationReport);
+      }
 
       const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
       const terrain = new ChunkManager({
@@ -151,7 +157,9 @@ export default function CastleDiorama({ castle }) {
 
       // ── Physics world (Rapier — async WASM init) ──────────────────────────
       if (cancelled) return;
-      const physWorld = await initPhysicsWorld(components, terrain.getPhysicsData());
+      const physWorld = await initPhysicsWorld(
+        components, terrain.getPhysicsData(), engine.physicsRamps,
+      );
       if (cancelled) { physWorld.dispose(); return; }
 
       // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
