@@ -459,29 +459,33 @@ export function buildSquareTower(p, sm, dm, rm, style = 'crusader') {
   const entW     = Math.max(0.9, Math.min(w, d) * 0.44);
   const entH     = Math.max(1.5, h * 0.38);
 
+  // DoubleSide so interior panels are visible from inside the tower.
+  const smDS = (sm && typeof sm.clone === 'function') ? sm.clone() : sm;
+  if (smDS !== sm) smDS.side = THREE.DoubleSide;
+
   // South face (+z) — split into left panel | door gap | right panel | above-door
   const sideSpan = (w - entW) / 2;
   [-(entW / 2 + sideSpan / 2), (entW / 2 + sideSpan / 2)].forEach(bx => {
-    const panel = new THREE.Mesh(new THREE.BoxGeometry(sideSpan, h, shellT), sm);
+    const panel = new THREE.Mesh(new THREE.BoxGeometry(sideSpan, h, shellT), smDS);
     panel.position.set(bx, h / 2 + 0.002, d / 2 - shellT / 2);
     panel.castShadow = true; panel.receiveShadow = true;
     g.add(panel);
   });
   const topSpan = h - entH;
   if (topSpan > 0.1) {
-    const topP = new THREE.Mesh(new THREE.BoxGeometry(w, topSpan, shellT), sm);
+    const topP = new THREE.Mesh(new THREE.BoxGeometry(w, topSpan, shellT), smDS);
     topP.position.set(0, entH + topSpan / 2 + 0.002, d / 2 - shellT / 2);
     topP.castShadow = true;
     g.add(topP);
   }
   // North face (-z, solid)
-  const nWall = new THREE.Mesh(new THREE.BoxGeometry(w, h, shellT), sm);
+  const nWall = new THREE.Mesh(new THREE.BoxGeometry(w, h, shellT), smDS);
   nWall.position.set(0, h / 2 + 0.002, -(d / 2 - shellT / 2));
   nWall.castShadow = true; nWall.receiveShadow = true;
   g.add(nWall);
   // East + West faces
   [-1, 1].forEach(side => {
-    const sw = new THREE.Mesh(new THREE.BoxGeometry(shellT, h, d - shellT * 2), sm);
+    const sw = new THREE.Mesh(new THREE.BoxGeometry(shellT, h, d - shellT * 2), smDS);
     sw.position.set(side * (w / 2 - shellT / 2), h / 2 + 0.002, 0);
     sw.castShadow = true; sw.receiveShadow = true;
     g.add(sw);
@@ -563,8 +567,13 @@ export function buildGabledHall(p, sm, dm, rm) {
     const shellT = Math.max(0.14, Math.min(w, d) * 0.16);
     const doorOffset = p.doorOffset || 0;
 
+    // DoubleSide so panels are visible regardless of normal orientation.
+    // A single clone per builder call keeps draw-call count low.
+    const smDS = (sm && typeof sm.clone === 'function') ? sm.clone() : sm;
+    if (smDS !== sm) smDS.side = THREE.DoubleSide;
+
     const addPanel = (pw, ph, cx, cz, rotY = 0) => {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(pw, ph, shellT), sm);
+      const m = new THREE.Mesh(new THREE.BoxGeometry(pw, ph, shellT), smDS);
       m.position.set(cx, ph / 2 + 0.002, cz);
       if (rotY) m.rotation.y = rotY;
       m.castShadow = true; m.receiveShadow = true;
@@ -577,7 +586,7 @@ export function buildGabledHall(p, sm, dm, rm) {
       });
       const above = fh - eH;
       if (above > 0.08) {
-        const m = new THREE.Mesh(new THREE.BoxGeometry(fw, above, shellT), sm);
+        const m = new THREE.Mesh(new THREE.BoxGeometry(fw, above, shellT), smDS);
         m.position.set(0, eH + above / 2 + 0.002, fz);
         if (rotY) m.rotation.y = rotY;
         m.castShadow = true;
@@ -1552,14 +1561,17 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
     const tR  = pt.r || 1.2; // tower radius / half-width
 
     // ── Tower at this vertex ─────────────────────────────────────────────
+    // buildRoundTower / buildSquareTower return { group, ramps } — we must
+    // extract the group for g.add() and propagate the ramps upward.
     if (useSquare) {
-      const side = tR * 2;
-      g.add(buildSquareTower(
-        { ...pt, w: side, d: side, y: ptY },
-        sm, dm, rm, style,
-      ));
+      const side   = tR * 2;
+      const result = buildSquareTower({ ...pt, w: side, d: side, y: ptY }, sm, dm, rm, style);
+      const tGroup = result.group ?? result;
+      g.add(tGroup);
     } else {
-      g.add(buildRoundTower({ ...pt, y: ptY }, sm, dm, rm, style));
+      const result = buildRoundTower({ ...pt, y: ptY }, sm, dm, rm, style);
+      const tGroup = result.group ?? result;
+      g.add(tGroup);
     }
 
     // ── Wall or gate to next tower ───────────────────────────────────────
@@ -1571,20 +1583,23 @@ export function buildRing(p, sm, dm, rm, style = 'crusader') {
     const rawLen = Math.sqrt(dx * dx + dz * dz);
     const ux  = rawLen > 0 ? dx / rawLen : 0;
     const uz  = rawLen > 0 ? dz / rawLen : 0;
-    const trim1 = tR  * (useSquare ? 0.82 : 0.88);
-    const trim2 = nxR * (useSquare ? 0.82 : 0.88);
+    // Trim factor: wall endpoint starts just inside the tower radius so the
+    // hollow shell "contains" the wall end — no visible gap at junction.
+    const trim1 = tR  * (useSquare ? 0.82 : 0.92);
+    const trim2 = nxR * (useSquare ? 0.82 : 0.92);
 
     if (gt && gt.atIndex === i) {
-      g.add(buildGate(
+      // buildGate now returns { group, ramps } — extract group
+      const gResult = buildGate(
         { ...gt, x: mx, z: mz, y, rotation: Math.atan2(mx, mz) },
         sm, dm, rm, style,
-      ));
+      );
+      g.add(gResult.group ?? gResult);
 
       // ── Connecting walls from each adjacent tower to the gatehouse ───────
-      // Connect point = just inside the gatehouse flanking tower (0.62 × gate half-width)
       const gHW = (gt.w || 4.5) * 0.62;
-      const lx = mx - ux * gHW, lz = mz - uz * gHW; // left flank connection
-      const rx = mx + ux * gHW, rz = mz + uz * gHW; // right flank connection
+      const lx = mx - ux * gHW, lz = mz - uz * gHW;
+      const rx = mx + ux * gHW, rz = mz + uz * gHW;
 
       const leftLen  = Math.sqrt((lx - pt.x) ** 2 + (lz - pt.z) ** 2);
       const rightLen = Math.sqrt((nx.x - rx)  ** 2 + (nx.z - rz)  ** 2);
