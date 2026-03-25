@@ -10,14 +10,9 @@ export const HERO_DIORAMAS_CRUSADER = {
     notes: 'Krak wird hier als Burgberg mit asymmetrischem Nordhang, massiver innerer Glacis und ansteigender Torrampe gelesen. Das Ziel ist eine glaubwuerdigere Topografie, nicht nur ein sauberer Ringplan.',
     sources: ['Paul Deschamps, Les Chateaux des Croises', 'historische Grundrisse des Krak des Chevaliers'],
     components: [
-      // Burgberg des Krak removed: the procedural FBM terrain provides the natural landscape.
-      // Oberes Felsplateau is restored as a TERRAIN_STACK that bridges the outer courtyard
-      // plateau (y=1.98) seamlessly up to the Glacis base (y=4.92).
-      {
-        type: 'PLATEAU', x: 0, z: 1.2, y: 0, w: 31.5, d: 24.5, h: 1.98,
-        label: 'Aeusserer Hofterrassenring',
-        info: 'Der Raum zwischen den Ringen war keine rohe Boeschungsflaeche. Eine lesbare Hofterrasse stabilisiert hier den Zwinger und die Bewegungsflaechen des aeusseren Werks.',
-      },
+      // Burgberg des Krak removed: the ChunkManager terrain rises naturally to
+      // castleBaseY = 1.98 m in the flat zone, so no PLATEAU box is needed.
+      // The outer ring sits flush with the landscape surface.
       {
         type: 'TERRAIN_STACK', x: 0.4, z: 0.1, y: 4.92,
         footprint: [

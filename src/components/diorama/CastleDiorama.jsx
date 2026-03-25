@@ -8,8 +8,8 @@ import { initPhysicsWorld } from './PhysicsWorld.js';
 import { RapierFPSController } from './RapierFPSController.js';
 import { buildScaleDummy } from './ScaleDummy.js';
 import { buildSky } from './SkySystem.js';
-import { buildTerrain } from './TerrainSystem.js';
-import { buildNature }  from './NatureSystem.js';
+import { buildNature }     from './NatureSystem.js';
+import { ChunkManager }   from './ChunkManager.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -120,10 +120,23 @@ export default function CastleDiorama({ castle }) {
         ? Math.max(...rings.flatMap(r => (r.points || []).map(pt => Math.sqrt((pt.x || 0) ** 2 + (pt.z || 0) ** 2))))
         : 0;
 
-      // ── Terrain (procedural FBM heightmap replaces flat ground disc) ─────
+      // ── Chunk-based world terrain (Minecraft-style, infinite, castleBaseY-aware) ──
+      // castleBaseY = y of the lowest RING component = natural ground level for the
+      // castle (outer ring base).  Terrain smoothly rises to this height at the flat
+      // zone so the outer ring walls sit flush with the landscape — no visible box.
+      const castleBaseY = rings.length > 0
+        ? Math.min(...rings.map(r => r.y ?? 0))
+        : 0;
+
       const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
-      const terrain = buildTerrain(maxRingR || 20, style, terrainSeed, mkTerrainMat(style));
-      scene.add(terrain.mesh);
+      const terrain = new ChunkManager({
+        style,
+        seed:        terrainSeed,
+        castleR:     maxRingR || 20,
+        castleBaseY,
+        mat:         mkTerrainMat(style),
+      });
+      terrain.init(scene);
 
       // ── Nature scatter (instanced rocks / boulders / stones on terrain) ───
       const nature = buildNature(terrain, maxRingR || 20, style, terrainSeed ^ 0xf00d);
@@ -131,7 +144,7 @@ export default function CastleDiorama({ castle }) {
 
       // ── Physics world (Rapier — async WASM init) ──────────────────────────
       if (cancelled) return;
-      const physWorld = await initPhysicsWorld(components, terrain);
+      const physWorld = await initPhysicsWorld(components, terrain.getPhysicsData());
       if (cancelled) { physWorld.dispose(); return; }
 
       // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
@@ -337,6 +350,8 @@ export default function CastleDiorama({ castle }) {
         const dt  = Math.min((now - lastT) / 1000, 0.05);
         lastT = now;
         if (fpsModeRef.current) fpsCtrl.update(dt);
+        // Stream new terrain chunks around camera
+        terrain.update(camera.position.x, camera.position.z, scene);
         renderer.render(scene, camera);
       };
       tick();
@@ -347,7 +362,7 @@ export default function CastleDiorama({ castle }) {
         physWorld.dispose();
         skySystem.dispose();
         nature.dispose();
-        terrain.mesh.geometry.dispose();
+        terrain.dispose();
         scene.environment = null;
         fpsModeRef.current = false;
         mount.removeEventListener('pointerdown',  onPD);
