@@ -153,11 +153,38 @@ export function buildWall(p, sm, dm, style = 'crusader') {
   g.rotation.y = ang;
   g.userData = { label: p.label || '', info: p.info || '' };
 
-  const wall = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), sm);
-  wall.position.y = h / 2 + 0.002;
-  wall.castShadow = true;
-  wall.receiveShadow = true;
-  g.add(wall);
+  // Hollow wall shell (Principle 2 – Interior Logic):
+  // thick walls (≥ 0.5 m) get outer face + inner face + top cap instead of solid box.
+  if (thick >= 0.5) {
+    const faceT = Math.max(0.15, thick * 0.22); // each face panel thickness
+    const capT  = Math.max(0.20, thick * 0.26); // top-cap thickness (closes the hollow)
+
+    const outerFace = new THREE.Mesh(new THREE.BoxGeometry(len, h, faceT), sm);
+    outerFace.position.set(0, h / 2 + 0.002,  (thick - faceT) / 2);
+    outerFace.castShadow    = true;
+    outerFace.receiveShadow = true;
+    g.add(outerFace);
+
+    const innerFace = new THREE.Mesh(new THREE.BoxGeometry(len, h, faceT), sm);
+    innerFace.position.set(0, h / 2 + 0.002, -(thick - faceT) / 2);
+    innerFace.castShadow    = true;
+    innerFace.receiveShadow = true;
+    g.add(innerFace);
+
+    // Close the top so coping sits on solid stone
+    const topCap = new THREE.Mesh(new THREE.BoxGeometry(len, capT, thick), sm);
+    topCap.position.set(0, h - capT / 2 + 0.001, 0);
+    topCap.castShadow    = true;
+    topCap.receiveShadow = true;
+    g.add(topCap);
+  } else {
+    // Thin decorative walls stay solid
+    const wall = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), sm);
+    wall.position.y = h / 2 + 0.002;
+    wall.castShadow    = true;
+    wall.receiveShadow = true;
+    g.add(wall);
+  }
 
   const footing = new THREE.Mesh(new THREE.BoxGeometry(len, Math.max(0.18, h * 0.08), thick * 1.18), sm);
   footing.position.y = Math.max(0.08, h * 0.04);

@@ -51,7 +51,16 @@ export function getDioramaModel(castle) {
   const baseComponents = diorama.components || castle.components || generateComponents(castle);
   const style = diorama.style || castle.dioramaStyle || resolveStyle(castle);
   const historicalMode = inferHistoricalMode(castle, diorama);
-  const components = enhanceComponentsForRealism(castle, baseComponents, style, historicalMode);
+  const rawComponents = enhanceComponentsForRealism(castle, baseComponents, style, historicalMode);
+  // Principle 4 – Persistent Data: assign stable, editor-addressable IDs.
+  // Format: "<castleId>/<type>/<index>" — deterministic across re-renders.
+  const typeCounters = {};
+  const components = rawComponents.map((comp) => {
+    if (comp.id) return comp; // keep explicit IDs from heroData unchanged
+    const t = (comp.type || 'UNKNOWN').toLowerCase();
+    typeCounters[t] = (typeCounters[t] || 0) + 1;
+    return { ...comp, id: `${castle.id}/${t}/${typeCounters[t]}` };
+  });
   const radius = components.length ? Math.max(...components.map(getComponentRadius)) : 18;
   const centroid = components.length
     ? components.reduce((acc, comp) => {
