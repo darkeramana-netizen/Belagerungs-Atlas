@@ -133,36 +133,9 @@ export function generateComponents(castle) {
 
   const cs = [];
 
-  // ── Terrain stack for elevated castles ───────────────────────────────────
-  if (pos >= 72) {
-    const terrainTop = Math.max(outerR * 1.08, 20);
-    const terrainFootprint = [
-      { x: 0, z: -terrainTop * 1.04 },
-      { x: terrainTop * 0.78, z: -terrainTop * 0.72 },
-      { x: terrainTop * 1.02, z: -terrainTop * 0.04 },
-      { x: terrainTop * 0.90, z: terrainTop * 0.66 },
-      { x: terrainTop * 0.30, z: terrainTop * 1.05 },
-      { x: -terrainTop * 0.36, z: terrainTop * 0.96 },
-      { x: -terrainTop * 0.92, z: terrainTop * 0.62 },
-      { x: -terrainTop * 1.00, z: -terrainTop * 0.12 },
-      { x: -terrainTop * 0.64, z: -terrainTop * 0.82 },
-    ];
-    const baseH = 1.1 + (pos - 70) * 0.045;
-    cs.push({
-      type: 'TERRAIN_STACK',
-      x: 0,
-      z: 0,
-      y: -baseH - 0.2,
-      footprint: terrainFootprint,
-      layers: [
-        { h: baseH * 0.95, scale: 1.36 },
-        { h: baseH * 0.75, scale: 1.20 },
-        { h: baseH * 0.55, scale: 1.06 },
-      ],
-      label: `Felsplateau – ${castle.name}`,
-      info: `Terrassierter Felssockel für Höhenlage (${pos}/100). Erschwert Sturmangriffe und Leitern.`,
-    });
-  }
+  // NOTE: The old polygon TERRAIN_STACK for elevated castles has been removed.
+  // The procedural FBM terrain now handles the surrounding landscape; the castle
+  // sits on the flat zone at y=0 and the FBM terrain rises naturally around it.
 
   // ── Glacis ───────────────────────────────────────────────────────────────
   if (glacisH > 0) cs.push({

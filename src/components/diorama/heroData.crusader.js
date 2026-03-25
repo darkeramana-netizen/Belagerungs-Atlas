@@ -10,26 +10,9 @@ export const HERO_DIORAMAS_CRUSADER = {
     notes: 'Krak wird hier als Burgberg mit asymmetrischem Nordhang, massiver innerer Glacis und ansteigender Torrampe gelesen. Das Ziel ist eine glaubwuerdigere Topografie, nicht nur ein sauberer Ringplan.',
     sources: ['Paul Deschamps, Les Chateaux des Croises', 'historische Grundrisse des Krak des Chevaliers'],
     components: [
-      {
-        type: 'TERRAIN_STACK', x: 0, z: 1, y: 0,
-        footprint: [
-          { x: -23, z: -18 }, { x: -18, z: -22 }, { x: -5, z: -24 }, { x: 11, z: -22 }, { x: 20, z: -16 }, { x: 24, z: -3 },
-          { x: 22, z: 12 }, { x: 16, z: 21 }, { x: 2, z: 24 }, { x: -12, z: 21 }, { x: -21, z: 12 }, { x: -24, z: -2 },
-        ],
-        layers: [{ scale: 1.18, h: 1.2 }, { scale: 1.08, h: 1.2 }, { scale: 1.01, h: 1.0 }],
-        label: 'Burgberg des Krak',
-        info: 'Der Krak sitzt nicht auf flacher Ebene, sondern auf einem vorgelagerten Hoehenruecken. Das Diorama staffelt den Burgberg deshalb in unregelmaessigen Fels- und Schuttschichten.',
-      },
-      {
-        type: 'TERRAIN_STACK', x: 0, z: 1, y: 3.4,
-        footprint: [
-          { x: -14.5, z: -12.5 }, { x: -11, z: -15.5 }, { x: -2, z: -16.5 }, { x: 7.5, z: -14.8 }, { x: 12.8, z: -10.8 },
-          { x: 14.2, z: -1 }, { x: 13, z: 8.5 }, { x: 8.8, z: 13.6 }, { x: 0.4, z: 15.2 }, { x: -8.2, z: 13.7 }, { x: -13.4, z: 8.2 }, { x: -15.2, z: -0.8 },
-        ],
-        layers: [{ scale: 1.05, h: 0.9 }, { scale: 0.98, h: 0.8 }],
-        label: 'Oberes Felsplateau',
-        info: 'Auf dem angehobenen inneren Plateau sitzt der staerkste Teil des Krak. Die Hochburg erhebt sich ueber dem aeusseren Ring und zwingt Angreifer in mehrfach gebrochene Anstiege.',
-      },
+      // Burgberg des Krak + Oberes Felsplateau removed:
+      // the procedural FBM terrain now provides the natural rocky landscape.
+      // The Glacis (built stone plinth), ditch, and all structural elements are retained.
       {
         type: 'DITCH', x: 0, z: 1, y: 3.3, rTop: 18.8, rBot: 17.2, h: 0.7,
         label: 'Trockengraben und Zwingerzone',

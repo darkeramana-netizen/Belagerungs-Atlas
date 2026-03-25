@@ -98,10 +98,50 @@ export async function initPhysicsWorld(components, terrainData = null) {
         const nxR = nx.r || 1.2;
         const dx  = nx.x - pt.x, dz = nx.z - pt.z;
         const raw = Math.sqrt(dx * dx + dz * dz);
-        const ux  = raw > 0 ? dx / raw : 0, uz = raw > 0 ? dz / raw : 0;
+        if (raw < 0.1) return;
+        const ux  = dx / raw, uz = dz / raw;
         const t1  = tr * 0.88, t2 = nxR * 0.88;
 
-        if (raw > t1 + t2 + 0.4) {
+        const gt = comp.gate;
+        if (gt && gt.atIndex === i) {
+          // ── Gate segment — open passage, add gatehouse colliders ─────────
+          const gW = gt.w || 4.5, gD = gt.d || 3.5, gH = gt.h || 6.0;
+          const pW     = gW * 0.40;
+          const pH     = gH * 0.64;
+          const archR  = pW / 2;
+          const pierW  = (gW - pW) / 2;
+          const lintelH = gH - pH - archR;
+          const tR     = gD * 0.52;        // flanking tower radius (matches buildGate)
+          const tH     = gH * 1.22;        // flanking tower height
+          const gHW    = gW * 0.62;        // half-width to flanking connection point
+          const mx = (pt.x + nx.x) / 2, mz = (pt.z + nx.z) / 2;
+          const gRot   = Math.atan2(mx, mz);
+          const cg = Math.cos(gRot), sg = Math.sin(gRot);
+          const offDist   = pW / 2 + pierW / 2;
+          const towerOff  = gW / 2 + tR * 0.45;
+
+          // Flanking towers of the gatehouse
+          addCylinder(world, mx + towerOff * cg, y + tH / 2, mz - towerOff * sg, tR, tH / 2);
+          addCylinder(world, mx - towerOff * cg, y + tH / 2, mz + towerOff * sg, tR, tH / 2);
+
+          // Passage: left pier (local -X) and right pier (local +X)
+          addBox(world, mx - offDist * cg, y + gH / 2, mz + offDist * sg, pierW / 2, gH / 2, gD / 2, gRot);
+          addBox(world, mx + offDist * cg, y + gH / 2, mz - offDist * sg, pierW / 2, gH / 2, gD / 2, gRot);
+
+          // Lintel above arch crown
+          if (lintelH > 0.1) {
+            addBox(world, mx, y + pH + archR + lintelH / 2, mz, gW / 2, lintelH / 2, gD / 2, gRot);
+          }
+
+          // Connecting walls from ring towers to gate flanking-tower attachment points
+          const lx = mx - ux * gHW, lz = mz - uz * gHW;
+          const rx = mx + ux * gHW, rz = mz + uz * gHW;
+          const leftLen  = Math.sqrt((lx - pt.x) ** 2 + (lz - pt.z) ** 2);
+          const rightLen = Math.sqrt((nx.x - rx)  ** 2 + (nx.z - rz)  ** 2);
+          if (leftLen  > t1 + 0.3) addWallBox(world, pt.x + ux * t1, pt.z + uz * t1, lx, lz, wH, wT, y);
+          if (rightLen > t2 + 0.3) addWallBox(world, rx, rz, nx.x - ux * t2, nx.z - uz * t2, wH, wT, y);
+
+        } else if (raw > t1 + t2 + 0.4) {
           addWallBox(
             world,
             pt.x + ux * t1, pt.z + uz * t1,
@@ -145,13 +185,11 @@ export async function initPhysicsWorld(components, terrainData = null) {
       const lintelH = h - pH - archR;
       const cx = comp.x || 0, cz = comp.z || 0;
 
-      // Left pier
-      addBox(world, cx, y + h / 2, cz, pierW / 2, h / 2, d / 2, ry);
-      // Right pier — mirror along local X
+      // Left pier (local –X) and right pier (local +X) — passage centre is clear
       const offX = (pW / 2 + pierW / 2) * Math.cos(ry);
       const offZ = (pW / 2 + pierW / 2) * Math.sin(ry);
-      addBox(world, cx + offX, y + h / 2, cz - offZ, pierW / 2, h / 2, d / 2, ry);
       addBox(world, cx - offX, y + h / 2, cz + offZ, pierW / 2, h / 2, d / 2, ry);
+      addBox(world, cx + offX, y + h / 2, cz - offZ, pierW / 2, h / 2, d / 2, ry);
 
       // Lintel above arch crown
       if (lintelH > 0.1) {

@@ -9,6 +9,7 @@ import { RapierFPSController } from './RapierFPSController.js';
 import { buildScaleDummy } from './ScaleDummy.js';
 import { buildSky } from './SkySystem.js';
 import { buildTerrain } from './TerrainSystem.js';
+import { buildNature }  from './NatureSystem.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -123,6 +124,10 @@ export default function CastleDiorama({ castle }) {
       const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
       const terrain = buildTerrain(maxRingR || 20, style, terrainSeed, mkTerrainMat(style));
       scene.add(terrain.mesh);
+
+      // ── Nature scatter (instanced rocks / boulders / stones on terrain) ───
+      const nature = buildNature(terrain, maxRingR || 20, style, terrainSeed ^ 0xf00d);
+      nature.add(scene);
 
       // ── Physics world (Rapier — async WASM init) ──────────────────────────
       if (cancelled) return;
@@ -341,6 +346,7 @@ export default function CastleDiorama({ castle }) {
         fpsCtrl.dispose();
         physWorld.dispose();
         skySystem.dispose();
+        nature.dispose();
         terrain.mesh.geometry.dispose();
         scene.environment = null;
         fpsModeRef.current = false;
