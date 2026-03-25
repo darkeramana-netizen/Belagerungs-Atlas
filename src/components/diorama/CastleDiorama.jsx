@@ -10,6 +10,7 @@ import { buildScaleDummy } from './ScaleDummy.js';
 import { buildSky } from './SkySystem.js';
 import { buildNature }     from './NatureSystem.js';
 import { ChunkManager }   from './ChunkManager.js';
+import { validateDiorama, printValidationReport } from './DioramaValidator.js';
 
 export default function CastleDiorama({ castle }) {
   const mountRef  = useRef(null);
@@ -127,6 +128,10 @@ export default function CastleDiorama({ castle }) {
       const castleBaseY = rings.length > 0
         ? Math.min(...rings.map(r => r.y ?? 0))
         : 0;
+
+      // ── Principle 3 – Validation: reachability + snap connectivity ────────
+      const validationReport = validateDiorama(components, { castleBaseY });
+      printValidationReport(validationReport, castle.id || 'unknown');
 
       const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
       const terrain = new ChunkManager({
