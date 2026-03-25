@@ -1,4 +1,4 @@
-extends RefCounted
+extends Node
 ## CastleLoader — reads hero_castles.json (or individual <id>.json) and
 ## dispatches each component to the appropriate builder script.
 ##

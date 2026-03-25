@@ -1,13 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://main"]
+[gd_scene load_steps=7 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/CameraRig.gd" id="2_cam"]
+
+[sub_resource type="PlaneMesh" id="ground_mesh"]
+size = Vector2(400, 400)
+
+[sub_resource type="StandardMaterial3D" id="ground_mat"]
+albedo_color = Color(0.28, 0.26, 0.22, 1)
+roughness = 0.95
+
+[sub_resource type="WorldBoundaryShape3D" id="ground_col"]
+
+[sub_resource type="Sky" id="sky_res"]
+
+[sub_resource type="Environment" id="env_res"]
+background_mode = 2
+sky = SubResource("sky_res")
+ambient_light_source = 3
+ambient_light_color = Color(0.5, 0.55, 0.65, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.4
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 castle_id = "krak"
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("env_res")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.707, -0.5, 0.5, 0, 0.707, 0.707, -0.707, -0.5, 0.5, 0, 20, 0)
@@ -21,8 +43,16 @@ light_color = Color(0.6, 0.7, 0.9, 1)
 light_energy = 0.4
 shadow_enabled = false
 
-[node name="Ground" type="MeshInstance3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0)
+
+[node name="GroundMesh" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("ground_mesh")
+surface_material_override/0 = SubResource("ground_mat")
+cast_shadow = 0
+
+[node name="GroundCol" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("ground_col")
 
 [node name="CastleRoot" type="Node3D" parent="."]
 

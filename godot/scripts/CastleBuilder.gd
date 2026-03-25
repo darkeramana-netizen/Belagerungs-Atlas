@@ -1,4 +1,4 @@
-extends RefCounted
+extends Node
 ## CastleBuilder — dispatcher: routes component types to their builder scripts.
 ## Mirrors buildComponent() from builders.js.
 ##

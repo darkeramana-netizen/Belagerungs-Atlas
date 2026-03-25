@@ -16,6 +16,8 @@ var _mat_dark:  StandardMaterial3D
 func _init() -> void:
 	_mat_stone = _stone_mat(Color(0.60, 0.56, 0.50))
 	_mat_dark  = _stone_mat(Color(0.22, 0.20, 0.18))
+	# Inner shell must be visible from inside: cull front faces so back faces show
+	_mat_dark.cull_mode = BaseMaterial3D.CULL_FRONT
 
 
 func build(comp: Dictionary) -> Node3D:
@@ -66,7 +68,6 @@ func _round_tower(comp: Dictionary) -> Node3D:
 	inner.mesh              = inner_m
 	inner.material_override = _mat_dark
 	inner.position          = Vector3(0, h * 0.5, 0)
-	inner.scale             = Vector3(1, 1, -1)
 	root.add_child(inner)
 
 	# ── Floor slab ───────────────────────────────────────────────────────────
