@@ -10,16 +10,11 @@ export const HERO_DIORAMAS_CRUSADER = {
     notes: 'Krak wird hier als Burgberg mit asymmetrischem Nordhang, massiver innerer Glacis und ansteigender Torrampe gelesen. Das Ziel ist eine glaubwuerdigere Topografie, nicht nur ein sauberer Ringplan.',
     sources: ['Paul Deschamps, Les Chateaux des Croises', 'historische Grundrisse des Krak des Chevaliers'],
     components: [
-      // Burgberg des Krak + Oberes Felsplateau removed:
-      // the procedural FBM terrain now provides the natural rocky landscape.
-      // The Glacis (built stone plinth), ditch, and all structural elements are retained.
+      // Burgberg des Krak removed: the procedural FBM terrain provides the natural landscape.
+      // Oberes Felsplateau is restored as a TERRAIN_STACK that bridges the outer courtyard
+      // plateau (y=1.98) seamlessly up to the Glacis base (y=4.92).
       {
-        type: 'DITCH', x: 0, z: 1, y: 3.3, rTop: 18.8, rBot: 17.2, h: 0.7,
-        label: 'Trockengraben und Zwingerzone',
-        info: 'Zwischen aeusserem und innerem Werk lag kein bequemer Hof, sondern ein kontrollierter Annaeherungsraum im Kreuzfeuer beider Ringe.',
-      },
-      {
-        type: 'PLATEAU', x: 0, z: 1.2, y: 1.52, w: 31.5, d: 24.5, h: 0.38,
+        type: 'PLATEAU', x: 0, z: 1.2, y: 0, w: 31.5, d: 24.5, h: 1.98,
         label: 'Aeusserer Hofterrassenring',
         info: 'Der Raum zwischen den Ringen war keine rohe Boeschungsflaeche. Eine lesbare Hofterrasse stabilisiert hier den Zwinger und die Bewegungsflaechen des aeusseren Werks.',
       },
@@ -88,10 +83,24 @@ export const HERO_DIORAMAS_CRUSADER = {
         label: 'Felsstuetze unter dem Suedostturm',
         info: 'Lokale Bergstuetze unter der Torre del Maestre, damit der Turm sauber auf dem Glacis steht.',
       },
+      // Oberes Felsplateau – Übergang vom Zwingerplateau (y=1.98) zum Glacis (y=4.92)
+      // Ersetzt den früheren Polygon-Burgberg durch eine nahtlose Geländestufe, die
+      // den gebauten Glacissockel glaubwürdig aus dem Fels herauswachsen lässt.
       {
-        type: 'SLOPE_PATH', x1: 21, z1: 18, x2: 10.5, z2: 12.2, y1: 0.55, y2: 2.0, w: 4.6, thick: 0.24,
-        label: 'Aeussere Torrampe',
-        info: 'Der Zugang zum Krak verlief nicht frontal, sondern ueber eine ansteigende Rampe, die Angreifer unter Flankenbeschuss in den Torbereich zwang.',
+        type: 'TERRAIN_STACK', x: 0.4, z: 0.1, y: 1.98,
+        footprint: [
+          { x: -15.0, z: -11.5 }, { x: -11.5, z: -14.5 }, { x: -2.0, z: -16.0 }, { x: 7.5, z: -14.5 },
+          { x: 12.0, z: -10.0 }, { x: 13.0, z: -1.2 }, { x: 12.4, z:  7.8 }, { x: 8.6, z: 12.8 },
+          { x:  1.0, z:  14.2 }, { x: -7.5, z:  13.0 }, { x: -11.8, z:  7.8 }, { x: -15.0, z: -0.8 },
+        ],
+        layers: [
+          { scale: 1.04, h: 0.74 },
+          { scale: 1.00, h: 0.72 },
+          { scale: 0.96, h: 0.76 },
+          { scale: 0.92, h: 0.72 },
+        ],
+        label: 'Oberes Felsplateau (Burgfels)',
+        info: 'Der natürliche Felsuntergrund des Krak steigt hier vom äusseren Hof zum Glacis an. Diese mittlere Geländestufe bildet den Übergang zwischen dem Zwingerhof und dem mächtigen Steinmantel der Hochburg.',
       },
       {
         type: 'RING', y: 8.12, matVariant: 'limestone',
@@ -119,9 +128,9 @@ export const HERO_DIORAMAS_CRUSADER = {
         points: [
           { x: 0, z: -20, r: 1.3, h: 5.5, label: 'Aussenturm Nord', info: 'Beobachtungsposten fuer den Nordhang.' },
           { x: 14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NO', info: 'Flankierungsturm fuer Kreuzfeuer zwischen Ost- und Nordmauer.' },
-          { x: 20, z: 0, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm Ost', info: 'Turm neben dem Haupttor mit Deckung des Torzugangs.' },
-          { x: 14.14, z: 14.14, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm SO', info: 'Suedoestlicher Flankierungsturm des Torbereichs.' },
-          { x: 0, z: 20, r: 1.3, h: 5.5, noRoof: true, label: 'Aussenturm Sued', info: 'Suedturm des aeusseren Rings direkt unter der Glacis-Front.' },
+          { x: 20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm Ost', info: 'Turm neben dem Haupttor mit Deckung des Torzugangs.' },
+          { x: 14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SO', info: 'Suedoestlicher Flankierungsturm des Torbereichs.' },
+          { x: 0, z: 20, r: 1.3, h: 5.5, label: 'Aussenturm Sued', info: 'Suedturm des aeusseren Rings direkt unter der Glacis-Front.' },
           { x: -14.14, z: 14.14, r: 1.3, h: 5.5, label: 'Aussenturm SW', info: 'Suedwestturm mit Sichtlinie ueber das Vorgelaende.' },
           { x: -20, z: 0, r: 1.3, h: 5.5, label: 'Aussenturm West', info: 'Westturm, teilweise im Felsgelaende eingebettet.' },
           { x: -14.14, z: -14.14, r: 1.3, h: 5.5, label: 'Aussenturm NW', info: 'Nordwestturm zur Sicherung des kritischen Nordhangs.' },
@@ -169,12 +178,12 @@ export const HERO_DIORAMAS_CRUSADER = {
         info: 'Kleiner Werk- und Lagerbereich im Hof vor dem inneren Mauerzug.',
       },
       {
-        type: 'STAIRWAY', x: -11.6, z: 6.6, y: 2.02, w: 1.6, d: 3.6, h: 1.35, steps: 4, landingD: 0.4, rotation: 0.92,
+        type: 'STAIRWAY', x: -13.5, z: 8.5, y: 1.98, w: 1.6, d: 5.2, h: 3.0, steps: 8, landingD: 0.5, rotation: 0.92,
         label: 'Wehrgangstreppe West',
-        info: 'Kleine Seitentreppe fuer den schnellen Aufstieg vom aeusseren Hof auf den westlichen Wehrgang.',
+        info: 'Seitentreppe vom aeusseren Zwingerhof auf den westlichen Wehrgang des Aussenrings.',
       },
       {
-        type: 'STAIRWAY', x: 11.2, z: 6.7, y: 2.02, w: 1.6, d: 3.6, h: 1.35, steps: 4, landingD: 0.4, rotation: -0.92,
+        type: 'STAIRWAY', x: 13.5, z: 8.5, y: 1.98, w: 1.6, d: 5.2, h: 3.0, steps: 8, landingD: 0.5, rotation: -0.92,
         label: 'Wehrgangstreppe Ost',
         info: 'Gegenstueck am oestlichen Abschnitt des aeusseren Rings fuer Wachwechsel und schnelle Verstaerkung.',
       },
@@ -317,9 +326,9 @@ export const HERO_DIORAMAS_CRUSADER = {
       // Aussenwalltreppe Ost  – Zugang zum Wehrgang des äusseren Rings
       {
         type: 'STAIR_FLIGHT',
-        x: 17.5, z: 4.5, y: 1.98,
-        steps: 7, stepH: 0.26, stepD: 0.38, w: 1.8,
-        rotation: Math.PI * 0.08,
+        x: 14.5, z: 2.0, y: 1.98,
+        steps: 12, stepH: 0.25, stepD: 0.38, w: 1.8,
+        rotation: Math.PI * 0.45,
         label: 'Wandaufgang Ost – Äusserer Ring',
         info: 'Treppenaufgang zur Wehrgangsplattform des östlichen Außenwalls. Über diesen Aufgang konnten Verteidiger schnell von der Hofebene auf den Kampfgang gelangen.',
       },
@@ -344,9 +353,9 @@ export const HERO_DIORAMAS_CRUSADER = {
       // Wehrgang Nordseite Aussenring
       {
         type: 'STAIR_FLIGHT',
-        x: -16.0, z: -2.0, y: 1.98,
-        steps: 7, stepH: 0.26, stepD: 0.38, w: 1.8,
-        rotation: -Math.PI * 0.12,
+        x: -14.5, z: -3.0, y: 1.98,
+        steps: 12, stepH: 0.25, stepD: 0.38, w: 1.8,
+        rotation: -Math.PI * 0.44,
         label: 'Wandaufgang Nord – Äusserer Ring',
         info: 'Nördlicher Wandaufgang des äusseren Mauerrings. Ermöglichte schnellen Nachschub von Pfeilen und Geschossen auf den Nordwehrgang.',
       },
