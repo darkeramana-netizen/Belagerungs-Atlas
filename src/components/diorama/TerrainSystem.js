@@ -15,7 +15,7 @@ import * as THREE from 'three';
 
 // ── constants ─────────────────────────────────────────────────────────────────
 export const TERRAIN_SIZE = 200;   // metres, must be > largest castle
-const TERRAIN_SEGS        = 80;    // 80×80 → 6561 vertices, ~smooth enough
+const TERRAIN_SEGS        = 120;   // 120×120 → 14641 vertices, smoother silhouette
 
 // ── noise helpers ─────────────────────────────────────────────────────────────
 
@@ -84,13 +84,17 @@ export function buildTerrain(castleR = 20, style = 'crusader', seed = 42, mat) {
   const lattice  = buildLattice(seed,       64);
   const detail   = buildLattice(seed + 997, 64);
 
-  // Castle footprint zones
-  const flatR  = Math.max(castleR * 1.20, 16); // flat below this radius
-  const blendR = Math.max(castleR * 2.60, 38); // full terrain by this radius
+  // Castle footprint zones.
+  // flatR must cover the outermost TERRAIN_STACK layer including its scale
+  // multiplier (up to ×1.18 on a ~29 m footprint → 34.5 m for Krak).
+  // Using ×2.0 gives 40 m for a 20 m outer ring — enough for any current castle.
+  const flatR  = Math.max(castleR * 2.0, 36); // flat below this radius
+  const blendR = Math.max(castleR * 3.5, 60); // full terrain by this radius
 
-  // Moat parameters
-  const moatInner = flatR  * 0.90;
-  const moatOuter = flatR  * 1.52;
+  // Moat: always place OUTSIDE the flat zone so it never cuts into TERRAIN_STACK
+  // polygon geometry.  Starting at flatR×1.10 puts it just beyond the castle area.
+  const moatInner = flatR * 1.10;
+  const moatOuter = flatR * 2.00;
 
   // Build heights array (Rapier layout: row=Z, col=X)
   const heights = new Float32Array(N * N);

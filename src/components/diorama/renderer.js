@@ -224,6 +224,33 @@ export function getRenderer() {
   return _renderer;
 }
 
+// ── Terrain material ───────────────────────────────────────────────────────────
+// Dedicated ground material for the 200 m procedural heightfield.
+// Deliberately avoids masonry/rock normal maps — those tile at wall scale and
+// produce giant "Minecraft blocks" on large terrain.  Vertex normals computed
+// from the displaced PlaneGeometry already give organic shading variation.
+const TERRAIN_COLS = {
+  crusader: { base: 0x9e8a60, seed: 44, amp: 10 },
+  japanese: { base: 0x6b7a5a, seed: 77, amp:  9 },
+  oriental: { base: 0x8a7a5a, seed: 33, amp: 10 },
+  ancient:  { base: 0xa09060, seed: 66, amp: 12 },
+};
+export function mkTerrainMat(style = 'crusader') {
+  const c = TERRAIN_COLS[style] || TERRAIN_COLS.crusader;
+  // Fine-grain noise texture tiled 50× over 200 m → ~4 m per tile, ~32 px/m
+  const tex = makeTextureFromNoise(c.base, c.seed, c.amp);
+  tex.repeat.set(50, 50);
+  tex.needsUpdate = true;
+  return new THREE.MeshStandardMaterial({
+    color:           new THREE.Color(c.base),
+    map:             tex,
+    roughness:       0.94,
+    metalness:       0.0,
+    envMapIntensity: 0.05,
+    // no normalMap — FBM vertex normals handle micro-shading
+  });
+}
+
 export function mkMat(hex, rough = 0.85, metal = 0.0, seed = 12, textureAmp = 14) {
   return new THREE.MeshStandardMaterial({
     color:       new THREE.Color(hex),

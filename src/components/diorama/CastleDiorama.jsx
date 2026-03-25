@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import * as THREE from 'three';
-import { getRenderer, getMaterials, getScenePreset, resolveStyle } from './renderer.js';
+import { getRenderer, getMaterials, getScenePreset, resolveStyle, mkTerrainMat } from './renderer.js';
 import { buildComponent } from './builders.js';
 import { generateComponents } from './generator.js';
 import { getDioramaModel } from './normalize.js';
@@ -121,7 +121,7 @@ export default function CastleDiorama({ castle }) {
 
       // ── Terrain (procedural FBM heightmap replaces flat ground disc) ─────
       const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
-      const terrain = buildTerrain(maxRingR || 20, style, terrainSeed, mats.ground);
+      const terrain = buildTerrain(maxRingR || 20, style, terrainSeed, mkTerrainMat(style));
       scene.add(terrain.mesh);
 
       // ── Physics world (Rapier — async WASM init) ──────────────────────────
@@ -132,9 +132,9 @@ export default function CastleDiorama({ castle }) {
       // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
       const dummy = buildScaleDummy();
       dummy.visible = false;
-      // Place just outside the outermost ring, at ground level
-      const dummySpawnZ = (maxRingR > 0 ? maxRingR : 18) * 1.08;
-      dummy.position.set(0, 0, dummySpawnZ);
+      // Place just outside the outermost ring, on terrain surface
+      const dummySpawnZ = (maxRingR > 0 ? maxRingR : 18) * 1.12;
+      dummy.position.set(0, terrain.getHeightAt(0, dummySpawnZ), dummySpawnZ);
       scene.add(dummy);
       dummyRef.current = dummy;
 
@@ -148,9 +148,12 @@ export default function CastleDiorama({ castle }) {
       };
       fpsCtrlRef.current = fpsCtrl;
 
-      // Default FPS spawn: just outside the main entrance, on terrain surface
-      const spawnZ     = (maxRingR > 0 ? maxRingR : 18) * 1.12;
-      const spawnY     = terrain.getHeightAt(0, spawnZ) + 0.1;
+      // FPS spawn: outside the castle footprint (polygon TERRAIN_STACK layers
+      // can extend to ~2× the outer ring radius at their widest scale).
+      // Using ×2.2 + 6 m places the player on the natural FBM terrain apron,
+      // clearly outside any polygon geometry, at the actual terrain surface.
+      const spawnZ      = (maxRingR > 0 ? maxRingR : 18) * 2.2 + 6;
+      const spawnY      = terrain.getHeightAt(0, spawnZ) + 1.2;
       const fpsSpawnPos = new T.Vector3(0, spawnY, spawnZ);
 
       // ── Toggle helpers exposed to React buttons ───────────────────────────
