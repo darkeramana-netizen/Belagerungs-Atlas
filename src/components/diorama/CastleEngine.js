@@ -19,10 +19,16 @@ import * as THREE from 'three';
 import { buildComponent } from './builders.js';
 
 // ── snapToGround ──────────────────────────────────────────────────────────────
-// Lifts an object so its lowest bounding-box face sits at y ≥ 0.
-export function snapToGround(obj) {
+// Lifts an object so its lowest bounding-box face sits at terrainY (default 0).
+// When getHeightAt(x, z) is provided it queries the FBM terrain at the
+// component's x,z world position so components on sloped ground don't float/sink.
+export function snapToGround(obj, getHeightAt = null) {
   const box = new THREE.Box3().setFromObject(obj);
-  if (box.min.y < 0) obj.position.y -= box.min.y;
+  const terrainY = getHeightAt
+    ? getHeightAt(obj.position.x, obj.position.z)
+    : 0;
+  const sinkDepth = terrainY - box.min.y;
+  if (sinkDepth > 0) obj.position.y += sinkDepth;
 }
 
 // ── Shallow component equality ─────────────────────────────────────────────────
@@ -46,15 +52,17 @@ export class CastleEngine {
   /**
    * @param {object} opts
    * @param {THREE.Scene}  opts.scene
-   * @param {object}       opts.mats        — { stone, dark, roof, rock, water }
+   * @param {object}       opts.mats           — { stone, dark, roof, rock, water }
    * @param {string}       opts.style
    * @param {number}       [opts.globalScale=1.0]
+   * @param {function}     [opts.getHeightAt]  — (x, z) => number; optional FBM terrain sampler
    */
-  constructor({ scene, mats, style, globalScale = 1.0 }) {
-    this.scene       = scene;
-    this.mats        = mats;
-    this.style       = style;
-    this.globalScale = globalScale;
+  constructor({ scene, mats, style, globalScale = 1.0, getHeightAt = null }) {
+    this.scene        = scene;
+    this.mats         = mats;
+    this.style        = style;
+    this.globalScale  = globalScale;
+    this.getHeightAt  = getHeightAt;
 
     /** Map<id, { group: THREE.Group, ramps: THREE.Mesh[], comp: object }> */
     this._registry = new Map();
@@ -128,7 +136,7 @@ export class CastleEngine {
     const group = raw.group ?? raw;
     const ramps = raw.ramps ?? [];
 
-    snapToGround(group);
+    snapToGround(group, this.getHeightAt);
     scene.add(group);
     this.clickables.push(group);
 
