@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://main"]
+[gd_scene load_steps=8 format=3 uid="uid://main"]
 
 [ext_resource type="Script" path="res://scripts/Main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/CameraRig.gd" id="2_cam"]
@@ -12,7 +12,15 @@ roughness = 0.95
 
 [sub_resource type="WorldBoundaryShape3D" id="ground_col"]
 
+[sub_resource type="ProceduralSkyMaterial" id="sky_mat"]
+sky_top_color = Color(0.18, 0.34, 0.62, 1)
+sky_horizon_color = Color(0.64, 0.75, 0.88, 1)
+ground_bottom_color = Color(0.22, 0.20, 0.18, 1)
+ground_horizon_color = Color(0.44, 0.40, 0.35, 1)
+sun_angle_max = 30.0
+
 [sub_resource type="Sky" id="sky_res"]
+sky_material = SubResource("sky_mat")
 
 [sub_resource type="Environment" id="env_res"]
 background_mode = 2
