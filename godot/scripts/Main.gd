@@ -105,5 +105,5 @@ func _load_castle(id: String) -> void:
 
 func _gate_spawn_pos() -> Vector3:
 	# Spawn player just outside the castle gate (in front along +z)
-	var flat_r := terrain.castle_flat_r
+	var flat_r: float = terrain.castle_flat_r
 	return Vector3(0, 2.0, flat_r * 0.55)
