@@ -162,8 +162,7 @@ func _build_hall(comp: Dictionary) -> void:
 	# Hollow walls (1 block thick)
 	for z in range(cz - hd, cz + hd + 1):
 		for x in range(cx - hw, cx + hw + 1):
-			var on_wall: bool = (x == cx - hw or x == cx + hw or
-			                     z == cz - hd or z == cz + hd)
+			var on_wall: bool = x == cx - hw or x == cx + hw or z == cz - hd or z == cz + hd
 			for y in range(BASE_Y, BASE_Y + h):
 				if on_wall:
 					world.set_block(x, y, z, BT.STONE_BRICK)
@@ -258,8 +257,7 @@ func _place_square_tower(cx: int, base_y: int, cz: int,
 			bid = BT.LIMESTONE
 		for z in range(cz - r, cz + r + 1):
 			for x in range(cx - r, cx + r + 1):
-				var on_wall: bool = (x == cx - r or x == cx + r or
-				                     z == cz - r or z == cz + r)
+				var on_wall: bool = x == cx - r or x == cx + r or z == cz - r or z == cz + r
 				if on_wall or y == base_y:
 					world.set_block(x, y, z, bid)
 
