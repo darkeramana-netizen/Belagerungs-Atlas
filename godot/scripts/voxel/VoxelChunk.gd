@@ -132,7 +132,7 @@ func rebuild() -> void:
 
 				for fi in 6:
 					var face    = _FACES[fi]
-					var neigh   := Vector3i(wx, wy, wz) + _NEIGH[fi]
+					var neigh: Vector3i = Vector3i(wx, wy, wz) + (_NEIGH[fi] as Vector3i)
 					var nid: int = _get_world_block(neigh.x, neigh.y, neigh.z)
 
 					# Only emit face if neighbour is transparent
