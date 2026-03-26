@@ -163,11 +163,32 @@ func _preload_castle_terrain(flat_r: int) -> void:
 # ---------------------------------------------------------------------------
 
 func _spawn_pos() -> Vector3:
-	# Spawn in front of the castle gate, on top of terrain
-	var flat_r: float = float(_world.castle_flat_r)
-	var gx: int = 0
-	var gz: int = int(flat_r * 0.55)
-	var sy: int = _world.get_surface_y(gx, gz)
+	# Spawn in front of the castle gate, on top of terrain.
+	var gz: int = int(float(_world.castle_flat_r) * 0.55)
+
+	# Ensure the column at the spawn XZ is loaded before querying surface Y.
+	# (Needed if the player switches to FPS before the streaming catches up.)
+	_ensure_column_loaded(0, gz)
+
+	var sy: int = _world.get_surface_y(0, gz)
 	if sy < 0:
 		sy = _world.BASE_Y
-	return Vector3(float(gx), float(sy + 2), float(gz))
+	return Vector3(0.0, float(sy + 2), float(gz))
+
+
+## Synchronously load + rebuild all Y-chunks for a given world-XZ position.
+func _ensure_column_loaded(wx: int, wz: int) -> void:
+	var cx := int(floor(float(wx) / 16.0))
+	var cz := int(floor(float(wz) / 16.0))
+	var filled := false
+	for cy in _world.WORLD_HEIGHT_CHUNKS:
+		var key := Vector3i(cx, cy, cz)
+		if not _world._chunks.has(key):
+			_world._create_chunk(key)
+			_gen.fill_chunk(key, _world)
+			filled = true
+	if filled:
+		for cy in _world.WORLD_HEIGHT_CHUNKS:
+			var key := Vector3i(cx, cy, cz)
+			if _world._chunks.has(key):
+				_world._chunks[key].rebuild()

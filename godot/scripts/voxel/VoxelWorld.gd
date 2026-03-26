@@ -1,13 +1,12 @@
 extends Node3D
 ## VoxelWorld -- manages all VoxelChunks, provides unified block read/write.
 ##
-## Async generation pipeline:
-##   1. update() discovers columns that need generating and queues them.
-##   2. WorkerThreadPool runs _gen.generate_chunk_data() for each queued column
-##      (pure data, no scene access -- thread-safe).
-##   3. When a column's data is ready, _apply_column_data() is called on the
-##      main thread via call_deferred(): chunks are created, block data is
-##      applied, and meshes are rebuilt.
+## Chunk streaming:
+##   - update() loads at most NEW_COLS_PER_FRAME new XZ columns per frame.
+##   - Each column = WORLD_HEIGHT_CHUNKS stacked chunks (16 blocks tall each).
+##   - Terrain is generated synchronously on the main thread to avoid
+##     thread-safety issues with FastNoiseLite + GDScript objects.
+##   - Dirty chunks (from block edits) are rebuilt MAX_REBUILDS_PER_FRAME per frame.
 ##
 ## Block coordinates: integers, Y=0 is bedrock.
 ## Chunk coordinates: block_coord / 16 (floor division).
@@ -25,13 +24,14 @@ const WORLD_HEIGHT_CHUNKS := 4            # 4 × 16 = 64
 ## Castle base Y (top surface of BASE_Y block = BASE_Y + 1 in world metres).
 const BASE_Y := 20
 
+## How many new XZ columns to generate per update() call.
+## Higher = faster loading but more frame stutter.
+const NEW_COLS_PER_FRAME   := 1
+## Max dirty-chunk rebuilds per update() call.
+const MAX_REBUILDS_PER_FRAME := 2
+
 var _chunks: Dictionary = {}   # Vector3i → VoxelChunk
 var _gen:    Node       = null # VoxelTerrainGen (set by Main after _ready)
-
-## XZ columns whose terrain is currently being generated on a worker thread.
-var _generating: Dictionary = {}   # Vector3i(cx,0,cz) → true (sentinel)
-## Max columns dispatched to worker threads simultaneously.
-const MAX_ASYNC_COLS := 4
 
 
 func _ready() -> void:
@@ -80,43 +80,33 @@ func update(player_pos: Vector3) -> void:
 	var pcx := int(floor(player_pos.x / 16.0))
 	var pcz := int(floor(player_pos.z / 16.0))
 
-	# Dispatch new XZ columns to worker threads.
+	# Generate new XZ columns (all Y levels), limited per frame.
+	var new_cols := 0
 	for dx in range(-view_dist, view_dist + 1):
+		if new_cols >= NEW_COLS_PER_FRAME:
+			break
 		for dz in range(-view_dist, view_dist + 1):
-			var col_key := Vector3i(pcx + dx, 0, pcz + dz)
-
-			# Skip if already loaded or already generating.
-			var all_loaded := true
+			if new_cols >= NEW_COLS_PER_FRAME:
+				break
+			var any_missing := false
 			for cy in WORLD_HEIGHT_CHUNKS:
 				if not _chunks.has(Vector3i(pcx + dx, cy, pcz + dz)):
-					all_loaded = false
+					any_missing = true
 					break
-			if all_loaded or _generating.has(col_key):
+			if not any_missing:
 				continue
-			if _generating.size() >= MAX_ASYNC_COLS:
-				break
-
-			_generating[col_key] = true
-			# Capture variables for the closure.
-			var cap_key   := col_key
-			var cap_gen   := _gen
-			var cap_flat  := castle_flat_r
-			var cap_world := self
-			WorkerThreadPool.add_task(func() -> void:
-				# Runs on worker thread -- only pure computation, NO scene ops.
-				var col_data: Array[PackedByteArray] = []
-				for cy in WORLD_HEIGHT_CHUNKS:
-					var chunk_k := Vector3i(cap_key.x, cy, cap_key.z)
-					var data: PackedByteArray
-					if cap_gen != null:
-						data = cap_gen.generate_chunk_data(chunk_k, cap_flat)
-					else:
-						data = PackedByteArray()
-						data.resize(16 * 16 * 16)
-					col_data.append(data)
-				# Hand results back to the main thread.
-				cap_world.call_deferred("_apply_column_data", cap_key, col_data)
-			)
+			new_cols += 1
+			# Create + fill + rebuild this entire XZ column.
+			for cy in WORLD_HEIGHT_CHUNKS:
+				var key := Vector3i(pcx + dx, cy, pcz + dz)
+				if not _chunks.has(key):
+					_create_chunk(key)
+					if _gen != null:
+						_gen.fill_chunk(key, self)
+			for cy in WORLD_HEIGHT_CHUNKS:
+				var key2 := Vector3i(pcx + dx, cy, pcz + dz)
+				if _chunks.has(key2):
+					(_chunks[key2] as Object).rebuild()
 
 	# Unload distant chunks.
 	for key in _chunks.keys():
@@ -124,35 +114,14 @@ func update(player_pos: Vector3) -> void:
 		if abs(k.x - pcx) > view_dist + 1 or abs(k.z - pcz) > view_dist + 1:
 			_unload_chunk(key)
 
-	# Rebuild chunks dirtied by block edits (castle placement, player edits).
+	# Rebuild chunks dirtied by block edits, limited per frame.
+	var rebuilts := 0
 	for key in _chunks.keys():
+		if rebuilts >= MAX_REBUILDS_PER_FRAME:
+			break
 		if (_chunks[key] as Object).is_dirty():
 			(_chunks[key] as Object).rebuild()
-
-
-## Called on the main thread once a worker thread finishes generating a column.
-func _apply_column_data(col_key: Vector3i, col_data: Array) -> void:
-	_generating.erase(col_key)
-
-	for cy in WORLD_HEIGHT_CHUNKS:
-		var chunk_k := Vector3i(col_key.x, cy, col_key.z)
-		if not _chunks.has(chunk_k):
-			_create_chunk(chunk_k)
-		var chunk: Object = _chunks[chunk_k]
-		var new_data: PackedByteArray = col_data[cy]
-		# Merge: only write AIR→block (don't overwrite castle/edit blocks).
-		var old_data: PackedByteArray = chunk._data
-		for i in new_data.size():
-			if old_data[i] == BT.AIR and new_data[i] != BT.AIR:
-				old_data[i] = new_data[i]
-		chunk._data  = old_data
-		chunk._dirty = true
-
-	# Rebuild all chunks in this column immediately (they were just filled).
-	for cy in WORLD_HEIGHT_CHUNKS:
-		var chunk_k := Vector3i(col_key.x, cy, col_key.z)
-		if _chunks.has(chunk_k):
-			(_chunks[chunk_k] as Object).rebuild()
+			rebuilts += 1
 
 
 # ---------------------------------------------------------------------------
