@@ -79,6 +79,31 @@ func fill_chunk(chunk_key: Vector3i, world: Object) -> void:
 					world.set_block(wx, wy, wz, bid)
 
 
+## Generate raw block data for a chunk without touching the VoxelWorld.
+## Thread-safe: reads only noise + castle_flat_r, writes nothing to the scene.
+## Returns PackedByteArray of SIZE^3 bytes (ly*256 + lz*16 + lx).
+func generate_chunk_data(chunk_key: Vector3i, castle_flat_r: int) -> PackedByteArray:
+	var cs: int  = 16
+	var wx0: int = chunk_key.x * cs
+	var wy0: int = chunk_key.y * cs
+	var wz0: int = chunk_key.z * cs
+
+	var data := PackedByteArray()
+	data.resize(cs * cs * cs)
+
+	for lz in cs:
+		for lx in cs:
+			var wx: int = wx0 + lx
+			var wz: int = wz0 + lz
+			var surf: int = _surface_y(wx, wz, castle_flat_r)
+
+			for ly in cs:
+				var wy: int = wy0 + ly
+				data[ly * cs * cs + lz * cs + lx] = _block_for_y(wy, surf)
+
+	return data
+
+
 ## Returns the surface Y integer for a column at (wx, wz).
 ## Used by CastleVoxelBuilder to know where to start placing castle blocks.
 func surface_y(wx: int, wz: int, flat_r: int) -> int:
