@@ -317,10 +317,23 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		var v_ao: float = _vertex_ao(s1, s2, sc)
 		var ao: float   = d_ao * v_ao
 
+		# UV orientation fix:
+		# For fi=0,1 (±X): v=ly(height), w=lz(horiz) → UV.x=w=horiz ✓, UV.y=v=height ✓
+		# For fi=4,5 (±Z): v=lx(horiz),  w=ly(height) → swap so UV.x=v=horiz, UV.y=w=height
+		# For fi=2,3 (±Y): top/bottom faces – no directional req., keep as-is.
+		var uv_u: float
+		var uv_v: float
+		if fi == 4 or fi == 5:
+			uv_u = uv_vs[ci]   # v-dir (horiz X) → UV.x
+			uv_v = uv_us[ci]   # w-dir (height Y) → UV.y
+		else:
+			uv_u = uv_us[ci]
+			uv_v = uv_vs[ci]
+
 		verts.append(_vert_pos(fi, u, vc, wc))
 		norms.append(normal)
-		uvs.append(Vector2(uv_us[ci], uv_vs[ci]))   # raw local for tiling
-		uv2s.append(tile_base)                       # atlas tile origin (constant)
+		uvs.append(Vector2(uv_u, uv_v))   # raw local for tiling
+		uv2s.append(tile_base)             # atlas tile origin (constant)
 		colors.append(Color(ao, ao, ao, 1.0))
 
 	idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)

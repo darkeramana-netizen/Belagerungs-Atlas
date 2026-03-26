@@ -104,13 +104,16 @@ static func _pixel_color(bid: int, fr: int, px: int, py: int) -> Color:
 		1:  # GRASS
 			if fr == 0:   # top: green with noise
 				return Color(0.25 + h * 0.12, 0.55 + h * 0.10, 0.16 + h * 0.06, 1)
-			elif fr == 1: # side: green cap + dirt body
-				if py < 3:
+			elif fr == 1: # side: dirt body + green cap
+				# UV maps: face-BOTTOM -> py=0, face-TOP -> py=15.
+				# Green cap must be at py >= TILE_PX-3 so it appears at the
+				# top of the block face in world space.
+				if py >= TILE_PX - 3:   # py=13,14,15 → rendered at top of face
 					return Color(0.28, 0.52, 0.18, 1)
-				elif py < 5:
-					var t: float = (float(py) - 3.0) / 2.0
-					return Color(lerp(0.28, 0.46, t), lerp(0.52, 0.33, t), lerp(0.18, 0.20, t), 1)
-				else:
+				elif py >= TILE_PX - 5: # py=11,12   → transition
+					var t: float = float(py - (TILE_PX - 5)) / 2.0
+					return Color(lerp(0.44, 0.28, t), lerp(0.31, 0.52, t), lerp(0.19, 0.18, t), 1)
+				else:                   # py=0..10   → dirt body
 					return Color(0.44 + h * 0.07, 0.31 + h * 0.06, 0.19 + h * 0.05, 1)
 			else:          # bottom = dirt
 				return Color(0.44 + h * 0.07, 0.31 + h * 0.06, 0.19 + h * 0.05, 1)
