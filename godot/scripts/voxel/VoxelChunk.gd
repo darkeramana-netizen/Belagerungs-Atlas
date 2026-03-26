@@ -114,12 +114,13 @@ func rebuild() -> void:
 
 	var verts:  PackedVector3Array = PackedVector3Array()
 	var norms:  PackedVector3Array = PackedVector3Array()
-	var uvs:    PackedVector2Array = PackedVector2Array()
+	var uvs:    PackedVector2Array = PackedVector2Array()   # raw local (0..dw, 0..dv) for tiling
+	var uv2s:   PackedVector2Array = PackedVector2Array()   # normalised atlas tile base
 	var colors: PackedColorArray   = PackedColorArray()
 	var idxs:   PackedInt32Array   = PackedInt32Array()
 
 	for fi in 6:
-		_greedy_pass(fi, ncache, verts, norms, uvs, colors, idxs)
+		_greedy_pass(fi, ncache, verts, norms, uvs, uv2s, colors, idxs)
 
 	if verts.is_empty():
 		_mesh_inst.mesh = null
@@ -128,11 +129,12 @@ func rebuild() -> void:
 
 	var arrays := []
 	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX]  = verts
-	arrays[Mesh.ARRAY_NORMAL]  = norms
-	arrays[Mesh.ARRAY_TEX_UV]  = uvs
-	arrays[Mesh.ARRAY_COLOR]   = colors
-	arrays[Mesh.ARRAY_INDEX]   = idxs
+	arrays[Mesh.ARRAY_VERTEX]   = verts
+	arrays[Mesh.ARRAY_NORMAL]   = norms
+	arrays[Mesh.ARRAY_TEX_UV]   = uvs
+	arrays[Mesh.ARRAY_TEX_UV2]  = uv2s
+	arrays[Mesh.ARRAY_COLOR]    = colors
+	arrays[Mesh.ARRAY_INDEX]    = idxs
 
 	var am := ArrayMesh.new()
 	am.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, arrays)
@@ -186,8 +188,8 @@ func _cache_get(cache: PackedByteArray, lx: int, ly: int, lz: int) -> int:
 
 func _greedy_pass(fi: int, ncache: PackedByteArray,
 		verts: PackedVector3Array, norms: PackedVector3Array,
-		uvs: PackedVector2Array, colors: PackedColorArray,
-		idxs: PackedInt32Array) -> void:
+		uvs: PackedVector2Array, uv2s: PackedVector2Array,
+		colors: PackedColorArray, idxs: PackedInt32Array) -> void:
 
 	var normal:   Vector3 = _NORMALS[fi]
 	var dir_ao:   float   = _DIR_AO[fi]
@@ -262,7 +264,7 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 						used[(v0 + pv) * SIZE + w0 + pw] = 1
 
 				_emit_quad(fi, u, v0, w0, dv, dw, dir_ao, bid, atlas_row, normal,
-						ncache, verts, norms, uvs, colors, idxs)
+						ncache, verts, norms, uvs, uv2s, colors, idxs)
 
 
 # ---------------------------------------------------------------------------
@@ -273,13 +275,17 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		d_ao: float, bid: int, atlas_row: int, normal: Vector3,
 		ncache: PackedByteArray,
 		verts: PackedVector3Array, norms: PackedVector3Array,
-		uvs: PackedVector2Array, colors: PackedColorArray,
-		idxs: PackedInt32Array) -> void:
+		uvs: PackedVector2Array, uv2s: PackedVector2Array,
+		colors: PackedColorArray, idxs: PackedInt32Array) -> void:
 
-	var v1: int     = v0 + dv
-	var w1: int     = w0 + dw
-	var atlas_col: float = float(bid)
-	var atlas_r:   float = float(atlas_row)
+	var v1: int = v0 + dv
+	var w1: int = w0 + dw
+
+	# UV2: normalised atlas tile base (same for all 4 corners of this quad).
+	# UV2.x = atlas_col / BLOCK_COUNT,  UV2.y = atlas_row / FACE_ROWS
+	var tile_base := Vector2(
+		float(bid)      / float(Atlas.BLOCK_COUNT),
+		float(atlas_row) / float(Atlas.FACE_ROWS))
 
 	# Corners: [vc, wc, sv, sw]
 	var corners: Array = [
@@ -290,9 +296,10 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 	]
 	var order: Array = (_QUAD_ORDER[fi] as Array)
 
-	# UV offsets scaled by quad size: U over w-direction, V over v-direction
-	var uv_us: Array = [0.0, 0.0, float(dw), float(dw)]  # A,B,C,D
-	var uv_vs: Array = [0.0, float(dv), float(dv), 0.0]  # A,B,C,D
+	# UV: raw local quad position (0..dw, 0..dv).
+	# The shader uses fract(UV) to tile within the block texture.
+	var uv_us: Array = [0.0, 0.0, float(dw), float(dw)]  # A,B,C,D  (w-dir)
+	var uv_vs: Array = [0.0, float(dv), float(dv), 0.0]  # A,B,C,D  (v-dir)
 
 	var vi: int = verts.size()
 
@@ -310,13 +317,10 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		var v_ao: float = _vertex_ao(s1, s2, sc)
 		var ao: float   = d_ao * v_ao
 
-		# Atlas UV: tile base + per-corner offset (tiling handled by shader fract)
-		var uv_u: float = atlas_col + uv_us[ci]
-		var uv_v: float = atlas_r   + uv_vs[ci]
-
 		verts.append(_vert_pos(fi, u, vc, wc))
 		norms.append(normal)
-		uvs.append(Vector2(uv_u, uv_v))
+		uvs.append(Vector2(uv_us[ci], uv_vs[ci]))   # raw local for tiling
+		uv2s.append(tile_base)                       # atlas tile origin (constant)
 		colors.append(Color(ao, ao, ao, 1.0))
 
 	idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)

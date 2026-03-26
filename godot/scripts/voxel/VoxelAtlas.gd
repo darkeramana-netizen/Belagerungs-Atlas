@@ -123,20 +123,20 @@ static func _pixel_color(bid: int, fr: int, px: int, py: int) -> Color:
 
 		4:  # STONE_BRICK -- brick grid pattern
 			var bx: int = px % 8
-			var by: int = (py + (px / 8) * 4) % 8
+			var by: int = (py + (px >> 3) * 4) % 8
 			if bx == 0 or by == 0:   # mortar line
 				return Color(0.74, 0.72, 0.68, 1)
 			return Color(0.52 + h * 0.08, 0.50 + h * 0.07, 0.46 + h * 0.06, 1)
 
 		5:  # DARK_BRICK -- darker brick
 			var bx2: int = px % 8
-			var by2: int = (py + (px / 8) * 4) % 8
+			var by2: int = (py + (px >> 3) * 4) % 8
 			if bx2 == 0 or by2 == 0:
 				return Color(0.44, 0.42, 0.40, 1)
 			return Color(0.30 + h * 0.06, 0.27 + h * 0.06, 0.24 + h * 0.05, 1)
 
 		6:  # COBBLESTONE -- rounded irregular stones
-			var cx: int = (px / 4) + (py / 5)
+			var cx: int = (px >> 2) + int(float(py) / 5.0)
 			var ch: float = _hash(cx * 7, bid * 3)
 			var edge: bool = (px % 4 == 0) or (py % 5 == 0)
 			if edge:
@@ -152,7 +152,7 @@ static func _pixel_color(bid: int, fr: int, px: int, py: int) -> Color:
 
 		9:  # BATTLEMENT -- same as stone brick but more worn
 			var bx3: int = px % 8
-			var by3: int = (py + (px / 8) * 4) % 8
+			var by3: int = (py + (px >> 3) * 4) % 8
 			if bx3 == 0 or by3 == 0:
 				return Color(0.66, 0.64, 0.60, 1)
 			return Color(0.54 + h * 0.07, 0.52 + h * 0.06, 0.48 + h * 0.06, 1)
@@ -186,13 +186,13 @@ static func _pixel_color(bid: int, fr: int, px: int, py: int) -> Color:
 
 		16: # ARCH -- lighter stone
 			var bx4: int = px % 8
-			var by4: int = (py + (px / 8) * 4) % 8
+			var by4: int = (py + (px >> 3) * 4) % 8
 			if bx4 == 0 or by4 == 0:
 				return Color(0.80, 0.78, 0.74, 1)
 			return Color(0.60 + h * 0.07, 0.57 + h * 0.06, 0.52 + h * 0.05, 1)
 
 		17: # CLAY_TILE -- terracotta tile
-			var tx: int = px % 6
+			var tx: int  = px % 6
 			var ty2: int = py % 6
 			if tx == 0 or ty2 == 0:
 				return Color(0.42, 0.28, 0.18, 1)

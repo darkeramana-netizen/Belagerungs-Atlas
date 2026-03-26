@@ -147,7 +147,7 @@ func _load_castle(id: String) -> void:
 ## Pre-fill terrain chunks covering the castle footprint so foundations work.
 func _preload_castle_terrain(flat_r: int) -> void:
 	var cs := 16
-	var chunk_r: int = (flat_r / cs) + 2
+	var chunk_r: int = int(float(flat_r) / float(cs)) + 2
 	for cx in range(-chunk_r, chunk_r + 1):
 		for cz in range(-chunk_r, chunk_r + 1):
 			for cy in _world.WORLD_HEIGHT_CHUNKS:

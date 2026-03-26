@@ -1,15 +1,14 @@
 // Voxel block surface shader with texture atlas support.
 //
-// UV encoding used by VoxelChunk:
-//   UV.x = atlas_col + within_tile_u   (0..dw tiles in w-direction)
-//   UV.y = atlas_row + within_tile_v   (0..dv tiles in v-direction)
+// UV encoding (new, correct for greedy quads):
+//   UV  = raw local quad coords (0..dw, 0..dv) used for tiling.
+//   UV2 = normalised atlas tile base:
+//           UV2.x = atlas_col / BLOCK_COUNT
+//           UV2.y = atlas_row / FACE_ROWS
 //
-// The shader splits UV into:
-//   tile = floor(UV)   -> which tile in the atlas (col, row)
-//   uv   = fract(UV)   -> position within that tile (0..1)
-//
-// This gives correct per-tile tiling without bleeding into neighbours
-// even for large greedy-merged quads.
+// The shader tiles within the correct block tile using fract(UV),
+// then offsets into the atlas via UV2.  This prevents large greedy quads
+// from bleeding into adjacent atlas columns/rows.
 //
 // Vertex COLOR (rgb) encodes AO: white = no occlusion, dark = occluded.
 // Final albedo = texture_sample * vertex_ao.
@@ -21,12 +20,13 @@ uniform sampler2D atlas : source_color, filter_nearest, repeat_disable;
 uniform vec2 atlas_grid = vec2(20.0, 3.0);   // (num_cols, num_rows)
 
 void fragment() {
-    vec2 tile_idx  = floor(UV);
-    vec2 tile_uv   = fract(UV);
-    vec2 sample_uv = (tile_idx + tile_uv) / atlas_grid;
+    // tile_size = (1/20, 1/3) in atlas UV space
+    vec2 tile_size = 1.0 / atlas_grid;
+    // UV2 is the top-left of this block's tile in the atlas (normalised).
+    // fract(UV) gives within-tile position tiling every 1.0 block.
+    vec2 sample_uv = UV2 + fract(UV) * tile_size;
 
     vec4 tex = texture(atlas, sample_uv);
-    // Multiply by vertex colour for per-vertex AO darkening
     ALBEDO = tex.rgb * COLOR.rgb;
     ALPHA  = tex.a;
 }
