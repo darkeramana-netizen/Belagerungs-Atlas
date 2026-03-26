@@ -177,8 +177,11 @@ func _build_ncache() -> PackedByteArray:
 	return cache
 
 
-# Cache lookup: local coords (lx,ly,lz) may be -1 or 16 (border)
+# Cache lookup: local coords -1..16 are valid; clamp anything further to AIR.
+# AO sampling can request vc+sv = SIZE+1 = 17 at chunk corners -- guard here.
 func _cache_get(cache: PackedByteArray, lx: int, ly: int, lz: int) -> int:
+	if lx < -1 or lx > SIZE or ly < -1 or ly > SIZE or lz < -1 or lz > SIZE:
+		return BT.AIR
 	return cache[(ly + 1) * PAD2 + (lz + 1) * PAD + (lx + 1)]
 
 
