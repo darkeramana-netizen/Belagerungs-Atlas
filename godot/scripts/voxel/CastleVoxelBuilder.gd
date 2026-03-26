@@ -1,26 +1,17 @@
 extends Node
 ## CastleVoxelBuilder -- places castle components into the VoxelWorld block grid.
 ##
-## Reads the same DNA Dictionary produced by ProceduralCastleGen (or hero JSON),
-## translates every component into integer block coordinates, and writes them via
-## VoxelWorld.set_block().
-##
-## Coordinate convention:
-##   All component positions in the DNA are in metres (floats).
-##   We convert: block_x = round(metres_x), block_z = round(metres_z).
-##   Castle base Y = VoxelWorld.BASE_Y (= 20 by default).
-##
-## Foundation Logic (requirement 4):
-##   After placing every surface block, call fill_foundations() which walks
-##   downward from the castle base Y until it hits solid terrain, filling with
-##   FOUNDATION blocks.  This ensures walls above cliffs never float.
+## Detail features added on top of the structural skeleton:
+##   - Arrow slits: pairs of AIR blocks cut into walls / tower shells.
+##   - Decorative stone courses: LIMESTONE band every 4 rows on tall towers.
+##   - Corbels: STONE_BRICK protrusions under battlement rows.
+##   - Window slots: openings in hall walls.
+##   - Stair-stepped glacis: tighter frustum stepping for a smoother slope.
 
 const BT = preload("res://scripts/voxel/BlockTypes.gd")
 
-## VoxelWorld reference (set by Main before calling build()).
-var world = null   # VoxelWorld
+var world = null   # VoxelWorld (set by Main before calling build())
 
-## Y block where castle floor sits (matches VoxelWorld.BASE_Y).
 const BASE_Y := 20
 
 
@@ -28,8 +19,6 @@ const BASE_Y := 20
 # Public entry point
 # ---------------------------------------------------------------------------
 
-## Build a castle from a DNA dictionary into the VoxelWorld.
-## model has the same structure as ProceduralCastleGen.generate() output.
 func build(model: Dictionary) -> void:
 	if world == null:
 		push_error("[CastleVoxelBuilder] world is null")
@@ -41,7 +30,7 @@ func build(model: Dictionary) -> void:
 			continue
 		_dispatch(comp)
 
-	# Lay down a cobblestone courtyard at ground level
+	# Cobblestone courtyard at ground level
 	var cam_r: float = model.get("cameraRadius", 60.0)
 	var yard_r: int  = int(cam_r * 0.38)
 	_fill_courtyard(yard_r)
@@ -71,7 +60,7 @@ func _dispatch(comp: Dictionary) -> void:
 
 
 # ---------------------------------------------------------------------------
-# RING -- towers at vertices + curtain walls between them
+# RING
 # ---------------------------------------------------------------------------
 
 func _build_ring(comp: Dictionary) -> void:
@@ -131,7 +120,7 @@ func _build_square_tower(comp: Dictionary) -> void:
 
 
 # ---------------------------------------------------------------------------
-# GATE (two flanking towers + portcullis gap)
+# GATE (two flanking towers + portcullis arch)
 # ---------------------------------------------------------------------------
 
 func _build_gate(comp: Dictionary) -> void:
@@ -140,13 +129,19 @@ func _build_gate(comp: Dictionary) -> void:
 	var w:  int = maxi(2, int(round(float(comp.get("w", 4.0)))))
 	var h:  int = maxi(3, int(round(float(comp.get("h", 10.0)))))
 	var tr: int = maxi(2, w)
+
 	# Two flanking towers
 	_place_round_tower(px - w - tr, BASE_Y, pz, tr, h, BT.DARK_BRICK)
 	_place_round_tower(px + w + tr, BASE_Y, pz, tr, h, BT.DARK_BRICK)
-	# Arch blocks over gate passage
-	for dx in range(-w, w + 1):
-		world.set_block(px + dx, BASE_Y + h - 1, pz, BT.ARCH)
-		world.set_block(px + dx, BASE_Y + h - 2, pz, BT.ARCH)
+
+	# Portcullis arch -- pointed arch shape
+	var arch_h: int = mini(3, h - 1)
+	for dy in arch_h:
+		var span: int = w - dy * (w / maxi(1, arch_h))
+		for dx in range(-span, span + 1):
+			world.set_block(px + dx, BASE_Y + h - arch_h + dy, pz, BT.ARCH)
+
+	# Gate passage remains open (AIR) for width w, height h-arch_h
 
 
 # ---------------------------------------------------------------------------
@@ -175,6 +170,14 @@ func _build_hall(comp: Dictionary) -> void:
 				elif y == BASE_Y:
 					world.set_block(x, y, z, BT.CLAY_TILE)   # interior floor
 
+	# Window slots: one per wall face, mid-height
+	var win_y: int = BASE_Y + h / 2
+	_cut_window_slot(cx, win_y, cz - hd, BT.AIR)   # south face
+	_cut_window_slot(cx, win_y, cz + hd, BT.AIR)   # north face
+	# Doorway on south face (wider opening at ground level)
+	world.set_block(cx, BASE_Y,     cz - hd, BT.AIR)
+	world.set_block(cx, BASE_Y + 1, cz - hd, BT.AIR)
+
 	# Gabled roof (SLATE_ROOF blocks)
 	for dz in range(-hd, hd + 1):
 		for dy in range(rh):
@@ -187,29 +190,42 @@ func _build_hall(comp: Dictionary) -> void:
 
 
 # ---------------------------------------------------------------------------
-# GLACIS (sloped base ring) -- approximated as a ring of stone blocks
+# GLACIS -- stair-stepped frustum ring
 # ---------------------------------------------------------------------------
 
 func _build_glacis(comp: Dictionary) -> void:
 	var r: int = maxi(1, int(round(float(comp.get("r", 30.0)))))
 	var h: int = maxi(1, int(round(float(comp.get("h",  4.0)))))
 	for y in h:
-		var ry: int = r - y   # ring shrinks as it goes up (frustum)
+		# Each step is 1 block narrower inward (frustum)
+		var ry: int = r - y
 		_ring_blocks(0, BASE_Y - h + y, 0, ry, 1, BT.STONE)
+		# Add a slightly wider solid base on the lowest step for a cleaner base
+		if y == 0:
+			_ring_blocks(0, BASE_Y - h, 0, ry, 2, BT.STONE)
 
 
 # ---------------------------------------------------------------------------
 # Primitive block placers
 # ---------------------------------------------------------------------------
 
-## Hollow cylinder shell: outer radius r, shell thickness wall_t (in blocks).
+## Hollow cylinder shell with arrow slits and decorative courses.
 func _place_round_tower(cx: int, base_y: int, cz: int,
 		r: int, height: int, block_id: int) -> void:
-	var shell: int = maxi(1, r / 4)   # wall thickness ~ 25% of radius
+	var shell: int = maxi(1, r / 4)
 	for y in range(base_y, base_y + height):
-		_ring_blocks(cx, y, cz, r, shell, block_id)
+		var dy: int = y - base_y
+		# Decorative LIMESTONE band every 4 rows on tall towers
+		var bid: int = block_id
+		if r >= 4 and (dy % 4 == 0) and dy > 0 and dy < height - 1:
+			bid = BT.LIMESTONE
+		_ring_blocks(cx, y, cz, r, shell, bid)
 
-	# Battlements (crenellations) on top: alternating merlons
+	# Corbels (protrusions) just below the battlement row
+	if height >= 4:
+		_ring_blocks(cx, base_y + height - 2, cz, r + 1, 1, BT.STONE_BRICK)
+
+	# Battlements (crenellations) on top
 	var merlon_gap := 2
 	for angle_step in range(0, 360, merlon_gap * 15):
 		var a: float = deg_to_rad(float(angle_step))
@@ -217,21 +233,44 @@ func _place_round_tower(cx: int, base_y: int, cz: int,
 		var bz_: int = cz + int(round(sin(a) * float(r)))
 		world.set_block(bx, base_y + height, bz_, BT.BATTLEMENT)
 
+	# Arrow slits: 4 cardinal directions
+	if r >= 3 and height >= 6:
+		var slit_y: int = base_y + height / 2
+		for a_deg in [0, 90, 180, 270]:
+			var a: float = deg_to_rad(float(a_deg))
+			var sx: int = cx + int(round(cos(a) * float(r - 1)))
+			var sz: int = cz + int(round(sin(a) * float(r - 1)))
+			world.set_block(sx, slit_y,     sz, BT.AIR)
+			world.set_block(sx, slit_y + 1, sz, BT.AIR)
+
 	# Foundation column
 	_fill_column_to_ground(cx, base_y, cz, block_id)
 	fill_ring_foundations(cx, cz, r, base_y)
 
 
-## Solid box tower: half-extent r, hollow interior.
+## Hollow box tower with arrow slits and decorative courses.
 func _place_square_tower(cx: int, base_y: int, cz: int,
 		r: int, height: int, block_id: int) -> void:
 	for y in range(base_y, base_y + height):
+		var dy: int = y - base_y
+		var bid: int = block_id
+		if r >= 3 and (dy % 4 == 0) and dy > 0 and dy < height - 1:
+			bid = BT.LIMESTONE
 		for z in range(cz - r, cz + r + 1):
 			for x in range(cx - r, cx + r + 1):
 				var on_wall: bool = (x == cx - r or x == cx + r or
 				                     z == cz - r or z == cz + r)
 				if on_wall or y == base_y:
-					world.set_block(x, y, z, block_id)
+					world.set_block(x, y, z, bid)
+
+	# Corbels under battlements
+	if height >= 4:
+		for x in range(cx - r - 1, cx + r + 2):
+			world.set_block(x, base_y + height - 2, cz - r - 1, BT.STONE_BRICK)
+			world.set_block(x, base_y + height - 2, cz + r + 1, BT.STONE_BRICK)
+		for z in range(cz - r, cz + r + 1):
+			world.set_block(cx - r - 1, base_y + height - 2, z, BT.STONE_BRICK)
+			world.set_block(cx + r + 1, base_y + height - 2, z, BT.STONE_BRICK)
 
 	# Battlements
 	for x in range(cx - r, cx + r + 1, 2):
@@ -241,10 +280,24 @@ func _place_square_tower(cx: int, base_y: int, cz: int,
 		world.set_block(cx - r, base_y + height, z, BT.BATTLEMENT)
 		world.set_block(cx + r, base_y + height, z, BT.BATTLEMENT)
 
+	# Arrow slits on each wall face (mid-height)
+	if height >= 6:
+		var slit_y: int = base_y + height / 2
+		for dx in range(-r + 1, r, 2):
+			world.set_block(cx + dx, slit_y,     cz - r, BT.AIR)
+			world.set_block(cx + dx, slit_y + 1, cz - r, BT.AIR)
+			world.set_block(cx + dx, slit_y,     cz + r, BT.AIR)
+			world.set_block(cx + dx, slit_y + 1, cz + r, BT.AIR)
+		for dz in range(-r + 1, r, 2):
+			world.set_block(cx - r, slit_y,     cz + dz, BT.AIR)
+			world.set_block(cx - r, slit_y + 1, cz + dz, BT.AIR)
+			world.set_block(cx + r, slit_y,     cz + dz, BT.AIR)
+			world.set_block(cx + r, slit_y + 1, cz + dz, BT.AIR)
+
 	_auto_foundations(cx - r, cx + r, cz - r, cz + r)
 
 
-## Curtain wall from (ax, base_y, az) to (bx, base_y, bz).
+## Curtain wall with arrow slits and corbels under battlements.
 func _place_wall(ax: int, base_y: int, az: int,
 		bx: int, bz: int, height: int, thickness: int,
 		block_id: int) -> void:
@@ -254,7 +307,6 @@ func _place_wall(ax: int, base_y: int, az: int,
 	if steps == 0:
 		return
 
-	# Walk along the longer axis, snap to grid
 	for s in range(steps + 1):
 		var t: float = float(s) / float(steps)
 		var wx: int  = ax + int(round(t * float(dx)))
@@ -262,17 +314,35 @@ func _place_wall(ax: int, base_y: int, az: int,
 
 		for y in range(base_y, base_y + height):
 			world.set_block(wx, y, wz, block_id)
-			# Wall thickness perpendicular to travel direction
-			if abs(dx) > abs(dz):   # mostly horizontal wall -> thicken in Z
+			if abs(dx) > abs(dz):
 				for tz in range(-(thickness / 2), (thickness / 2) + 1):
 					world.set_block(wx, y, wz + tz, block_id)
-			else:                    # mostly vertical wall -> thicken in X
+			else:
 				for tx in range(-(thickness / 2), (thickness / 2) + 1):
 					world.set_block(wx + tx, y, wz, block_id)
+
+		# Corbels just below battlement row
+		if height >= 3:
+			if abs(dx) > abs(dz):
+				world.set_block(wx, base_y + height - 2, wz - 1, BT.STONE_BRICK)
+				world.set_block(wx, base_y + height - 2, wz + 1, BT.STONE_BRICK)
+			else:
+				world.set_block(wx - 1, base_y + height - 2, wz, BT.STONE_BRICK)
+				world.set_block(wx + 1, base_y + height - 2, wz, BT.STONE_BRICK)
 
 		# Battlements every 2 blocks
 		if s % 2 == 0:
 			world.set_block(wx, base_y + height, wz, BT.BATTLEMENT)
+
+	# Arrow slits every 4 steps along the wall
+	if height >= 5:
+		var slit_y: int = base_y + height / 2
+		for s in range(2, steps - 1, 4):
+			var t: float = float(s) / float(steps)
+			var wx: int  = ax + int(round(t * float(dx)))
+			var wz: int  = az + int(round(t * float(dz)))
+			world.set_block(wx, slit_y,     wz, BT.AIR)
+			world.set_block(wx, slit_y + 1, wz, BT.AIR)
 
 	# Foundations under wall
 	for s in range(steps + 1):
@@ -282,14 +352,17 @@ func _place_wall(ax: int, base_y: int, az: int,
 		world.fill_foundation(wx, base_y, wz, BT.FOUNDATION)
 
 
-## Leave a gap in the wall for a gate passage.
 func _build_gate_gap(pt_a, pt_b, base_y: int, wall_h: int) -> void:
-	# The gate index just leaves an open passage -- CastleVoxelBuilder.build_gate()
-	# handles the arch + flanking towers separately.
-	pass
+	pass   # open passage handled by _build_gate() flanking towers
 
 
-## Courtyard: fill a circle of COBBLE at BASE_Y (only over AIR blocks).
+## Window slot: a 1-wide 2-tall opening centred at (wx, wy, wz).
+func _cut_window_slot(wx: int, wy: int, wz: int, _block_id: int) -> void:
+	world.set_block(wx, wy,     wz, BT.AIR)
+	world.set_block(wx, wy + 1, wz, BT.AIR)
+
+
+## Courtyard: fill a circle of COBBLE at BASE_Y (only over AIR/grass/dirt).
 func _fill_courtyard(radius: int) -> void:
 	for z in range(-radius, radius + 1):
 		for x in range(-radius, radius + 1):
@@ -303,7 +376,6 @@ func _fill_courtyard(radius: int) -> void:
 # Geometry helpers
 # ---------------------------------------------------------------------------
 
-## Place a ring of blocks at radius r with wall thickness shell.
 func _ring_blocks(cx: int, y: int, cz: int, r: int, shell: int, block_id: int) -> void:
 	var r_inner: int = maxi(0, r - shell)
 	for z in range(cz - r, cz + r + 1):
@@ -313,19 +385,16 @@ func _ring_blocks(cx: int, y: int, cz: int, r: int, shell: int, block_id: int) -
 				world.set_block(x, y, z, block_id)
 
 
-## Fill a single column down to ground level with FOUNDATION blocks.
 func _fill_column_to_ground(wx: int, top_y: int, wz: int, block_id: int) -> void:
 	world.fill_foundation(wx, top_y, wz, block_id)
 
 
-## Fill foundations under all columns within an AABB.
 func _auto_foundations(x0: int, x1: int, z0: int, z1: int) -> void:
 	for z in range(z0, z1 + 1):
 		for x in range(x0, x1 + 1):
 			world.fill_foundation(x, BASE_Y, z, BT.FOUNDATION)
 
 
-## Fill foundations under a ring perimeter.
 func fill_ring_foundations(cx: int, cz: int, r: int, base_y: int) -> void:
 	for z in range(cz - r, cz + r + 1):
 		for x in range(cx - r, cx + r + 1):
