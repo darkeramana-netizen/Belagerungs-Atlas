@@ -76,6 +76,7 @@ static func _build_material() -> ShaderMaterial:
 	mat.shader = shader
 	mat.set_shader_parameter("atlas", atlas_tex)
 	mat.set_shader_parameter("atlas_grid", Vector2(BLOCK_COUNT, FACE_ROWS))
+	mat.set_shader_parameter("atlas_size", Vector2(ATLAS_W, ATLAS_H))
 	return mat
 
 
