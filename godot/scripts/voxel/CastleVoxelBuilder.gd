@@ -137,7 +137,7 @@ func _build_gate(comp: Dictionary) -> void:
 	# Portcullis arch -- pointed arch shape
 	var arch_h: int = mini(3, h - 1)
 	for dy in arch_h:
-		var span: int = w - dy * (w // maxi(1, arch_h))
+		var span: int = w - dy * (w / maxi(1, arch_h))
 		for dx in range(-span, span + 1):
 			world.set_block(px + dx, BASE_Y + h - arch_h + dy, pz, BT.ARCH)
 
@@ -156,8 +156,8 @@ func _build_hall(comp: Dictionary) -> void:
 	var h:  int = maxi(2, int(round(float(comp.get("h",  7.0)))))
 	var rh: int = maxi(1, int(round(float(comp.get("roofH", 3.0)))))
 
-	var hw: int = w // 2
-	var hd: int = d // 2
+	var hw: int = w / 2
+	var hd: int = d / 2
 
 	# Hollow walls (1 block thick)
 	for z in range(cz - hd, cz + hd + 1):
@@ -170,7 +170,7 @@ func _build_hall(comp: Dictionary) -> void:
 					world.set_block(x, y, z, BT.CLAY_TILE)   # interior floor
 
 	# Window slots: one per wall face, mid-height
-	var win_y: int = BASE_Y + h // 2
+	var win_y: int = BASE_Y + h / 2
 	_cut_window_slot(cx, win_y, cz - hd, BT.AIR)   # south face
 	_cut_window_slot(cx, win_y, cz + hd, BT.AIR)   # north face
 	# Doorway on south face (wider opening at ground level)
@@ -211,7 +211,7 @@ func _build_glacis(comp: Dictionary) -> void:
 ## Hollow cylinder shell with arrow slits and decorative courses.
 func _place_round_tower(cx: int, base_y: int, cz: int,
 		r: int, height: int, block_id: int) -> void:
-	var shell: int = maxi(1, r // 4)
+	var shell: int = maxi(1, r / 4)
 	for y in range(base_y, base_y + height):
 		var dy: int = y - base_y
 		# Decorative LIMESTONE band every 4 rows on tall towers
@@ -234,7 +234,7 @@ func _place_round_tower(cx: int, base_y: int, cz: int,
 
 	# Arrow slits: 4 cardinal directions
 	if r >= 3 and height >= 6:
-		var slit_y: int = base_y + height // 2
+		var slit_y: int = base_y + height / 2
 		for a_deg in [0, 90, 180, 270]:
 			var a: float = deg_to_rad(float(a_deg))
 			var sx: int = cx + int(round(cos(a) * float(r - 1)))
@@ -280,7 +280,7 @@ func _place_square_tower(cx: int, base_y: int, cz: int,
 
 	# Arrow slits on each wall face (mid-height)
 	if height >= 6:
-		var slit_y: int = base_y + height // 2
+		var slit_y: int = base_y + height / 2
 		for dx in range(-r + 1, r, 2):
 			world.set_block(cx + dx, slit_y,     cz - r, BT.AIR)
 			world.set_block(cx + dx, slit_y + 1, cz - r, BT.AIR)
@@ -313,10 +313,10 @@ func _place_wall(ax: int, base_y: int, az: int,
 		for y in range(base_y, base_y + height):
 			world.set_block(wx, y, wz, block_id)
 			if abs(dx) > abs(dz):
-				for tz in range(-(thickness // 2), (thickness // 2) + 1):
+				for tz in range(-(thickness / 2), (thickness / 2) + 1):
 					world.set_block(wx, y, wz + tz, block_id)
 			else:
-				for tx in range(-(thickness // 2), (thickness // 2) + 1):
+				for tx in range(-(thickness / 2), (thickness / 2) + 1):
 					world.set_block(wx + tx, y, wz, block_id)
 
 		# Corbels just below battlement row
@@ -334,7 +334,7 @@ func _place_wall(ax: int, base_y: int, az: int,
 
 	# Arrow slits every 4 steps along the wall
 	if height >= 5:
-		var slit_y: int = base_y + height // 2
+		var slit_y: int = base_y + height / 2
 		for s in range(2, steps - 1, 4):
 			var t: float = float(s) / float(steps)
 			var wx: int  = ax + int(round(t * float(dx)))
