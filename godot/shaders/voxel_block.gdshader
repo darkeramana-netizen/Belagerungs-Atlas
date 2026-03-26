@@ -1,31 +1,29 @@
 // Voxel block surface shader — triplanar world-space UV mapping.
 //
-// Eliminates UV seam artifacts from greedy quads by deriving UVs entirely
-// from world-space vertex position rather than mesh-local texture coordinates.
-//
-// World coordinates are in metres (1 block = 1 m), so fract(world_pos.**)
-// maps exactly one block face to one texture tile with no manual scaling.
-//
 // Atlas layout: atlas_grid = (num_cols=20, num_rows=3)
-//   Row 0 = top face, Row 1 = side face, Row 2 = bottom face
+//   Row 0 = top face (+Y)   Row 1 = side face   Row 2 = bottom face (-Y)
 //   Col   = block ID  (0 .. BLOCK_COUNT-1)
 //
 // UV2.x = float(block_id) / BLOCK_COUNT  — atlas column selector.
-// Vertex COLOR.rgb = per-vertex AO greyscale (1 = bright, 0 = occluded).
+// Vertex COLOR.rgb = per-vertex AO greyscale (1=bright, 0=occluded).
 //
-// Precision notes:
-//   world_pos via MODEL_MATRIX accounts for chunk-node world offset.
-//   world_normal via MODEL_NORMAL_MATRIX (inverse-transpose of model mat3)
-//     gives correct normals even under non-uniform scaling.
-//   +0.001 snap before fract() prevents 15.9999... rounding at block edges
-//     from sampling the wrong block-row pixel.
+// Triplanar UV selection (dominant world normal axis):
+//   ±Y  →  world_pos.xz   ±X  →  world_pos.zy   ±Z  →  world_pos.xy
+//
+// Precision:
+//   world_pos via MODEL_MATRIX includes full chunk-node world offset.
+//   world_normal via MODEL_NORMAL_MATRIX (inverse-transpose) + re-normalised
+//     in fragment stage stays axis-aligned despite varying interpolation.
+//   fract(world_pos + 0.001) snaps away from integer block boundaries.
+//   within_tile uses half-texel inset derived from atlas_size so samples
+//     never land on atlas tile borders regardless of block or atlas dimensions.
 
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_draw_opaque, shadows_disabled;
 
 uniform sampler2D atlas      : source_color, filter_nearest, repeat_disable;
 uniform vec2      atlas_grid = vec2(20.0, 3.0);    // (num_cols, num_rows)
-uniform vec2      atlas_size = vec2(320.0, 48.0);  // (width_px, height_px)
+uniform vec2      atlas_size = vec2(320.0, 48.0);  // (width_px, height_px) for half-texel
 
 varying vec3 world_pos;
 varying vec3 world_normal;
@@ -34,49 +32,55 @@ void vertex() {
 	// Full world-space position including chunk node offset.
 	world_pos    = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	// MODEL_NORMAL_MATRIX = transpose(inverse(mat3(MODEL_MATRIX))).
-	// Correct for non-uniform scale; avoids skewed normals.
+	// Correct for any scale; keeps normals axis-aligned for our chunks.
 	world_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 }
 
 void fragment() {
-	// ── Triplanar UV selection ─────────────────────────────────────────────
-	// +0.001 snap: shifts coords slightly away from integer block boundaries
-	// so that floating-point values like 15.9999 become 16.0009 before fract(),
-	// landing in the correct [0,1) tile rather than the previous tile's tail.
-	vec3 snapped = world_pos + vec3(0.001);
+	// ── Re-normalise (varying interpolation can drift off unit length) ────
+	vec3 wn = normalize(world_normal);
 
-	float any = abs(world_normal.y);
-	float anx = abs(world_normal.x);
-	float anz = abs(world_normal.z);
+	// ── Triplanar UV selection ────────────────────────────────────────────
+	// +0.001 snap keeps us safely above the previous integer block boundary
+	// when the GPU produces e.g. 15.9998 instead of 16.0000.
+	vec3  snapped = world_pos + vec3(0.001);
+
+	float any_y = abs(wn.y);
+	float any_x = abs(wn.x);
+	float any_z = abs(wn.z);
 
 	vec2  tile_uv;
 	float atlas_row_f;
 
-	if (any > 0.5) {
-		// Top (+Y, row 0) or Bottom (-Y, row 2)
+	if (any_y >= any_x && any_y >= any_z) {
+		// ±Y  →  top (row 0) or bottom (row 2)
 		tile_uv     = fract(snapped.xz);
-		atlas_row_f = (world_normal.y > 0.0) ? 0.0 : 2.0;
-	} else if (anx >= anz) {
-		// ±X side face: horizontal = Z, vertical = Y
+		atlas_row_f = (wn.y > 0.0) ? 0.0 : 2.0;
+	} else if (any_x >= any_z) {
+		// ±X side: horizontal = Z, vertical = Y
 		tile_uv     = fract(snapped.zy);
 		atlas_row_f = 1.0;
 	} else {
-		// ±Z side face: horizontal = X, vertical = Y
+		// ±Z side: horizontal = X, vertical = Y
 		tile_uv     = fract(snapped.xy);
 		atlas_row_f = 1.0;
 	}
 
-	// ── Atlas sampling ────────────────────────────────────────────────────
-	vec2 tile_size = 1.0 / atlas_grid;
+	// ── Atlas tile lookup ─────────────────────────────────────────────────
+	vec2 tile_size   = 1.0 / atlas_grid;
 
-	// Atlas tile origin: column from block-ID (UV2.x), row from face normal.
-	vec2 atlas_base = vec2(UV2.x, atlas_row_f / atlas_grid.y);
+	// Half-texel inset computed from actual atlas pixel dimensions so the
+	// inset is always 0.5 px regardless of tile or atlas size.
+	// This prevents nearest-neighbour sampling from landing on tile borders.
+	vec2 half_texel  = 0.5 / atlas_size;
 
-	// Inset tile_uv by ±0.001 so samples never reach tile boundaries,
-	// preventing bleed from adjacent tiles.
-	vec2 within_tile = tile_uv * (tile_size - vec2(0.002)) + vec2(0.001);
+	// Atlas tile origin: column from UV2.x (block_id/BLOCK_COUNT), row from normal.
+	vec2 atlas_base  = vec2(UV2.x, atlas_row_f / atlas_grid.y);
+
+	// Map tile_uv [0,1] to [half_texel, tile_size-half_texel] within the tile.
+	vec2 within_tile = tile_uv * (tile_size - 2.0 * half_texel) + half_texel;
 
 	vec4 tex = texture(atlas, atlas_base + within_tile);
 	ALBEDO = tex.rgb * COLOR.rgb;
-	ALPHA  = tex.a;
+	ALPHA  = 1.0;   // all terrain faces are fully opaque
 }
