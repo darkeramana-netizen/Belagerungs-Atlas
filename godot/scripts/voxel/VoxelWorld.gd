@@ -15,7 +15,7 @@ const BT         = preload("res://scripts/voxel/BlockTypes.gd")
 const ChunkScene = preload("res://scripts/voxel/VoxelChunk.gd")
 
 @export var world_seed:    int = 12345
-@export var view_dist:     int = 5        # chunks radius in X/Z
+@export var view_dist:     int = 4        # chunks radius in X/Z  (4 = 9x9=81 cols)
 @export var castle_flat_r: int = 32       # flat zone radius in blocks (set by Main)
 
 ## World height in blocks and chunks.
@@ -30,7 +30,7 @@ var _gen: Node = null                    # VoxelTerrainGen (set by Main after _r
 
 ## New XZ columns created + filled + rebuilt per update() call.
 ## One column = WORLD_HEIGHT_CHUNKS actual chunks.
-const NEW_COLS_PER_FRAME := 4
+const NEW_COLS_PER_FRAME := 2
 
 
 func _ready() -> void:

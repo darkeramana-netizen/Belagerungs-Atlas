@@ -75,7 +75,7 @@ func fill_chunk(chunk_key: Vector3i, world: Object) -> void:
 			for ly in cs:
 				var wy: int = wy0 + ly
 				var bid: int = _block_for_y(wy, surf)
-				if bid != BT.AIR:
+				if bid != BT.AIR and world.get_block(wx, wy, wz) == BT.AIR:
 					world.set_block(wx, wy, wz, bid)
 
 
