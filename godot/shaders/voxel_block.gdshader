@@ -17,9 +17,12 @@
 //   fract(world_pos + 0.001) snaps away from integer block boundaries.
 //   within_tile uses half-texel inset derived from atlas_size so samples
 //     never land on atlas tile borders regardless of block or atlas dimensions.
+//
+// cull_back eliminates back-face "floating brown rectangle" artefacts.
+// All mesh quads use outward-facing CCW winding (verified via cross product).
 
 shader_type spatial;
-render_mode unshaded, cull_disabled, depth_draw_opaque, shadows_disabled;
+render_mode unshaded, cull_back, depth_draw_opaque, shadows_disabled;
 
 uniform sampler2D atlas      : source_color, filter_nearest, repeat_disable;
 uniform vec2      atlas_grid = vec2(20.0, 3.0);    // (num_cols, num_rows)
@@ -39,17 +42,6 @@ void vertex() {
 void fragment() {
 	// ── Re-normalise (varying interpolation can drift off unit length) ────
 	vec3 wn = normalize(world_normal);
-
-	// ── Selective backface cull ───────────────────────────────────────────
-	// cull_disabled is needed so top faces are visible from below (underground
-	// / editor camera below terrain).  But the back-faces of vertical SIDE
-	// quads (normal ±X or ±Z) must be discarded — they are the source of the
-	// "floating brown rectangle" artefacts that appear on the green surface
-	// when looking down at terrain from above at an oblique angle.
-	// Top/bottom back-faces (abs(wn.y) ≥ 0.5) are left visible intentionally.
-	if (!FRONT_FACING && abs(wn.y) < 0.5) {
-		discard;
-	}
 
 	// ── Triplanar UV selection ────────────────────────────────────────────
 	// +0.001 snap keeps us safely above the previous integer block boundary
