@@ -73,7 +73,7 @@ func _ready() -> void:
 	_mat.vertex_color_use_as_albedo = true
 	_mat.roughness                 = 1.0
 	_mat.metallic                  = 0.0
-	_mat.cull_mode                 = BaseMaterial3D.CULL_BACK
+	_mat.cull_mode                 = BaseMaterial3D.CULL_DISABLED
 
 	_mesh_inst = MeshInstance3D.new()
 	_mesh_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
