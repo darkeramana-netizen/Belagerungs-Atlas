@@ -4,10 +4,13 @@ extends StaticBody3D
 ## Mesh arrays used:
 ##   ARRAY_VERTEX   -- local-space positions (chunk node offset applied by Godot)
 ##   ARRAY_NORMAL   -- per-vertex outward normals
-##   ARRAY_TEX_UV   -- atlas UV: (col + within_tile_u, row + within_tile_v)
-##                    Atlas shader decodes with fract(); large greedy quads tile.
+##   ARRAY_TEX_UV2  -- UV2.x = float(block_id) / BLOCK_COUNT (atlas column selector)
+##                    Atlas row is derived in the shader from the world-space normal.
 ##   ARRAY_COLOR    -- AO factor as greyscale (1=bright, 0=fully occluded)
 ##   ARRAY_INDEX    -- triangle indices
+##
+## Triplanar world-space UVs are computed entirely in the shader from MODEL_MATRIX,
+## so no tiling UV data is needed here — UV2.x only carries the block-type index.
 ##
 ## Performance:
 ##   18x18x18 padded neighbour cache built once per rebuild() to replace
@@ -62,11 +65,6 @@ const _QUAD_ORDER := [
 	[1, 0, 3, 2],   # fi=5  -Z
 ]
 
-# Precomputed per-corner UV offsets in (u, v) within the tile grid:
-# A:(0,0)  B:(0,1)  C:(1,1)  D:(1,0)   -- u=w-dir, v=v-dir
-const _CORNER_U := [0, 0, 1, 1]  # indexed by corner 0=A,1=B,2=C,3=D
-const _CORNER_V := [0, 1, 1, 0]
-
 
 func _ready() -> void:
 	_data = PackedByteArray()
@@ -114,13 +112,12 @@ func rebuild() -> void:
 
 	var verts:  PackedVector3Array = PackedVector3Array()
 	var norms:  PackedVector3Array = PackedVector3Array()
-	var uvs:    PackedVector2Array = PackedVector2Array()   # raw local (0..dw, 0..dv) for tiling
-	var uv2s:   PackedVector2Array = PackedVector2Array()   # normalised atlas tile base
+	var uv2s:   PackedVector2Array = PackedVector2Array()   # UV2.x = block_id/BLOCK_COUNT
 	var colors: PackedColorArray   = PackedColorArray()
 	var idxs:   PackedInt32Array   = PackedInt32Array()
 
 	for fi in 6:
-		_greedy_pass(fi, ncache, verts, norms, uvs, uv2s, colors, idxs)
+		_greedy_pass(fi, ncache, verts, norms, uv2s, colors, idxs)
 
 	if verts.is_empty():
 		_mesh_inst.mesh = null
@@ -131,7 +128,6 @@ func rebuild() -> void:
 	arrays.resize(Mesh.ARRAY_MAX)
 	arrays[Mesh.ARRAY_VERTEX]   = verts
 	arrays[Mesh.ARRAY_NORMAL]   = norms
-	arrays[Mesh.ARRAY_TEX_UV]   = uvs
 	arrays[Mesh.ARRAY_TEX_UV2]  = uv2s
 	arrays[Mesh.ARRAY_COLOR]    = colors
 	arrays[Mesh.ARRAY_INDEX]    = idxs
@@ -188,12 +184,11 @@ func _cache_get(cache: PackedByteArray, lx: int, ly: int, lz: int) -> int:
 
 func _greedy_pass(fi: int, ncache: PackedByteArray,
 		verts: PackedVector3Array, norms: PackedVector3Array,
-		uvs: PackedVector2Array, uv2s: PackedVector2Array,
+		uv2s: PackedVector2Array,
 		colors: PackedColorArray, idxs: PackedInt32Array) -> void:
 
 	var normal:   Vector3 = _NORMALS[fi]
 	var dir_ao:   float   = _DIR_AO[fi]
-	var atlas_row: int    = Atlas.face_row_from_fi(fi)
 	var nx:        int    = _NX[fi]
 	var ny:        int    = _NY[fi]
 	var nz:        int    = _NZ[fi]
@@ -263,8 +258,8 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 					for pw in dw:
 						used[(v0 + pv) * SIZE + w0 + pw] = 1
 
-				_emit_quad(fi, u, v0, w0, dv, dw, dir_ao, bid, atlas_row, normal,
-						ncache, verts, norms, uvs, uv2s, colors, idxs)
+				_emit_quad(fi, u, v0, w0, dv, dw, dir_ao, bid, normal,
+						ncache, verts, norms, uv2s, colors, idxs)
 
 
 # ---------------------------------------------------------------------------
@@ -272,20 +267,18 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 # ---------------------------------------------------------------------------
 
 func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
-		d_ao: float, bid: int, atlas_row: int, normal: Vector3,
+		d_ao: float, bid: int, normal: Vector3,
 		ncache: PackedByteArray,
 		verts: PackedVector3Array, norms: PackedVector3Array,
-		uvs: PackedVector2Array, uv2s: PackedVector2Array,
+		uv2s: PackedVector2Array,
 		colors: PackedColorArray, idxs: PackedInt32Array) -> void:
 
 	var v1: int = v0 + dv
 	var w1: int = w0 + dw
 
-	# UV2: normalised atlas tile base (same for all 4 corners of this quad).
-	# UV2.x = atlas_col / BLOCK_COUNT,  UV2.y = atlas_row / FACE_ROWS
-	var tile_base := Vector2(
-		float(bid)      / float(Atlas.BLOCK_COUNT),
-		float(atlas_row) / float(Atlas.FACE_ROWS))
+	# UV2.x = atlas column selector (block_id / BLOCK_COUNT).
+	# Atlas row and tile UVs are computed from world-space position in the shader.
+	var col_uv := Vector2(float(bid) / float(Atlas.BLOCK_COUNT), 0.0)
 
 	# Corners: [vc, wc, sv, sw]
 	var corners: Array = [
@@ -295,11 +288,6 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		[v0, w1, -1,  1],   # D
 	]
 	var order: Array = (_QUAD_ORDER[fi] as Array)
-
-	# UV: raw local quad position (0..dw, 0..dv).
-	# The shader uses fract(UV) to tile within the block texture.
-	var uv_us: Array = [0.0, 0.0, float(dw), float(dw)]  # A,B,C,D  (w-dir)
-	var uv_vs: Array = [0.0, float(dv), float(dv), 0.0]  # A,B,C,D  (v-dir)
 
 	var vi: int = verts.size()
 
@@ -317,23 +305,9 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		var v_ao: float = _vertex_ao(s1, s2, sc)
 		var ao: float   = d_ao * v_ao
 
-		# UV orientation fix:
-		# For fi=0,1 (±X): v=ly(height), w=lz(horiz) → UV.x=w=horiz ✓, UV.y=v=height ✓
-		# For fi=4,5 (±Z): v=lx(horiz),  w=ly(height) → swap so UV.x=v=horiz, UV.y=w=height
-		# For fi=2,3 (±Y): top/bottom faces – no directional req., keep as-is.
-		var uv_u: float
-		var uv_v: float
-		if fi == 4 or fi == 5:
-			uv_u = uv_vs[ci]   # v-dir (horiz X) → UV.x
-			uv_v = uv_us[ci]   # w-dir (height Y) → UV.y
-		else:
-			uv_u = uv_us[ci]
-			uv_v = uv_vs[ci]
-
 		verts.append(_vert_pos(fi, u, vc, wc))
 		norms.append(normal)
-		uvs.append(Vector2(uv_u, uv_v))   # raw local for tiling
-		uv2s.append(tile_base)             # atlas tile origin (constant)
+		uv2s.append(col_uv)
 		colors.append(Color(ao, ao, ao, 1.0))
 
 	idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)
