@@ -43,6 +43,7 @@ roughness = 0.95
 [node name="Main" type="Node3D"]
 script = ExtResource("1_main")
 castle_id = "krak"
+world_seed = 12345
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("env_res")

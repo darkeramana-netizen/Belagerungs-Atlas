@@ -118,8 +118,10 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# TPS camera follows behind + above player
+	# TPS camera follows behind + above player.
+	# basis.z is the local +Z axis which points BEHIND the character
+	# (Godot forward is -Z, so +Z is the back direction).
 	if mode == Mode.TPS:
-		var behind := -transform.basis.z * TPS_DIST
+		var behind := transform.basis.z * TPS_DIST
 		_tps_cam.global_position = global_position + Vector3(behind.x, TPS_HEIGHT, behind.z)
-		_tps_cam.look_at(global_position + Vector3(0, 1.4, 0), Vector3.UP)
+		_tps_cam.look_at(global_position + Vector3(0, 1.1, 0), Vector3.UP)
