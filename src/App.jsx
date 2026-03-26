@@ -7267,7 +7267,7 @@ export default function App(){
   }),[filter,epochFilter,regionFilter,search]);
 
   const sc=avg(sel);
-  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
+  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
