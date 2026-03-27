@@ -126,7 +126,9 @@ func _surface_y(wx: int, wz: int, flat_r: int) -> int:
 	var h1: float = _noise.get_noise_2d(float(wx), float(wz)) * float(noise_scale)
 	# h2 disabled (creates isolated 1-3 block pillars; re-enable when terrain looks good)
 	# var h2: float = _noise2.get_noise_2d(float(wx), float(wz)) * float(noise_scale) * 0.25
-	var raw: int  = base_y + int(h1)
+	# IMPORTANT: int() truncates toward 0, which biases negative noise values
+	# and can create isolated 1–3 block pillars/plates. Use floor() for symmetry.
+	var raw: int  = base_y + int(floor(h1))
 
 	# Castle flat zone + smoothstep blend
 	var blend_r: float = float(flat_r) * 1.7
