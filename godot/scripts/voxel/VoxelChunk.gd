@@ -218,7 +218,7 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 					continue
 
 				var neighbour: int = _cache_get(ncache, lx + nx, ly + ny, lz + nz)
-				if not BT.is_solid(neighbour):
+				if neighbour == BT.AIR:
 					mask[v * SIZE + w] = bid
 
 		# Greedy rectangle scan

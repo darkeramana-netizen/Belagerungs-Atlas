@@ -18,11 +18,10 @@
 //   within_tile uses half-texel inset derived from atlas_size so samples
 //     never land on atlas tile borders regardless of block or atlas dimensions.
 //
-// cull_disabled + explicit per-face discard:
-//   Side faces (abs(wn.y) < 0.5): discard if camera is on the back side
-//     → eliminates floating-rectangle artefacts without winding-order dependency.
-//   Top/bottom faces (abs(wn.y) >= 0.5): always rendered double-sided
-//     → top faces visible from above; bottom faces from underground / editor.
+// cull_disabled + explicit per-face discard for ALL faces:
+//   Every face: discard if camera is on the back side (dot-product test).
+//   Winding-order independent. Fixes back-of-top-face "white band" artefact
+//   visible at terrain level, and all other back-face fragments.
 
 shader_type spatial;
 render_mode unshaded, cull_disabled, depth_draw_opaque, shadows_disabled;
@@ -49,11 +48,11 @@ void fragment() {
 	// ── Re-normalise (varying interpolation can drift off unit length) ────
 	vec3 wn = normalize(world_normal);
 
-	// ── Back-face discard for side quads only ─────────────────────────────
-	// Side faces have |wn.y| < 0.5 (normals ±X or ±Z).
-	// Use dot-product with camera vector (world-space, independent of winding).
-	// Top/bottom faces (|wn.y| >= 0.5) are left double-sided intentionally.
-	if (abs(wn.y) < 0.5) {
+	// ── Back-face discard (all faces) ────────────────────────────────────
+	// INV_VIEW_MATRIX[3].xyz = camera world position.
+	// Discard any fragment where the face points away from the camera.
+	// Applies to top, bottom, and side faces equally.
+	{
 		vec3 to_cam = INV_VIEW_MATRIX[3].xyz - world_pos;
 		if (dot(to_cam, wn) <= 0.0) {
 			discard;
