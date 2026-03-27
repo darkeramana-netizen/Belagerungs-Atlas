@@ -304,6 +304,8 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 	var order: Array = (_QUAD_ORDER[fi] as Array)
 
 	var vi: int = verts.size()
+	var quad_pos: Array[Vector3] = []
+	quad_pos.resize(4)
 
 	for oi in 4:
 		var ci: int = order[oi] as int
@@ -321,14 +323,23 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 
 		var p: Vector3 = _vert_pos(fi, u, vc, wc)
 		verts.append(p)
+		quad_pos[oi] = p
 		norms.append(normal)
 		uv2s.append(col_uv)
 		colors.append(Color(ao, ao, ao, 1.0))
 
-	# Winding is determined by _QUAD_ORDER[fi] and this fixed index pattern.
-	# Invert winding so outside faces become FRONT with render_mode=cull_back.
-	idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 1)
-	idxs.append(vi);     idxs.append(vi + 3); idxs.append(vi + 2)
+	# Ensure correct FRONT-face winding for render_mode=cull_back.
+	# Godot treats counter-clockwise (CCW) triangles as FRONT faces.
+	# With right-hand rule: CCW => cross points along +normal.
+	var cross_n: Vector3 = (quad_pos[1] - quad_pos[0]).cross(quad_pos[2] - quad_pos[0])
+	var is_ccw: bool = (cross_n.dot(normal) > 0.0)
+	if is_ccw:
+		idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)
+		idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 3)
+	else:
+		# Flip winding.
+		idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 1)
+		idxs.append(vi);     idxs.append(vi + 3); idxs.append(vi + 2)
 
 
 # ---------------------------------------------------------------------------
