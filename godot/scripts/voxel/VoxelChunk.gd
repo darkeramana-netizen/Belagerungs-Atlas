@@ -235,60 +235,13 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 				if BT.is_transparent(_cache_get(ncache, lx + nx, ly + ny, lz + nz)):
 					mask[v * SIZE + w] = bid
 
-		# ── Greedy rectangle scan ────────────────────────────────────────────
-		var used: PackedByteArray = PackedByteArray()
-		used.resize(SIZE * SIZE)
-		used.fill(0)
-
+		# Vereinfachter Pfad: kein Greedy-Merging, ein 1×1-Quad pro sichtbarer Zelle.
 		for v0 in SIZE:
 			for w0 in SIZE:
-				if used[v0 * SIZE + w0] or mask[v0 * SIZE + w0] == 0:
+				var bid2: int = mask[v0 * SIZE + w0]
+				if bid2 == 0:
 					continue
-
-				var bid: int = mask[v0 * SIZE + w0]
-				var is_grass: bool = (bid == BT.GRASS)
-
-				# Extend in +w.
-				# RULE 2 — Greedy-Sperre: every new cell is re-verified against
-				# the ncache directly, not just the pre-built mask, so no stale
-				# mask entry can silently expand the quad.
-				var dw: int = 1
-				# RULE 4 — Kein Y-Merging für Gras:
-				# For fi 4/5 (+/-Z faces) the greedy w-axis maps to local Y.
-				# Avoid merging across Y so the grass-cap shading stays consistent.
-				while (not is_grass or (fi != 4 and fi != 5)) and w0 + dw < SIZE:
-					var ni: int = v0 * SIZE + w0 + dw
-					if used[ni] or mask[ni] != bid:
-						break
-					if not _face_visible_at(fi, u, v0, w0 + dw, bid, nx, ny, nz, ncache):
-						break
-					dw += 1
-
-				# Extend in +v.
-				# Every cell in the new row must pass both the mask check and
-				# the explicit ncache visibility check before the row is accepted.
-				var dv: int = 1
-				var ok := true
-				# RULE 4 (continued) — for fi 0/1 (+/-X faces) the greedy v-axis maps to local Y.
-				while ok and (not is_grass or (fi != 0 and fi != 1)) and v0 + dv < SIZE:
-					for k in dw:
-						var ni2: int = (v0 + dv) * SIZE + w0 + k
-						if used[ni2] or mask[ni2] != bid:
-							ok = false
-							break
-						# RULE 2 (continued) — explicit ncache check per cell.
-						if not _face_visible_at(fi, u, v0 + dv, w0 + k, bid, nx, ny, nz, ncache):
-							ok = false
-							break
-					if ok:
-						dv += 1
-
-				# Mark all cells in this rectangle as consumed.
-				for pv in dv:
-					for pw in dw:
-						used[(v0 + pv) * SIZE + w0 + pw] = 1
-
-				_emit_quad(fi, u, v0, w0, dv, dw, dir_ao, bid, normal,
+				_emit_quad(fi, u, v0, w0, 1, 1, dir_ao, bid2, normal,
 						ncache, verts, norms, uv2s, colors, idxs)
 
 
