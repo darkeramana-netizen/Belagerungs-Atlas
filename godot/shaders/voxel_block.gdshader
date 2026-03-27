@@ -46,30 +46,49 @@ void fragment() {
 	// ── Re-normalise (varying interpolation can drift off unit length) ────
 	vec3 wn = normalize(world_normal);
 
+	// Quantize to the dominant axis so face selection never "wobbles"
+	// due to tiny normal drift or interpolation.
+	vec3 awn = abs(wn);
+	if (awn.x >= awn.y && awn.x >= awn.z) {
+		wn = vec3(sign(wn.x), 0.0, 0.0);
+	} else if (awn.y >= awn.z) {
+		wn = vec3(0.0, sign(wn.y), 0.0);
+	} else {
+		wn = vec3(0.0, 0.0, sign(wn.z));
+	}
+
 	// ── Triplanar UV selection ────────────────────────────────────────────
 	// +0.001 snap keeps us safely above the previous integer block boundary
 	// when the GPU produces e.g. 15.9998 instead of 16.0000.
 	vec3  snapped = world_pos + vec3(0.001);
 
-	float any_y = abs(wn.y);
-	float any_x = abs(wn.x);
-	float any_z = abs(wn.z);
-
 	vec2  tile_uv;
 	float atlas_row_f;
 
-	if (any_y >= any_x && any_y >= any_z) {
+	if (wn.y != 0.0) {
 		// ±Y  →  top (row 0) or bottom (row 2)
 		tile_uv     = fract(snapped.xz);
 		atlas_row_f = (wn.y > 0.0) ? 0.0 : 2.0;
-	} else if (any_x >= any_z) {
+		// Mirror so top/bottom align with sides consistently.
+		if (wn.y < 0.0) {
+			tile_uv.x = 1.0 - tile_uv.x;
+		}
+	} else if (wn.x != 0.0) {
 		// ±X side: horizontal = Z, vertical = Y
 		tile_uv     = fract(snapped.zy);
 		atlas_row_f = 1.0;
+		// Mirror U on -X so texture orientation matches +X.
+		if (wn.x < 0.0) {
+			tile_uv.x = 1.0 - tile_uv.x;
+		}
 	} else {
 		// ±Z side: horizontal = X, vertical = Y
 		tile_uv     = fract(snapped.xy);
 		atlas_row_f = 1.0;
+		// Mirror U on +Z so texture orientation matches -Z.
+		if (wn.z > 0.0) {
+			tile_uv.x = 1.0 - tile_uv.x;
+		}
 	}
 
 	// ── Atlas tile lookup ─────────────────────────────────────────────────
