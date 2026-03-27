@@ -15,7 +15,7 @@ const BT         = preload("res://scripts/voxel/BlockTypes.gd")
 const ChunkScene = preload("res://scripts/voxel/VoxelChunk.gd")
 
 @export var world_seed:    int = 12345
-@export var view_dist:     int = 4        # chunk radius in X/Z (4 = 9×9 = 81 cols)
+@export var view_dist:     int = 6        # chunk radius in X/Z (6 = 13×13 = 169 cols)
 @export var castle_flat_r: int = 32       # flat zone radius in blocks (set by Main)
 
 const WORLD_HEIGHT_BLOCKS := 64
@@ -27,8 +27,8 @@ const BASE_Y := 20
 ## How many new XZ columns to generate per update() call.
 ## Higher = faster loading but more frame stutter.
 const NEW_COLS_PER_FRAME   := 1
-## Max dirty-chunk rebuilds per update() call.
-const MAX_REBUILDS_PER_FRAME := 2
+## Max dirty-chunk rebuilds per update() call (for block-edit dirty marks).
+const MAX_REBUILDS_PER_FRAME := 4
 
 var _chunks: Dictionary = {}   # Vector3i → VoxelChunk
 var _gen:    Node       = null # VoxelTerrainGen (set by Main after _ready)
@@ -107,6 +107,19 @@ func update(player_pos: Vector3) -> void:
 				var key2 := Vector3i(pcx + dx, cy, pcz + dz)
 				if _chunks.has(key2):
 					(_chunks[key2] as Object).rebuild()
+
+			# When this column loaded, fill_chunk called set_block on its border
+			# blocks, which marked the 4 adjacent already-loaded columns dirty.
+			# Those stale ncaches would show inner ghost-faces until the normal
+			# dirty-rebuild loop catches them (up to MAX_REBUILDS_PER_FRAME/frame).
+			# Rebuild them immediately in the same frame so they are never visible.
+			for neighbour_offset in [Vector2i(-1, 0), Vector2i(1, 0),
+									  Vector2i(0, -1), Vector2i(0, 1)]:
+				for cy in WORLD_HEIGHT_CHUNKS:
+					var nkey := Vector3i(pcx + dx + neighbour_offset.x, cy,
+										  pcz + dz + neighbour_offset.y)
+					if _chunks.has(nkey) and (_chunks[nkey] as Object).is_dirty():
+						(_chunks[nkey] as Object).rebuild()
 
 	# Unload distant chunks.
 	for key in _chunks.keys():

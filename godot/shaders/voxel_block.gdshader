@@ -31,8 +31,8 @@ uniform sampler2D atlas      : source_color, filter_nearest, repeat_disable;
 uniform vec2      atlas_grid = vec2(20.0, 3.0);    // (num_cols, num_rows)
 uniform vec2      atlas_size = vec2(320.0, 48.0);  // (width_px, height_px) for half-texel
 uniform vec3      fog_color  = vec3(0.62, 0.77, 0.90);  // sky horizon colour
-uniform float     fog_start  = 60.0;   // metres from camera where fog begins
-uniform float     fog_end    = 130.0;  // metres where fog is fully opaque
+uniform float     fog_start  = 70.0;   // metres from camera where fog begins
+uniform float     fog_end    = 110.0;  // metres where fog is fully opaque
 
 varying vec3 world_pos;
 varying vec3 world_normal;
