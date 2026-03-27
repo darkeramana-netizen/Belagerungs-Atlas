@@ -329,17 +329,18 @@ func _emit_quad(fi: int, u: int, v0: int, w0: int, dv: int, dw: int,
 		colors.append(Color(ao, ao, ao, 1.0))
 
 	# Ensure correct FRONT-face winding for render_mode=cull_back.
-	# Godot treats counter-clockwise (CCW) triangles as FRONT faces.
-	# With right-hand rule: CCW => cross points along +normal.
+	# Godot front faces are clockwise (CW). With right-hand rule:
+	# CCW => cross points along +normal, CW => cross points along -normal.
 	var cross_n: Vector3 = (quad_pos[1] - quad_pos[0]).cross(quad_pos[2] - quad_pos[0])
 	var is_ccw: bool = (cross_n.dot(normal) > 0.0)
 	if is_ccw:
-		idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)
-		idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 3)
-	else:
-		# Flip winding.
+		# Flip to make it clockwise.
 		idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 1)
 		idxs.append(vi);     idxs.append(vi + 3); idxs.append(vi + 2)
+	else:
+		# Already clockwise.
+		idxs.append(vi);     idxs.append(vi + 1); idxs.append(vi + 2)
+		idxs.append(vi);     idxs.append(vi + 2); idxs.append(vi + 3)
 
 
 # ---------------------------------------------------------------------------
