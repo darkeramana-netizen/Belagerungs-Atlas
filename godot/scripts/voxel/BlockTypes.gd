@@ -92,8 +92,11 @@ static func is_solid(id: int) -> bool:
 	return p.get("solid", false)
 
 static func is_transparent(id: int) -> bool:
-	var p: Dictionary = PROPS.get(id, PROPS[AIR])
-	return p.get("transparent", true)
+	# Unknown IDs (e.g. the UNLOADED sentinel 255) are treated as opaque so
+	# the mesher never generates a face against an unloaded neighbour chunk.
+	if not PROPS.has(id):
+		return false
+	return PROPS[id].get("transparent", false)
 
 static func get_color(id: int) -> Color:
 	var p: Dictionary = PROPS.get(id, PROPS[AIR])

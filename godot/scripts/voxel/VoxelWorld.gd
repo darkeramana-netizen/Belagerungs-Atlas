@@ -72,6 +72,15 @@ func get_castle_base_meters() -> float:
 	return float(BASE_Y + 1)
 
 
+## Returns true iff the chunk that contains world block (wx, wy, wz) is loaded.
+## Used by VoxelChunk._build_ncache() to avoid treating an unloaded neighbour
+## as AIR (which would produce ghost side-faces at chunk boundaries).
+func is_chunk_loaded(wx: int, wy: int, wz: int) -> bool:
+	if wy < 0 or wy >= WORLD_HEIGHT_BLOCKS:
+		return false
+	return _chunks.has(_chunk_key(wx, wy, wz))
+
+
 # ---------------------------------------------------------------------------
 # Chunk streaming -- call every frame from Main._process()
 # ---------------------------------------------------------------------------

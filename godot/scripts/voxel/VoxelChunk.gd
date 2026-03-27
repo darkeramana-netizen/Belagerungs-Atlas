@@ -27,9 +27,14 @@ extends StaticBody3D
 const BT    = preload("res://scripts/voxel/BlockTypes.gd")
 const Atlas = preload("res://scripts/voxel/VoxelAtlas.gd")
 
-const SIZE := 16
-const PAD  := 18      # SIZE + 2 (one-block border)
-const PAD2 := 324     # PAD * PAD
+const SIZE    := 16
+const PAD     := 18      # SIZE + 2 (one-block border)
+const PAD2    := 324     # PAD * PAD
+## Sentinel stored in ncache border cells whose neighbour chunk is not loaded.
+## BT.is_transparent(UNLOADED) == false, so no face is generated against an
+## unloaded chunk.  When the chunk loads later, _mark_borders_dirty triggers
+## a rebuild with the correct data.
+const UNLOADED := 255
 
 var chunk_pos: Vector3i = Vector3i.ZERO
 var world = null       # VoxelWorld (untyped to avoid circular preload)
@@ -224,8 +229,10 @@ func _greedy_pass(fi: int, ncache: PackedByteArray,
 				if bid == BT.AIR:
 					continue
 
-				# RULE 1 — Face-Visibility: solid block + neighbour exactly AIR.
-				if _cache_get(ncache, lx + nx, ly + ny, lz + nz) == BT.AIR:
+				# RULE 1 — Face-Visibility: solid block + transparent neighbour.
+				# BT.is_transparent() returns false for the UNLOADED sentinel (255),
+				# so no face is ever generated against an unloaded chunk.
+				if BT.is_transparent(_cache_get(ncache, lx + nx, ly + ny, lz + nz)):
 					mask[v * SIZE + w] = bid
 
 		# ── Greedy rectangle scan ────────────────────────────────────────────
@@ -306,8 +313,9 @@ func _face_visible_at(fi: int, u: int, v: int, w: int, bid: int,
 	if _data[ly * SIZE * SIZE + lz * SIZE + lx] != bid:
 		return false
 
-	# Neighbour must be exactly AIR (== 0).
-	return _cache_get(ncache, lx + nx, ly + ny, lz + nz) == BT.AIR
+	# Neighbour must be transparent (AIR, water, …).
+	# UNLOADED (255) is not in PROPS → is_transparent returns false → no expansion.
+	return BT.is_transparent(_cache_get(ncache, lx + nx, ly + ny, lz + nz))
 
 
 # ---------------------------------------------------------------------------
@@ -399,4 +407,12 @@ func _vert_pos(fi: int, u: int, vc: int, wc: int) -> Vector3:
 func _get_world_block(wx: int, wy: int, wz: int) -> int:
 	if world == null:
 		return BT.AIR
+	# Y out of world range: sky above = AIR (face visible), void below = AIR.
+	if wy < 0 or wy >= world.WORLD_HEIGHT_BLOCKS:
+		return BT.AIR
+	# Neighbour chunk not yet loaded → return opaque sentinel.
+	# This prevents a ghost face from appearing here and vanishing once the
+	# chunk loads.  The dirty-rebuild path guarantees a correct remesh.
+	if not world.is_chunk_loaded(wx, wy, wz):
+		return UNLOADED
 	return world.get_block(wx, wy, wz)
