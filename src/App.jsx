@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { ROLEPLAY_RESPONSES, SIMULATOR_FALLBACKS, WHATIF_FALLBACKS, getWhatIfFallback, LEXIKON_OFFLINE, getLexikonFacts } from "./data/fallbacks.js";
+import { ROLEPLAY_RESPONSES, PERSONALITY_RESPONSES, SIMULATOR_FALLBACKS, WHATIF_FALLBACKS, getWhatIfFallback, LEXIKON_OFFLINE, getLexikonFacts, getAdvisorFallback } from "./data/fallbacks.js";
 import { TOTAL_RES, BUILDER_BUDGET, SYNERGIES, getActiveSynergies, getSynergyBonuses, SEASONS, DEFENDER_TYPES, CASTLE_PERSONALITIES, getDefenderType, GENERALS, SIEGE_EVENTS, BUILDER, RES, WEATHER_TYPES } from "./data/gameData.js";
 import { COORDS, CASTLES } from "./data/castles.js";
 import CastleDiorama from "./components/diorama/CastleDiorama.jsx";
+import ScoreBar from "./components/ui/ScoreBar.jsx";
+import RadarChart from "./components/ui/RadarChart.jsx";
 
 // ══════════════════════════════════════════════════════════════════════════
 //  ██████╗ █████╗ ███████╗████████╗██╗     ███████╗
@@ -43,90 +45,6 @@ const regions = [...new Set(CASTLES.map(c=>c.region))];
 // ═══════════════════════════════════════════════════════════════════════════
 //  COMPONENTS
 // ═══════════════════════════════════════════════════════════════════════════
-
-// ── ScoreBar ───────────────────────────────────────────────────────────────
-function ScoreBar({label,value,delay=0,accent}){
-  const [w,setW]=useState(0);
-  useEffect(()=>{const t=setTimeout(()=>setW(value),delay+80);return()=>clearTimeout(t);},[value,delay]);
-  return(
-    <div style={{marginBottom:"8px"}}>
-      <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
-        <span style={{fontSize:"13px",color:"#cbb888",letterSpacing:"1px"}}>{label.toUpperCase()}</span>
-        <span style={{fontSize:"14px",fontWeight:"bold",color:rCol(value),fontFamily:"monospace"}}>{value}</span>
-      </div>
-      <div style={{height:"2px",background:"rgba(255,255,255,0.05)",borderRadius:"2px",overflow:"hidden"}}>
-        <div style={{height:"100%",width:`${w}%`,background:accent||rCol(value),
-          transition:`width 0.8s cubic-bezier(.4,0,.2,1) ${delay}ms`,
-          boxShadow:`0 0 6px ${(accent||rCol(value))}55`}}/>
-      </div>
-    </div>
-  );
-}
-
-// ── RadarChart ─────────────────────────────────────────────────────────────
-function RadarChart({castle,compare}){
-  const cats=[
-    {k:"walls",l:"Mauern",i:"🧱"},
-    {k:"position",l:"Position",i:"⛰️"},
-    {k:"morale",l:"Moral",i:"🔥"},
-    {k:"garrison",l:"Garnison",i:"⚔️"},
-    {k:"supply",l:"Versorgung",i:"🍖"},
-  ];
-  const N=cats.length,cx=55,cy=56,R=36;
-  const pt=(val,i)=>{const a=(i/N)*2*Math.PI-Math.PI/2,r=(val/100)*R;return{x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)};};
-  const axPt=(i,s=1)=>{const a=(i/N)*2*Math.PI-Math.PI/2;return{x:cx+R*s*Math.cos(a),y:cy+R*s*Math.sin(a)};};
-  const poly=(r)=>cats.map((c,i)=>pt(r[c.k],i)).map(p=>`${p.x},${p.y}`).join(" ");
-  const ac=castle.theme.accent;
-  const ac2=compare?.theme.accent||"#6aaa52";
-  return(
-    <svg viewBox="0 0 110 110" style={{width:"100%",maxWidth:"220px",display:"block",margin:"0 auto"}}>
-      {/* Grid rings */}
-      {[0.25,0.5,0.75,1].map((s,i)=>(
-        <polygon key={i} points={cats.map((_,j)=>axPt(j,s)).map(p=>`${p.x},${p.y}`).join(" ")}
-          fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.4"/>
-      ))}
-      {/* Axis lines */}
-      {cats.map((_,i)=>{const p=axPt(i);return <line key={i} x1={cx} y1={cy} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.08)" strokeWidth="0.3"/>;}) }
-      {/* Value labels on rings */}
-      {[25,50,75,100].map(v=>(
-        <text key={v} x={cx+2} y={cy-(v/100)*R+1} fill="rgba(255,255,255,0.12)" fontSize="3.5" fontFamily="monospace">{v}</text>
-      ))}
-      {/* Compare polygon */}
-      {compare&&<polygon points={poly(compare.ratings)} fill={`${ac2}12`} stroke={ac2} strokeWidth="0.8" strokeDasharray="2,1.5" opacity="0.85"/>}
-      {/* Main polygon */}
-      <polygon points={poly(castle.ratings)} fill={`${ac}1a`} stroke={ac} strokeWidth="1"/>
-      {/* Data points */}
-      {cats.map((c,i)=>{
-        const p=pt(castle.ratings[c.k],i);
-        return <circle key={i} cx={p.x} cy={p.y} r="1.5" fill={ac} opacity="0.9"/>;
-      })}
-      {/* Compare data points */}
-      {compare&&cats.map((c,i)=>{
-        const p=pt(compare.ratings[c.k],i);
-        return <circle key={i} cx={p.x} cy={p.y} r="1.2" fill={ac2} opacity="0.7"/>;
-      })}
-      {/* Axis labels with values */}
-      {cats.map((c,i)=>{
-        const p=axPt(i,1.3);
-        const v=castle.ratings[c.k];
-        const v2=compare?.ratings[c.k];
-        return(
-          <g key={i}>
-            <text x={p.x} y={p.y-1.5} textAnchor="middle" dominantBaseline="middle"
-              fill={`${ac}88`} fontSize="6.5" fontFamily="serif">{c.l}</text>
-            <text x={p.x} y={p.y+5} textAnchor="middle" dominantBaseline="middle"
-              fill={ac} fontSize="5.5" fontFamily="monospace" fontWeight="bold">{v}</text>
-            {compare&&<text x={p.x} y={p.y+9.5} textAnchor="middle" dominantBaseline="middle"
-              fill={ac2} fontSize="5" fontFamily="monospace">{v2}</text>}
-          </g>
-        );
-      })}
-      {/* Center dot */}
-      <circle cx={cx} cy={cy} r="1" fill={ac} opacity="0.4"/>
-    </svg>
-  );
-}
-
 
 // ══════════════════════════════════════════════════════════════════════════
 // CASTLE FLOOR PLAN MAPS — unique top-down SVG per castle
@@ -3734,7 +3652,7 @@ function WorldMap({castles,onSelect,selected}){
   );
 }
 // ── Overview Grid ──────────────────────────────────────────────────────────
-const REGION_LABELS={europa:"⚜ Europa",nahost:"☪ Naher Osten",ostasien:"⛩ Ostasien",suedostasien:"🌺 S-Asien",mittelerde:"✦ Mittelerde",westeros:"❄ Westeros"};
+const REGION_LABELS={europa:"⚜ Europa",nahost:"☪ Naher Osten",ostasien:"⛩ Ostasien",suedostasien:"🌺 S-Asien",suedamerika:"🌎 Südamerika",mittelerde:"✦ Mittelerde",westeros:"❄ Westeros"};
 const EPOCH_ORDER=["Antike","Spätantike","Mittelalter","Hochmittelalter","Feudaljapan","Neuzeit","Mittelerde","Silmarillion","Westeros"];
 
 function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpochFilter,regionFilter,setRegionFilter,search,setSearch}){
@@ -4129,13 +4047,24 @@ Nach 5-9 Zügen bei guter Strategie: "**[GEFALLEN]**", bei schlechter: "**[GEHAL
         const actLow=act.toLowerCase();
         let pool;
         // Action-specific pools first
-        if(actLow.includes("belagerungs")||actLow.includes("katapult")||actLow.includes("maschine")||actLow.includes("turm")||actLow.includes("ramme")) pool=ROLEPLAY_RESPONSES.action_siege;
+        if(actLow.includes("belagerungs")||actLow.includes("katapult")||actLow.includes("maschine")||actLow.includes("ramme")) pool=ROLEPLAY_RESPONSES.action_siege;
         else if(actLow.includes("spion")||actLow.includes("verrat")||actLow.includes("einschleusen")||actLow.includes("kundschaft")) pool=ROLEPLAY_RESPONSES.action_spy;
-        else if(actLow.includes("hunger")||actLow.includes("versorgung")||actLow.includes("blockade")||actLow.includes("abschneid")) pool=ROLEPLAY_RESPONSES.action_hunger;
+        else if(actLow.includes("hunger")||actLow.includes("blockade")||actLow.includes("abschneid")||actLow.includes("versorg")) pool=ROLEPLAY_RESPONSES.action_hunger;
         else if(actLow.includes("verhandl")||actLow.includes("kapitulat")||actLow.includes("frieden")||actLow.includes("angebot")) pool=ROLEPLAY_RESPONSES.action_diplomacy;
+        else if(actLow.includes("mine")||actLow.includes("tunnel")||actLow.includes("graben")||actLow.includes("untermini")) pool=ROLEPLAY_RESPONSES.action_mining;
+        else if(actLow.includes("feuer")||actLow.includes("brand")||actLow.includes("fackel")||actLow.includes("brennen")) pool=ROLEPLAY_RESPONSES.action_fire;
+        else if(actLow.includes("kavall")||actLow.includes("reiter")||actLow.includes("pferd")||actLow.includes("sturm")) pool=ROLEPLAY_RESPONSES.action_cavalry;
+        else if(actLow.includes("einschüchter")||actLow.includes("psych")||actLow.includes("trommel")||actLow.includes("terror")) pool=ROLEPLAY_RESPONSES.action_psych;
+        else if(actLow.includes("leiter")||actLow.includes("erklettern")||actLow.includes("klettern")||actLow.includes("escalade")) pool=ROLEPLAY_RESPONSES.action_escalade;
+        else if(actLow.includes("wasser")||actLow.includes("fluss")||actLow.includes("zisterne")||actLow.includes("vergift")) pool=ROLEPLAY_RESPONSES.action_water;
         else {
-          // Phase-based pool
-          const phasePool=t<=2?ROLEPLAY_RESPONSES.early:t<=5?ROLEPLAY_RESPONSES.middle:ROLEPLAY_RESPONSES.late;
+          // Phase-based pool — prefer personality-specific responses
+          const personalityPool = PERSONALITY_RESPONSES[defType.id];
+          const phasePool = t<=2
+            ? (personalityPool?.early || ROLEPLAY_RESPONSES.early)
+            : t<=5
+            ? (personalityPool?.middle || ROLEPLAY_RESPONSES.middle)
+            : ROLEPLAY_RESPONSES.late;
           const defPool=t>5?defType.lateResponses:null;
           pool=defPool&&Math.random()<0.45?defPool:phasePool;
         }
@@ -4606,136 +4535,6 @@ function WhatIf({castle}){
 }
 
 // ── AI Advisor ─────────────────────────────────────────────────────────────
-// Rich offline fallback library for AIAdvisor
-function getAdvisorFallback(question, castle){
-  const q=question.toLowerCase();
-  const ac=castle.theme.accent;
-  const r=castle.ratings;
-
-  // Burg-spezifische Antworten basierend auf Kategorie
-  if(q.includes("schnell")||q.includes("einnahme")||q.includes("angriff")||q.includes("nehmen")){
-    const bestTip=castle.attackTips[0]||"Schwachstelle direkt angreifen";
-    return `**Schnellster Weg zur Einnahme von ${castle.name}:**
-
-${castle.attackTips.map((t,i)=>`**${i+1}.** ${t}`).join("\n")}
-
-**Kritische Schwachstelle:** ${castle.weaknesses[0]}
-
-**Historisch:** ${castle.history.split(".")[0]}.`;
-  }
-  if(q.includes("verteid")||q.includes("halten")||q.includes("schutz")||q.includes("als verteidiger")){
-    return `**Als Verteidiger von ${castle.name}:**
-
-${castle.strengths.map((s,i)=>`**${i+1}.** ${s}`).join("\n")}
-
-**Taktik:** Konzentriere alle Kräfte auf ${castle.weaknesses[0].split("—")[0]} — das ist der einzige Punkt wo du wirklich verwundbar bist.
-
-**Moral:** ${r.morale>=85?"Die Garnison kämpft fanatisch — nutze das als Waffe.":r.morale>=70?"Halte die Moral durch regelmäßige Erfolge.":"Moral ist schwach — nutze religiöse oder politische Motivierung."}`;
-  }
-  if(q.includes("parallel")||q.includes("vergleich")||q.includes("ähnlich")||q.includes("andere burg")){
-    const epochParallels={
-      "Antike":["Masada (73 n.Chr.) — ähnliche Uneinnehmbarkeit durch Position","Sacsayhuamán — ähnliche Geländeüberlegenheit"],
-      "Mittelalter":["Krak des Chevaliers — konzentrische Verteidigung","Carcassonne — Doppelmauerring als Konzept"],
-      "Feudaljapan":["Himeji — weißer Reiher als ästhetische Verteidigung","Kumamoto — Ishigaki-Fundamente gegen Unterminierung"],
-      "Neuzeit":["Marienburg — Anpassung an Schwarzpulver","Topkapi — Palatial-Festung als Konzept"],
-    };
-    const parallels=epochParallels[castle.epoch]||["Viele Burgen der gleichen Ära","Festungen mit ähnlicher Positionsstrategie"];
-    return `**Historische Parallelen zu ${castle.name}:**
-
-${castle.verdict}
-
-**Ähnliche Festungen:**
-${parallels.map(p=>`→ ${p}`).join("\n")}
-
-**Kategorie:** ${castle.name} gehört zur Gruppe der ${castle.epoch}-Festungen, die primär durch ${r.position>85?"überlegene Positionierung":"Mauerstärke und Garnison"} überlebten.`;
-  }
-  if(q.includes("gebaut")||q.includes("besser")||q.includes("fehler")||q.includes("schwach")){
-    return `**Was man an ${castle.name} besser hätte bauen können:**
-
-**Erkannte Schwachstellen:**
-${castle.weaknesses.map((w,i)=>`**${i+1}.** ${w}`).join("\n")}
-
-**Primäres Problem:** ${castle.weaknesses[0]}
-
-**Architektonische Lösung:** ${r.walls<70?"Dickere Mauern mit Scharten-Verbesserung wären entscheidend gewesen.":r.supply<60?"Bessere Wasserversorgung und Vorratslager hätten die Belagerungsresistenz verdoppelt.":r.garrison<60?"Eine größere permanente Garnison hätte alle Schwachstellen gleichzeitig besetzen können.":"Die Grundkonstruktion war stark — kleine Verbesserungen am Nordflügel hätten genügt."}
-
-**Vergleich:** ${castle.history.split(".").slice(-2).join(".")}`;
-  }
-  if(q.includes("modern")||q.includes("heute")||q.includes("21")||q.includes("artillerie")||q.includes("panzer")){
-    const posStr=r.position>90?"Einzig die extreme Geländeposition böte noch echten Widerstand — Artillerie wäre aber auch hier entscheidend.":r.position>75?"Die Geländeposition würde etwas Zeit kaufen. Aber moderne Artillerie macht mittelalterliche Mauern irrelevant.":"Kein Element dieser Burg könnte modernen Waffen standhalten.";
-    return `**Moderner Angriff auf ${castle.name}:**
-
-**Kurzfassung:** Mit moderner Militärtechnik wäre ${castle.name} in Stunden einnehmbar.
-
-**Analyse:**
-→ **Artillerie:** ${castle.strengths[0]} hält keine Haubitze auf
-→ **Luftangriff:** Keine mittelalterliche Burg hat Flugabwehr
-→ **Position:** ${posStr}
-
-**Einziger Vorteil heute:** Guerilla-Taktik in den Gängen — Festungen sind in urbaner Kriegsführung noch immer nützlich.`;
-  }
-  if(q.includes("moment")||q.includes("kritisch")||q.includes("wend")||q.includes("entscheidend")){
-    return `**Der kritischste Moment bei ${castle.name}:**
-
-${castle.history}
-
-**Wendepunkt:** ${castle.verdict}
-
-**Lehre:** ${castle.weaknesses[0].includes("Verrat")||castle.history.includes("Verrat")?"Keine Mauer schützt gegen Verrat von innen.":castle.weaknesses[0].includes("Hunger")||castle.weaknesses[0].includes("Versorgung")?"Hunger bezwingt, was Schwerter nicht können.":"Die stärkste Festung fällt durch ihre einzige Schwachstelle — nicht durch ihre Stärken."}`;
-  }
-  if(q.includes("wer")||q.includes("erbau")||q.includes("gründ")||q.includes("ursprung")){
-    return `**Ursprung und Erbauer von ${castle.name}:**
-
-**Epoche:** ${castle.era}
-**Ort:** ${castle.loc}
-**Typ:** ${castle.sub}
-
-**Geschichte:** ${castle.history}
-
-**Strategische Rolle:** ${castle.desc}`;
-  }
-  if(q.includes("stärk")||q.includes("vorteil")||q.includes("stark")){
-    return `**Stärken von ${castle.name}:**
-
-${castle.strengths.map((s,i)=>`**${i+1}.** ${s}`).join("\n")}
-
-**Gesamtbewertung:**
-→ Mauern: ${r.walls}/100
-→ Position: ${r.position}/100
-→ Versorgung: ${r.supply}/100
-→ Garnison: ${r.garrison}/100
-→ Moral: ${r.morale}/100
-
-**Stärkster Aspekt:** ${Object.entries(r).sort((a,b)=>b[1]-a[1])[0][0]} mit ${Object.values(r).sort((a,b)=>b-a)[0]} Punkten.`;
-  }
-  if(q.includes("belagerung")||q.includes("wie lange")||q.includes("dauer")){
-    const dur=r.supply>=80?"mehrere Jahre":r.supply>=60?"6-18 Monate":"2-6 Monate";
-    return `**Belagerungsszenarien für ${castle.name}:**
-
-**Realistische Belagerungsdauer:** ${dur} bei vollständiger Einkreisung
-
-**Szenario:**
-${castle.siegeCtx}
-
-**Strategien des Angreifers:**
-${castle.attackTips.map((t,i)=>`${i+1}. ${t}`).join("\n")}
-
-**Defender:** ${castle.defender||"Unbekannter Burgherr"}`;
-  }
-  // Default — comprehensive overview
-  return `**${castle.name}** (${castle.sub})
-
-**Epoche:** ${castle.era} · **Ort:** ${castle.loc}
-
-**Überblick:** ${castle.desc}
-
-**Geschichte:** ${castle.history}
-
-**Fazit:** ${castle.verdict}
-
-**Frag mich spezifischer:** Angriff, Verteidigung, historische Parallelen, Schwachstellen, oder den kritischsten Moment.`;
-}
-
 function AIAdvisor({castle}){
   const [msgs,setMsgs]=useState([]);
   const [input,setInput]=useState("");

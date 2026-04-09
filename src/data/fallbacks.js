@@ -79,6 +79,49 @@ export const ROLEPLAY_RESPONSES = {
     "Ihr bietet mir Verhandlungen an? Eine Schwäche zu verhandeln ist eine Stärke — eure. Was bietet ihr wirklich?",
     "Ehrenvoller Rückzug gegen Übergabe? Nein. Diese Burg ist keine Verhandlungsmasse.",
     "Ein interessantes Angebot. Ich werde es meiner Garnison vorlegen — und sie werden es ablehnen. Das ist ihre Entscheidung, nicht meine.",
+    "Verhandlungen mid Belagerung? Heißt das, eure Vorräte schwinden schneller als unsere? Ich warte.",
+    "Euer Bote kommt mit einem weißen Tuch — doch meine Fahne weht noch. Schickt ihn zurück.",
+  ],
+  action_mining: [
+    "Ich höre das Graben unter unseren Füßen. Meine Ingenieure haben Gegentunnel — kommt ruhig.",
+    "Ihr untergräbt den Westturm? Wir haben letzte Nacht Holzstützen eingebaut die auf Kommando brennen. Ich entscheide wann.",
+    "Bergarbeiter im Tunnel — wir haben sie gehört. Ein Topf mit Wasser auf dem Boden zittert bei jedem Spatenstich. Keine Überraschung.",
+    "Euer Minengang ist gut — fast so gut wie unsere Gegenmine. Wenn ihr durchbrecht, empfangen wir euch im Dunkeln.",
+    "Graben, graben, graben. Geduld — auch unsere Kellen sind beschäftigt. Wir verstärken von oben was ihr von unten aushöhlt.",
+  ],
+  action_fire: [
+    "Feuer! Löschwasser, schnell! Die Holzgalerie brennt — alle Hände an die Eimer! Das ist Panik, kein Sieg.",
+    "Brandfackeln über die Mauer? Wir haben Sandkisten und nasse Tücher. Drei Brände gelöscht, die Männer ruhig.",
+    "Das Feuer im Nordflügel ist unter Kontrolle. Was es nicht verbrannte: unsere Kampfkraft. Was es verbrannte: Holz.",
+    "Griechisches Feuer? Das ist eine seltene Waffe. Wir wissen: Wasser hilft nicht — wir ersticken die Flammen mit Erde.",
+    "Euer Brandanschlag trifft die Stallungen. Die Pferde retten wir — die Scheune opfern wir. Ein fairer Tausch für uns.",
+  ],
+  action_cavalry: [
+    "Kavallerie am Haupttor! Fallgitter! FALLGITTER! Lasst sie reiten — in den Graben. Pferde können nicht schwimmen.",
+    "Reiter stürmen vor? Die Zugbrücke ist hochgezogen. Ihr Mut bewundere ich — ihr Urteilsvermögen weniger.",
+    "Kavallerie ist nutzlos gegen Mauern. Jeder Reiter der vor dem Tor kreist ist ein Ziel für unsere Bogenschützen.",
+    "Die Reiter kommen aus dem Norden — wir haben Pfahlhindernisse gesetzt. Pferde die über Pfähle springen? Ich warte.",
+    "Eure Kavallerie beeindruckt auf offenem Feld. Hier ist kein offenes Feld. Hier ist Stein. Galoppiert dagegen an.",
+  ],
+  action_psych: [
+    "Ihr lasst Trommeln schlagen und Banner wehen? Meine Männer haben schlimmeres gesehen. Manche schlafen dabei.",
+    "Psychologische Kriegsführung — respektiert. Ich erwidere sie: Morgen früh werfen wir euren Kundschafter zurück über die Mauer. Lebend.",
+    "Eure Männer singen in der Nacht — Heimweh. Meine Männer singen auch — Kampflieder. Der Unterschied ist die Melodie.",
+    "Ihr schickt einen Herold mit Drohungen? Ich schicke ihn zurück mit einem Gegengeschenk: einem Korb frischen Brotes. Ihr habt Hunger, ich nicht.",
+    "Einschüchterungsversuche. Gut geübt. Aber ich verteidige diese Burg seit dreißig Jahren — ich kenne jeden Trick.",
+  ],
+  action_escalade: [
+    "Leitern an der Nordmauer! Pech — bereitet das Pech vor! Heute kochen wir unsere Antwort heiß!",
+    "Sie steigen die Leitern hoch. Stoßt die Leitern ab! Ein Mann mit einem Haken — das reicht. Nächste Leiter.",
+    "Eure Sturmleitern sind zu kurz. Ihr habt die Mauerhöhe falsch geschätzt. Nächstes Mal: messen bevor ihr angreift.",
+    "Leiternmänner an der Ostwand! Schützen, Bogen! Jeden Kopf der über die Brüstung kommt — sofort!",
+    "Ein Dutzend Männer haben die Mauer erreicht. Ein Dutzend — gegen meine zweihundert. Das Rechnen überlasse ich euch.",
+  ],
+  action_water: [
+    "Ihr leitet den Fluss um? Gut — aber unsere Zisternen sind voll. Monate Wasser, nicht Wochen. Wartetet ihr noch ein Jahr?",
+    "Den Graben trockenlegen? Das dauert Tage. In Tagen kann viel passieren — auch Entsatz.",
+    "Ihr vergiftet die Quellen außerhalb? Wir trinken nur aus den Zisternen innerhalb. Euer Gift bleibt draußen.",
+    "Wasser als Waffe — klug. Aber auch eure Männer brauchen Wasser. Wer leidet mehr: ihr in der Hitze oder wir hinter Stein?",
   ],
 };
 
@@ -95,6 +138,15 @@ export const SIMULATOR_FALLBACKS = [
   {success:true,title:"Hunger als Waffe",outcome:"Vollständige Einkreisung und Geduld zwangen die Garnison in die Knie.",phases:["Vollständige circumvallatio errichtet","Versorgungslinien zu Wasser und Land gekappt","3 Monate warten — Seuche bricht in der Burg aus","Garnison öffnet Tore kampflos"],keyMoment:"Als die letzten Pferde geschlachtet wurden, wusste der Verteidiger: Es gibt kein Halten.",mistakes:["Eigene Versorgung ebenfalls knapp"],whatWorked:["Geduld","Vollständige Blockade"],historicalParallel:"Wie Flavius Silvas Belagerung von Masada 73 n.Chr.",generalBonus:"Disziplin verhinderte ungeduldige Ausbrüche.",seasonEffect:"Sommer machte die Belagerung erträglich.",rating:7,daysElapsed:142},
   {success:false,title:"Entsatz bricht Belagerung",outcome:"Ein Entsatzheer zwang die Belagerer zum Rückzug.",phases:["Erste Angriffe scheitern","Burg schickt Boten durch die Linien","Entsatzheer erscheint nach 6 Wochen","Belagerer zwischen zwei Fronten — Rückzug"],keyMoment:"Die Trompeten des Entsatzheeres erschollen kurz bevor die letzte Wasserreserve verbraucht war.",mistakes:["Keine Aufklärung über Entsatztruppen","Zu wenig Kavallerie"],whatWorked:["Anfangsdruck psychologisch stark"],historicalParallel:"Wie die gescheiterte Belagerung von Orléans 1429.",generalBonus:"General durch Entsatz überrascht.",seasonEffect:"Herbstschlamm verlangsamte Truppenbewegung.",rating:3,daysElapsed:45},
   {success:true,title:"Ingenieursbelagerung",outcome:"Systematisches Unterminieren ließ den Hauptturm kollabieren.",phases:["Schwachstelle der Fundamentierung identifiziert","Mineure graben Tunnel unter der Hauptmauer","Holzstützen in Brand gesetzt","Turm kollabiert — Bresche für Sturm"],keyMoment:"Das Grollen unter der Erde — dann das Krachen des Turms. Dreißig Jahre Stein in Sekunden.",mistakes:["Verluste der Mineure hoch"],whatWorked:["Ingenieursexpertise","Präzise Tunnelführung"],historicalParallel:"Wie bei Château Gaillard 1204.",generalBonus:"Minenkrieg-Spezialist war entscheidend.",seasonEffect:"Trockener Sommer erleichterte Tunnelbau.",rating:8,daysElapsed:54},
+  {success:true,title:"Diplomatischer Sieg",outcome:"Geschickte Verhandlungen überzeugten die Garnison zur Kapitulation ohne Blutvergießen.",phases:["Erstkontakt mit Burgkommandant hergestellt","Ehrenvolle Übergabebedingungen angeboten","Garnisonsführer überzeugte seine Männer","Tore öffneten sich am Morgen des 23. Tags"],keyMoment:"Als der Burgherr erkannte dass Entsatz nicht mehr kommen würde, wählte er das Leben seiner Männer.",mistakes:["Erste Verhandlungsrunde zu harsch — Gegenseite verhärtete sich"],whatWorked:["Ehrenhaftes Angebot — freier Abzug mit Waffen","Psychologischer Druck durch sichtbares Lager"],historicalParallel:"Wie viele Kreuzfahrerburgen im Heiligen Land die durch Verhandlung fielen.",generalBonus:"Diplomatischer General maximierte Effekt der Verhandlungen.",seasonEffect:"Winterkälte beschleunigte die Bereitschaft zur Einigung.",rating:7,daysElapsed:23},
+  {success:false,title:"Seuche im eigenen Lager",outcome:"Eine Ruhrepidemie zwang zur Aufgabe der Belagerung.",phases:["Erste Erkrankungen im Südlager nach 3 Wochen","Seuche breitet sich trotz Quarantäne aus","40% der Belagerungsarmee kampfunfähig","Geordneter Rückzug um Schlimmeres zu verhindern"],keyMoment:"Als der Feldarzt meldete dass die Seuche exponentiell wuchs, blieb keine Wahl.",mistakes:["Lager in der Senke — schlechte Hygiene und Wasserversorgung","Frühwarnzeichen ignoriert"],whatWorked:["Rückzug rechtzeitig — Armee gerettet","Disziplin im Rückzug verhinderte Panik"],historicalParallel:"Wie der Erste Kreuzzug: Seuchen töteten mehr Kreuzfahrer als muslimische Schwerter.",generalBonus:"General rettete die Armee — ein Rückzug ist auch eine Entscheidung.",seasonEffect:"Sommerhitze und schlechtes Wasser beschleunigten die Ausbreitung.",rating:4,daysElapsed:38},
+  {success:true,title:"Nachtangriff auf Wachposten",outcome:"Ein Überraschungsangriff in der dritten Nachtwache nahm das Haupttor.",phases:["Wachmuster drei Nächte beobachtet","Stoßtrupp von 40 Mann in der dunkelsten Stunde","Wachposten lautlos ausgeschaltet","Tor von innen geöffnet — Hauptheer strömt hinein"],keyMoment:"Fünf Minuten Stille — dann Trompeten. Die Burg war gefallen bevor die Garnison verstand was geschah.",mistakes:["Risiko war extrem — bei Entdeckung vollständige Vernichtung der Stoßtruppe"],whatWorked:["Disziplin der Stoßtruppe","Präzise Aufklärung der Wachablösung"],historicalParallel:"Ähnlich dem Fall von Pontorson 1420 durch englische Stoßtruppe.",generalBonus:"Generals Kenntnis nächtlicher Taktik war entscheidend.",seasonEffect:"Neumond — absolute Dunkelheit begünstigte den Angriff.",rating:9,daysElapsed:18},
+  {success:false,title:"Bündnisverrat",outcome:"Ein Verbündeter wechselte die Seiten und ließ Verstärkungen für die Verteidiger durch.",phases:["Allianz mit Nachbarfürst geschlossen","Gemeinsame Belagerung begann stark","Verbündeter erhielt heimlich besseres Angebot","Entsatztruppen marschierten durch verbündetes Territorium — Zweifrontenbedrohung"],keyMoment:"Als die Fahnen des Verbündeten auf der anderen Seite erschienen, wusste jeder: das Spiel war vorbei.",mistakes:["Zu sehr auf den Verbündeten vertraut","Keine eigene Aufklärung über seine Aktivitäten"],whatWorked:["Anfangsbelagerung taktisch korrekt — der Verrat war nicht vorhersehbar"],historicalParallel:"Wie bei der Belagerung von Konstantinopel 1204 — Bündnisse verschieben sich.",generalBonus:"Auch der beste General kann Verrat nicht vorhersagen.",seasonEffect:"Frühjahrsmarsch ermöglichte schnelle Truppenbewegung des Entsatzes.",rating:2,daysElapsed:55},
+  {success:true,title:"Versorgungsinterzeptions-Kampagne",outcome:"Alle feindlichen Nachschublinien wurden systematisch unterbrochen.",phases:["Kavallerie-Streifen unterbrachen alle Versorgungsrouten","Belagerungsring geschlossen — vollständige Isolation","Fouragiertrupps des Feindes abgefangen","Garnison kapituliert nach erschöpften Vorräten"],keyMoment:"Der Burgherr schickte Frauen und Kinder heraus — er hatte keine Nahrung mehr für sie.",mistakes:["Eigene Versorgung ebenfalls gestresst durch lange Operation"],whatWorked:["Disziplinierte Kavallerie-Patrouillen","Vollständige Isolation ohne Sturm"],historicalParallel:"Wie Caesars Belagerung von Alesia 52 v.Chr. — Ring in Ring.",generalBonus:"Kavalleriegeneral brillierte im Patrouillen-Einsatz.",seasonEffect:"Herbsternte abgeschnitten — keine Nachversorgung möglich.",rating:8,daysElapsed:102},
+  {success:false,title:"Artillerie-Gegenbatterie verloren",outcome:"Die Verteidiger zerstörten die eigenen Belagerungsmaschinen mit überraschenden Ausfällen.",phases:["Belagerungsmaschinen in Position gebracht","Überraschender Ausfall der Verteidiger in der Nacht","Drei Trebuchets zerstört — Feuerschwaden","Belagerungsfähigkeit halbiert — Sturm scheiterte"],keyMoment:"Als das Haupttrebuchet in Flammen aufging, traten die Männer zurück. Es war das teuerste Gerät.",mistakes:["Belagerungsmaschinen unzureichend bewacht","Ausfall nicht antizipiert"],whatWorked:["Schnelle Reorganisation verhinderte vollständige Katastrophe"],historicalParallel:"Verteidiger-Ausfälle waren klassische mittelalterliche Taktik.",generalBonus:"General reorganisierte trotz Chaos — nicht alles verloren.",seasonEffect:"Starker Wind beschleunigte die Ausbreitung des Feuers.",rating:3,daysElapsed:31},
+  {success:true,title:"Erdbeben als unerwarteter Verbündeter",outcome:"Ein Erdbeben beschädigte die Nordmauer — die Bresche wurde sofort genutzt.",phases:["Belagerung stockte wochenlang ohne Fortschritt","Erdbeben in der Nacht erschütterte die Region","Nordmauerabschnitt kollabierte teilweise","Sofortiger Sturm durch Bresche noch vor Tagesanbruch"],keyMoment:"Als die Erde bebte, rannte der Befehlshaber zur Bresche: 'Alle rein — jetzt oder nie.'",mistakes:["Keine — das war reines Glück und blitzschnelle Reaktion"],whatWorked:["Sofortige Nutzung des unerwarteten Vorteils","Bereitschaft zu spontanem Angriff"],historicalParallel:"Mehrere Belagerungen im Levante wurden durch Erdbeben beendet.",generalBonus:"General reagierte in Minuten auf das Erdbeben.",seasonEffect:"Trockene Mauern rissen beim Erdbeben tiefer als nasse.",rating:7,daysElapsed:63},
+  {success:false,title:"Gegenmine kollabierte Angreifer-Tunnel",outcome:"Ein feindlicher Gegentunnel ließ den eigenen Minengang einstürzen.",phases:["Mineuren gruben drei Wochen unter dem Ostturm","Verteidiger erkannten Erschütterungen — gruben Gegenmine","Beide Tunnel stießen aufeinander — Kampf im Dunkeln","Eigener Tunnel kollabiert — 12 Mineure verschüttet"],keyMoment:"Das Knirschen im Tunnel, dann Stille. Zwölf Männer hörten wir nie wieder.",mistakes:["Zu langsam gegraben — Verteidiger hatten Zeit zu reagieren","Gegentunnel-Risiko unterschätzt"],whatWorked:["Überlebende Mineure lieferten wertvolle Informationen über Fundamentstruktur"],historicalParallel:"Gegenminenkrieg war üblich — Kenilworth 1266 zeigte beide Seiten graben.",generalBonus:"General ließ Überlebende für neue Tunnelplanungen befragen.",seasonEffect:"Feuchte Erde erschwerte stabilen Tunnelbau erheblich.",rating:3,daysElapsed:49},
+  {success:true,title:"Lange Zermürbung mit psychologischem Druck",outcome:"Systematischer psychologischer Druck brach den Willen der Garnison.",phases:["Trommeln und Hornsignale Tag und Nacht — kein Schlaf","Gefangene gut behandelt und mit Berichten über Außenwelt entlassen","Gezielte Desinformation über nahenden Entsatz (der nicht kam)","Garnison desertierte in Gruppen — Burgherr kapitulierte"],keyMoment:"Als der zehnte Deserteur in einer Woche aufgegriffen wurde, erkannte der Burgherr: Der Krieg war im Kopf verloren.",mistakes:["Methode ist langsam — Geduld kostet Ressourcen"],whatWorked:["Kombination aus physischem Druck und psychologischer Kriegsführung","Gastfreundliche Behandlung von Deserteuren ermutigte weitere"],historicalParallel:"Psychologische Kriegsführung war Saladins bevorzugte Methode.",generalBonus:"Saladin-Spielstil: Maximum-Effekt durch Diplomatie und Druck.",seasonEffect:"Langer Sommer machte die Dauerpräsenz des Lagers möglich.",rating:7,daysElapsed:89},
 ];
 
 export const WHATIF_FALLBACKS = [
@@ -105,7 +157,129 @@ export const WHATIF_FALLBACKS = [
   {likelihood:4,outcome:"Frühere Erbauung hätte technisch schwächere Mittel bedeutet.",analysis:"Frühere Epochen verfügten über weniger Baumaterial und weniger Ingenieurswissen. Die Burg wäre kleiner und schwächer. Gleichzeitig wären Angreifer schwächer — das Gleichgewicht bliebe ähnlich, nur auf niedrigerem Niveau.",wouldHaveFallen:true,keyFactor:"Technisches Wissen bestimmt die Qualität — früher bedeutet schwächer.",timeChange:"Die Burg wäre schneller gefallen, da primitiver konstruiert.",historicalParallels:["Motte-and-Bailey des 10. Jh. vs. Steinburgen des 12. Jh."],confidence:"mittel"},
   {likelihood:6,outcome:"Wasserreserven als Waffe hätten das Gleichgewicht gebrochen.",analysis:"Die Kontrolle über Wasser war in Belagerungen oft entscheidend. Kyros der Große leitete den Euphrat um und nahm Babylon in einer Nacht. Wer die Zisternen sichert oder den Graben trockenlegt, kontrolliert den Ausgang.",wouldHaveFallen:true,keyFactor:"Wasser ist Macht — für Verteidigung wie Angriff.",timeChange:"Ohne Wasser wäre die Burg in Wochen statt Jahren gefallen.",historicalParallels:["Kyros leitete den Euphrat um — Babylon fiel 539 v.Chr.","Wasserlinien sind die verwundbarste Versorgungsader"],confidence:"hoch"},
   {likelihood:7,outcome:"Verrat ist die häufigste Todesursache starker Burgen.",analysis:"Historisch fielen die stärksten Burgen selten durch direkten Angriff, sondern durch Verrat, Hunger oder politisches Versagen. Ein bestochener Torwächter kann tausend tapfere Männer zunichte machen. Das gilt für San Leo, Konstantinopel und Château Gaillard gleichermaßen.",wouldHaveFallen:true,keyFactor:"Keine Mauer ist stark genug gegen einen Verräter im eigenen Lager.",timeChange:"Der Fall wäre schlagartig innerhalb von Stunden gekommen.",historicalParallels:["San Leo fiel 1631 durch einen Torwächter","Château Gaillard durch die Latrinenöffnung"],confidence:"hoch"},
+  {likelihood:8,outcome:"Im Winter hätte der Angriff die Belagerer selbst besiegt.",analysis:"Winterbelagerungen sind für Angreifer katastrophal: Erfrierungen, Krankheit, und Nachschubprobleme auf gefrorenen Wegen töten mehr Männer als die Verteidiger. Historisch scheiterte Napoleon, Karl XII. und zahllose Kreuzfahrer am Winterfeldzug. Die Verteidiger hinter Stein sind geschützt — die Angreifer im Freien nicht.",wouldHaveFallen:false,keyFactor:"Winter tötet Belagerer schneller als jeden Verteidiger.",timeChange:"Der Angriff wäre nach 6-8 Wochen abgebrochen worden — Kälte, Seuche, Meuterei.",historicalParallels:["Karls XII. Feldzug 1708/09 — russischer Winter vernichtete schwedische Armee","Napoleons Russlandfeldzug 1812 — dieselbe Lektion, größerer Maßstab"],confidence:"sehr hoch"},
+  {likelihood:6,outcome:"Feuer als Waffe hätte die Belagerung in Tagen entschieden.",analysis:"Brandwaffen — Griechisches Feuer, Katapult-Feuerpötte, Brandfackeln — waren die gefährlichste Waffe gegen Holzelemente in Burgen. Torbrücken, Gallerien, Dachkonstruktionen: ein Feuer zur falschen Zeit vernichtete mehr als jeder Sturm. Gegen Steinmauern half Feuer wenig — aber kaum eine Burg war vollständig aus Stein.",wouldHaveFallen:true,keyFactor:"Holzelemente in der Verteidigung sind die Achillesferse gegen Feuer.",timeChange:"Ein gezielter Brandalarm hätte die Verteidigung in Stunden zusammenbrechen lassen.",historicalParallels:["Brandgranaten entschieden Belagerungen im Nahen Osten des Mittelalters","Griechisches Feuer schützte Konstantinopel — und vernichtete arabische Flotten"],confidence:"mittel"},
+  {likelihood:5,outcome:"Würde der Angreifer aufgegeben haben, wäre die Burg für Jahrzehnte sicher.",analysis:"Belagerungsabbrüche waren historisch häufig — mangelnde Versorgung, Seuche im eigenen Lager, politische Krisen zuhause. Jede Belagerung die scheitert stärkt die Verteidiger psychologisch. Masada, Mont-Saint-Michel, Harlech: Berühmte Verteidigungserfolge bauten auf dem Scheitern früherer Angreifer auf.",wouldHaveFallen:false,keyFactor:"Belagerungsabbruch stärkt die Legende der Uneinnehmbarkeit — zukünftige Angreifer zögern.",timeChange:"Die Burg wäre als 'uneinnehmbar' bekannt geworden — ein psychologischer Schutzwall für Generationen.",historicalParallels:["Krak des Chevaliers: Niemand wagte einen ernsthaften Angriff nach frühen Fehlversuchen","Harlech nach dem Rosenkrieg: Kein Angreifer mehr in 400 Jahren"],confidence:"mittel"},
+  {likelihood:7,outcome:"Pest im Angreiferlager hätte die Belagerung beendet.",analysis:"Seuchen töteten Belagerungsarmeen häufiger als die Verteidiger. Zusammengedrängte Männer ohne Hygiene, schlechtes Wasser, Sommerhitze: ideale Seuchenbedingungen. Der Schwarze Tod 1348, Ruhr bei englischen Kreuzzügen, Cholera in napoleonischen Belagerungen — die Krankheit war oft Verbündeter der Verteidiger.",wouldHaveFallen:false,keyFactor:"Belagerungsarmeen sind anfälliger für Seuchen als die Besatzung hinter Mauern.",timeChange:"Die Armee wäre nach 4-8 Wochen aufgelöst — Rückzug aus Seuchengründen.",historicalParallels:["Schwarzer Tod 1348 beendete mehrere Belagerungen in Europa","Englische Kreuzfahrer verloren mehr durch Ruhr als durch Kämpfe"],confidence:"hoch"},
+  {likelihood:6,outcome:"Zwei Tage früher eingetroffener Entsatz hätte alles verändert.",analysis:"Geschichte hängt oft an zwei Tagen. In Belagerungen gilt: Entsatz der zu früh kommt ist ein Sieg, Entsatz der zu spät kommt ist eine Tragödie. Orléans 1429: Jeanne d'Arc erschien genau im richtigen Moment. Wien 1683: Sobieskis Entsatz rettete die Stadt in letzter Stunde — einen Tag später wäre sie gefallen.",wouldHaveFallen:false,keyFactor:"Timing ist in der Belagerungsgeschichte oft wichtiger als Stärke.",timeChange:"Der Entsatz hätte die Belagerer in eine Zweifrontenbedrohung gedrängt — erzwungener Rückzug.",historicalParallels:["Wien 1683: Sobieski erschien nach 59-tägiger Belagerung","Orléans 1429: Jeanne d'Arc rettete die Stadt als die Garnison am Ende war"],confidence:"hoch"},
+  {likelihood:8,outcome:"Ohne Graben oder Wasserhindernis wäre die Burg in Tagen gefallen.",analysis:"Burggräben und Wasserhindernisse sind unterschätzte Schlüsselelemente: Sie verhindern Annäherung von Belagerungsmaschinen, machen Untergrabungen nahezu unmöglich und zwingen Angreifer auf schmale Übergänge. Beaumaris, Caerphilly, Kenilworth: alle nutzen Wasser als erste Verteidigungslinie. Ohne sie wäre jede dieser Burgen viel angreifbarer.",wouldHaveFallen:true,keyFactor:"Wasserverteidigung macht Belagerungsmaschinen irrelevant und Unterminierung unmöglich.",timeChange:"Direktangriff mit Belagerungsmaschinen wäre sofort möglich — Belagerung in Wochen statt Jahren.",historicalParallels:["Kenilworth: der künstliche See machte die Burg 9 Monate uneinnehmbar","Caerphilly: konzentrische Wasserverteidigung als Schlüssel zur Stärke"],confidence:"sehr hoch"},
+  {likelihood:5,outcome:"Mehr Belagerungsmaschinen hätten die Mauern schneller gebrochen.",analysis:"Belagerungsmaschinen waren die 'Artillerie' des Mittelalters — aber ihre Wirkung hing von Qualität, Positionierung und Menge ab. Ein einzelnes Trebuchet konnte Monate brauchen. Zehn koordiniert eingesetzte Maschinen auf eine Mauersektion konzentriert konnten Brechen in Tagen erzielen. Edward I. setzte 17 Maschinen gleichzeitig gegen Stirling Castle ein.",wouldHaveFallen:true,keyFactor:"Konzentrierte Maschinengewalt auf einen Punkt überwindet jede mittelalterliche Mauer.",timeChange:"Die Bresche wäre 3-4 mal schneller entstanden — Wochen statt Monate.",historicalParallels:["Stirling Castle 1304: Edward I. mit 17 Maschinen","Belagerung von Kenilworth 1266: größtes Belagerungsgerätarsenal Englands"],confidence:"mittel"},
+  {likelihood:6,outcome:"Würde Verrat rechtzeitig entdeckt, wäre die Burg gehalten worden.",analysis:"Gegenspionage war im Mittelalter lebensrettend. Burgen mit aktiver Informationsarbeit — bezahlte Informanten, Verhör von Gefangenen, Kontrolle der Garnison — überlebten länger. Der Verrat im eigenen Lager war fast immer das Ende starker Burgen: Konstantinopel, San Leo, Château Gaillard. Frühe Entdeckung hätte den Spieß umgedreht.",wouldHaveFallen:false,keyFactor:"Gegenspionage und Kontrolle der eigenen Garnison sind wichtiger als Mauern.",timeChange:"Der Verräter entdeckt und beseitigt — die Burg hätte Monate oder Jahre länger gehalten.",historicalParallels:["Masada: keine Verräter — die Festung fiel durch Hunger, nicht Verrat","Harlech: treue Garnison hielt 7 Jahre im Rosenkrieg"],confidence:"hoch"},
 ];
+
+// Personality-specific roleplay response pools for offline use
+export const PERSONALITY_RESPONSES = {
+  fanatiker: {
+    early: [
+      "Gott ist auf unserer Seite — und Gott baut keine schlechten Mauern! Kommt näher, wenn ihr den Märtyrertod sucht.",
+      "Ihr seid viele. Wir sind wenige. Aber der Herr braucht keine Armeen — er braucht Glauben. Und den haben wir im Überfluss.",
+      "Ich habe meinen Männern gesagt: Wir verlassen diese Burg nur auf zwei Arten — als Sieger oder als Tote. Es gibt kein Drittes.",
+      "Seht ihr diese Mauern? Mein Vater hat sie gebaut. Sein Vater davor. Jeder Stein ist getränkt mit dem Blut meiner Ahnen. Ihr rührt keinen davon an.",
+      "Dreißig Jahre habe ich für diesen Moment gebetet. Dass Gott uns eine würdige Prüfung schickt. Kommt — besteht eure.",
+      "Meine Männer schlafen auf Stroh und essen Brot. Sie haben Angst. Aber Angst und Kapitulation sind nicht dasselbe — das haben wir gelernt.",
+      "Habt ihr gesehen wie meine Bogenschützen beten bevor sie schießen? Das ist keine Schwäche. Das ist Stärke die ihr nicht kaufen könnt.",
+      "Der Feind vor den Mauern ist sichtbar. Der Feind der uns zur Übergabe drängt ist unsichtbar — Hunger, Zweifel, Erschöpfung. Den bekämpfen wir härter.",
+    ],
+    middle: [
+      "Wochen — und wir stehen noch! Jeder Tag ist ein Wunder und ein Zeichen. Meine Männer wissen es. Die Mauern wissen es.",
+      "Ihr habt den Ostturm erschüttert. Er steht noch. Wir haben ihn in der Nacht gestützt. Was Gott zusammenfügt, reißt ihr nicht ein.",
+      "Hunger? Ja, wir hungern. Aber Hunger tötet den Körper — nicht den Geist. Wir kämpfen mit dem Geist.",
+      "Der Priester liest jeden Morgen die Messe auf dem Bergfried. Meine Männer hören zu. Danach greifen sie zu den Waffen. So arbeitet Gott.",
+      "Ihr habt unsere Außenwerke. Gut — ihr habt Staub genommen, nicht Festung. Die eigentliche Burg haben wir noch.",
+      "Heute Nacht sang die Garnison gemeinsam. Kein Befehl — freiwillig. Das ist der Geist der hier herrscht. Brecht ihn wenn ihr könnt.",
+      "Drei Männer desertierten letzte Nacht. Schande — aber drei von hundert. Und die Hundert? Ungebrochen.",
+      "Mein Kaplan sagte: 'Diese Burg ist Gottes Versprechen an uns.' Ich glaube ihm. Ihr glaubt euren Schwertern. Wir werden sehen wessen Glaube stärker ist.",
+    ],
+  },
+  pragmatiker: {
+    early: [
+      "Ich habe eure Aufstellung studiert. Zwanzig Prozent zu viel Kavallerie für eine Belagerung — ihr habt sie auf offenem Feld geübt, nicht hier.",
+      "Eine gute Aufstellung. Ich rechne täglich nach: meine Vorräte, eure Stärke, die Wahrscheinlichkeit von Entsatz. Heute: Wir halten.",
+      "Sentimentalität hilft weder euch noch mir. Dies ist Mathematik: Mauern gegen Maschinen, Vorräte gegen Zeit. Ich habe die besseren Zahlen.",
+      "Ich respektiere eure Disziplin. Aber respektiert meine Logistik: Diese Burg ist für 18 Monate Belagerung ausgerüstet. Habt ihr 18 Monate?",
+      "Euer Angriffsplan ist klassisch und korrekt. Aber klassische Angriffe gewinnen gegen schlecht vorbereitete Burgen. Diese ist vorbereitet.",
+      "Ich habe die Schwachstellen meiner Burg kartiert. Dann habe ich sie alle verstärkt. Ihr werdet keine finden die ich nicht schon kenne.",
+      "Strategie heißt: die Zukunft antizipieren. Ich weiß was ihr als nächstes tut. Meine Kontermaßnahmen sind bereit.",
+      "Sie sagen, ein kluger General braucht keine Worte — er braucht Pläne. Ich habe fünfzehn Pläne für fünfzehn Szenarien. Welches wählt ihr?",
+    ],
+    middle: [
+      "Die Lage ist ernst. Ich leugne es nicht. Aber 'ernst' bedeutet nicht 'hoffnungslos' — ich rechne weiter.",
+      "Eure Versorgungslogistik zeigt erste Risse — ich habe euren Proviantzug letzte Woche gezählt. Weniger als erwartet.",
+      "Meine Ausfallsoptionen sind: Verhandlung, Ausbruch, Gegenmining, Entsatzerwartung. Ich priorisiere täglich neu. Heute: Halten und warten.",
+      "Ihr habt gut gespielt. Ich gebe es zu. Aber auch gut gespielte Belagerungen scheitern — die Variablen sind zu viele.",
+      "Drei Wochen — ich habe Muster in eurem Vorgehen erkannt. Montags greift ihr an, freitags ruht ihr. Gut zu wissen.",
+      "Der Entsatz: Ich habe Boten auf drei Routen geschickt. Einer kommt durch. Das reicht.",
+      "Ich werde euch täglich Berichte über unsere Verluste zeigen — korrekte. Keine Propaganda. Ich brauche kein Theater — nur Zeit.",
+      "Ihr habt meinen besten Hauptmann getötet. Eine schlechte Nachricht. Aber er war einer von acht. Die sieben anderen sind informiert und angewiesen.",
+    ],
+  },
+  feigling: {
+    early: [
+      "Ich... ich muss zugeben dass eure Armee beeindruckend ist. Sehr beeindruckend. Habt ihr wirklich keine friedliche Lösung?",
+      "Meine Männer sind nervös. Ich beruhige sie so gut ich kann. Aber ich selbst — ich wünschte die Situation wäre anders.",
+      "Vielleicht könnten wir reden bevor jemand verletzt wird? Ich wäre offen für... Bedingungen. Nur um die Optionen zu verstehen.",
+      "Das war ein Warnschuss? Ein echter? Ich wollte das nur sicherstellen. Meine Männer... sie fragen mich was wir tun sollen.",
+      "Ich habe diese Burg geerbt — ich habe sie nicht gewählt. Es ist kein Geheimnis dass ich kein Krieger bin. Was wollt ihr eigentlich?",
+      "Diese Situation... sie ist komplizierter als ich dachte. Lasst mich mit meinen Hauptleuten reden. Vielleicht... vielleicht gibt es einen Ausweg.",
+      "Eure Banner... ich habe sie erkannt. Viele davon. Sehr viele. Ist das wirklich nötig, so viele Männer zu schicken?",
+      "Ich schreibe gerade einen Brief. An wen? An meinen König. Ob er antwortet... ich bete es. Bitte gebt mir ein paar Tage.",
+    ],
+    middle: [
+      "Drei Wochen! Das habe ich... ich habe das wirklich nicht erwartet. Meine Männer auch nicht. Wir halten noch, aber...",
+      "Es gab letzte Nacht einen Alarm — falsch, stellte sich heraus. Aber mein Herz... die nächsten Belagerungswochen werden schwer.",
+      "Zwei meiner Hauptleute haben mich heute zur Seite genommen. Sie sagen die Moral bricht. Ich sagte ihnen... ich sagte... ich weiß nicht was ich sagte.",
+      "Wenn ihr ehrenhaften Abzug garant... ich frage nur theoretisch. Was wären eure Bedingungen? Theoretisch.",
+      "Der Beschuss heute hat... hat ein Loch in den Südturm geschlagen. Klein, aber... meine Männer haben es gesehen. Sie haben Fragen gestellt.",
+      "Ich habe nicht gut geschlafen. Seit Wochen nicht. Jedes Geräusch, jeder Schuss... ich kann nicht mehr klar denken.",
+      "Mein ältester Hauptmann sagte heute: 'Herr, wir kämpfen weiter.' Ich bin froh dass wenigstens er die Nerven behält.",
+      "Vielleicht... vielleicht war das ein Fehler. Die Burg zu halten. Aber ich bin noch hier. Noch. Ich denke nach.",
+    ],
+  },
+  stratege: {
+    early: [
+      "Interessant. Ihr beginnt mit dem Südflügel — ich hätte den Norden gewählt. Aber das sagt viel über eure Generalsstrategie.",
+      "Jede eurer Bewegungen wird beobachtet. Ich habe Männer auf allen vier Türmen mit Aufgaben die sie nicht miteinander teilen. Kein Gesamtbild für euch.",
+      "Ihr glaubt ich bin defensiv. Das bin ich nicht. Ich warte auf den richtigen Moment — dann greife ich an. Aus einer Festung heraus.",
+      "Die Schwachstelle die ihr sucht existiert. Ich habe sie sichtbar gelassen — als Köder. Dahinter wartet meine stärkste Reserve.",
+      "Drei Angreifer haben wir letzte Woche eingeschleust ins Lager. Sie notieren was sie sehen. Ich lese ihre Berichte täglich.",
+      "Ihr seid gut ausgebildet. Ich sehe es an der Formation. Aber Ausbildung bedeutet Vorhersehbarkeit — und Vorhersehbarkeit ist mein Verbündeter.",
+      "Was ihr als Zögern interpretiert ist Vorbereitung. Wenn ich reagiere, werden fünf Schritte gleichzeitig ausgeführt.",
+      "Ich habe einen geheimen Boten geschickt — nicht an den König, an euren Verbündeten. Nur um eine Frage zu stellen.",
+    ],
+    middle: [
+      "Woche vier. Ich hatte Woche drei antizipiert — ihr seid etwas langsamer als erwartet. Das gibt mir Zeit für Plan C.",
+      "Ihr habt gerade meinen scheinbar stärksten Mauerabschnitt angegriffen. Korrekte Entscheidung — wenn ich dort meine besten Männer hätte. Das tu ich nicht.",
+      "Der Angriff gestern war gut koordiniert. Einer von drei möglichen Angriffen die ich erwartet habe. Die zwei anderen Szenarien hatte ich vorbereitet. Schade.",
+      "Mein Bote ist zurück. Mit einer Antwort. Ich sage nicht von wem. Aber in acht Tagen ändert sich etwas.",
+      "Ihr habt meinen Proviantturm getroffen. Gut geschossen — aber der echte Proviant liegt im Westgewölbe. Das wusstet ihr nicht.",
+      "Ich habe heute drei Schwächen entdeckt — in eurer Formation, nicht meiner. Ich nutze sie in zwei Tagen.",
+      "Das Erdbeben letzte Nacht — ihr dachtet ich wäre aus der Bahn geworfen. Ich hatte für Erdbeben einen Plan. Ich habe für alles einen Plan.",
+      "Ihr fragt ob ich kapituliere? Interessante Frage. Ich stelle mir lieber die interessantere Frage: warum fragt ihr schon jetzt?",
+    ],
+  },
+  ehrenmann: {
+    early: [
+      "Ihr seid ehrenwert in eurer Aufstellung — ein geordnetes Heer, keine Plünderung der Umgebung. Das respektiere ich und erwidere es mit ritterlicher Verteidigung.",
+      "Meine Männer wissen: Wir kämpfen nicht für mich, nicht für Gold — wir kämpfen für Pflicht. Das ist der edelste Grund.",
+      "Wenn einer meiner Männer einen von euch gefangen nimmt — er wird behandelt wie ein Gast, nicht wie ein Feind. Das ist das Gesetz hier.",
+      "Ich habe eure Herolde immer angehört. Auch wenn ich ablehnte. Das ist meine Pflicht als Herr — niemand stirbt ungehört.",
+      "Diese Burg verteidige ich weil ich es versprochen habe. Ein Versprechen ist mehr wert als mein Leben. Das ist keine Schwäche.",
+      "Ich kenne euren General vom Namen her. Ein tapferer Mann, sagt man. Dieser Kampf ehrt uns beide.",
+      "Meine Bogenschützen schießen nicht auf Boten. Meine Reiter trampeln keine Verwundeten. Das ist keine Taktik — das ist wer wir sind.",
+      "Ich habe die Zivilbevölkerung aus der Burg geschickt bevor ihr kamt. Frauen und Kinder gehören nicht in einen Kampf. Das war meine erste Entscheidung.",
+    ],
+    middle: [
+      "Vier Wochen. Meine Männer halten sich tapfer — ich bin stolz auf jeden einzelnen. Das sage ich ihnen jeden Abend persönlich.",
+      "Einer eurer Männer wurde vor dem Tor verletzt. Ich habe ihn hereinbringen lassen und verarzten. Ihr bekommt ihn zurück.",
+      "Die Situation ist schwierig — das leugne ich nicht. Aber schwierig bedeutet nicht unehrenhaft. Wir kämpfen weiter, wie es sich gehört.",
+      "Mein ältester Ritter wollte heute einen Verräter in euerem Lager bestechen. Ich habe es verboten. Nicht weil ich es nicht kann — weil es nicht meine Art ist.",
+      "Eure Männer kämpfen gut. Ich habe sie von den Zinnen beobachtet. Tapferkeit verdient Respekt — auch wenn sie gegen uns gerichtet ist.",
+      "Das Essen wird knapper. Ich esse weniger als meine Männer — das ist selbstverständlich. Der Herr isst zuletzt.",
+      "Ich habe heute Verhandlungen abgelehnt — die Bedingungen waren nicht ehrenhaft. Wenn ihr faire Bedingungen anbietet, höre ich zu.",
+      "Meine Männer fragten ob wir aufgeben sollten. Ich fragte zurück: Haben wir alles getan was wir konnten? Noch nicht. Also: Nein.",
+    ],
+  },
+};
 
 // WhatIf — pick best fallback based on scenario keywords
 export function getWhatIfFallback(scen, castle) {
@@ -117,6 +291,13 @@ export function getWhatIfFallback(scen, castle) {
   else if(s.includes("früher")||s.includes("100 jahre")||s.includes("200 jahre")||s.includes("früh")||s.includes("später")) base=WHATIF_FALLBACKS[4];
   else if(s.includes("wasser")||s.includes("fluss")||s.includes("graben")||s.includes("überflutu")||s.includes("trocken")) base=WHATIF_FALLBACKS[5];
   else if(s.includes("verräter")||s.includes("verrat")||s.includes("bestoch")||s.includes("spion")) base=WHATIF_FALLBACKS[6];
+  else if(s.includes("winter")||s.includes("kälte")||s.includes("frost")||s.includes("schnee")) base=WHATIF_FALLBACKS[7];
+  else if(s.includes("feuer")||s.includes("brand")||s.includes("griechisch")||s.includes("brennen")) base=WHATIF_FALLBACKS[8];
+  else if(s.includes("aufgegeben")||s.includes("abgebrochen")||s.includes("rückzug")||s.includes("aufgabe")) base=WHATIF_FALLBACKS[9];
+  else if(s.includes("pest")||s.includes("seuche")||s.includes("krankheit")||s.includes("epidemie")) base=WHATIF_FALLBACKS[10];
+  else if(s.includes("entsatz")||s.includes("hilfe")||s.includes("verstärkung")||s.includes("früher geholfen")) base=WHATIF_FALLBACKS[11];
+  else if(s.includes("katapult")||s.includes("trebuchet")||s.includes("belagerungsmaschine")||s.includes("mehr maschinen")) base=WHATIF_FALLBACKS[12];
+  else if(s.includes("verrat entdeckt")||s.includes("verräter gefunden")||s.includes("frühzeitig entdeckt")) base=WHATIF_FALLBACKS[13];
   else base=WHATIF_FALLBACKS[Math.floor(Math.random()*2)];
   return {
     ...base,
@@ -210,4 +391,173 @@ export function getLexikonFacts(castle) {
     castle.history,
     `Fazit der Militärhistoriker: ${castle.verdict}`,
   ];
+}
+
+// ── Advisor offline fallback — pure function, no React deps ─────────────────
+export function getAdvisorFallback(question, castle){
+  const q=question.toLowerCase();
+  const r=castle.ratings;
+
+  if(q.includes("schnell")||q.includes("einnahme")||q.includes("angriff")||q.includes("nehmen")){
+    return `**Schnellster Weg zur Einnahme von ${castle.name}:**
+
+${castle.attackTips.map((t,i)=>`**${i+1}.** ${t}`).join("\n")}
+
+**Kritische Schwachstelle:** ${castle.weaknesses[0]}
+
+**Historisch:** ${castle.history.split(".")[0]}.`;
+  }
+  if(q.includes("verteid")||q.includes("halten")||q.includes("schutz")||q.includes("als verteidiger")){
+    return `**Als Verteidiger von ${castle.name}:**
+
+${castle.strengths.map((s,i)=>`**${i+1}.** ${s}`).join("\n")}
+
+**Taktik:** Konzentriere alle Kräfte auf ${castle.weaknesses[0].split("—")[0]} — das ist der einzige Punkt wo du wirklich verwundbar bist.
+
+**Moral:** ${r.morale>=85?"Die Garnison kämpft fanatisch — nutze das als Waffe.":r.morale>=70?"Halte die Moral durch regelmäßige Erfolge.":"Moral ist schwach — nutze religiöse oder politische Motivierung."}`;
+  }
+  if(q.includes("parallel")||q.includes("vergleich")||q.includes("ähnlich")||q.includes("andere burg")){
+    const epochParallels={
+      "Antike":["Masada (73 n.Chr.) — ähnliche Uneinnehmbarkeit durch Position","Sacsayhuamán — ähnliche Geländeüberlegenheit"],
+      "Mittelalter":["Krak des Chevaliers — konzentrische Verteidigung","Carcassonne — Doppelmauerring als Konzept"],
+      "Feudaljapan":["Himeji — weißer Reiher als ästhetische Verteidigung","Kumamoto — Ishigaki-Fundamente gegen Unterminierung"],
+      "Neuzeit":["Marienburg — Anpassung an Schwarzpulver","Topkapi — Palatial-Festung als Konzept"],
+    };
+    const parallels=epochParallels[castle.epoch]||["Viele Burgen der gleichen Ära","Festungen mit ähnlicher Positionsstrategie"];
+    return `**Historische Parallelen zu ${castle.name}:**
+
+${castle.verdict}
+
+**Ähnliche Festungen:**
+${parallels.map(p=>`→ ${p}`).join("\n")}
+
+**Kategorie:** ${castle.name} gehört zur Gruppe der ${castle.epoch}-Festungen, die primär durch ${r.position>85?"überlegene Positionierung":"Mauerstärke und Garnison"} überlebten.`;
+  }
+  if(q.includes("gebaut")||q.includes("besser")||q.includes("fehler")||q.includes("schwach")){
+    return `**Was man an ${castle.name} besser hätte bauen können:**
+
+**Erkannte Schwachstellen:**
+${castle.weaknesses.map((w,i)=>`**${i+1}.** ${w}`).join("\n")}
+
+**Primäres Problem:** ${castle.weaknesses[0]}
+
+**Architektonische Lösung:** ${r.walls<70?"Dickere Mauern mit Scharten-Verbesserung wären entscheidend gewesen.":r.supply<60?"Bessere Wasserversorgung und Vorratslager hätten die Belagerungsresistenz verdoppelt.":r.garrison<60?"Eine größere permanente Garnison hätte alle Schwachstellen gleichzeitig besetzen können.":"Die Grundkonstruktion war stark — kleine Verbesserungen am Nordflügel hätten genügt."}
+
+**Vergleich:** ${castle.history.split(".").slice(-2).join(".")}`;
+  }
+  if(q.includes("modern")||q.includes("heute")||q.includes("21")||q.includes("artillerie")||q.includes("panzer")){
+    const posStr=r.position>90?"Einzig die extreme Geländeposition böte noch echten Widerstand — Artillerie wäre aber auch hier entscheidend.":r.position>75?"Die Geländeposition würde etwas Zeit kaufen. Aber moderne Artillerie macht mittelalterliche Mauern irrelevant.":"Kein Element dieser Burg könnte modernen Waffen standhalten.";
+    return `**Moderner Angriff auf ${castle.name}:**
+
+**Kurzfassung:** Mit moderner Militärtechnik wäre ${castle.name} in Stunden einnehmbar.
+
+**Analyse:**
+→ **Artillerie:** ${castle.strengths[0]} hält keine Haubitze auf
+→ **Luftangriff:** Keine mittelalterliche Burg hat Flugabwehr
+→ **Position:** ${posStr}
+
+**Einziger Vorteil heute:** Guerilla-Taktik in den Gängen — Festungen sind in urbaner Kriegsführung noch immer nützlich.`;
+  }
+  if(q.includes("moment")||q.includes("kritisch")||q.includes("wend")||q.includes("entscheidend")){
+    return `**Der kritischste Moment bei ${castle.name}:**
+
+${castle.history}
+
+**Wendepunkt:** ${castle.verdict}
+
+**Lehre:** ${castle.weaknesses[0].includes("Verrat")||castle.history.includes("Verrat")?"Keine Mauer schützt gegen Verrat von innen.":castle.weaknesses[0].includes("Hunger")||castle.weaknesses[0].includes("Versorgung")?"Hunger bezwingt, was Schwerter nicht können.":"Die stärkste Festung fällt durch ihre einzige Schwachstelle — nicht durch ihre Stärken."}`;
+  }
+  if(q.includes("wer")||q.includes("erbau")||q.includes("gründ")||q.includes("ursprung")){
+    return `**Ursprung und Erbauer von ${castle.name}:**
+
+**Epoche:** ${castle.era}
+**Ort:** ${castle.loc}
+**Typ:** ${castle.sub}
+
+**Geschichte:** ${castle.history}
+
+**Strategische Rolle:** ${castle.desc}`;
+  }
+  if(q.includes("stärk")||q.includes("vorteil")||q.includes("stark")){
+    return `**Stärken von ${castle.name}:**
+
+${castle.strengths.map((s,i)=>`**${i+1}.** ${s}`).join("\n")}
+
+**Gesamtbewertung:**
+→ Mauern: ${r.walls}/100
+→ Position: ${r.position}/100
+→ Versorgung: ${r.supply}/100
+→ Garnison: ${r.garrison}/100
+→ Moral: ${r.morale}/100
+
+**Stärkster Aspekt:** ${Object.entries(r).sort((a,b)=>b[1]-a[1])[0][0]} mit ${Object.values(r).sort((a,b)=>b-a)[0]} Punkten.`;
+  }
+  if(q.includes("belagerung")||q.includes("wie lange")||q.includes("dauer")){
+    const dur=r.supply>=80?"mehrere Jahre":r.supply>=60?"6-18 Monate":"2-6 Monate";
+    return `**Belagerungsszenarien für ${castle.name}:**
+
+**Realistische Belagerungsdauer:** ${dur} bei vollständiger Einkreisung
+
+**Szenario:**
+${castle.siegeCtx}
+
+**Strategien des Angreifers:**
+${castle.attackTips.map((t,i)=>`${i+1}. ${t}`).join("\n")}
+
+**Defender:** ${castle.defender||"Unbekannter Burgherr"}`;
+  }
+  if(q.includes("ressource")||q.includes("truppen")||q.includes("was brauche")||q.includes("ausrüst")){
+    const needsCav=r.position<70;
+    const needsMines=r.walls>80;
+    const needsSupply=r.supply>75;
+    return `**Ressourcenbedarf für die Belagerung von ${castle.name}:**
+
+${needsMines?"→ **Mineure/Ingenieure (hoch):** Mauern sind stark \u2014 Unterminierung oder Artillerie nötig":"→ **Belagerungsmaschinen:** Katapulte auf Schwachstelle " + castle.weaknesses[0].split("\u2014")[0] + " konzentrieren"}
+${needsCav?"→ **Kavallerie:** Position schwach — Reiter können schnell einfallen":"→ **Infanterie:** Schwerpunkt auf Infanterie für Mauerbrechen und Sturm"}
+${needsSupply?"→ **Geduld:** Versorgung stark — lange Belagerung einplanen, Blockade vollständig":"→ **Tempo:** Versorgung ist schwach — schnell handeln bevor Entsatz kommt"}
+→ **Spione:** Infiltriere die Garnison — ${castle.weaknesses[0].toLowerCase()}
+
+**Mindeststärke:** ${r.walls>80&&r.garrison>75?"Mindestens 3:1 Überlegenheit":r.walls>60?"2:1 reicht mit guter Strategie":"1.5:1 mit richtiger Taktik"}`;
+  }
+  if(q.includes("notfall")||q.includes("mauerbruch")||q.includes("bresche")||q.includes("einbruch")){
+    return `**Notfallplan bei Mauerbruch in ${castle.name}:**
+
+**Sofortmaßnahmen:**
+1. Alle verfügbaren Männer in die Bresche — kein Zentimeter kampflos
+2. Rückzug zum ${r.garrison>70?"Donjon/Bergfried":"nächsten Mauerring"} vorbereiten
+3. Reserven aus Zitadelle einsetzen
+
+**Strategie:**
+→ Jede Gasse, jeden Raum verteidigen — Zeitgewinn für Entsatz
+→ Griechisches Feuer/Pech auf die Bresche
+→ ${r.morale>75?"Moral hoch — Männer kämpfen weiter":"Moral sichern — persönlich in die Bresche"}
+
+**Historisches Vorbild:** Bei Mauerbruch oft noch Stunden oder Tage zu gewinnen — Minas Tirith, Konstantinopel 1453, Akkon 1291.`;
+  }
+  if(q.includes("moral")||q.includes("motivation")||q.includes("stimmung")||q.includes("mut")){
+    return `**Moral in ${castle.name} hochhalten:**
+
+**Ausgangslage:** Moral ${r.morale}/100 — ${r.morale>=80?"stark, aber nicht unerschütterlich":r.morale>=60?"solide, braucht Pflege":"fragil, höchste Priorität"}
+
+**Maßnahmen:**
+1. Tägliche Morgensprache durch den Burgherrn — persönlich, nicht durch Untergebene
+2. Regelmäßige kleine Erfolge sichtbar machen (abgewehrte Angriffe feiern)
+3. Religiöse Unterstützung — Priester/Kaplan für Messen und Segen
+4. Gerechte Nahrungsverteilung — der Herr isst zuletzt
+5. Informationskontrolle — keine Panikgerüchte zulassen
+
+**Warnsignal:** Desertion beginnt wenn Moral unter 40% fällt. Dann: sofortige Kommunikation über Entsatz-Aussichten.`;
+  }
+  // Default
+  return `**${castle.name}** (${castle.sub})
+
+**Epoche:** ${castle.era} · **Ort:** ${castle.loc}
+
+**Überblick:** ${castle.desc}
+
+**Geschichte:** ${castle.history}
+
+**Fazit:** ${castle.verdict}
+
+**Frag mich spezifischer:** Angriff, Verteidigung, historische Parallelen, Schwachstellen, oder den kritischsten Moment.`;
 }
