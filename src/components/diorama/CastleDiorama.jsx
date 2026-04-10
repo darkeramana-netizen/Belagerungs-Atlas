@@ -1,27 +1,37 @@
 import { useEffect, useRef } from 'react';
 
-// ── Isometric tile dimensions ──────────────────────────────────────────────
 const TW = 36, TH = 18;
 
-// ── Seeded LCG random (deterministic per castle.id) ──────────────────────
+// ── Seeded LCG — deterministic per castle.id ──────────────────────────────
 function mkRng(str) {
-  let s = [...(str || 'castle')].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 0x87654321);
+  let s = [...(str || 'x')].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 0x87654321);
   return () => { s = (Math.imul(s, 1664525) + 1013904223) | 0; return (s >>> 0) / 0x100000000; };
 }
 
-// ── Color palettes by region ───────────────────────────────────────────────
+// ── Color palettes by region ──────────────────────────────────────────────
 const PAL = {
-  europa:      { gT:'#556644', gL:'#3a4530', gR:'#283020', wT:'#9a9085', wL:'#7a7065', wR:'#5a5045', tT:'#807868', tL:'#605850', tR:'#403830' },
-  nahost:      { gT:'#806850', gL:'#604838', gR:'#403028', wT:'#c8a878', wL:'#a88858', wR:'#886840', tT:'#b08868', tL:'#907048', tR:'#705030' },
-  ostasien:    { gT:'#485640', gL:'#303c2a', gR:'#20281a', wT:'#c8c8b8', wL:'#989888', wR:'#686858', tT:'#383028', tL:'#281e18', tR:'#181208' },
-  suedostasien:{ gT:'#506840', gL:'#384830', gR:'#283020', wT:'#a09880', wL:'#807868', wR:'#605850', tT:'#6a5840', tL:'#4a3828', tR:'#302818' },
-  suedamerika: { gT:'#687838', gL:'#485428', gR:'#303818', wT:'#c87848', wL:'#a05838', wR:'#783828', tT:'#a06030', tL:'#784020', tR:'#502810' },
-  mittelerde:  { gT:'#252535', gL:'#181825', gR:'#101018', wT:'#454565', wL:'#2e2e4e', wR:'#1e1e32', tT:'#353558', tL:'#22223a', tR:'#161622' },
-  westeros:    { gT:'#384848', gL:'#283434', gR:'#182020', wT:'#888898', wL:'#686878', wR:'#484858', tT:'#585868', tL:'#383848', tR:'#282830' },
+  europa:      { gT:'#556644',gL:'#3a4530',gR:'#283020', wT:'#9a9085',wL:'#7a7065',wR:'#5a5045', tT:'#706860',tL:'#504840',tR:'#303020' },
+  nahost:      { gT:'#806850',gL:'#604838',gR:'#403028', wT:'#c8a878',wL:'#a88858',wR:'#886840', tT:'#a07848',tL:'#805830',tR:'#603820' },
+  ostasien:    { gT:'#485640',gL:'#303c2a',gR:'#20281a', wT:'#c8c8b8',wL:'#989888',wR:'#686858', tT:'#3a2e20',tL:'#281e14',tR:'#180e08' },
+  suedostasien:{ gT:'#506840',gL:'#384830',gR:'#283020', wT:'#a09880',wL:'#807868',wR:'#605850', tT:'#6a5840',tL:'#4a3828',tR:'#302818' },
+  suedamerika: { gT:'#687838',gL:'#485428',gR:'#303818', wT:'#c87848',wL:'#a05838',wR:'#783828', tT:'#a06030',tL:'#784020',tR:'#502810' },
+  mittelerde:  { gT:'#1e1e2a',gL:'#141420',gR:'#0c0c14', wT:'#404060',wL:'#2a2a44',wR:'#1a1a2c', tT:'#303050',tL:'#1e1e38',tR:'#121226' },
+  westeros:    { gT:'#384848',gL:'#283434',gR:'#182020', wT:'#888898',wL:'#686878',wR:'#484858', tT:'#585868',tL:'#383848',tR:'#282830' },
 };
 PAL.default = PAL.europa;
 
-// ── Main component ─────────────────────────────────────────────────────────
+// ── Layout-Stil je nach Region und Ratings wählen ─────────────────────────
+function selectStyle(castle) {
+  const region = castle?.region || 'europa';
+  const rat    = castle?.ratings || {};
+  if (region === 'ostasien' || region === 'suedostasien') return 'japanese';
+  if (region === 'suedamerika')                            return 'pyramid';
+  if (region === 'mittelerde')                             return 'spire';
+  if ((rat.walls || 70) >= 90)                             return 'concentric';
+  return 'standard';
+}
+
+// ── Hauptkomponente ───────────────────────────────────────────────────────
 export default function CastleDiorama({ castle }) {
   const ref = useRef(null);
 
@@ -35,131 +45,211 @@ export default function CastleDiorama({ castle }) {
 
   const ac = castle?.theme?.accent || '#c9a84c';
   return (
-    <div style={{
-      width: '100%', background: '#060504', borderRadius: '8px',
-      overflow: 'hidden', position: 'relative', userSelect: 'none'
-    }}>
-      <canvas ref={ref} width={600} height={380} style={{ width: '100%', display: 'block' }} />
+    <div style={{ width:'100%', background:'#060504', borderRadius:'8px', overflow:'hidden', position:'relative', userSelect:'none' }}>
+      <canvas ref={ref} width={600} height={380} style={{ width:'100%', display:'block' }} />
       <div style={{
-        position: 'absolute', bottom: 8, left: 10, right: 10,
-        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
-        fontSize: '11px', fontFamily: 'monospace', pointerEvents: 'none',
+        position:'absolute', bottom:8, left:10, right:10,
+        display:'flex', justifyContent:'space-between', alignItems:'flex-end',
+        fontSize:'11px', fontFamily:'monospace', pointerEvents:'none',
       }}>
-        <span style={{ color: 'rgba(255,255,255,0.38)' }}>{castle?.name}</span>
-        <span style={{ color: ac + '88', fontSize: '10px' }}>{castle?.era}</span>
+        <span style={{ color:'rgba(255,255,255,0.38)' }}>{castle?.name}</span>
+        <span style={{ color: ac + '88', fontSize:'10px' }}>{castle?.era}</span>
       </div>
     </div>
   );
 }
 
-// ── Renderer ───────────────────────────────────────────────────────────────
+// ── Renderer ──────────────────────────────────────────────────────────────
 function render(ctx, W, H, castle) {
-  const rng  = mkRng(castle?.id || 'default');
-  const ac   = castle?.theme?.accent || '#c9a84c';
-  const pal  = PAL[castle?.region] || PAL.default;
-  const rat  = castle?.ratings || { walls: 70, garrison: 60, morale: 70, supply: 70, position: 60 };
+  const rng   = mkRng(castle?.id || 'x');
+  const ac    = castle?.theme?.accent || '#c9a84c';
+  const pal   = PAL[castle?.region] || PAL.default;
+  const rat   = castle?.ratings || { walls:70, garrison:60, morale:70, supply:70, position:60 };
+  const style = selectStyle(castle);
 
-  // Castle dimensions derived from ratings
-  const wallH  = 1 + Math.floor(rat.walls    / 40);  // 1–3  blocks tall
-  const towerH = wallH + 1 + Math.floor(rat.garrison / 40); // 2–5
-  const yardR  = 3 + Math.floor(rat.supply   / 25);  // 3–7  tiles from center
-  const keepH  = 3 + Math.floor(rat.morale   / 20);  // 3–8  blocks tall
-
-  // Isometric origin: canvas center, shifted up slightly
   const cx = W / 2, cy = H * 0.37;
   const pt = (gx, gy, gz = 0) => [cx + (gx - gy) * TW / 2, cy + (gx + gy) * TH / 2 - gz * TH];
 
-  // ── Build block list ─────────────────────────────────────────────────────
   const blks = [];
-  const add  = (bx, by, bz, bh, top, lft, rgt) => blks.push({ bx, by, bz, bh, top, lft, rgt });
+  const add  = (bx, by, bz, bh, t, l, r) => blks.push({ bx, by, bz, bh, t, l, r });
 
-  // Ground plane with random bumps outside the walls
-  const gR = yardR + 2;
-  for (let x = -gR; x <= gR; x++)
-    for (let y = -gR; y <= gR; y++) {
-      const outside = Math.max(Math.abs(x), Math.abs(y)) > yardR;
-      const bump = (outside && rng() < 0.12) ? 1 : 0;
-      add(x, y, -1, 1 + bump, pal.gT, pal.gL, pal.gR);
+  // Bodenplatte mit zufälligen Unebenheiten am Rand
+  const addGround = (R) => {
+    for (let x = -R; x <= R; x++)
+      for (let y = -R; y <= R; y++) {
+        const outer = Math.max(Math.abs(x), Math.abs(y)) > R - 2;
+        add(x, y, -1, (outer && rng() < 0.12) ? 2 : 1, pal.gT, pal.gL, pal.gR);
+      }
+  };
+
+  // ── Layouts ───────────────────────────────────────────────────────────────
+
+  if (style === 'japanese') {
+    // Gestufter japanischer Burgturm (Tenshu): weiße Plattformen, dunkle Dächer
+    const base   = 1 + Math.floor(rat.walls    / 50);  // 1-3 Basis
+    const tierH  = 2 + Math.floor(rat.garrison / 40);  // 2-4 pro Etage
+    const tiers  = 1 + Math.floor(rat.morale   / 35);  // 1-3 Stockwerke
+    addGround(6);
+    // Steinbasis: 7×7
+    for (let x = -3; x <= 3; x++) for (let y = -3; y <= 3; y++)
+      add(x, y, 0, base, pal.wT, pal.wL, pal.wR);
+    // Turmetagen: jede Ebene schmaler
+    const radii = [2, 1, 0];
+    let z = base;
+    for (let i = 0; i < Math.min(tiers, 3); i++) {
+      const s = radii[i];
+      for (let x = -s; x <= s; x++) for (let y = -s; y <= s; y++)
+        add(x, y, z, tierH, pal.wT, pal.wL, pal.wR);
+      // Dunkles Dach oben drauf (1 Block flach)
+      for (let x = -s; x <= s; x++) for (let y = -s; y <= s; y++)
+        add(x, y, z + tierH, 1, pal.tT, pal.tL, pal.tR);
+      z += tierH + 1;
     }
 
-  // Outer wall ring (perimeter of yardR square)
-  for (let x = -yardR; x <= yardR; x++)
-    for (let y = -yardR; y <= yardR; y++) {
-      const atX = Math.abs(x) === yardR, atY = Math.abs(y) === yardR;
-      if (!atX && !atY) continue;          // interior — skip
-      if (x === 0 && y === yardR) continue; // gate opening
+  } else if (style === 'pyramid') {
+    // Mesoamerikanische Stufenpyramide
+    const rings  = 3 + Math.floor(rat.walls / 35);  // 3-5 Stufen
+    addGround(rings + 2);
+    for (let ring = 0; ring < rings; ring++) {
+      const r = rings - ring;  // Radius wird kleiner
+      const h = ring + 1;      // Höhe nimmt zu
+      for (let x = -r; x <= r; x++) for (let y = -r; y <= r; y++)
+        if (Math.max(Math.abs(x), Math.abs(y)) === r)
+          add(x, y, 0, h, pal.wT, pal.wL, pal.wR);
+    }
+    // Tempel auf dem Gipfel (2×2, einen Block höher als oberste Stufe)
+    const shrineH = rings + 1 + Math.floor(rat.morale / 40);
+    add(-1, -1, 0, shrineH, pal.tT, pal.tL, pal.tR);
+    add( 0, -1, 0, shrineH, pal.tT, pal.tL, pal.tR);
+    add(-1,  0, 0, shrineH, pal.tT, pal.tL, pal.tR);
+    add( 0,  0, 0, shrineH, pal.tT, pal.tL, pal.tR);
+
+  } else if (style === 'spire') {
+    // Dunkler asymmetrischer Fantasy-Turm (Mittelerde)
+    const baseH = 1 + Math.floor(rat.walls / 40);
+    const spireH = 5 + Math.floor(rat.morale / 18);
+    addGround(5);
+    // Unregelmäßige Basis: 5×5, Ecken zufällig gekappt
+    for (let x = -2; x <= 2; x++) for (let y = -2; y <= 2; y++)
+      if (!(Math.abs(x) === 2 && Math.abs(y) === 2 && rng() < 0.55))
+        add(x, y, 0, baseH, pal.wT, pal.wL, pal.wR);
+    // Hauptturm (2×1 — leicht asymmetrisch)
+    add(-1, -1, baseH, spireH,     pal.tT, pal.tL, pal.tR);
+    add( 0, -1, baseH, spireH,     pal.tT, pal.tL, pal.tR);
+    add(-1,  0, baseH, spireH - 1, pal.tT, pal.tL, pal.tR);
+    // Sekundäre Vorsprünge auf zufälligen Höhen (seeded)
+    const juts = [[-2,-1], [1,0], [-1,1], [0,-2]];
+    for (const [jx, jy] of juts) {
+      const jz  = baseH + Math.floor(rng() * spireH * 0.6);
+      const jh  = 1 + Math.floor(rng() * 2);
+      add(jx, jy, jz, jh, pal.tT, pal.tL, pal.tR);
+    }
+
+  } else if (style === 'concentric') {
+    // Konzentrische Mauerringe — Kreuzritter-/Edwardianischer Stil
+    const outerR = 4 + Math.floor(rat.supply   / 34);  // 4-6
+    const wallH  = 1 + Math.floor(rat.walls    / 40);  // 1-3
+    const towerH = wallH + 2;
+    addGround(outerR + 2);
+    // Äußerer Ring
+    for (let x = -outerR; x <= outerR; x++) for (let y = -outerR; y <= outerR; y++) {
+      const atX = Math.abs(x) === outerR, atY = Math.abs(y) === outerR;
+      if (!atX && !atY) continue;
+      if (x === 0 && y === outerR) continue;
       const corner = atX && atY;
-      const h  = corner ? towerH : wallH;
-      const tc = corner ? pal.tT : pal.wT;
-      const lc = corner ? pal.tL : pal.wL;
-      const rc = corner ? pal.tR : pal.wR;
-      add(x, y, 0, h, tc, lc, rc);
+      add(x, y, 0, corner ? towerH : wallH, corner ? pal.tT : pal.wT, corner ? pal.tL : pal.wL, corner ? pal.tR : pal.wR);
     }
+    // Innerer Ring (2 Tiles kleiner, um 1 Block höher)
+    const innerR = outerR - 2;
+    for (let x = -innerR; x <= innerR; x++) for (let y = -innerR; y <= innerR; y++) {
+      const atX = Math.abs(x) === innerR, atY = Math.abs(y) === innerR;
+      if (!atX && !atY) continue;
+      if (x === 0 && y === innerR) continue;
+      const corner = atX && atY;
+      add(x, y, 0, corner ? towerH + 2 : wallH + 1, corner ? pal.tT : pal.wT, corner ? pal.tL : pal.wL, corner ? pal.tR : pal.wR);
+    }
+    // Torhaustürme
+    add(-1, outerR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+    add( 1, outerR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+    // Zentraler Bergfried
+    const kh = 3 + Math.floor(rat.morale / 25);
+    for (let x = -1; x <= 0; x++) for (let y = -1; y <= 0; y++)
+      add(x, y, 0, kh, pal.tT, pal.tL, pal.tR);
 
-  // Gatehouse: two flanking towers beside the gate gap
-  add(-1, yardR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
-  add( 1, yardR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
-
-  // Mid-wall towers (appear when garrison ≥ 50)
-  if (rat.garrison >= 50) {
-    const mid = Math.round(yardR * 0.5);
-    const sides = [[-yardR, mid], [-yardR, -mid], [yardR, mid], [yardR, -mid], [mid, -yardR], [-mid, -yardR]];
-    for (const [x, y] of sides)
-      if (Math.abs(x) === yardR || Math.abs(y) === yardR)
-        add(x, y, 0, towerH - 1, pal.tT, pal.tL, pal.tR);
+  } else {
+    // Standard — rechteckiger Hof, Bergfried seeded versetzt
+    const xR    = 3 + Math.floor(rat.supply   / 25);
+    const yR    = Math.max(3, xR + Math.round(rng() * 4 - 2));  // ±2 Asymmetrie
+    const wallH  = 1 + Math.floor(rat.walls    / 40);
+    const towerH = wallH + 1 + Math.floor(rat.garrison / 40);
+    const kh    = 3 + Math.floor(rat.morale   / 20);
+    addGround(Math.max(xR, yR) + 2);
+    // Außenmauer
+    for (let x = -xR; x <= xR; x++) for (let y = -yR; y <= yR; y++) {
+      const atX = Math.abs(x) === xR, atY = Math.abs(y) === yR;
+      if (!atX && !atY) continue;
+      if (x === 0 && y === yR) continue;
+      const corner = atX && atY;
+      add(x, y, 0, corner ? towerH : wallH, corner ? pal.tT : pal.wT, corner ? pal.tL : pal.wL, corner ? pal.tR : pal.wR);
+    }
+    // Torhaustürme
+    add(-1, yR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+    add( 1, yR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+    // Wandtürme (bei hoher Garnison)
+    if (rat.garrison >= 50) {
+      const mid = Math.round(xR * 0.5);
+      [[-xR, mid], [-xR, -mid], [xR, mid], [xR, -mid], [mid, -yR], [-mid, -yR]].forEach(([x, y]) => {
+        if (Math.abs(x) === xR || Math.abs(y) === yR) add(x, y, 0, towerH - 1, pal.tT, pal.tL, pal.tR);
+      });
+    }
+    if (rat.garrison >= 85) {
+      const mid2 = Math.round(xR * 0.75);
+      [[-xR, mid2], [-xR, -mid2], [xR, mid2], [xR, -mid2]].forEach(([x, y]) => {
+        if (Math.abs(x) === xR || Math.abs(y) === yR) add(x, y, 0, towerH, pal.tT, pal.tL, pal.tR);
+      });
+    }
+    // Bergfried: leicht versetzt (seeded)
+    const kx = rng() < 0.38 ? Math.round(rng() * 2 - 1) : 0;
+    for (let x = -1; x <= 0; x++) for (let y = -1; y <= 0; y++)
+      add(x + kx, y, 0, kh, pal.tT, pal.tL, pal.tR);
   }
 
-  // Second ring of mid-wall towers (appear when garrison ≥ 85)
-  if (rat.garrison >= 85) {
-    const mid2 = Math.round(yardR * 0.75);
-    const sides2 = [[-yardR, mid2], [-yardR, -mid2], [yardR, mid2], [yardR, -mid2], [mid2, -yardR], [-mid2, -yardR]];
-    for (const [x, y] of sides2)
-      if (Math.abs(x) === yardR || Math.abs(y) === yardR)
-        add(x, y, 0, towerH, pal.tT, pal.tL, pal.tR);
-  }
-
-  // Central keep: 2×2 tile block, taller than everything
-  for (let x = -1; x <= 0; x++)
-    for (let y = -1; y <= 0; y++)
-      add(x, y, 0, keepH, pal.tT, pal.tL, pal.tR);
-
-  // ── Painter's algorithm: sort back-to-front (ascending bx+by) ────────────
+  // ── Painter's Algorithm: hinten → vorne ───────────────────────────────────
   blks.sort((a, b) => (a.bx + a.by) - (b.bx + b.by) || a.bz - b.bz);
+  for (const { bx, by, bz, bh, t, l, r } of blks)
+    drawBlock(ctx, pt, bx, by, bz, bh, t, l, r);
 
-  // ── Draw all blocks ──────────────────────────────────────────────────────
-  for (const { bx, by, bz, bh, top, lft, rgt } of blks)
-    drawBlock(ctx, pt, bx, by, bz, bh, top, lft, rgt);
+  // ── Akzentglühen am höchsten Punkt (kein Flaggenmast) ────────────────────
+  let maxZ = -Infinity, apexGx = 0, apexGy = 0;
+  for (const b of blks) {
+    if (b.bz + b.bh > maxZ) { maxZ = b.bz + b.bh; apexGx = b.bx + 0.5; apexGy = b.by + 0.5; }
+  }
+  const [apx, apy] = pt(apexGx, apexGy, maxZ);
+  const glow = ctx.createRadialGradient(apx, apy - 2, 0, apx, apy - 2, 14);
+  glow.addColorStop(0,   ac + 'cc');
+  glow.addColorStop(0.3, ac + '55');
+  glow.addColorStop(1,   ac + '00');
+  ctx.fillStyle = glow;
+  ctx.beginPath(); ctx.arc(apx, apy - 2, 14, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.globalAlpha = 0.85;
+  ctx.beginPath(); ctx.arc(apx, apy - 2, 1.5, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
 
-  // ── Flag on keep top ─────────────────────────────────────────────────────
-  const [fpx, fpy] = pt(-0.5, -0.5, keepH);
-  ctx.strokeStyle = '#b0988a';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(fpx, fpy);
-  ctx.lineTo(fpx, fpy - 22);
-  ctx.stroke();
-  ctx.fillStyle = ac;
-  ctx.beginPath();
-  ctx.moveTo(fpx,      fpy - 22);
-  ctx.lineTo(fpx + 13, fpy - 17);
-  ctx.lineTo(fpx,      fpy - 12);
-  ctx.closePath();
-  ctx.fill();
-
-  // ── Ambient fog vignette ──────────────────────────────────────────────────
-  const grad = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, H * 0.7);
-  grad.addColorStop(0, 'rgba(0,0,0,0)');
-  grad.addColorStop(1, 'rgba(0,0,0,0.55)');
-  ctx.fillStyle = grad;
+  // ── Vignette ──────────────────────────────────────────────────────────────
+  const vg = ctx.createRadialGradient(W / 2, H / 2, H * 0.18, W / 2, H / 2, H * 0.72);
+  vg.addColorStop(0, 'rgba(0,0,0,0)');
+  vg.addColorStop(1, 'rgba(0,0,0,0.58)');
+  ctx.fillStyle = vg;
   ctx.fillRect(0, 0, W, H);
 }
 
-// ── Isometric block: draws top + left + right faces ────────────────────────
+// ── Isometrischer Block: Decke + linke + rechte Wand ─────────────────────
 function drawBlock(ctx, pt, bx, by, bz, bh, topC, lftC, rgtC) {
   const z0 = bz, z1 = bz + bh;
-  const ol = 'rgba(0,0,0,0.2)';
+  const ol = 'rgba(0,0,0,0.22)';
 
-  // Top face
+  // Deckfläche
   const [ax, ay]   = pt(bx,   by,   z1);
   const [bpx, bpy] = pt(bx+1, by,   z1);
   const [cpx, cpy] = pt(bx+1, by+1, z1);
@@ -169,7 +259,7 @@ function drawBlock(ctx, pt, bx, by, bz, bh, topC, lftC, rgtC) {
   ctx.closePath(); ctx.fillStyle = topC; ctx.fill();
   ctx.strokeStyle = ol; ctx.lineWidth = 0.5; ctx.stroke();
 
-  // Left face (y+1 side — faces viewer bottom-left)
+  // Linke Wand (y+1-Seite)
   const [lax, lay] = pt(bx,   by+1, z1);
   const [lbx, lby] = pt(bx+1, by+1, z1);
   const [lcx, lcy] = pt(bx+1, by+1, z0);
@@ -179,7 +269,7 @@ function drawBlock(ctx, pt, bx, by, bz, bh, topC, lftC, rgtC) {
   ctx.closePath(); ctx.fillStyle = lftC; ctx.fill();
   ctx.strokeStyle = ol; ctx.lineWidth = 0.5; ctx.stroke();
 
-  // Right face (x+1 side — faces viewer bottom-right)
+  // Rechte Wand (x+1-Seite)
   const [rax, ray] = pt(bx+1, by,   z1);
   const [rbx, rby] = pt(bx+1, by+1, z1);
   const [rcx, rcy] = pt(bx+1, by+1, z0);
