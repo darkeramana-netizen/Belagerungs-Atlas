@@ -1,655 +1,191 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import * as THREE from 'three';
-import { getRenderer, getMaterials, getScenePreset, resolveStyle, mkTerrainMat } from './renderer.js';
-// buildComponent is used internally by CastleEngine — no direct import needed here
-import { generateComponents } from './generator.js';
-import { getDioramaModel } from './normalize.js';
-import { initPhysicsWorld } from './PhysicsWorld.js';
-import { RapierFPSController } from './RapierFPSController.js';
-import { buildScaleDummy } from './ScaleDummy.js';
-import { buildSky } from './SkySystem.js';
-import { buildNature }     from './NatureSystem.js';
-import { ChunkManager }    from './ChunkManager.js';
-import { CastleEngine }    from './CastleEngine.js';
-import { validateDiorama, printValidationReport, autoCorrectReachability } from './DioramaValidator.js';
+import { useEffect, useRef } from 'react';
 
+// ── Isometric tile dimensions ──────────────────────────────────────────────
+const TW = 36, TH = 18;
+
+// ── Seeded LCG random (deterministic per castle.id) ──────────────────────
+function mkRng(str) {
+  let s = [...(str || 'castle')].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 0x87654321);
+  return () => { s = (Math.imul(s, 1664525) + 1013904223) | 0; return (s >>> 0) / 0x100000000; };
+}
+
+// ── Color palettes by region ───────────────────────────────────────────────
+const PAL = {
+  europa:      { gT:'#556644', gL:'#3a4530', gR:'#283020', wT:'#9a9085', wL:'#7a7065', wR:'#5a5045', tT:'#807868', tL:'#605850', tR:'#403830' },
+  nahost:      { gT:'#806850', gL:'#604838', gR:'#403028', wT:'#c8a878', wL:'#a88858', wR:'#886840', tT:'#b08868', tL:'#907048', tR:'#705030' },
+  ostasien:    { gT:'#485640', gL:'#303c2a', gR:'#20281a', wT:'#c8c8b8', wL:'#989888', wR:'#686858', tT:'#383028', tL:'#281e18', tR:'#181208' },
+  suedostasien:{ gT:'#506840', gL:'#384830', gR:'#283020', wT:'#a09880', wL:'#807868', wR:'#605850', tT:'#6a5840', tL:'#4a3828', tR:'#302818' },
+  suedamerika: { gT:'#687838', gL:'#485428', gR:'#303818', wT:'#c87848', wL:'#a05838', wR:'#783828', tT:'#a06030', tL:'#784020', tR:'#502810' },
+  mittelerde:  { gT:'#252535', gL:'#181825', gR:'#101018', wT:'#454565', wL:'#2e2e4e', wR:'#1e1e32', tT:'#353558', tL:'#22223a', tR:'#161622' },
+  westeros:    { gT:'#384848', gL:'#283434', gR:'#182020', wT:'#888898', wL:'#686878', wR:'#484858', tT:'#585868', tL:'#383848', tR:'#282830' },
+};
+PAL.default = PAL.europa;
+
+// ── Main component ─────────────────────────────────────────────────────────
 export default function CastleDiorama({ castle }) {
-  const mountRef  = useRef(null);
-  const [ready,      setReady]      = useState(false);
-  const [info,       setInfo]       = useState(null);
-  const [hover,      setHover]      = useState(null);
-  const [fpsMode,    setFpsMode]    = useState(false);
-  const [showDummy,  setShowDummy]  = useState(false);
-  const [valReport,  setValReport]  = useState(null);
-
-  const infoRef   = useRef(null); infoRef.current   = setInfo;
-  const hoverRef  = useRef(null); hoverRef.current  = setHover;
-  // Refs used inside the animation-loop closure (no re-render needed)
-  const fpsModeRef   = useRef(false);
-  const showDummyRef = useRef(false);
-  const fpsCtrlRef   = useRef(null);
-  const dummyRef     = useRef(null);
-  // Expose toggle functions to buttons outside useEffect
-  const toggleFpsRef   = useRef(null);
-  const toggleDummyRef = useRef(null);
-
-  const ac = castle.theme?.accent || '#c9a84c';
-  const model = useMemo(() => getDioramaModel(castle), [castle]);
+  const ref = useRef(null);
 
   useEffect(() => {
-    let animId;
-    let cleanupFns = [];        // collected in async setup, called in cleanup
-    let cancelled  = false;
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    render(ctx, canvas.width, canvas.height, castle);
+  }, [castle?.id]);
 
-    const mount = mountRef.current;
-    if (!mount) return;
-    setReady(false);
-    infoRef.current(null);
-    hoverRef.current(null);
-
-    (async () => { try {
-      const T = THREE;
-      const W = mount.clientWidth || 700;
-      const H = Math.min(Math.round(W * 0.60), 460);
-
-      // ── Renderer (singleton — one WebGL context for the whole app) ───────
-      const renderer = getRenderer();
-      renderer.setSize(W, H);
-      renderer.setPixelRatio(Math.max(1, Math.min(window.devicePixelRatio, 2)));
-      if (!mount.contains(renderer.domElement)) mount.appendChild(renderer.domElement);
-      renderer.domElement.style.cssText = `display:block;width:${W}px;height:${H}px;cursor:grab;max-width:100%;`;
-
-      // ── Scene ────────────────────────────────────────────────────────────
-      const scene = new T.Scene();
-
-      // ── Camera ───────────────────────────────────────────────────────────
-      const camera = new T.PerspectiveCamera(52, W / H, 0.1, 6000);
-
-      // ── Materials (style-aware palette) ─────────────────────────────────
-      const style = model.style || resolveStyle(castle);
-      const mats  = getMaterials(style);
-      const scenePreset = getScenePreset(style);
-
-      // ── Sky (Preetham model) + environment map ────────────────────────────
-      const skySystem = buildSky(renderer, scene, style);
-      scene.environment = skySystem.envMap;   // IBL reflections on all PBR mats
-      scene.fog = new T.FogExp2(skySystem.fogColor, skySystem.fogDensity);
-
-      // ── Lighting ─────────────────────────────────────────────────────────
-      scene.add(new T.AmbientLight(scenePreset.ambient.color, scenePreset.ambient.intensity));
-
-      const sun  = new T.DirectionalLight(scenePreset.sun.color, scenePreset.sun.intensity);
-      sun.position.set(...scenePreset.sun.position);
-      sun.castShadow = true;
-      sun.shadow.mapSize.set(2048, 2048);
-      sun.shadow.camera.near = 1;
-      sun.shadow.camera.far  = 120;
-      sun.shadow.camera.left  = -40; sun.shadow.camera.right  = 40;
-      sun.shadow.camera.top   =  40; sun.shadow.camera.bottom = -40;
-      sun.shadow.bias       = -0.0008;   // prevents shadow acne on flat walls
-      sun.shadow.normalBias =  0.02;     // prevents self-shadowing artefacts
-      scene.add(sun);
-
-      const fill = new T.DirectionalLight(scenePreset.fill.color, scenePreset.fill.intensity);
-      fill.position.set(...scenePreset.fill.position);
-      scene.add(fill);
-
-      const rim = new T.DirectionalLight(scenePreset.rim.color, scenePreset.rim.intensity);
-      rim.position.set(...scenePreset.rim.position);
-      scene.add(rim);
-
-      // ── Build castle via CastleEngine (registry-based, reconstructBurg-capable) ──
-      const components  = model.components || generateComponents(castle);
-      const globalScale = model.scale || 1.0;
-
-      const engine = new CastleEngine({
-        scene, style, globalScale,
-        mats: { stone: mats.stone, dark: mats.dark, roof: mats.roof,
-                rock: mats.rock, water: mats.water },
-      });
-      engine.buildAll(components);
-      const clickables = engine.clickables;
-      cleanupFns.push(() => engine.dispose());
-
-      // ── Auto-scale camera from outermost ring radius ─────────────────────
-      const rings    = components.filter(c => c.type === 'RING');
-      const maxRingR = rings.length > 0
-        ? Math.max(...rings.flatMap(r => (r.points || []).map(pt => Math.sqrt((pt.x || 0) ** 2 + (pt.z || 0) ** 2))))
-        : 0;
-
-      // ── Chunk-based world terrain (Minecraft-style, infinite, castleBaseY-aware) ──
-      // castleBaseY = y of the lowest RING component = natural ground level for the
-      // castle (outer ring base).  Terrain smoothly rises to this height at the flat
-      // zone so the outer ring walls sit flush with the landscape — no visible box.
-      const castleBaseY = rings.length > 0
-        ? Math.min(...rings.map(r => r.y ?? 0))
-        : 0;
-
-      // ── Principle 3 + 5 – Validation + Auto-Correction ────────────────────
-      // First pass: validate the authored components
-      const validationReport = validateDiorama(components, { castleBaseY });
-      // Auto-inject stairs for any levels that are unreachable
-      const correctedComponents = autoCorrectReachability(components, validationReport);
-      if (correctedComponents !== components) {
-        // Second pass: rebuild with the auto-corrected set and re-validate
-        engine.reconstructBurg(correctedComponents);
-        const correctedReport = validateDiorama(correctedComponents, { castleBaseY });
-        printValidationReport(correctedReport, castle.id || 'unknown');
-        setValReport(correctedReport);
-      } else {
-        printValidationReport(validationReport, castle.id || 'unknown');
-        setValReport(validationReport);
-      }
-
-      const terrainSeed = Math.abs(castle.id?.split('').reduce((a, c) => a + c.charCodeAt(0), 0) ?? 42) % 9999;
-      const terrain = new ChunkManager({
-        style,
-        seed:        terrainSeed,
-        castleR:     maxRingR || 20,
-        castleBaseY,
-        mat:         mkTerrainMat(style),
-      });
-      terrain.init(scene);
-
-      // ── Nature scatter (instanced rocks / boulders / stones on terrain) ───
-      const nature = buildNature(terrain, maxRingR || 20, style, terrainSeed ^ 0xf00d);
-      nature.add(scene);
-
-      // ── Physics world (Rapier — async WASM init) ──────────────────────────
-      if (cancelled) return;
-      const physWorld = await initPhysicsWorld(
-        components, terrain.getPhysicsData(), engine.physicsRamps,
-      );
-      if (cancelled) { physWorld.dispose(); return; }
-
-      // ── Scale dummy (1.80 m reference figure, hidden by default) ──────────
-      const dummy = buildScaleDummy();
-      dummy.visible = false;
-      // Place just outside the outermost ring, on terrain surface
-      const dummySpawnZ = (maxRingR > 0 ? maxRingR : 18) * 1.12;
-      dummy.position.set(0, terrain.getHeightAt(0, dummySpawnZ), dummySpawnZ);
-      scene.add(dummy);
-      dummyRef.current = dummy;
-
-      // ── FPS controller (Rapier capsule controller) ────────────────────────
-      const fpsCtrl = new RapierFPSController(camera, physWorld, renderer.domElement);
-      fpsCtrl.onExit = () => {
-        fpsModeRef.current = false;
-        setFpsMode(false);
-        renderer.domElement.style.cursor = 'grab';
-        syncCam(); // restore orbit camera
-      };
-      fpsCtrlRef.current = fpsCtrl;
-
-      // FPS spawn: outside the castle footprint (polygon TERRAIN_STACK layers
-      // can extend to ~2× the outer ring radius at their widest scale).
-      // Using ×2.2 + 6 m places the player on the natural FBM terrain apron,
-      // clearly outside any polygon geometry, at the actual terrain surface.
-      const spawnZ      = (maxRingR > 0 ? maxRingR : 18) * 2.2 + 6;
-      const spawnY      = terrain.getHeightAt(0, spawnZ) + 1.2;
-      const fpsSpawnPos = new T.Vector3(0, spawnY, spawnZ);
-
-      // ── Toggle helpers exposed to React buttons ───────────────────────────
-      toggleFpsRef.current = () => {
-        if (fpsModeRef.current) {
-          fpsCtrl.disable();
-          fpsModeRef.current = false;
-          setFpsMode(false);
-          renderer.domElement.style.cursor = 'grab';
-          syncCam();
-        } else {
-          fpsModeRef.current = true;
-          setFpsMode(true);
-          renderer.domElement.style.cursor = 'none';
-          fpsCtrl.enable(fpsSpawnPos, Math.PI);
-        }
-      };
-
-      toggleDummyRef.current = () => {
-        showDummyRef.current = !showDummyRef.current;
-        dummy.visible = showDummyRef.current;
-        setShowDummy(showDummyRef.current);
-      };
-
-      let theta = Math.PI * 0.85, phi = 0.78;
-      let camR  = model.cameraRadius || (maxRingR > 0 ? Math.max(26, maxRingR * 2.4) : (castle.components ? 32 : 26));
-      const tgt = new T.Vector3(
-        model.focus?.x || 0,
-        model.focus?.y || (maxRingR > 12 ? 8 : 4),
-        model.focus?.z || 0,
-      );
-
-      function syncCam() {
-        camera.position.set(
-          tgt.x + camR * Math.sin(phi) * Math.sin(theta),
-          tgt.y + camR * Math.cos(phi),
-          tgt.z + camR * Math.sin(phi) * Math.cos(theta),
-        );
-        camera.lookAt(tgt);
-      }
-      syncCam();
-
-      // ── Orbit controls ───────────────────────────────────────────────────
-      let pDown = false, lastPX = 0, lastPY = 0, moved = false;
-
-      // ── Hover highlight state ─────────────────────────────────────────────
-      // On hover: clone each mesh's material and apply emissive accent glow.
-      // On leave: restore originals. Uses a Map so clones are cleaned up precisely.
-      let hoveredGroup  = null;
-      const savedMats   = new Map(); // mesh → original material (shared)
-      const accentColor = new THREE.Color(ac);
-
-      function clearHighlight() {
-        if (!hoveredGroup) return;
-        // Restore original shared materials and dispose the clones
-        savedMats.forEach((origMat, mesh) => {
-          mesh.material.dispose();
-          mesh.material = origMat;
-        });
-        savedMats.clear();
-        hoveredGroup = null;
-        hoverRef.current(null);
-        renderer.domElement.style.cursor = pDown ? 'grabbing' : 'grab';
-      }
-
-      function applyHighlight(group) {
-        if (group === hoveredGroup) return;
-        clearHighlight();
-        if (!group) return;
-        hoveredGroup = group;
-        hoverRef.current(group.userData.label);
-        renderer.domElement.style.cursor = 'pointer';
-        group.traverse(obj => {
-          if (obj.isMesh) {
-            savedMats.set(obj, obj.material);
-            const m = obj.material.clone();
-            m.emissive = accentColor.clone().multiplyScalar(0.20);
-            m.emissiveIntensity = 1.0;
-            obj.material = m;
-          }
-        });
-      }
-
-      // ── Raycaster helpers ────────────────────────────────────────────────
-      const rc    = new T.Raycaster();
-      const mouse = new T.Vector2();
-
-      // Traverse up from hit mesh to nearest ancestor with a non-empty label
-      function findLabelGroup(hits) {
-        for (const hit of hits) {
-          let o = hit.object;
-          while (o) {
-            if (o.userData?.label) return o;
-            o = o.parent;
-          }
-        }
-        return null;
-      }
-
-      function castRay(e) {
-        const rect = mount.getBoundingClientRect();
-        mouse.set(
-          ((e.clientX - rect.left) / rect.width)  * 2 - 1,
-          -((e.clientY - rect.top)  / rect.height) * 2 + 1,
-        );
-        rc.setFromCamera(mouse, camera);
-        return rc.intersectObjects(clickables, true);
-      }
-
-      const onPD = e => {
-        if (fpsModeRef.current) return; // orbit disabled in FPS mode
-        pDown = true; moved = false;
-        lastPX = e.clientX; lastPY = e.clientY;
-        try { mount.setPointerCapture(e.pointerId); } catch (_) {}
-        renderer.domElement.style.cursor = 'grabbing';
-      };
-
-      const onPM = e => {
-        if (fpsModeRef.current) return;
-        if (pDown) {
-          moved  = true;
-          theta -= (e.clientX - lastPX) * 0.007;
-          phi    = Math.max(0.12, Math.min(1.46, phi - (e.clientY - lastPY) * 0.007));
-          lastPX = e.clientX; lastPY = e.clientY;
-          syncCam();
-          return;
-        }
-        // Hover raycasting (only when not dragging)
-        const g = findLabelGroup(castRay(e));
-        if (g) applyHighlight(g);
-        else clearHighlight();
-      };
-
-      const onPU = e => {
-        pDown = false;
-        try { mount.releasePointerCapture(e.pointerId); } catch (_) {}
-        renderer.domElement.style.cursor = hoveredGroup ? 'pointer' : 'grab';
-      };
-
-      const onLeave = () => clearHighlight();
-
-      const onWhl = e => {
-        e.preventDefault();
-        if (fpsModeRef.current) return;
-        camR = Math.max(7, Math.min(55, camR + e.deltaY * 0.04));
-        syncCam();
-      };
-
-      const onClick = e => {
-        if (fpsModeRef.current || moved) return;
-        const g = findLabelGroup(castRay(e));
-        if (g) {
-          infoRef.current({ label: g.userData.label, info: g.userData.info || '' });
-        } else {
-          infoRef.current(null);
-        }
-      };
-
-      mount.addEventListener('pointerdown',  onPD);
-      mount.addEventListener('pointermove',  onPM);
-      mount.addEventListener('pointerup',    onPU);
-      mount.addEventListener('pointerleave', onLeave);
-      mount.addEventListener('wheel',        onWhl, { passive: false });
-      mount.addEventListener('click',        onClick);
-
-      setReady(true);
-
-      // ── Orbit-input guards (disabled in FPS mode) ─────────────────────────
-      // (applied inline in onPD / onPM via fpsModeRef check)
-
-      // ── Render loop ──────────────────────────────────────────────────────
-      let lastT = performance.now();
-      const tick = () => {
-        animId = requestAnimationFrame(tick);
-        const now = performance.now();
-        const dt  = Math.min((now - lastT) / 1000, 0.05);
-        lastT = now;
-        if (fpsModeRef.current) fpsCtrl.update(dt);
-        // Stream new terrain chunks around camera
-        terrain.update(camera.position.x, camera.position.z, scene);
-        renderer.render(scene, camera);
-      };
-      tick();
-
-      // ── Register async-phase cleanup ─────────────────────────────────────
-      cleanupFns.push(() => {
-        fpsCtrl.dispose();
-        physWorld.dispose();
-        skySystem.dispose();
-        nature.dispose();
-        terrain.dispose();
-        scene.environment = null;
-        fpsModeRef.current = false;
-        mount.removeEventListener('pointerdown',  onPD);
-        mount.removeEventListener('pointermove',  onPM);
-        mount.removeEventListener('pointerup',    onPU);
-        mount.removeEventListener('pointerleave', onLeave);
-        mount.removeEventListener('wheel',        onWhl);
-        mount.removeEventListener('click',        onClick);
-        savedMats.forEach((_, mesh) => { mesh.material?.dispose(); });
-        savedMats.clear();
-        if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
-        scene.traverse(obj => {
-          if (obj.geometry) obj.geometry.dispose();
-          if (obj.material) {
-            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-            else obj.material.dispose();
-          }
-        });
-        Object.values(mats).forEach(m => { m.map?.dispose(); m.dispose(); });
-      });
-
-    } catch (e) {
-      console.error('CastleDiorama error:', castle.id, e);
-      setReady(true);
-    } })(); // end async IIFE
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(animId);
-      cleanupFns.forEach(fn => fn());
-    };
-  }, [
-    castle.id,
-    castle.type,
-    castle.ratings?.position,
-    model.cameraRadius,
-    model.components,
-    model.focus?.x,
-    model.focus?.y,
-    model.focus?.z,
-    model.scale,
-    model.style,
-    model.terrainModel,
-  ]);
-
+  const ac = castle?.theme?.accent || '#c9a84c';
   return (
-    <div style={{ width: '100%' }}>
-
-      {/* ── 3D Canvas ─────────────────────────────────────────────────────── */}
+    <div style={{
+      width: '100%', background: '#060504', borderRadius: '8px',
+      overflow: 'hidden', position: 'relative', userSelect: 'none'
+    }}>
+      <canvas ref={ref} width={600} height={380} style={{ width: '100%', display: 'block' }} />
       <div style={{
-        position: 'relative', width: '100%', background: '#0c0a07',
-        borderRadius: info ? '4px 4px 0 0' : '4px',
-        overflow: 'hidden', minHeight: '300px',
+        position: 'absolute', bottom: 8, left: 10, right: 10,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end',
+        fontSize: '11px', fontFamily: 'monospace', pointerEvents: 'none',
       }}>
-        <div ref={mountRef} style={{ width: '100%', minHeight: '300px' }} />
-
-        {/* Loading spinner */}
-        {!ready && (
-          <div style={{
-            position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
-            alignItems: 'center', justifyContent: 'center', gap: '10px',
-            background: 'rgba(12,10,7,0.9)',
-          }}>
-            <div style={{
-              width: '32px', height: '32px', border: '2px solid ' + ac,
-              borderTopColor: 'transparent', borderRadius: '50%',
-              animation: 'spin 0.8s linear infinite',
-            }} />
-            <div style={{ fontSize: '11px', color: ac, letterSpacing: '2px', opacity: 0.7 }}>
-              3D DIORAMA LÄDT
-            </div>
-          </div>
-        )}
-
-        {/* Hover label — bottom-left, unobtrusive */}
-        {ready && hover && (
-          <div style={{
-            position: 'absolute', bottom: '8px', left: '10px',
-            fontSize: '10px', color: ac, letterSpacing: '1px',
-            pointerEvents: 'none', textTransform: 'uppercase',
-            textShadow: '0 1px 6px rgba(0,0,0,0.95)',
-            opacity: 0.9,
-          }}>
-            {hover}
-            <span style={{ color: 'rgba(255,255,255,0.35)', marginLeft: '6px' }}>↙ klick</span>
-          </div>
-        )}
-
-        {/* Interaction hint — only when nothing is hovered/selected */}
-        {ready && !hover && !info && !fpsMode && (
-          <div style={{
-            position: 'absolute', bottom: '8px', right: '10px',
-            fontSize: '9px', color: 'rgba(255,255,255,0.18)',
-            pointerEvents: 'none', letterSpacing: '0.8px',
-          }}>
-            ZIEHEN · ZOOM · KLICK = INFO
-          </div>
-        )}
-
-        {/* FPS mode overlay — crosshair + controls hint */}
-        {fpsMode && (
-          <>
-            {/* Crosshair */}
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              pointerEvents: 'none',
-            }}>
-              <div style={{ position: 'relative', width: 18, height: 18 }}>
-                <div style={{ position: 'absolute', top: '50%', left: 0, right: 0, height: 1.5, background: 'rgba(255,255,255,0.82)', transform: 'translateY(-50%)' }} />
-                <div style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1.5, background: 'rgba(255,255,255,0.82)', transform: 'translateX(-50%)' }} />
-              </div>
-            </div>
-            {/* Controls hint */}
-            <div style={{
-              position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)',
-              fontSize: '9px', color: 'rgba(255,255,255,0.35)', letterSpacing: '1px',
-              pointerEvents: 'none',
-            }}>
-              WASD BEWEGEN · SHIFT RENNEN · LEERTASTE SPRINGEN · ESC VERLASSEN
-            </div>
-          </>
-        )}
-
-        {/* Validation badge — top-right, dev-mode indicator */}
-        {ready && valReport && (valReport.errors.length > 0 || valReport.warnings.length > 0) && (
-          <div title={[...valReport.errors, ...valReport.warnings].join('\n')} style={{
-            position: 'absolute', top: '8px', right: '10px',
-            fontSize: '9px', letterSpacing: '0.8px',
-            background: valReport.errors.length > 0 ? 'rgba(180,40,40,0.82)' : 'rgba(160,110,20,0.78)',
-            color: '#fff', padding: '2px 7px', borderRadius: '3px',
-            pointerEvents: 'auto', cursor: 'help',
-            textTransform: 'uppercase',
-          }}>
-            {valReport.errors.length > 0
-              ? `⚠ ${valReport.errors.length} Fehler · ${valReport.warnings.length} Warnung${valReport.warnings.length !== 1 ? 'en' : ''}`
-              : `${valReport.warnings.length} Warnung${valReport.warnings.length !== 1 ? 'en' : ''}`}
-          </div>
-        )}
-
-        {/* Sprint-1 controls: FPS button + Scale Dummy toggle */}
-        {ready && (
-          <div style={{
-            position: 'absolute', bottom: '32px', left: '10px',
-            display: 'flex', gap: '5px', alignItems: 'center',
-          }}>
-            <button
-              onClick={e => { e.currentTarget.blur(); toggleFpsRef.current?.(); }}
-              style={{
-                padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
-                background: fpsMode ? 'rgba(180,100,30,0.85)' : 'rgba(15,11,7,0.78)',
-                border: `1px solid ${fpsMode ? '#e8a44a' : 'rgba(201,168,76,0.28)'}`,
-                color: fpsMode ? '#fff' : '#c9a84c', borderRadius: '999px',
-                cursor: 'pointer', textTransform: 'uppercase',
-              }}
-            >
-              {fpsMode ? '⬛ Orbit' : '👁 Erste Person'}
-            </button>
-            <button
-              onClick={e => { e.currentTarget.blur(); toggleDummyRef.current?.(); }}
-              style={{
-                padding: '4px 9px', fontSize: '9px', letterSpacing: '0.9px',
-                background: showDummy ? 'rgba(180,60,0,0.75)' : 'rgba(15,11,7,0.78)',
-                border: `1px solid ${showDummy ? '#ff6622' : 'rgba(201,168,76,0.22)'}`,
-                color: showDummy ? '#fff' : 'rgba(255,255,255,0.38)', borderRadius: '999px',
-                cursor: 'pointer', textTransform: 'uppercase',
-              }}
-            >
-              {showDummy ? '▣ Dummy' : '□ Maßstab 1:1'}
-            </button>
-          </div>
-        )}
-
-        {/* Castle name badge */}
-        <div style={{
-          position: 'absolute', top: '8px', left: '10px',
-          fontSize: '10px', color: ac, opacity: 0.55,
-          letterSpacing: '1.5px', pointerEvents: 'none', textTransform: 'uppercase',
-        }}>
-          🏰 {castle.name.slice(0, 26)}
-        </div>
-
-        <div style={{
-          position: 'absolute', top: '8px', right: '10px',
-          display: 'flex', gap: '6px', alignItems: 'center',
-          fontSize: '9px', color: '#f0ddbc',
-          pointerEvents: 'none',
-        }}>
-          <span style={{
-            padding: '4px 6px',
-            borderRadius: '999px',
-            background: 'rgba(15,11,7,0.76)',
-            border: `1px solid ${ac}33`,
-            textTransform: 'uppercase',
-            letterSpacing: '0.8px',
-          }}>
-            {model.fidelityLabel}
-          </span>
-          <span style={{
-            padding: '4px 6px',
-            borderRadius: '999px',
-            background: 'rgba(15,11,7,0.76)',
-            color: '#c6b28a',
-            letterSpacing: '0.6px',
-          }}>
-            Quelle: {model.sourceConfidence}
-          </span>
-          <span style={{
-            padding: '4px 6px',
-            borderRadius: '999px',
-            background: 'rgba(15,11,7,0.76)',
-            color: '#d8c39a',
-            letterSpacing: '0.6px',
-          }}>
-            Audit: {model.historicalAudit?.grade || '-'} ({model.historicalAudit?.score ?? '--'})
-          </span>
-        </div>
+        <span style={{ color: 'rgba(255,255,255,0.38)' }}>{castle?.name}</span>
+        <span style={{ color: ac + '88', fontSize: '10px' }}>{castle?.era}</span>
       </div>
-
-      {/* ── Info panel — BELOW the canvas, never blocks the view ────────────── */}
-      {ready && info && (
-        <div
-          onClick={() => setInfo(null)}
-          style={{
-            background: 'linear-gradient(180deg,rgba(14,11,8,0.98) 0%,rgba(10,8,5,0.98) 100%)',
-            border: `1px solid ${ac}28`,
-            borderTop: `2px solid ${ac}55`,
-            borderRadius: '0 0 4px 4px',
-            padding: '13px 16px 11px',
-            cursor: 'pointer',
-            userSelect: 'none',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '11px', fontWeight: 'bold', color: ac, letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '6px' }}>
-                {info.label}
-              </div>
-              <div style={{ fontSize: '11px', color: '#c0a880', lineHeight: '1.65' }}>
-                {info.info}
-              </div>
-            </div>
-            <div style={{ fontSize: '15px', color: `${ac}66`, flexShrink: 0, marginTop: '1px', fontWeight: 'bold' }}>✕</div>
-          </div>
-          <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.18)', marginTop: '8px', letterSpacing: '1px' }}>
-            KLICK ZUM SCHLIESSEN
-          </div>
-        </div>
-      )}
-
-      {ready && model.historicalAudit?.findings?.length > 0 && !info && (
-        <div style={{
-          marginTop: '8px',
-          background: 'rgba(14,11,8,0.65)',
-          border: `1px solid ${ac}22`,
-          borderRadius: '4px',
-          padding: '10px 12px',
-        }}>
-          <div style={{
-            fontSize: '10px',
-            color: ac,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            marginBottom: '6px',
-          }}>
-            Historische Plausibilitaet: naechster Feinschliff
-          </div>
-          <div style={{ fontSize: '11px', color: '#c9b692', lineHeight: '1.55' }}>
-            {model.historicalAudit.recommendation}
-          </div>
-        </div>
-      )}
     </div>
   );
+}
+
+// ── Renderer ───────────────────────────────────────────────────────────────
+function render(ctx, W, H, castle) {
+  const rng  = mkRng(castle?.id || 'default');
+  const ac   = castle?.theme?.accent || '#c9a84c';
+  const pal  = PAL[castle?.region] || PAL.default;
+  const rat  = castle?.ratings || { walls: 70, garrison: 60, morale: 70, supply: 70, position: 60 };
+
+  // Castle dimensions derived from ratings
+  const wallH  = 1 + Math.floor(rat.walls    / 40);  // 1–3  blocks tall
+  const towerH = wallH + 1 + Math.floor(rat.garrison / 40); // 2–5
+  const yardR  = 3 + Math.floor(rat.supply   / 25);  // 3–7  tiles from center
+  const keepH  = 3 + Math.floor(rat.morale   / 20);  // 3–8  blocks tall
+
+  // Isometric origin: canvas center, shifted up slightly
+  const cx = W / 2, cy = H * 0.37;
+  const pt = (gx, gy, gz = 0) => [cx + (gx - gy) * TW / 2, cy + (gx + gy) * TH / 2 - gz * TH];
+
+  // ── Build block list ─────────────────────────────────────────────────────
+  const blks = [];
+  const add  = (bx, by, bz, bh, top, lft, rgt) => blks.push({ bx, by, bz, bh, top, lft, rgt });
+
+  // Ground plane with random bumps outside the walls
+  const gR = yardR + 2;
+  for (let x = -gR; x <= gR; x++)
+    for (let y = -gR; y <= gR; y++) {
+      const outside = Math.max(Math.abs(x), Math.abs(y)) > yardR;
+      const bump = (outside && rng() < 0.12) ? 1 : 0;
+      add(x, y, -1, 1 + bump, pal.gT, pal.gL, pal.gR);
+    }
+
+  // Outer wall ring (perimeter of yardR square)
+  for (let x = -yardR; x <= yardR; x++)
+    for (let y = -yardR; y <= yardR; y++) {
+      const atX = Math.abs(x) === yardR, atY = Math.abs(y) === yardR;
+      if (!atX && !atY) continue;          // interior — skip
+      if (x === 0 && y === yardR) continue; // gate opening
+      const corner = atX && atY;
+      const h  = corner ? towerH : wallH;
+      const tc = corner ? pal.tT : pal.wT;
+      const lc = corner ? pal.tL : pal.wL;
+      const rc = corner ? pal.tR : pal.wR;
+      add(x, y, 0, h, tc, lc, rc);
+    }
+
+  // Gatehouse: two flanking towers beside the gate gap
+  add(-1, yardR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+  add( 1, yardR, 0, wallH + 2, pal.tT, pal.tL, pal.tR);
+
+  // Mid-wall towers (appear when garrison ≥ 50)
+  if (rat.garrison >= 50) {
+    const mid = Math.round(yardR * 0.5);
+    const sides = [[-yardR, mid], [-yardR, -mid], [yardR, mid], [yardR, -mid], [mid, -yardR], [-mid, -yardR]];
+    for (const [x, y] of sides)
+      if (Math.abs(x) === yardR || Math.abs(y) === yardR)
+        add(x, y, 0, towerH - 1, pal.tT, pal.tL, pal.tR);
+  }
+
+  // Second ring of mid-wall towers (appear when garrison ≥ 85)
+  if (rat.garrison >= 85) {
+    const mid2 = Math.round(yardR * 0.75);
+    const sides2 = [[-yardR, mid2], [-yardR, -mid2], [yardR, mid2], [yardR, -mid2], [mid2, -yardR], [-mid2, -yardR]];
+    for (const [x, y] of sides2)
+      if (Math.abs(x) === yardR || Math.abs(y) === yardR)
+        add(x, y, 0, towerH, pal.tT, pal.tL, pal.tR);
+  }
+
+  // Central keep: 2×2 tile block, taller than everything
+  for (let x = -1; x <= 0; x++)
+    for (let y = -1; y <= 0; y++)
+      add(x, y, 0, keepH, pal.tT, pal.tL, pal.tR);
+
+  // ── Painter's algorithm: sort back-to-front (ascending bx+by) ────────────
+  blks.sort((a, b) => (a.bx + a.by) - (b.bx + b.by) || a.bz - b.bz);
+
+  // ── Draw all blocks ──────────────────────────────────────────────────────
+  for (const { bx, by, bz, bh, top, lft, rgt } of blks)
+    drawBlock(ctx, pt, bx, by, bz, bh, top, lft, rgt);
+
+  // ── Flag on keep top ─────────────────────────────────────────────────────
+  const [fpx, fpy] = pt(-0.5, -0.5, keepH);
+  ctx.strokeStyle = '#b0988a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(fpx, fpy);
+  ctx.lineTo(fpx, fpy - 22);
+  ctx.stroke();
+  ctx.fillStyle = ac;
+  ctx.beginPath();
+  ctx.moveTo(fpx,      fpy - 22);
+  ctx.lineTo(fpx + 13, fpy - 17);
+  ctx.lineTo(fpx,      fpy - 12);
+  ctx.closePath();
+  ctx.fill();
+
+  // ── Ambient fog vignette ──────────────────────────────────────────────────
+  const grad = ctx.createRadialGradient(W / 2, H / 2, H * 0.2, W / 2, H / 2, H * 0.7);
+  grad.addColorStop(0, 'rgba(0,0,0,0)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.55)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// ── Isometric block: draws top + left + right faces ────────────────────────
+function drawBlock(ctx, pt, bx, by, bz, bh, topC, lftC, rgtC) {
+  const z0 = bz, z1 = bz + bh;
+  const ol = 'rgba(0,0,0,0.2)';
+
+  // Top face
+  const [ax, ay]   = pt(bx,   by,   z1);
+  const [bpx, bpy] = pt(bx+1, by,   z1);
+  const [cpx, cpy] = pt(bx+1, by+1, z1);
+  const [dpx, dpy] = pt(bx,   by+1, z1);
+  ctx.beginPath();
+  ctx.moveTo(ax, ay); ctx.lineTo(bpx, bpy); ctx.lineTo(cpx, cpy); ctx.lineTo(dpx, dpy);
+  ctx.closePath(); ctx.fillStyle = topC; ctx.fill();
+  ctx.strokeStyle = ol; ctx.lineWidth = 0.5; ctx.stroke();
+
+  // Left face (y+1 side — faces viewer bottom-left)
+  const [lax, lay] = pt(bx,   by+1, z1);
+  const [lbx, lby] = pt(bx+1, by+1, z1);
+  const [lcx, lcy] = pt(bx+1, by+1, z0);
+  const [ldx, ldy] = pt(bx,   by+1, z0);
+  ctx.beginPath();
+  ctx.moveTo(lax, lay); ctx.lineTo(lbx, lby); ctx.lineTo(lcx, lcy); ctx.lineTo(ldx, ldy);
+  ctx.closePath(); ctx.fillStyle = lftC; ctx.fill();
+  ctx.strokeStyle = ol; ctx.lineWidth = 0.5; ctx.stroke();
+
+  // Right face (x+1 side — faces viewer bottom-right)
+  const [rax, ray] = pt(bx+1, by,   z1);
+  const [rbx, rby] = pt(bx+1, by+1, z1);
+  const [rcx, rcy] = pt(bx+1, by+1, z0);
+  const [rdx, rdy] = pt(bx+1, by,   z0);
+  ctx.beginPath();
+  ctx.moveTo(rax, ray); ctx.lineTo(rbx, rby); ctx.lineTo(rcx, rcy); ctx.lineTo(rdx, rdy);
+  ctx.closePath(); ctx.fillStyle = rgtC; ctx.fill();
+  ctx.strokeStyle = ol; ctx.lineWidth = 0.5; ctx.stroke();
 }

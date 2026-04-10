@@ -2982,6 +2982,23 @@ const GEO = {
   sigiriya_lion:       lonlatToXY(80.76,  7.96,   "Pidurangala"),
   osaka_nijo:          lonlatToXY(135.75, 35.01,  "Nijō-jō"),
   matsumoto:           lonlatToXY(137.98, 36.23,  "Matsumoto"),
+  // Batch 6 — fehlende Burgen
+  stirling:            lonlatToXY( -3.95, 56.12,  "Stirling"),
+  bamburgh:            lonlatToXY( -1.71, 55.61,  "Bamburgh"),
+  trim:                lonlatToXY( -6.79, 53.56,  "Trim"),
+  conwy_castle:        lonlatToXY( -3.83, 53.28,  "Conwy Castle"),
+  peyrepertuse:        lonlatToXY(  2.83, 42.91,  "Peyrepertuse"),
+  hohensalzburg:       lonlatToXY( 13.05, 47.80,  "Hohensalzburg"),
+  samarkand:           lonlatToXY( 66.98, 39.65,  "Samarkand"),
+  bagdad:              lonlatToXY( 44.39, 33.34,  "Rundes Bagdad"),
+  citadel_aleppo:      lonlatToXY( 37.16, 36.20,  "Zitadelle Aleppo"),
+  shobak:              lonlatToXY( 35.57, 30.53,  "Shobak"),
+  nimrod_fortress:     lonlatToXY( 35.70, 33.26,  "Nimrod-Festung"),
+  derbent:             lonlatToXY( 48.29, 42.05,  "Derbent"),
+  carthage_byrsa:      lonlatToXY( 10.32, 36.85,  "Karthago"),
+  gao_songhai:         lonlatToXY( -0.04, 16.27,  "Gao"),
+  bala_hisar:          lonlatToXY( 69.18, 34.52,  "Bala Hissar"),
+  mehrangarh_v2:       lonlatToXY( 74.64, 24.89,  "Chittorgarh"),
 };
 
 // Fantasy positions on a 600×400 canvas (fictional)
