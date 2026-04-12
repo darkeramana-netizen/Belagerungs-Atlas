@@ -767,18 +767,6 @@ components:[
  attackTips:["Süddamm angreifen","Seen durch Kanäle ablassen","Belagerungstürme auf Flöße"],
  siegeCtx:"1270er — Llywelyns Heer steht vor den Seen. Der Damm ist der einzige Weg.",defender:"Gilbert de Clare"},
 
-{id:"kenilworth",name:"Kenilworth Castle",sub:"Längste Belagerung Englands",era:"1265",year:1265,loc:"Warwickshire, England",type:"real",epoch:"Mittelalter",region:"europa",icon:"🔴",
- theme:{bg:"#130a08",accent:"#cc5533",glow:"rgba(180,70,40,0.14)"},
- ratings:{walls:85,supply:90,position:80,garrison:70,morale:85},
- desc:"1265: 9 Monate Belagerung durch Heinrich III. — die längste in der englischen Geschichte.",
- history:"Simon de Montforts Anhänger hielten 9 Monate. Fiel letztlich durch Hunger und Seuchen, nicht durch militärischen Durchbruch.",
- verdict:"Ausreichende Wasserversorgung und Vorräte machen jede Burg zur Geduldsprobe für den Angreifer.",
- zones:[{id:"mk2",l:"Merevale-See",x:50,y:60,r:35,c:"#4488cc",a:4,d:"Künstlicher See schützt Süd+West."},{id:"dt",l:"Großer Turm",x:50,y:40,r:18,c:"#cc5533",a:5,d:"Mächtigstes Element."},{id:"nb",l:"Nordzugang ⚠",x:50,y:5,r:10,c:"#cc4444",a:1,d:"Nordzugang ohne Seeschutz."}],
- strengths:["Künstlicher See","Große Vorräte","Hohe Moral durch politische Überzeugung"],
- weaknesses:["Isoliert ohne Entsatz möglich","Krankheit bei langer Belagerung"],
- attackTips:["Vollständige Einkreisung","Geduld — Hunger besiegt sie","Seuchen durch Kadaver ins Wasser"],
- siegeCtx:"1265 — Heinrich III. Heer umzingelt Kenilworth. 9 Monate Geduld sind nötig.",defender:"Henry de Hastings"},
-
 {id:"chateau_de_gisors",name:"Château de Gisors",sub:"Streitapfel der Könige",era:"1097–1193",year:1097,loc:"Normandie, Frankreich",type:"real",epoch:"Mittelalter",region:"europa",icon:"⚔️",
  theme:{bg:"#100d08",accent:"#b08840",glow:"rgba(160,120,55,0.14)"},
  ratings:{walls:80,supply:72,position:82,garrison:60,morale:65},

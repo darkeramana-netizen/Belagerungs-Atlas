@@ -34,6 +34,12 @@ const PAL_OVERRIDE = {
   angkor:              {gT:'#506040',gL:'#384528',gR:'#202c14',wT:'#c0a870',wL:'#a08848',wR:'#806828',tT:'#a08060',tL:'#806040',tR:'#604020'},
   angkor_thom:         {gT:'#506040',gL:'#384528',gR:'#202c14',wT:'#c0a870',wL:'#a08848',wR:'#806828',tT:'#a08060',tL:'#806040',tR:'#604020'},
   borobudur_fort:      {gT:'#506040',gL:'#384528',gR:'#202c14',wT:'#b89870',wL:'#987848',wR:'#785828',tT:'#907060',tL:'#705040',tR:'#503020'},
+  // Wüsten / Felsburgen
+  masada:              {gT:'#907848',gL:'#705828',gR:'#503810',wT:'#d4a860',wL:'#b48840',wR:'#8a6820',tT:'#c09840',tL:'#906818',tR:'#6a4c08'},
+  alamut:              {gT:'#585040',gL:'#383020',gR:'#201c08',wT:'#908070',wL:'#685848',wR:'#483828',tT:'#786858',tL:'#503828',tR:'#302018'},
+  bodiam:              {gT:'#2a4030',gL:'#182a1a',gR:'#0c1810',wT:'#7a7870',wL:'#585850',wR:'#383830',tT:'#585858',tL:'#383838',tR:'#202020'},
+  cachtice:            {gT:'#201c18',gL:'#141010',gR:'#0c0808',wT:'#604838',wL:'#402818',wR:'#281408',tT:'#502030',tL:'#301018',tR:'#180808'},
+  persepolis:          {gT:'#806040',gL:'#604020',gR:'#402810',wT:'#e0c080',wL:'#c0a060',wR:'#a08040',tT:'#d4a840',tL:'#b08820',tR:'#8a6610'},
 };
 
 // ── Per-Burg Layout-Überschreibungen ──────────────────────────────────────
@@ -68,6 +74,17 @@ const STYLE_OVERRIDE = {
   windsor:        'concentric',
   caernarvon:     'concentric',
   dover:          'concentric',
+  bodiam:         'concentric',  // Wassergraben-Burg
+  kenilworth:     'concentric',  // Seefestung
+  bagdad:         'concentric',  // Kreisstadt
+  // Bergfestungen
+  masada:         'mountain',
+  alamut:         'mountain',
+  cachtice:       'mountain',
+  // Terrassenanlagen
+  persepolis:     'terrace_walls',
+  caral:          'terrace_walls',
+  chan_chan:       'terrace_walls',
 };
 
 function selectStyle(castle) {
@@ -151,28 +168,36 @@ function render(ctx, W, H, castle) {
         add(x, y, baseH, H2, pal.tT, pal.tL, pal.tR);
 
   } else if (style === 'mountain') {
-    // Burg auf Berggipfel — gravecrest, erebor, hochosterwitz, sigiriya
-    const peakH = 3 + Math.floor(rat.position / 30);  // 3–6
-    addGround(7, (x,y) => {
+    // Burg auf Berggipfel — gravecrest, masada, alamut, hochosterwitz
+    const peakH = 3 + Math.floor(rat.position / 25);  // 3–7, stärker positions-abhängig
+    addGround(8, (x,y) => {
       const d = Math.sqrt(x*x+y*y);
-      return Math.max(1, peakH - Math.floor(d * 0.7));
+      return Math.max(1, peakH - Math.floor(d * 1.0));  // steileres Terrain
     });
-    // Felskrone
-    for (let x=-2; x<=2; x++) for (let y=-2; y<=2; y++)
-      if (!(Math.abs(x)===2 && Math.abs(y)===2))
-        add(x, y, peakH-1, 2, pal.wT, pal.wL, pal.wR);
-    // Turm/Burg auf dem Gipfel
-    const kh = 3 + Math.floor(rat.morale/25);
+    // Felsplateau als Unterbau
+    for (let x=-3; x<=3; x++) for (let y=-3; y<=3; y++)
+      if (!(Math.abs(x)===3 && Math.abs(y)===3))
+        add(x, y, peakH-1, 2, pal.gT, pal.gL, pal.gR);
+    // Mauern auf dem Gipfel
     const wallH = 1 + Math.floor(rat.walls/40);
+    const kh = 3 + Math.floor(rat.morale/22);
     for (let x=-2; x<=2; x++) for (let y=-2; y<=2; y++) {
       const atX=Math.abs(x)===2, atY=Math.abs(y)===2;
       if (!atX && !atY) continue;
       if (x===0 && y===2) continue;
       const corner=atX&&atY;
-      add(x, y, peakH+1, corner?wallH+2:wallH, corner?pal.tT:pal.wT, corner?pal.tL:pal.wL, corner?pal.tR:pal.wR);
+      add(x,y,peakH+1,corner?wallH+3:wallH,corner?pal.tT:pal.wT,corner?pal.tL:pal.wL,corner?pal.tR:pal.wR);
     }
+    // Gipfelturm/Bergfried
     for (let x=-1; x<=0; x++) for (let y=-1; y<=0; y++)
       add(x, y, peakH+1, kh, pal.tT, pal.tL, pal.tR);
+    // Zinnen auf Mauern
+    for (let x=-2; x<=2; x++) {
+      if ((x+100)%2===0) {
+        add(x,-2,peakH+1+wallH,1,pal.wT,pal.wL,pal.wR);
+        if (x!==0) add(x,2,peakH+1+wallH,1,pal.wT,pal.wL,pal.wR);
+      }
+    }
 
   } else if (style === 'tidal_island') {
     // Inselfestung auf Fels — mont_michel
@@ -252,18 +277,21 @@ function render(ctx, W, H, castle) {
     }
 
   } else if (style === 'pyramid') {
-    // Stufenpyramide — suedamerika, minas_tirith (weiße Palette via Override)
+    // Stufenpyramide — echte gestapelte Terrassen
     const rings = 3+Math.floor(rat.walls/35);
     addGround(rings+2);
     for (let ring=0; ring<rings; ring++) {
-      const r=rings-ring, h=ring+1;
+      const r  = rings-ring;
+      const bz = ring;         // jede Stufe eine Ebene höher
+      // Vollflächige Plattform dieser Ebene (wird von höheren Ringen überlagert)
       for (let x=-r; x<=r; x++) for (let y=-r; y<=r; y++)
-        if (Math.max(Math.abs(x),Math.abs(y))===r)
-          add(x,y,0,h,pal.wT,pal.wL,pal.wR);
+        add(x,y,bz,1,pal.wT,pal.wL,pal.wR);
     }
-    const sh = rings+1+Math.floor(rat.morale/40);
-    add(-1,-1,0,sh,pal.tT,pal.tL,pal.tR); add(0,-1,0,sh,pal.tT,pal.tL,pal.tR);
-    add(-1, 0,0,sh,pal.tT,pal.tL,pal.tR); add(0, 0,0,sh,pal.tT,pal.tL,pal.tR);
+    // Tempel/Turm auf dem Gipfel
+    const apexZ = rings;
+    const sh = 2+Math.floor(rat.morale/35);
+    for (let x=-1; x<=0; x++) for (let y=-1; y<=0; y++)
+      add(x,y,apexZ,sh,pal.tT,pal.tL,pal.tR);
 
   } else if (style === 'spire') {
     // Dunkler asymmetrischer Fantasy-Turm — mittelerde (ohne plan:"tower")
@@ -279,39 +307,61 @@ function render(ctx, W, H, castle) {
       add(jx,jy, baseH+Math.floor(rng()*spireH*0.6), 1+Math.floor(rng()*2), pal.tT,pal.tL,pal.tR);
 
   } else if (style === 'concentric') {
-    // Zwei konzentrische Mauerringe — Krak, Carcassonne, Edwardian
+    // Zwei konzentrische Mauerringe mit Mitteltürmen — Krak, Carcassonne, Edwardian
     const outerR=4+Math.floor(rat.supply/34), wallH=1+Math.floor(rat.walls/40), towerH=wallH+2;
     addGround(outerR+2);
+    // Äußerer Ring — Ecktürme + Seitenmitteltürme
     for (let x=-outerR; x<=outerR; x++) for (let y=-outerR; y<=outerR; y++) {
       const atX=Math.abs(x)===outerR, atY=Math.abs(y)===outerR;
       if (!atX&&!atY) continue; if (x===0&&y===outerR) continue;
-      const c=atX&&atY;
-      add(x,y,0,c?towerH:wallH,c?pal.tT:pal.wT,c?pal.tL:pal.wL,c?pal.tR:pal.wR);
+      const corner=atX&&atY;
+      const midTower=!corner&&((x===0&&atY)||(y===0&&atX));
+      const h=corner?towerH:midTower?towerH-1:wallH;
+      const isT=corner||midTower;
+      add(x,y,0,h,isT?pal.tT:pal.wT,isT?pal.tL:pal.wL,isT?pal.tR:pal.wR);
     }
+    // Torhaustürme am Haupttor
+    add(-1,outerR,0,wallH+3,pal.tT,pal.tL,pal.tR); add(1,outerR,0,wallH+3,pal.tT,pal.tL,pal.tR);
+    // Zinnen auf äußerem Ring
+    for (let x=-outerR+1; x<outerR; x++) {
+      if ((x+100)%2===0) {
+        add(x,-outerR,wallH,1,pal.wT,pal.wL,pal.wR);
+        if (x!==0) add(x,outerR,wallH,1,pal.wT,pal.wL,pal.wR);
+      }
+    }
+    for (let y=-outerR+1; y<outerR; y++) {
+      if ((y+100)%2===0) {
+        add(-outerR,y,wallH,1,pal.wT,pal.wL,pal.wR);
+        add( outerR,y,wallH,1,pal.wT,pal.wL,pal.wR);
+      }
+    }
+    // Innerer Ring — deutlich höher, markantere Türme
     const innerR=outerR-2;
     for (let x=-innerR; x<=innerR; x++) for (let y=-innerR; y<=innerR; y++) {
       const atX=Math.abs(x)===innerR, atY=Math.abs(y)===innerR;
       if (!atX&&!atY) continue; if (x===0&&y===innerR) continue;
       const c=atX&&atY;
-      add(x,y,0,c?towerH+2:wallH+1,c?pal.tT:pal.wT,c?pal.tL:pal.wL,c?pal.tR:pal.wR);
+      add(x,y,0,c?towerH+4:wallH+2,c?pal.tT:pal.wT,c?pal.tL:pal.wL,c?pal.tR:pal.wR);
     }
-    add(-1,outerR,0,wallH+2,pal.tT,pal.tL,pal.tR); add(1,outerR,0,wallH+2,pal.tT,pal.tL,pal.tR);
     const kh=3+Math.floor(rat.morale/25);
     for (let x=-1; x<=0; x++) for (let y=-1; y<=0; y++) add(x,y,0,kh,pal.tT,pal.tL,pal.tR);
 
   } else {
-    // Standard: rechteckiger Hof, Bergfried seeded versetzt
+    // Standard: rechteckiger Hof mit Merlons, Bergfried seeded versetzt
     const xR=3+Math.floor(rat.supply/25);
     const yR=Math.max(3,xR+Math.round(rng()*4-2));
     const wallH=1+Math.floor(rat.walls/40), towerH=wallH+1+Math.floor(rat.garrison/40), kh=3+Math.floor(rat.morale/20);
     addGround(Math.max(xR,yR)+2);
+    // Mauern
     for (let x=-xR; x<=xR; x++) for (let y=-yR; y<=yR; y++) {
       const atX=Math.abs(x)===xR, atY=Math.abs(y)===yR;
       if (!atX&&!atY) continue; if (x===0&&y===yR) continue;
       const c=atX&&atY;
       add(x,y,0,c?towerH:wallH,c?pal.tT:pal.wT,c?pal.tL:pal.wL,c?pal.tR:pal.wR);
     }
+    // Torhaustürme
     add(-1,yR,0,wallH+2,pal.tT,pal.tL,pal.tR); add(1,yR,0,wallH+2,pal.tT,pal.tL,pal.tR);
+    // Zwischentürme (ab garrison>=50)
     if (rat.garrison>=50) {
       const mid=Math.round(xR*0.5);
       [[-xR,mid],[-xR,-mid],[xR,mid],[xR,-mid],[mid,-yR],[-mid,-yR]].forEach(([x,y])=>{
@@ -324,6 +374,20 @@ function render(ctx, W, H, castle) {
         if (Math.abs(x)===xR||Math.abs(y)===yR) add(x,y,0,towerH,pal.tT,pal.tL,pal.tR);
       });
     }
+    // Zinnen (Merlons) — jede zweite Zelle auf der Mauerkrone
+    for (let x=-xR+1; x<xR; x++) {
+      if ((x+100)%2===0) {
+        add(x,-yR,wallH,1,pal.wT,pal.wL,pal.wR);
+        if (x!==0) add(x,yR,wallH,1,pal.wT,pal.wL,pal.wR);
+      }
+    }
+    for (let y=-yR+1; y<yR; y++) {
+      if ((y+100)%2===0) {
+        add(-xR,y,wallH,1,pal.wT,pal.wL,pal.wR);
+        add( xR,y,wallH,1,pal.wT,pal.wL,pal.wR);
+      }
+    }
+    // Bergfried (leicht versetzt per Zufall)
     const kx=rng()<0.38?Math.round(rng()*2-1):0;
     for (let x=-1; x<=0; x++) for (let y=-1; y<=0; y++) add(x+kx,y,0,kh,pal.tT,pal.tL,pal.tR);
   }
