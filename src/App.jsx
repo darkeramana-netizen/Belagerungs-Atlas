@@ -2511,7 +2511,7 @@ function CastleMapTab({castle}){
 
                     {/* GRUNDRISS MODE */}
                     {mapMode==="plan"&&(
-                      <div style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
+                      <div className="map-detail-grid" style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
                         {/* Left: SVG with zoom */}
                         <div>
                           {/* Zoom controls + 3D toggle */}
@@ -3829,9 +3829,9 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
   };
 
   return(
-    <div style={{padding:"18px 20px"}}>
+    <div className="castle-outer" style={{padding:"18px 20px"}}>
       {/* Filter/sort bar */}
-      <div style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:"18px",alignItems:"center",
+      <div className="filter-bar" style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:"18px",alignItems:"center",
         padding:"12px 16px",
         background:"linear-gradient(135deg,rgba(20,14,6,0.95),rgba(10,7,3,0.98))",
         border:"1px solid rgba(201,168,76,0.12)",borderRadius:"8px",
@@ -3901,12 +3901,12 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
               </span>
               <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(255,255,255,0.05),transparent)"}}/>
             </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
+            <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
               {cards.map(c=><CastleCard key={c.id} c={c}/>)}
             </div>
           </div>
         ))
-        : <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
+        : <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
             {filtered.map(c=><CastleCard key={c.id} c={c}/>)}
           </div>
       }
@@ -7179,15 +7179,28 @@ export default function App(){
           .main-content{flex-direction:column!important}
           .nav-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
           .nav-tabs::-webkit-scrollbar{display:none}
-          .castle-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))!important}
+          .castle-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))!important}
           .detail-tabs{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
           .detail-tabs::-webkit-scrollbar{display:none}
           .leaflet-container{touch-action:pan-x pan-y}
+          .castle-outer{padding:10px 12px!important}
+          .filter-bar{padding:8px 10px!important;gap:5px!important}
+          .grid-2col{grid-template-columns:1fr!important}
+          .map-detail-grid{grid-template-columns:1fr!important}
+          .header-sub{display:none!important}
         }
         @media(max-width:600px){
           .castle-grid{grid-template-columns:1fr 1fr!important}
+          .castle-outer{padding:8px!important}
           header{height:40px!important}
           header span{font-size:12px!important}
+          .card{width:calc(100vw - 24px)!important;margin:12px auto!important}
+          .detail-header-meta{font-size:10px!important;white-space:normal!important}
+        }
+        @media(max-width:430px){
+          .castle-grid{grid-template-columns:1fr!important}
+          .header-title{letter-spacing:0.5px!important;font-size:12px!important}
+          .detail-tabs button{padding:7px 8px!important;font-size:11px!important}
         }
         @media(hover:none){
           button:hover{filter:none}
@@ -7202,7 +7215,7 @@ export default function App(){
       <header style={{height:"46px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(201,168,76,0.07)",background:"rgba(5,4,3,0.99)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:"7px",padding:"0 12px",borderRight:"1px solid rgba(255,255,255,0.04)",flexShrink:0}}>
           <span style={{fontSize:"14px"}}>⚔️</span>
-          <span style={{fontSize:"14px",fontWeight:"bold",color:"#f0e6cc",letterSpacing:"2px",whiteSpace:"nowrap"}}>BELAGERUNGS-ATLAS</span>
+          <span className="header-title" style={{fontSize:"14px",fontWeight:"bold",color:"#f0e6cc",letterSpacing:"2px",whiteSpace:"nowrap"}}>BELAGERUNGS-ATLAS</span>
           <span style={{fontSize:"12px",color:"#b09a70",borderLeft:"1px solid rgba(255,255,255,0.05)",paddingLeft:"7px"}}>{CASTLES.length} Burgen</span>
         </div>
         <div style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
@@ -7307,7 +7320,7 @@ export default function App(){
       {tab==="detail"&&(
         <div style={{display:"flex",flex:1,overflow:"hidden"}}>
           {/* Sidebar */}
-          <aside style={{width:sideOpen?"195px":"40px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.16)",overflowY:"auto",overflowX:"hidden"}}>
+          <aside className="sidebar" style={{width:sideOpen?"195px":"40px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.16)",overflowY:"auto",overflowX:"hidden"}}>
             <button onClick={()=>setSideOpen(e=>!e)} style={{width:"100%",padding:"6px",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.02)",color:"#8a7a60",cursor:"pointer",fontSize:"14px",textAlign:sideOpen?"right":"center"}}>{sideOpen?"◀":"▶"}</button>
             {sideFiltered.map(c=>{const a=avg(c),isA=sel.id===c.id,hs=scores[c.id];return(
               <button key={c.id} onClick={()=>{setSel(c);setDtab("map");setAttackMode(false);}} title={c.name}
@@ -7334,7 +7347,7 @@ export default function App(){
                 <div style={{flex:1}}>
                   <div style={{display:"flex",gap:"4px",alignItems:"center",marginBottom:"2px",flexWrap:"wrap"}}>
                     <span style={{fontSize:"11px",letterSpacing:"2px",padding:"1px 6px",borderRadius:"2px",background:sel.type==="real"?"rgba(40,70,25,0.18)":"rgba(40,40,90,0.18)",color:sel.type==="real"?"#5a7a38":"#6a6aaa",border:`1px solid ${sel.type==="real"?"rgba(40,70,25,0.28)":"rgba(40,40,90,0.28)"}`}}>{sel.type==="real"?"⚜ HISTORISCH":"✦ FANTASY"}</span>
-                    <span style={{fontSize:"11px",color:"#8a7a60"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
+                    <span className="detail-header-meta" style={{fontSize:"11px",color:"#8a7a60",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
                   </div>
                   <h1 style={{fontSize:"15px",fontWeight:"bold",color:"#f5edd8",margin:"0 0 1px"}}>{sel.name}</h1>
                   <div style={{fontSize:"12px",color:sel.theme.accent,marginBottom:"3px"}}>{sel.sub}</div>
@@ -7350,7 +7363,7 @@ export default function App(){
             </div>
 
             {/* Detail tabs */}
-            <div style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.06)",flexShrink:0,overflowX:"auto"}}>
+            <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.06)",flexShrink:0,overflowX:"auto"}}>
               {DTABS.map(t=>(
                 <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"7px 11px",background:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#7a6a50",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .13s",marginBottom:"-1px",whiteSpace:"nowrap"}}>{t.l}</button>
               ))}
@@ -7362,7 +7375,7 @@ export default function App(){
               {dtab==="diorama"&&<CastleDiorama castle={sel}/>}
 
               {dtab==="stats"&&(
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
+                <div className="grid-2col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
                   <div>
                     <div style={{padding:"12px",background:"rgba(255,255,255,.016)",border:`1px solid ${sel.theme.accent}16`,borderRadius:"4px",marginBottom:"8px"}}>
                       <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"2px",marginBottom:"9px"}}>DEFENSIV-RATING</div>
