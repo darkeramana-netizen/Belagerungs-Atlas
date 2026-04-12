@@ -3672,7 +3672,7 @@ function WorldMap({castles,onSelect,selected}){
 const REGION_LABELS={europa:"⚜ Europa",nahost:"☪ Naher Osten",ostasien:"⛩ Ostasien",suedostasien:"🌺 S-Asien",suedamerika:"🌎 Südamerika",mittelerde:"✦ Mittelerde",westeros:"❄ Westeros"};
 const EPOCH_ORDER=["Antike","Spätantike","Mittelalter","Hochmittelalter","Feudaljapan","Neuzeit","Mittelerde","Silmarillion","Westeros"];
 
-function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpochFilter,regionFilter,setRegionFilter,search,setSearch}){
+function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpochFilter,regionFilter,setRegionFilter,search,setSearch,favs=new Set(),onFavToggle}){
   const [hov,setHov]=useState(null);
   const [sortBy,setSortBy]=useState("default");
 
@@ -3681,6 +3681,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
       if(filter!=="all"&&c.type!==filter)return false;
       if(epochFilter&&c.epoch!==epochFilter)return false;
       if(regionFilter&&c.region!==regionFilter)return false;
+      if(sortBy==="favs"&&!favs.has(c.id))return false;
       if(search&&!c.name.toLowerCase().includes(search.toLowerCase())&&!c.loc.toLowerCase().includes(search.toLowerCase()))return false;
       return true;
     });
@@ -3688,7 +3689,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
     else if(sortBy==="epoch") arr=[...arr].sort((a,b)=>EPOCH_ORDER.indexOf(a.epoch)-EPOCH_ORDER.indexOf(b.epoch));
     else if(sortBy==="name") arr=[...arr].sort((a,b)=>a.name.localeCompare(b.name));
     return arr;
-  },[castles,filter,epochFilter,regionFilter,search,sortBy]);
+  },[castles,filter,epochFilter,regionFilter,search,sortBy,favs]);
 
   const grouped=useMemo(()=>{
     if(sortBy!=="default")return null;
@@ -3698,7 +3699,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
   },[filtered,sortBy]);
 
   const CastleCard=({c})=>{
-    const sc=avg(c),hs=scores[c.id],isH=hov===c.id;
+    const sc=avg(c),hs=scores[c.id],isH=hov===c.id,isFav=favs.has(c.id);
     const cats=[
       {k:"walls",   l:"Mauern",  i:"🧱"},
       {k:"position",l:"Position",i:"⛰️"},
@@ -3722,6 +3723,15 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           display:"flex",flexDirection:"row",
           minHeight:"80px",
         }}>
+          <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
+            style={{position:"absolute",top:"6px",right:"6px",zIndex:2,
+              background:"transparent",border:"none",cursor:"pointer",
+              fontSize:"14px",lineHeight:1,opacity:isFav?1:0.2,
+              transition:"opacity .15s, transform .15s",
+              transform:isH||isFav?"scale(1)":"scale(0.8)",
+              color:isFav?"#f0c040":"#a09060"}}>
+            {isFav?"⭐":"☆"}
+          </button>
           {/* Left accent bar */}
           <div style={{width:"3px",flexShrink:0,
             background:`linear-gradient(180deg,${ac},${ac}33)`,
@@ -3855,7 +3865,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           <option value="">Alle Regionen</option>{regions.map(r=><option key={r} value={r}>{REGION_LABELS[r]||r}</option>)}
         </select>
         <div style={{width:"1px",height:"24px",background:"rgba(255,255,255,0.06)",margin:"0 2px"}}/>
-        {[{k:"default",l:"🗺 Gruppiert"},{k:"score",l:"↓ Score"},{k:"epoch",l:"📅 Zeit"},{k:"name",l:"A–Z"}].map(s=>(
+        {[{k:"default",l:"🗺 Gruppiert"},{k:"score",l:"↓ Score"},{k:"epoch",l:"📅 Zeit"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
           <button key={s.k} onClick={()=>setSortBy(s.k)}
             style={{padding:"3px 8px",fontSize:"11px",
               background:sortBy===s.k?"rgba(201,168,76,0.08)":"transparent",
@@ -5045,6 +5055,42 @@ function Compare({castles,init}){
             })}
           </div>
 
+          {/* Metadaten-Vergleich */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px",marginBottom:"10px"}}>
+            {[
+              {l:"Epoche",v1:c1.epoch,v2:c2.epoch},
+              {l:"Ort",v1:c1.loc,v2:c2.loc},
+              {l:"Typ",v1:c1.type==="real"?"Historisch":"Fantasy",v2:c2.type==="real"?"Historisch":"Fantasy"},
+              {l:"Jahr",v1:c1.year<0?`${Math.abs(c1.year)} v.Chr.`:`~${c1.year}`,v2:c2.year<0?`${Math.abs(c2.year)} v.Chr.`:`~${c2.year}`},
+            ].map(row=>(
+              <div key={row.l} style={{gridColumn:"1/-1",display:"grid",gridTemplateColumns:"1fr 60px 1fr",gap:"6px",alignItems:"start",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
+                <div style={{fontSize:"11px",color:"#a09070",textAlign:"right",paddingRight:"4px"}}>{row.v1}</div>
+                <div style={{fontSize:"10px",color:"#4a3a20",textAlign:"center",letterSpacing:"1px"}}>{row.l}</div>
+                <div style={{fontSize:"11px",color:"#a09070",textAlign:"left",paddingLeft:"4px"}}>{row.v2}</div>
+              </div>
+            ))}
+          </div>
+          {/* Stärken/Schwächen */}
+          {c1.strengths&&c2.strengths&&(
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px",marginBottom:"10px"}}>
+              <div style={{padding:"8px 10px",background:`${c1.theme.bg}`,border:`1px solid ${c1.theme.accent}22`,borderRadius:"5px"}}>
+                <div style={{fontSize:"10px",color:c1.theme.accent,letterSpacing:"1px",marginBottom:"4px"}}>STÄRKE</div>
+                <div style={{fontSize:"11px",color:"#a09070"}}>{c1.strengths[0]}</div>
+              </div>
+              <div style={{padding:"8px 10px",background:`${c2.theme.bg}`,border:`1px solid ${c2.theme.accent}22`,borderRadius:"5px"}}>
+                <div style={{fontSize:"10px",color:c2.theme.accent,letterSpacing:"1px",marginBottom:"4px"}}>STÄRKE</div>
+                <div style={{fontSize:"11px",color:"#a09070"}}>{c2.strengths[0]}</div>
+              </div>
+              <div style={{padding:"8px 10px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(200,80,80,0.15)",borderRadius:"5px"}}>
+                <div style={{fontSize:"10px",color:"#c05050",letterSpacing:"1px",marginBottom:"4px"}}>SCHWÄCHE</div>
+                <div style={{fontSize:"11px",color:"#907060"}}>{c1.weaknesses?.[0]}</div>
+              </div>
+              <div style={{padding:"8px 10px",background:"rgba(0,0,0,0.2)",border:"1px solid rgba(200,80,80,0.15)",borderRadius:"5px"}}>
+                <div style={{fontSize:"10px",color:"#c05050",letterSpacing:"1px",marginBottom:"4px"}}>SCHWÄCHE</div>
+                <div style={{fontSize:"11px",color:"#907060"}}>{c2.weaknesses?.[0]}</div>
+              </div>
+            </div>
+          )}
           {/* Verdict */}
           <div style={{padding:"11px 14px",background:"rgba(201,168,76,0.04)",border:"1px solid rgba(201,168,76,0.1)",borderRadius:"5px",textAlign:"center"}}>
             {avg(c1)===avg(c2)
@@ -7035,6 +7081,17 @@ export default function App(){
   const [scores,setScores]=useState(()=>{
     try{ return JSON.parse(localStorage.getItem('bAtlas_scores')||'{}'); }catch{return {};}
   });
+  const [favs,setFavs]=useState(()=>{
+    try{ return new Set(JSON.parse(localStorage.getItem('bAtlas_favs')||'[]')); }catch{return new Set();}
+  });
+  const toggleFav=useCallback((id)=>{
+    setFavs(prev=>{
+      const next=new Set(prev);
+      next.has(id)?next.delete(id):next.add(id);
+      try{localStorage.setItem('bAtlas_favs',JSON.stringify([...next]));}catch{}
+      return next;
+    });
+  },[]);
   const [playStats,setPlayStats]=useState(()=>{
     try{ return JSON.parse(localStorage.getItem('bAtlas_stats')||'{"sieges":0,"wins":0,"totalDays":0,"streak":0,"generalWins":{},"campaignsDone":0,"choicesMade":0,"bestBuild":0}'); }catch{return {sieges:0,wins:0,totalDays:0,streak:0,generalWins:{},campaignsDone:0,choicesMade:0,bestBuild:0};}
   });
@@ -7210,7 +7267,7 @@ export default function App(){
 
       {/* ── OVERVIEW ── */}
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
-        <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch}/>
+        <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
       </div>}
 
       {/* ── WORLD MAP ── */}
