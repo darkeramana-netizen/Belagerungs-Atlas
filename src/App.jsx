@@ -7128,6 +7128,7 @@ export default function App(){
     if(search&&!c.name.toLowerCase().includes(search.toLowerCase()))return false;
     return true;
   }),[filter,epochFilter,regionFilter,search]);
+  const topCastles=useMemo(()=>[...CASTLES].sort((a,b)=>avg(b)-avg(a)).slice(0,4),[]);
 
   const sc=avg(sel);
   const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
@@ -7220,9 +7221,26 @@ export default function App(){
         .hero-kpi{padding:10px 12px;border-radius:10px;background:rgba(8,16,32,0.46);border:1px solid rgba(138,173,255,0.2);text-align:center}
         .hero-cta{padding:9px 12px;border-radius:10px;border:1px solid rgba(138,173,255,0.38);background:linear-gradient(135deg,rgba(111,138,255,0.35),rgba(66,216,207,0.24));color:#eff5ff;cursor:pointer;font-weight:600}
         .hero-cta.alt{background:rgba(138,173,255,0.08);color:#b8cbf8}
+        .hero-mini-card{padding:10px;border-radius:12px;background:rgba(9,16,31,0.52);border:1px solid rgba(138,173,255,0.18);display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .hero-mini-card button{padding:6px 8px;border-radius:8px;border:1px solid rgba(138,173,255,0.28);background:rgba(138,173,255,0.1);color:#dce7ff;font-size:11px;cursor:pointer}
+        .content-wrap{max-width:1280px;margin:0 auto;width:100%}
+        .mobile-quickbar{display:none}
+        .soft-card{border-radius:14px;background:linear-gradient(155deg,rgba(14,22,41,0.78),rgba(10,16,31,0.62));border:1px solid rgba(138,173,255,0.2);box-shadow:0 10px 24px rgba(0,0,0,0.2)}
         .castle-card:hover{transform:translateY(-3px)}
         .gold-text{color:#c9a84c;font-family:'Cinzel',serif}
         .section-title{font-family:'Cinzel',serif;letter-spacing:0.08em;font-size:11px;color:#a08848;text-transform:uppercase}
+        @media(max-width:768px){
+          .mobile-quickbar{
+            display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:450;
+            gap:8px;padding:8px;border-radius:12px;
+            background:linear-gradient(155deg,rgba(10,18,36,0.95),rgba(8,14,28,0.92));
+            border:1px solid rgba(138,173,255,0.24);box-shadow:0 14px 24px rgba(0,0,0,0.35)
+          }
+          .mobile-quickbar button{
+            flex:1;border-radius:8px;border:1px solid rgba(138,173,255,0.28);
+            background:rgba(138,173,255,0.1);color:#e8f0ff;padding:8px 6px;font-size:12px
+          }
+        }
       `}</style>
 
       {/* ── HEADER ── */}
@@ -7296,6 +7314,7 @@ export default function App(){
 
       {/* ── OVERVIEW ── */}
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
+        <div className="content-wrap">
         <section className="hero-v2">
           <div style={{display:"flex",justifyContent:"space-between",gap:"14px",alignItems:"flex-start",flexWrap:"wrap"}}>
             <div style={{maxWidth:"620px"}}>
@@ -7318,8 +7337,28 @@ export default function App(){
             <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>BELAGERUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges||0}</div></div>
             <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>SIEGRATE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges?Math.round(((playStats.wins||0)/playStats.sieges)*100):0}%</div></div>
           </div>
+          <div style={{marginTop:"12px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8ea2d8",marginBottom:"8px"}}>TOP FESTUNGEN · SCHNELLSTART</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"8px"}}>
+              {topCastles.map(c=>(
+                <div key={c.id} className="hero-mini-card">
+                  <div style={{display:"flex",gap:"8px",alignItems:"center",minWidth:0}}>
+                    <span style={{fontSize:"18px"}}>{c.icon}</span>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontSize:"12px",color:"#eff5ff",fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                      <div style={{fontSize:"10px",color:"#8ea2d8"}}>{c.epoch} · Score {avg(c)}</div>
+                    </div>
+                  </div>
+                  <button onClick={()=>{setSel(c);setTab("detail");setDtab("stats");}}>Öffnen</button>
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
-        <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        <div className="soft-card" style={{margin:"0 16px 16px",padding:"2px"}}>
+          <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        </div>
+        </div>
       </div>}
 
       {/* ── WORLD MAP ── */}
@@ -7346,6 +7385,12 @@ export default function App(){
       {tab==="globalstats"&&<div style={{flex:1,overflowY:"auto"}}><GlobalStats scores={scores} playStats={playStats} castles={CASTLES}/></div>}
       {tab==="achievements"&&<div style={{flex:1,overflowY:"auto"}}><AchievementsPanel scores={scores} castles={CASTLES} playStats={playStats}/></div>}
       {tab==="highscores"&&<div style={{flex:1,overflowY:"auto"}}><Highscores scores={scores} onSelect={go} playStats={playStats}/></div>}
+
+      <div className="mobile-quickbar">
+        <button onClick={()=>setTab("overview")}>🏰 Übersicht</button>
+        <button onClick={()=>setTab("worldmap")}>🌍 Karte</button>
+        <button onClick={()=>setTab("campaign")}>📖 Kampagne</button>
+      </div>
 
       {/* Achievement toast notification */}
       {achievementToast&&(
