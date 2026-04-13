@@ -7089,6 +7089,7 @@ export default function App(){
   const [season,setSeason]=useState(SEASONS[0]);
   const {weather,randomize:randomizeWeather}=useWeather();
   const [showSetup,setShowSetup]=useState(false);
+  const [visualPreset,setVisualPreset]=useState("blue");
   const [achievementToast,setAchievementToast]=useState(null);
   const prevAchievements=useRef(new Set());
 
@@ -7129,13 +7130,34 @@ export default function App(){
     return true;
   }),[filter,epochFilter,regionFilter,search]);
   const topCastles=useMemo(()=>[...CASTLES].sort((a,b)=>avg(b)-avg(a)).slice(0,4),[]);
+  const uiTheme=visualPreset==="gold"
+    ? {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(214,164,77,0.18) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(139,96,45,0.16) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#120d07 0%,#1a1209 45%,#080604 100%)",
+        appColor:"#f4ead7",
+        headerBg:"linear-gradient(180deg,rgba(31,20,12,0.96) 0%,rgba(17,12,7,0.94) 100%)",
+        headerBorder:"1px solid rgba(201,168,76,0.30)",
+        setupBg:"rgba(24,16,10,0.92)",
+        setupBorder:"1px solid rgba(201,168,76,0.25)",
+        heroBorder:"1px solid rgba(201,168,76,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(201,168,76,0.16),transparent 36%),radial-gradient(circle at 90% 15%,rgba(232,200,120,0.18),transparent 42%),linear-gradient(145deg,rgba(30,20,12,0.9),rgba(14,10,6,0.92))",
+      }
+    : {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(111,138,255,0.26) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(64,224,208,0.15) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#070a14 0%,#080d1b 45%,#05070f 100%)",
+        appColor:"#e8eeff",
+        headerBg:"linear-gradient(180deg,rgba(16,24,44,0.96) 0%,rgba(10,16,32,0.94) 100%)",
+        headerBorder:"1px solid rgba(138,173,255,0.28)",
+        setupBg:"rgba(11,20,38,0.9)",
+        setupBorder:"1px solid rgba(138,173,255,0.25)",
+        heroBorder:"1px solid rgba(130,170,255,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92))",
+      };
 
   const sc=avg(sel);
   const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
-    <div className="app-shell" style={{height:"100vh",overflow:"hidden",background:"radial-gradient(circle at 12% -10%, rgba(111,138,255,0.26) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(64,224,208,0.15) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#070a14 0%,#080d1b 45%,#05070f 100%)",color:"#e8eeff",fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}}>
+    <div className="app-shell" style={{height:"100vh",overflow:"hidden",background:uiTheme.appBg,color:uiTheme.appColor,fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}}>
       <style>{`
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}
@@ -7244,7 +7266,7 @@ export default function App(){
       `}</style>
 
       {/* ── HEADER ── */}
-      <header className="glass" style={{height:"62px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(138,173,255,0.28)",background:"linear-gradient(180deg,rgba(16,24,44,0.96) 0%,rgba(10,16,32,0.94) 100%)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
+      <header className="glass" style={{height:"62px",display:"flex",alignItems:"stretch",borderBottom:uiTheme.headerBorder,background:uiTheme.headerBg,position:"sticky",top:0,zIndex:300,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:"10px",padding:"0 16px",borderRight:"1px solid rgba(201,168,76,0.1)",flexShrink:0}}>
           <span style={{fontSize:"18px",filter:"drop-shadow(0 0 6px rgba(201,168,76,0.4))"}}>⚔️</span>
           <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
@@ -7265,7 +7287,7 @@ export default function App(){
 
       {/* ── SETUP PANEL ── */}
       {showSetup&&(
-        <div className="glass" style={{background:"rgba(11,20,38,0.9)",borderBottom:"1px solid rgba(138,173,255,0.25)",padding:"14px 16px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
+        <div className="glass" style={{background:uiTheme.setupBg,borderBottom:uiTheme.setupBorder,padding:"14px 16px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
           <div>
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>⚔️ GENERAL</div>
             <div style={{display:"flex",gap:"4px",flexWrap:"wrap"}}>
@@ -7285,6 +7307,13 @@ export default function App(){
                   {s.emoji} {s.name}
                 </button>
               ))}
+            </div>
+          </div>
+          <div>
+            <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>🎨 DESIGN</div>
+            <div style={{display:"flex",gap:"4px"}}>
+              <button onClick={()=>setVisualPreset("blue")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="blue"?"rgba(111,138,255,0.22)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="blue"?"rgba(138,173,255,0.5)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="blue"?"#dce8ff":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🔹 Premium Blue</button>
+              <button onClick={()=>setVisualPreset("gold")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="gold"?"rgba(201,168,76,0.18)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="gold"?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="gold"?"#e8cc98":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🟡 Royal Gold</button>
             </div>
           </div>
           {/* Weather display */}
@@ -7315,7 +7344,7 @@ export default function App(){
       {/* ── OVERVIEW ── */}
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
         <div className="content-wrap">
-        <section className="hero-v2">
+        <section className="hero-v2" style={{border:uiTheme.heroBorder,background:uiTheme.heroBg}}>
           <div style={{display:"flex",justifyContent:"space-between",gap:"14px",alignItems:"flex-start",flexWrap:"wrap"}}>
             <div style={{maxWidth:"620px"}}>
               <div style={{fontSize:"11px",letterSpacing:"2px",color:"#96aee4",marginBottom:"8px"}}>COMMAND OVERVIEW · V2</div>
