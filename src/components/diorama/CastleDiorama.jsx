@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const TW = 36, TH = 18;
+const TW = 28, TH = 14;
 
 function mkRng(str) {
   let s = [...(str||'x')].reduce((a,c)=>(a*31+c.charCodeAt(0))|0, 0x87654321);
@@ -162,7 +162,7 @@ function render(ctx, W, H, castle, rot=0) {
   const rat   = castle?.ratings || {walls:70,garrison:60,morale:70,supply:70,position:60};
   const style = selectStyle(castle);
 
-  const cx = W/2, cy = H*0.37;
+  const cx = W/2, cy = H*0.57;
   const pt = (gx,gy,gz=0) => [cx+(gx-gy)*TW/2, cy+(gx+gy)*TH/2-gz*TH];
 
   const blks = [];
