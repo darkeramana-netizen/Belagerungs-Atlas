@@ -3715,13 +3715,13 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
         style={{textAlign:"left",padding:0,background:"transparent",border:"none",cursor:"pointer",display:"block",width:"100%"}}>
         <div style={{
           position:"relative",overflow:"hidden",
-          background:isH?`linear-gradient(120deg,${c.theme.bg},rgba(8,6,3,0.99))`:"rgba(255,255,255,0.018)",
-          border:`1px solid ${isH?ac+"66":"rgba(255,255,255,0.06)"}`,
-          borderRadius:"8px",
-          boxShadow:isH?`0 4px 18px rgba(0,0,0,0.55),0 0 0 1px ${ac}14`:"none",
+          background:isH?`linear-gradient(135deg,${c.theme.bg} 0%,rgba(6,4,3,0.97) 65%)`:"rgba(255,255,255,0.022)",
+          border:`1px solid ${isH?ac+"55":"rgba(255,255,255,0.07)"}`,
+          borderRadius:"10px",
+          boxShadow:isH?`0 8px 28px rgba(0,0,0,0.65),0 0 0 1px ${ac}18,inset 0 1px 0 ${ac}14`:"0 1px 4px rgba(0,0,0,0.35)",
           transition:"border-color .18s,box-shadow .18s,background .18s",
           display:"flex",flexDirection:"row",
-          minHeight:"80px",
+          minHeight:"82px",
         }}>
           <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
             style={{position:"absolute",top:"6px",right:"6px",zIndex:2,
@@ -3755,8 +3755,8 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           <div style={{flex:1,padding:"10px 12px",display:"flex",flexDirection:"column",justifyContent:"center",gap:"4px",minWidth:0}}>
             {/* Name + sub */}
             <div style={{display:"flex",alignItems:"baseline",gap:"6px",flexWrap:"wrap"}}>
-              <div style={{fontSize:"14px",fontWeight:"bold",
-                color:isH?"#f0e6cc":"#c0b080",lineHeight:1.2}}>{c.name}</div>
+              <div style={{fontSize:"14px",fontWeight:"600",fontFamily:"'Cinzel',serif",
+                color:isH?"#f0e6cc":"#c8b87a",lineHeight:1.2,letterSpacing:"0.02em"}}>{c.name}</div>
               <div style={{fontSize:"10px",color:isH?ac:"#4a3a20",flexShrink:0}}>{c.era}</div>
             </div>
             <div style={{fontSize:"10px",color:"#5a4a28",marginBottom:"3px",
@@ -7144,7 +7144,7 @@ export default function App(){
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
-    <div style={{height:"100vh",overflow:"hidden",background:"#060504",color:"#e8dcc8",fontFamily:"'Palatino Linotype','Book Antiqua',Georgia,serif",display:"flex",flexDirection:"column"}}>
+    <div style={{height:"100vh",overflow:"hidden",background:"radial-gradient(ellipse 120% 40% at 50% -10%, rgba(50,35,10,0.45) 0%, transparent 60%), #080604",color:"#ede4cf",fontFamily:"'Crimson Text',Georgia,serif",display:"flex",flexDirection:"column"}}>
       <style>{`
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}
@@ -7209,18 +7209,27 @@ export default function App(){
         @media(prefers-reduced-motion:reduce){
           *{animation:none!important;transition:none!important}
         }
+        .cinzel{font-family:'Cinzel',serif!important;letter-spacing:0.05em}
+        .cinzel-lg{font-family:'Cinzel',serif!important;letter-spacing:0.12em}
+        input,textarea,select{font-family:inherit}
+        .castle-card{transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,background 0.18s ease}
+        .castle-card:hover{transform:translateY(-3px)}
+        .gold-text{color:#c9a84c;font-family:'Cinzel',serif}
+        .section-title{font-family:'Cinzel',serif;letter-spacing:0.08em;font-size:11px;color:#a08848;text-transform:uppercase}
       `}</style>
 
       {/* ── HEADER ── */}
-      <header style={{height:"46px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(201,168,76,0.07)",background:"rgba(5,4,3,0.99)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:"7px",padding:"0 12px",borderRight:"1px solid rgba(255,255,255,0.04)",flexShrink:0}}>
-          <span style={{fontSize:"14px"}}>⚔️</span>
-          <span className="header-title" style={{fontSize:"14px",fontWeight:"bold",color:"#f0e6cc",letterSpacing:"2px",whiteSpace:"nowrap"}}>BELAGERUNGS-ATLAS</span>
-          <span style={{fontSize:"12px",color:"#b09a70",borderLeft:"1px solid rgba(255,255,255,0.05)",paddingLeft:"7px"}}>{CASTLES.length} Burgen</span>
+      <header style={{height:"52px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(201,168,76,0.14)",background:"linear-gradient(180deg,rgba(14,11,7,0.99) 0%,rgba(8,6,4,0.99) 100%)",boxShadow:"0 2px 24px rgba(0,0,0,0.6),0 1px 0 rgba(201,168,76,0.08)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:"10px",padding:"0 16px",borderRight:"1px solid rgba(201,168,76,0.1)",flexShrink:0}}>
+          <span style={{fontSize:"18px",filter:"drop-shadow(0 0 6px rgba(201,168,76,0.4))"}}>⚔️</span>
+          <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
+            <span className="header-title cinzel-lg" style={{fontSize:"13px",fontWeight:"700",color:"#e8d498",letterSpacing:"4px",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(201,168,76,0.35)"}}>BELAGERUNGS-ATLAS</span>
+            <span style={{fontSize:"9px",color:"#6a5530",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
+          </div>
         </div>
-        <div style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
+        <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
           {NAVTABS.map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{height:"100%",padding:"0 12px",background:"transparent",border:"none",borderBottom:`2px solid ${tab===t.id?"#c9a84c":"transparent"}`,color:tab===t.id?"#c9a84c":"#8a7a58",cursor:"pointer",fontSize:"13px",letterSpacing:"0.5px",transition:"all .14s",marginBottom:"-1px",whiteSpace:"nowrap"}}>{t.l}</button>
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{height:"100%",padding:"0 13px",background:tab===t.id?"rgba(201,168,76,0.06)":"transparent",border:"none",borderBottom:`2px solid ${tab===t.id?"#c9a84c":"transparent"}`,borderTop:`1px solid ${tab===t.id?"rgba(201,168,76,0.12)":"transparent"}`,color:tab===t.id?"#d4aa56":"#6a5a40",cursor:"pointer",fontSize:"12px",letterSpacing:"0.3px",transition:"all .16s",marginBottom:"-1px",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
           ))}
         </div>
         {/* Setup button */}
