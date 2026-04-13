@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const TW = 36, TH = 18;
 
@@ -103,20 +103,46 @@ function selectStyle(castle) {
 }
 
 // ── Hauptkomponente ───────────────────────────────────────────────────────
+const ROT_LABELS = ['SW','NW','NO','SO'];
+
 export default function CastleDiorama({ castle }) {
-  const ref = useRef(null);
+  const ref  = useRef(null);
+  const [rot, setRot] = useState(0);
+
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    render(ctx, canvas.width, canvas.height, castle);
-  }, [castle?.id]);
+    render(ctx, canvas.width, canvas.height, castle, rot);
+  }, [castle?.id, rot]);
 
-  const ac = castle?.theme?.accent || '#c9a84c';
+  // Reset rotation when castle changes
+  useEffect(() => { setRot(0); }, [castle?.id]);
+
+  const ac  = castle?.theme?.accent || '#c9a84c';
+  const btn = (label, onClick) => (
+    <button onClick={onClick} style={{
+      background:'rgba(0,0,0,0.6)', border:`1px solid ${ac}44`, color:ac,
+      borderRadius:'3px', padding:'2px 8px', cursor:'pointer',
+      fontSize:'13px', lineHeight:1.4, fontFamily:'monospace',
+      transition:'background .12s',
+    }}>{label}</button>
+  );
+
   return (
     <div style={{width:'100%',background:'#060504',borderRadius:'8px',overflow:'hidden',position:'relative',userSelect:'none'}}>
       <canvas ref={ref} width={600} height={380} style={{width:'100%',display:'block'}}/>
+
+      {/* Rotationssteuerung */}
+      <div style={{position:'absolute',top:8,right:10,display:'flex',gap:'4px',alignItems:'center'}}>
+        {btn('◀', ()=>setRot(r=>(r+3)%4))}
+        <span style={{color:ac+'99',fontSize:'10px',fontFamily:'monospace',minWidth:'20px',textAlign:'center'}}>
+          {ROT_LABELS[rot]}
+        </span>
+        {btn('▶', ()=>setRot(r=>(r+1)%4))}
+      </div>
+
       <div style={{position:'absolute',bottom:8,left:10,right:10,display:'flex',
         justifyContent:'space-between',alignItems:'flex-end',
         fontSize:'11px',fontFamily:'monospace',pointerEvents:'none'}}>
@@ -128,7 +154,7 @@ export default function CastleDiorama({ castle }) {
 }
 
 // ── Renderer ──────────────────────────────────────────────────────────────
-function render(ctx, W, H, castle) {
+function render(ctx, W, H, castle, rot=0) {
   const rng   = mkRng(castle?.id || 'x');
   const ac    = castle?.theme?.accent || '#c9a84c';
   const base  = PAL[castle?.region] || PAL.default;
@@ -390,6 +416,21 @@ function render(ctx, W, H, castle) {
     // Bergfried (leicht versetzt per Zufall)
     const kx=rng()<0.38?Math.round(rng()*2-1):0;
     for (let x=-1; x<=0; x++) for (let y=-1; y<=0; y++) add(x+kx,y,0,kh,pal.tT,pal.tL,pal.tR);
+  }
+
+  // ── Koordinaten-Rotation (0°/90°/180°/270°) ──────────────────────────────
+  if (rot !== 0) {
+    for (const b of blks) {
+      const bxc = b.bx + 0.5, byc = b.by + 0.5;
+      let nx, ny;
+      if      (rot === 1) { nx = -byc;  ny =  bxc; }
+      else if (rot === 2) { nx = -bxc;  ny = -byc; }
+      else                { nx =  byc;  ny = -bxc; }
+      b.bx = nx - 0.5;
+      b.by = ny - 0.5;
+      // Seiten tauschen wenn Blickwinkel die Lichtseite wechselt
+      if (rot === 1 || rot === 3) { const tmp = b.l; b.l = b.r; b.r = tmp; }
+    }
   }
 
   // ── Painter's Algorithm: hinten → vorne ─────────────────────────────────
