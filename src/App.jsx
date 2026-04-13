@@ -3700,127 +3700,104 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
 
   const CastleCard=({c})=>{
     const sc=avg(c),hs=scores[c.id],isH=hov===c.id,isFav=favs.has(c.id);
-    const cats=[
-      {k:"walls",   l:"Mauern",  i:"🧱"},
-      {k:"position",l:"Position",i:"⛰️"},
-      {k:"supply",  l:"Versorg.", i:"🍖"},
-      {k:"garrison",l:"Garnison",i:"⚔️"},
-      {k:"morale",  l:"Moral",   i:"🔥"},
-    ];
-    const maxR=Math.max(...Object.values(c.ratings));
-    const minR=Math.min(...Object.values(c.ratings));
     const ac=c.theme.accent;
+    const rEntries=Object.entries(c.ratings);
+    const [maxK,maxV]=rEntries.reduce((a,b)=>a[1]>b[1]?a:b);
+    const [minK,minV]=rEntries.reduce((a,b)=>a[1]<b[1]?a:b);
+    const RLBL={walls:"Mauern",position:"Lage",supply:"Versorg.",garrison:"Garnison",morale:"Moral"};
     return(
       <button onClick={()=>onSelect(c)} onMouseEnter={()=>setHov(c.id)} onMouseLeave={()=>setHov(null)}
         style={{textAlign:"left",padding:0,background:"transparent",border:"none",cursor:"pointer",display:"block",width:"100%"}}>
-        <div style={{
+        <div className="castle-card" style={{
           position:"relative",overflow:"hidden",
-          background:isH?`linear-gradient(135deg,${c.theme.bg} 0%,rgba(6,4,3,0.97) 65%)`:"rgba(255,255,255,0.022)",
-          border:`1px solid ${isH?ac+"55":"rgba(255,255,255,0.07)"}`,
-          borderRadius:"10px",
-          boxShadow:isH?`0 8px 28px rgba(0,0,0,0.65),0 0 0 1px ${ac}18,inset 0 1px 0 ${ac}14`:"0 1px 4px rgba(0,0,0,0.35)",
-          transition:"border-color .18s,box-shadow .18s,background .18s",
-          display:"flex",flexDirection:"row",
-          minHeight:"82px",
+          background:isH?`linear-gradient(145deg,${c.theme.bg} 0%,rgba(8,6,4,0.97) 70%)`:"rgba(255,255,255,0.03)",
+          border:`1px solid ${isH?ac+"50":"rgba(255,255,255,0.08)"}`,
+          borderRadius:"12px",
+          boxShadow:isH?`0 12px 40px rgba(0,0,0,0.7),0 0 0 1px ${ac}1a,inset 0 1px 0 ${ac}20`:"0 2px 8px rgba(0,0,0,0.4)",
         }}>
-          <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
-            style={{position:"absolute",top:"6px",right:"6px",zIndex:2,
-              background:"transparent",border:"none",cursor:"pointer",
-              fontSize:"14px",lineHeight:1,opacity:isFav?1:0.2,
-              transition:"opacity .15s, transform .15s",
-              transform:isH||isFav?"scale(1)":"scale(0.8)",
-              color:isFav?"#f0c040":"#a09060"}}>
-            {isFav?"⭐":"☆"}
-          </button>
-          {/* Left accent bar */}
-          <div style={{width:"3px",flexShrink:0,
-            background:`linear-gradient(180deg,${ac},${ac}33)`,
-            opacity:isH?0.9:0.25,transition:"opacity .18s",
-            borderRadius:"8px 0 0 8px"}}/>
+          {/* Top accent bar */}
+          <div style={{height:"3px",background:`linear-gradient(90deg,${ac} 0%,${ac}66 50%,transparent 100%)`,opacity:isH?1:0.35,transition:"opacity .2s"}}/>
 
-          {/* Icon column */}
-          <div style={{
-            width:"52px",flexShrink:0,
-            display:"flex",alignItems:"center",justifyContent:"center",
-            background:isH?`${ac}08`:"transparent",
-            borderRight:`1px solid ${isH?ac+"18":"rgba(255,255,255,0.04)"}`,
-            transition:"background .18s",
-          }}>
-            <span style={{fontSize:"24px",lineHeight:1,
-              filter:isH?`drop-shadow(0 2px 8px ${ac}66)`:"none",
-              transition:"filter .18s"}}>{c.icon}</span>
-          </div>
-
-          {/* Main content */}
-          <div style={{flex:1,padding:"10px 12px",display:"flex",flexDirection:"column",justifyContent:"center",gap:"4px",minWidth:0}}>
-            {/* Name + sub */}
-            <div style={{display:"flex",alignItems:"baseline",gap:"6px",flexWrap:"wrap"}}>
-              <div style={{fontSize:"14px",fontWeight:"600",fontFamily:"'Cinzel',serif",
-                color:isH?"#f0e6cc":"#c8b87a",lineHeight:1.2,letterSpacing:"0.02em"}}>{c.name}</div>
-              <div style={{fontSize:"10px",color:isH?ac:"#4a3a20",flexShrink:0}}>{c.era}</div>
+          <div style={{display:"flex",padding:"12px",gap:"12px",alignItems:"center"}}>
+            {/* Icon bubble */}
+            <div style={{
+              width:"52px",height:"52px",flexShrink:0,borderRadius:"12px",
+              background:isH?`radial-gradient(circle at 40% 40%,${ac}28,${c.theme.bg}88)`:`rgba(255,255,255,0.04)`,
+              border:`1px solid ${isH?ac+"30":"rgba(255,255,255,0.06)"}`,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              transition:"all .2s",
+            }}>
+              <span style={{fontSize:"26px",filter:isH?`drop-shadow(0 0 10px ${ac}99)`:"none",transition:"filter .2s"}}>{c.icon}</span>
             </div>
-            <div style={{fontSize:"10px",color:"#5a4a28",marginBottom:"3px",
-              overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.sub} · {c.loc}</div>
 
-            {/* Stat bars — all 5 in one column */}
-            <div style={{display:"flex",flexDirection:"column",gap:"2px"}}>
-              {cats.map(cat=>{
-                const v=c.ratings[cat.k],isMax=v===maxR,isMin=v===minR;
-                return(
-                  <div key={cat.k} style={{display:"flex",alignItems:"center",gap:"5px"}}>
-                    <div style={{fontSize:"9px",width:"50px",flexShrink:0,
-                      color:isMax?ac:isMin?"#663322":"#4a3a20",letterSpacing:"0.2px"}}>
-                      {cat.i} {cat.l}
-                    </div>
-                    <div style={{flex:1,height:"3px",background:"rgba(255,255,255,0.05)",
-                      borderRadius:"2px",overflow:"hidden",minWidth:"60px"}}>
-                      <div style={{height:"100%",width:`${v}%`,borderRadius:"2px",
-                        background:isMax?`linear-gradient(90deg,${ac},${ac}88)`:isMin?"#883322":rCol(v),
-                        opacity:isH?1:0.6,transition:"opacity .18s, width 0.4s ease"}}/>
-                    </div>
-                    <div style={{fontSize:"10px",fontFamily:"monospace",width:"22px",
-                      textAlign:"right",flexShrink:0,
-                      color:isMax?ac:isMin?"#774422":rCol(v),
-                      fontWeight:isMax?"bold":"normal"}}>{v}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right panel: score + badges */}
-          <div style={{
-            width:"64px",flexShrink:0,
-            display:"flex",flexDirection:"column",
-            alignItems:"center",justifyContent:"center",
-            gap:"5px",
-            borderLeft:`1px solid ${isH?ac+"18":"rgba(255,255,255,0.04)"}`,
-            background:isH?`${ac}06`:"transparent",
-            transition:"background .18s",
-          }}>
-            {/* Score ring */}
-            <div style={{position:"relative",width:"40px",height:"40px"}}>
-              <svg width="40" height="40" viewBox="0 0 40 40">
-                <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"/>
-                <circle cx="20" cy="20" r="16" fill="none" stroke={rCol(sc)} strokeWidth="3"
-                  strokeDasharray={`${sc*1.005} 100.5`} strokeLinecap="round"
-                  transform="rotate(-90 20 20)" opacity="0.9"/>
-              </svg>
-              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
-                alignItems:"center",justifyContent:"center"}}>
-                <div style={{fontSize:"13px",fontWeight:"bold",color:rCol(sc),lineHeight:1,fontFamily:"monospace"}}>{sc}</div>
+            {/* Main content */}
+            <div style={{flex:1,minWidth:0}}>
+              {/* Name row */}
+              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"6px",marginBottom:"2px"}}>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"14px",fontWeight:"700",
+                  color:isH?"#f5edd8":"#c8b87a",letterSpacing:"0.02em",
+                  overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1,
+                  textShadow:isH?`0 0 20px ${ac}55`:"none",transition:"text-shadow .2s",
+                }}>{c.name}</div>
+                <div style={{display:"flex",gap:"4px",alignItems:"center",flexShrink:0}}>
+                  <span style={{fontSize:"8px",padding:"2px 7px",borderRadius:"20px",letterSpacing:"0.8px",
+                    background:c.type==="real"?"rgba(40,80,20,0.4)":"rgba(60,30,100,0.4)",
+                    border:`1px solid ${c.type==="real"?"rgba(70,140,35,0.35)":"rgba(100,50,170,0.35)"}`,
+                    color:c.type==="real"?"#6aba40":"#a066dd",fontFamily:"'Cinzel',serif",
+                  }}>{c.type==="real"?"HIST.":"FAN."}</span>
+                  <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
+                    style={{background:"transparent",border:"none",cursor:"pointer",
+                      fontSize:"13px",lineHeight:1,padding:"1px",
+                      opacity:isFav?1:isH?0.4:0.12,transition:"opacity .15s",
+                      color:isFav?"#f0c040":"#a09060"}}>
+                    {isFav?"⭐":"☆"}
+                  </button>
+                </div>
               </div>
-            </div>
-            {/* Type + score badges */}
-            <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"2px"}}>
-              <span style={{fontSize:"8px",padding:"1px 4px",borderRadius:"2px",
-                background:c.type==="real"?"rgba(40,70,25,0.4)":"rgba(50,30,80,0.45)",
-                color:c.type==="real"?"#4a7a30":"#8866bb",
-                border:`1px solid ${c.type==="real"?"rgba(60,100,35,0.3)":"rgba(80,50,130,0.3)"}`}}>
-                {c.type==="real"?"⚜ Hist.":"✦ Fantasy"}
-              </span>
-              {hs&&<span style={{fontSize:"11px"}}>{hs.won?"✅":"❌"}</span>}
-              {hs?.rating&&<span style={{fontSize:"9px",color:rCol(hs.rating*10),fontFamily:"monospace"}}>{hs.rating}/10</span>}
+
+              {/* Sub */}
+              <div style={{fontSize:"11px",color:isH?ac+"cc":"#5a4828",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"2px"}}>{c.sub}</div>
+
+              {/* Meta */}
+              <div style={{fontSize:"10px",color:"#3e3018",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"7px"}}>{c.era} · {c.loc}</div>
+
+              {/* Stats row */}
+              <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
+                <div style={{flex:1,display:"flex",flexDirection:"column",gap:"3px"}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span style={{fontSize:"9px",color:isH?ac+"99":"#4a3820",letterSpacing:"0.5px"}}>▲ {RLBL[maxK]}</span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:isH?"#88cc44":"#486618",fontWeight:"bold"}}>{maxV}</span>
+                  </div>
+                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
+                    <div style={{height:"100%",width:`${maxV}%`,borderRadius:"1px",
+                      background:`linear-gradient(90deg,${ac},${ac}55)`,transition:"width .4s"}}/>
+                  </div>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <span style={{fontSize:"9px",color:"#3a2810",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:"#774422"}}>{minV}</span>
+                  </div>
+                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
+                    <div style={{height:"100%",width:`${minV}%`,borderRadius:"1px",background:"rgba(180,80,40,0.6)",transition:"width .4s"}}/>
+                  </div>
+                </div>
+
+                {/* Score ring */}
+                <div style={{flexShrink:0,position:"relative",width:"36px",height:"36px"}}>
+                  <svg width="36" height="36" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5"/>
+                    <circle cx="18" cy="18" r="14" fill="none" stroke={rCol(sc)} strokeWidth="2.5"
+                      strokeDasharray={`${sc*0.879} 87.9`} strokeLinecap="round"
+                      transform="rotate(-90 18 18)"/>
+                  </svg>
+                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
+                    alignItems:"center",justifyContent:"center",gap:"0px"}}>
+                    <span style={{fontSize:"10px",fontWeight:"bold",color:rCol(sc),fontFamily:"monospace",lineHeight:1}}>{sc}</span>
+                    {hs&&<span style={{fontSize:"8px",lineHeight:1,marginTop:"1px"}}>{hs.won?"✅":"❌"}</span>}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -3828,85 +3805,98 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
     );
   };
 
+  const RCOL={europa:"#7788bb",nahost:"#cc9944",ostasien:"#dd6644",suedostasien:"#66bb55",suedamerika:"#cc7722",mittelerde:"#8855cc",westeros:"#44aacc"};
+
   return(
-    <div className="castle-outer" style={{padding:"18px 20px"}}>
-      {/* Filter/sort bar */}
-      <div className="filter-bar" style={{display:"flex",gap:"7px",flexWrap:"wrap",marginBottom:"18px",alignItems:"center",
-        padding:"12px 16px",
-        background:"linear-gradient(135deg,rgba(20,14,6,0.95),rgba(10,7,3,0.98))",
-        border:"1px solid rgba(201,168,76,0.12)",borderRadius:"8px",
-        boxShadow:"0 4px 20px rgba(0,0,0,0.4)"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"4px"}}>
-          <span style={{fontSize:"18px"}}>⚔️</span>
+    <div className="castle-outer" style={{padding:"16px 20px"}}>
+      {/* ── FILTER BAR ── */}
+      <div className="filter-bar" style={{
+        marginBottom:"20px",
+        background:"rgba(12,9,6,0.92)",
+        backdropFilter:"blur(12px)",
+        border:"1px solid rgba(201,168,76,0.14)",
+        borderRadius:"14px",
+        padding:"14px 16px",
+        boxShadow:"0 6px 28px rgba(0,0,0,0.55)",
+      }}>
+        {/* Top row */}
+        <div style={{display:"flex",gap:"10px",alignItems:"center",marginBottom:"12px"}}>
           <div>
-            <div style={{fontSize:"14px",fontWeight:"bold",color:"#f0e6cc",letterSpacing:"0.5px"}}>Alle Festungen</div>
-            <div style={{fontSize:"10px",color:"#5a4a28"}}>{filtered.length} von {castles.length} angezeigt</div>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:"13px",fontWeight:"600",color:"#e8d498",letterSpacing:"3px"}}>BURGENKATALOG</div>
+            <div style={{fontSize:"10px",color:"#4a3820",letterSpacing:"1px",marginTop:"2px"}}>{filtered.length} von {castles.length} Festungen</div>
+          </div>
+          <div style={{flex:1}}/>
+          <div style={{position:"relative"}}>
+            <span style={{position:"absolute",left:"11px",top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none",opacity:0.5}}>🔍</span>
+            <input value={search} onChange={e=>setSearch(e.target.value)}
+              placeholder="Suchen…"
+              style={{padding:"7px 14px 7px 32px",background:"rgba(255,255,255,0.06)",
+                border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",
+                color:"#c0a870",fontSize:"12px",outline:"none",width:"150px",fontFamily:"inherit"}}/>
           </div>
         </div>
-        <div style={{width:"1px",height:"32px",background:"rgba(255,255,255,0.06)",margin:"0 4px"}}/>
-        {[{k:"all",l:"Alle"},{k:"real",l:"⚜ Historisch"},{k:"fantasy",l:"✦ Fantasy"}].map(f=>(
-          <button key={f.k} onClick={()=>setFilter(f.k)}
-            style={{padding:"4px 10px",fontSize:"12px",letterSpacing:"0.5px",
-              background:filter===f.k?"rgba(201,168,76,0.12)":"transparent",
-              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.07)"}`,
-              color:filter===f.k?"#c9a84c":"#6a5a38",borderRadius:"4px",cursor:"pointer"}}>
-            {f.l}
-          </button>
-        ))}
-        <div style={{width:"1px",height:"24px",background:"rgba(255,255,255,0.06)",margin:"0 2px"}}/>
-        <select value={epochFilter} onChange={e=>setEpochFilter(e.target.value)}
-          style={{padding:"4px 8px",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.08)",
-            color:"#7a6a48",fontSize:"12px",borderRadius:"4px",outline:"none",fontFamily:"inherit"}}>
-          <option value="">Alle Epochen</option>{epochs.map(e=><option key={e} value={e}>{e}</option>)}
-        </select>
-        <select value={regionFilter} onChange={e=>setRegionFilter(e.target.value)}
-          style={{padding:"4px 8px",background:"rgba(0,0,0,0.5)",border:"1px solid rgba(255,255,255,0.08)",
-            color:"#7a6a48",fontSize:"12px",borderRadius:"4px",outline:"none",fontFamily:"inherit"}}>
-          <option value="">Alle Regionen</option>{regions.map(r=><option key={r} value={r}>{REGION_LABELS[r]||r}</option>)}
-        </select>
-        <div style={{width:"1px",height:"24px",background:"rgba(255,255,255,0.06)",margin:"0 2px"}}/>
-        {[{k:"default",l:"🗺 Gruppiert"},{k:"score",l:"↓ Score"},{k:"epoch",l:"📅 Zeit"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
-          <button key={s.k} onClick={()=>setSortBy(s.k)}
-            style={{padding:"3px 8px",fontSize:"11px",
-              background:sortBy===s.k?"rgba(201,168,76,0.08)":"transparent",
-              border:`1px solid ${sortBy===s.k?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,
-              color:sortBy===s.k?"#c9a84c":"#5a4a28",borderRadius:"3px",cursor:"pointer"}}>
-            {s.l}
-          </button>
-        ))}
-        <div style={{marginLeft:"auto",display:"flex",gap:"6px",alignItems:"center"}}>
-          <input value={search} onChange={e=>setSearch(e.target.value)}
-            placeholder="🔍 Burg suchen…"
-            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",
-              border:"1px solid rgba(255,255,255,0.08)",color:"#a09070",
-              fontSize:"12px",borderRadius:"4px",outline:"none",width:"120px",fontFamily:"inherit"}}/>
+        {/* Filter pills */}
+        <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
+          {[{k:"all",l:"Alle"},{k:"real",l:"⚜ Historisch"},{k:"fantasy",l:"✦ Fantasy"}].map(f=>(
+            <button key={f.k} onClick={()=>setFilter(f.k)} style={{
+              padding:"5px 13px",fontSize:"11px",letterSpacing:"0.5px",
+              background:filter===f.k?"rgba(201,168,76,0.15)":"rgba(255,255,255,0.04)",
+              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.08)"}`,
+              color:filter===f.k?"#d4aa56":"#5a4a30",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+              {f.l}
+            </button>
+          ))}
+          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
+          <select value={epochFilter} onChange={e=>setEpochFilter(e.target.value)}
+            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
+              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
+            <option value="">Alle Epochen</option>{epochs.map(e=><option key={e} value={e}>{e}</option>)}
+          </select>
+          <select value={regionFilter} onChange={e=>setRegionFilter(e.target.value)}
+            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
+              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
+            <option value="">Alle Regionen</option>{regions.map(r=><option key={r} value={r}>{REGION_LABELS[r]||r}</option>)}
+          </select>
+          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
+          {[{k:"default",l:"🗺 Karte"},{k:"score",l:"↓ Score"},{k:"epoch",l:"Epoche"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
+            <button key={s.k} onClick={()=>setSortBy(s.k)} style={{
+              padding:"5px 11px",fontSize:"11px",
+              background:sortBy===s.k?"rgba(201,168,76,0.1)":"rgba(255,255,255,0.03)",
+              border:`1px solid ${sortBy===s.k?"rgba(201,168,76,0.32)":"rgba(255,255,255,0.05)"}`,
+              color:sortBy===s.k?"#c9a84c":"#4a3a20",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+              {s.l}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Cards — grouped or flat */}
+      {/* ── CARD GRID ── */}
       {grouped
         ? Object.entries(grouped)
-            .sort(([a],[b])=>{const o=["europa","nahost","ostasien","suedostasien","suedamerika","mittelerde","westeros","sorrowland"];return(o.indexOf(a)||99)-(o.indexOf(b)||99);})
+            .sort(([a],[b])=>{const o=["europa","nahost","ostasien","suedostasien","suedamerika","mittelerde","westeros"];return(o.indexOf(a)>=0?o.indexOf(a):99)-(o.indexOf(b)>=0?o.indexOf(b):99);})
             .map(([region,cards])=>(
-          <div key={region} style={{marginBottom:"28px"}}>
-            <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"12px",
-              paddingBottom:"8px",borderBottom:"1px solid rgba(255,255,255,0.06)"}}>
-              <span style={{fontSize:"13px",fontWeight:"bold",color:"#a09060",letterSpacing:"1.5px",fontFamily:"serif"}}>
-                {REGION_LABELS[region]||region.toUpperCase()}
-              </span>
-              <span style={{fontSize:"11px",color:"#4a3a20",padding:"1px 7px",
-                background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.05)",
-                borderRadius:"10px"}}>
-                {cards.length}
-              </span>
-              <div style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(255,255,255,0.05),transparent)"}}/>
+          <div key={region} style={{marginBottom:"32px"}}>
+            {/* Region header */}
+            <div style={{display:"flex",alignItems:"center",gap:"14px",marginBottom:"14px"}}>
+              <div style={{width:"3px",height:"32px",borderRadius:"2px",flexShrink:0,
+                background:`linear-gradient(180deg,${RCOL[region]||"#c9a84c"} 0%,transparent 100%)`}}/>
+              <div>
+                <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",
+                  color:RCOL[region]||"#c9a84c",letterSpacing:"3px",textTransform:"uppercase"}}>
+                  {REGION_LABELS[region]||region}
+                </div>
+                <div style={{fontSize:"9px",color:"#3a2a10",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
+                  {cards.length} FESTUNG{cards.length!==1?"EN":""}
+                </div>
+              </div>
+              <div style={{flex:1,height:"1px",background:`linear-gradient(90deg,${RCOL[region]||"#c9a84c"}55 0%,transparent 100%)`}}/>
             </div>
-            <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
+            <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:"10px"}}>
               {cards.map(c=><CastleCard key={c.id} c={c}/>)}
             </div>
           </div>
         ))
-        : <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"8px"}}>
+        : <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:"10px"}}>
             {filtered.map(c=><CastleCard key={c.id} c={c}/>)}
           </div>
       }
