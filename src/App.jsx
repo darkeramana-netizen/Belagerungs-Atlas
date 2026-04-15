@@ -3891,35 +3891,38 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
         boxShadow:"0 8px 32px rgba(0,0,0,0.6),inset 0 1px 0 rgba(201,168,76,0.08)",
       }}>
         {/* Top row */}
-        <div style={{display:"flex",gap:"12px",alignItems:"center",marginBottom:"12px"}}>
-          <div>
+        <div style={{display:"flex",gap:"10px",alignItems:"center",marginBottom:"14px",flexWrap:"wrap"}}>
+          <div style={{flex:"1 1 auto",minWidth:0}}>
             <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",color:"#d4bc78",letterSpacing:"3.5px"}}>
               BURGENKATALOG
             </div>
-            <div style={{fontSize:"10px",color:"#5a4a2a",letterSpacing:"1.5px",marginTop:"2px"}}>
-              <span style={{color:"#8a7040",fontWeight:"bold"}}>{filtered.length}</span> von {castles.length} Festungen
+            <div style={{fontSize:"10px",color:"#8a7a5a",letterSpacing:"1.5px",marginTop:"2px"}}>
+              <span style={{color:"#c9a84c",fontWeight:"bold"}}>{filtered.length}</span>
+              <span style={{color:"#7a6a4a"}}> von {castles.length} Festungen</span>
             </div>
           </div>
-          <div style={{flex:1}}/>
           {/* Search */}
-          <div style={{position:"relative"}}>
+          <div style={{position:"relative",flexShrink:0}}>
             <span style={{
-              position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",
-              fontSize:"12px",pointerEvents:"none",opacity:0.45,
+              position:"absolute",left:"11px",top:"50%",transform:"translateY(-50%)",
+              fontSize:"12px",pointerEvents:"none",opacity:0.5,
             }}>🔍</span>
             <input
               className="search-input"
               value={search} onChange={e=>setSearch(e.target.value)}
               placeholder="Burg suchen…"
               style={{
-                padding:"7px 14px 7px 34px",
-                background:"rgba(255,255,255,0.055)",
-                border:"1px solid rgba(201,168,76,0.18)",
+                padding:"7px 14px 7px 32px",
+                background:"rgba(255,255,255,0.06)",
+                border:"1px solid rgba(201,168,76,0.22)",
                 borderRadius:"20px",
-                color:"#c0a870",fontSize:"12px",outline:"none",
-                width:"160px",fontFamily:"inherit",
-                transition:"border-color .2s, box-shadow .2s",
+                color:"#c8b07a",fontSize:"12px",outline:"none",
+                width:"140px",
+                fontFamily:"inherit",
+                transition:"width .25s ease, border-color .2s, box-shadow .2s",
               }}
+              onFocus={e=>e.target.style.width="180px"}
+              onBlur={e=>e.target.style.width="140px"}
             />
           </div>
         </div>
@@ -3930,18 +3933,18 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           {[{k:"all",l:"Alle"},{k:"real",l:"⚜ Historisch"},{k:"fantasy",l:"✦ Fantasy"}].map(f=>(
             <button key={f.k} onClick={()=>setFilter(f.k)} className="filter-pill" style={{
               background:filter===f.k
-                ?"linear-gradient(135deg,rgba(201,168,76,0.22),rgba(201,168,76,0.1))"
-                :"rgba(255,255,255,0.05)",
-              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.55)":"rgba(255,255,255,0.1)"}`,
-              color:filter===f.k?"#d8b25a":"#a08e70",
+                ?"linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.12))"
+                :"rgba(255,255,255,0.07)",
+              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.14)"}`,
+              color:filter===f.k?"#e0c070":"#c0aa80",
               fontFamily:"inherit",
-              boxShadow:filter===f.k?"0 2px 12px rgba(201,168,76,0.2)":"none",
+              boxShadow:filter===f.k?"0 2px 14px rgba(201,168,76,0.25)":"none",
             }}>
               {f.l}
             </button>
           ))}
 
-          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.3),transparent)",margin:"0 3px"}}/>
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.35),transparent)",margin:"0 2px"}}/>
 
           {/* Epoch & Region selects */}
           {[
@@ -3949,10 +3952,10 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
             {value:regionFilter,onChange:e=>setRegionFilter(e.target.value),opts:[{v:"",l:"Alle Regionen"},...regions.map(r=>({v:r,l:REGION_LABELS[r]||r}))]},
           ].map((sel,i)=>(
             <select key={i} value={sel.value} onChange={sel.onChange} style={{
-              padding:"5px 12px",
-              background:"rgba(255,255,255,0.05)",
-              border:"1px solid rgba(201,168,76,0.18)",
-              color:"#9a8a68",fontSize:"11px",borderRadius:"20px",
+              padding:"6px 12px",
+              background:"rgba(255,255,255,0.07)",
+              border:"1px solid rgba(255,255,255,0.14)",
+              color:"#b0a080",fontSize:"11px",borderRadius:"20px",
               outline:"none",fontFamily:"inherit",cursor:"pointer",
               transition:"border-color .18s",
             }}>
@@ -3960,18 +3963,18 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
             </select>
           ))}
 
-          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.3),transparent)",margin:"0 3px"}}/>
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(138,173,255,0.3),transparent)",margin:"0 2px"}}/>
 
           {/* Sort buttons */}
           {[{k:"default",l:"🗺 Karte"},{k:"score",l:"↓ Score"},{k:"epoch",l:"Epoche"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
             <button key={s.k} onClick={()=>setSortBy(s.k)} className="filter-pill" style={{
               background:sortBy===s.k
-                ?"linear-gradient(135deg,rgba(111,138,255,0.2),rgba(66,216,207,0.12))"
-                :"rgba(255,255,255,0.04)",
-              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.45)":"rgba(255,255,255,0.09)"}`,
-              color:sortBy===s.k?"#c0d4ff":"#8a8878",
+                ?"linear-gradient(135deg,rgba(111,138,255,0.22),rgba(66,216,207,0.14))"
+                :"rgba(255,255,255,0.07)",
+              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.5)":"rgba(255,255,255,0.14)"}`,
+              color:sortBy===s.k?"#c8dcff":"#a8a898",
               fontFamily:"inherit",
-              boxShadow:sortBy===s.k?"0 2px 12px rgba(111,138,255,0.18)":"none",
+              boxShadow:sortBy===s.k?"0 2px 14px rgba(111,138,255,0.2)":"none",
             }}>
               {s.l}
             </button>
@@ -7614,10 +7617,11 @@ export default function App(){
 
         /* ── Search input ── */
         .search-input:focus{
-          outline:none;
-          border-color:rgba(138,173,255,0.5)!important;
-          box-shadow:0 0 0 3px rgba(111,138,255,0.15);
+          outline:none!important;
+          border-color:rgba(201,168,76,0.55)!important;
+          box-shadow:0 0 0 3px rgba(201,168,76,0.12),0 0 12px rgba(201,168,76,0.1)!important;
         }
+        .search-input{box-sizing:border-box;max-width:100%}
 
         /* ── Region headers ── */
         .region-bar{
