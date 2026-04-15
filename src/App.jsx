@@ -3705,95 +3705,164 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
     const [maxK,maxV]=rEntries.reduce((a,b)=>a[1]>b[1]?a:b);
     const [minK,minV]=rEntries.reduce((a,b)=>a[1]<b[1]?a:b);
     const RLBL={walls:"Mauern",position:"Lage",supply:"Versorg.",garrison:"Garnison",morale:"Moral"};
+    const scoreColor=rCol(sc);
     return(
       <button onClick={()=>onSelect(c)} onMouseEnter={()=>setHov(c.id)} onMouseLeave={()=>setHov(null)}
         style={{textAlign:"left",padding:0,background:"transparent",border:"none",cursor:"pointer",display:"block",width:"100%"}}>
         <div className="castle-card" style={{
           position:"relative",overflow:"hidden",
-          background:isH?`linear-gradient(145deg,${c.theme.bg} 0%,rgba(8,6,4,0.97) 70%)`:"rgba(255,255,255,0.03)",
-          border:`1px solid ${isH?ac+"50":"rgba(255,255,255,0.08)"}`,
-          borderRadius:"12px",
-          boxShadow:isH?`0 12px 40px rgba(0,0,0,0.7),0 0 0 1px ${ac}1a,inset 0 1px 0 ${ac}20`:"0 2px 8px rgba(0,0,0,0.4)",
+          background:isH
+            ?`linear-gradient(145deg,${c.theme.bg} 0%,rgba(10,8,5,0.97) 65%,rgba(6,4,2,0.99) 100%)`
+            :"linear-gradient(145deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))",
+          border:`1px solid ${isH?ac+"65":"rgba(255,255,255,0.07)"}`,
+          borderRadius:"14px",
+          boxShadow:isH
+            ?`0 16px 48px rgba(0,0,0,0.75),0 0 0 1px ${ac}22,0 4px 24px ${ac}18,inset 0 1px 0 ${ac}25`
+            :"0 2px 10px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.02)",
         }}>
-          {/* Top accent bar */}
-          <div style={{height:"3px",background:`linear-gradient(90deg,${ac} 0%,${ac}66 50%,transparent 100%)`,opacity:isH?1:0.35,transition:"opacity .2s"}}/>
+          {/* Top accent bar — thicker and more vivid on hover */}
+          <div style={{
+            height:"3px",
+            background:`linear-gradient(90deg,${ac} 0%,${ac}88 45%,${ac}22 80%,transparent 100%)`,
+            opacity:isH?1:0.28,
+            transition:"opacity .25s ease, height .25s ease",
+          }}/>
 
-          <div style={{display:"flex",padding:"12px",gap:"12px",alignItems:"center"}}>
+          {/* Hover glow overlay */}
+          {isH&&<div style={{
+            position:"absolute",top:0,left:0,right:0,height:"60%",pointerEvents:"none",
+            background:`radial-gradient(ellipse at 20% 0%,${ac}12,transparent 60%)`,
+          }}/>}
+
+          <div style={{display:"flex",padding:"13px",gap:"12px",alignItems:"center"}}>
             {/* Icon bubble */}
             <div style={{
-              width:"52px",height:"52px",flexShrink:0,borderRadius:"12px",
-              background:isH?`radial-gradient(circle at 40% 40%,${ac}28,${c.theme.bg}88)`:`rgba(255,255,255,0.04)`,
-              border:`1px solid ${isH?ac+"30":"rgba(255,255,255,0.06)"}`,
+              width:"54px",height:"54px",flexShrink:0,borderRadius:"13px",
+              background:isH
+                ?`radial-gradient(circle at 35% 35%,${ac}32,${c.theme.bg}aa)`
+                :`linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))`,
+              border:`1px solid ${isH?ac+"45":"rgba(255,255,255,0.07)"}`,
               display:"flex",alignItems:"center",justifyContent:"center",
-              transition:"all .2s",
+              transition:"all .25s ease",
+              boxShadow:isH?`0 4px 16px ${ac}30,inset 0 1px 0 rgba(255,255,255,0.1)`:"none",
             }}>
-              <span style={{fontSize:"26px",filter:isH?`drop-shadow(0 0 10px ${ac}99)`:"none",transition:"filter .2s"}}>{c.icon}</span>
+              <span style={{
+                fontSize:"27px",
+                filter:isH?`drop-shadow(0 2px 10px ${ac}cc)`:"drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+                transition:"filter .25s ease, transform .25s ease",
+                transform:isH?"scale(1.12)":"scale(1)",
+                display:"block",
+              }}>{c.icon}</span>
             </div>
 
             {/* Main content */}
             <div style={{flex:1,minWidth:0}}>
               {/* Name row */}
-              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"6px",marginBottom:"2px"}}>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"14px",fontWeight:"700",
-                  color:isH?"#f5edd8":"#c8b87a",letterSpacing:"0.02em",
+              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"6px",marginBottom:"3px"}}>
+                <div style={{
+                  fontFamily:"'Cinzel',serif",fontSize:"13.5px",fontWeight:"700",
+                  color:isH?"#f6eedd":"#b0a068",
+                  letterSpacing:"0.03em",
                   overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1,
-                  textShadow:isH?`0 0 20px ${ac}55`:"none",transition:"text-shadow .2s",
+                  textShadow:isH?`0 0 22px ${ac}66`:"none",
+                  transition:"color .2s ease, text-shadow .2s ease",
                 }}>{c.name}</div>
                 <div style={{display:"flex",gap:"4px",alignItems:"center",flexShrink:0}}>
-                  <span style={{fontSize:"8px",padding:"2px 7px",borderRadius:"20px",letterSpacing:"0.8px",
-                    background:c.type==="real"?"rgba(40,80,20,0.4)":"rgba(60,30,100,0.4)",
-                    border:`1px solid ${c.type==="real"?"rgba(70,140,35,0.35)":"rgba(100,50,170,0.35)"}`,
-                    color:c.type==="real"?"#6aba40":"#a066dd",fontFamily:"'Cinzel',serif",
+                  {/* Type badge */}
+                  <span style={{
+                    fontSize:"8px",padding:"2px 7px",borderRadius:"20px",letterSpacing:"1px",
+                    background:c.type==="real"
+                      ?"linear-gradient(135deg,rgba(50,100,25,0.5),rgba(35,70,18,0.4))"
+                      :"linear-gradient(135deg,rgba(70,35,120,0.5),rgba(50,25,90,0.4))",
+                    border:`1px solid ${c.type==="real"?"rgba(80,160,40,0.4)":"rgba(120,60,200,0.4)"}`,
+                    color:c.type==="real"?"#74cc44":"#b07aee",
+                    fontFamily:"'Cinzel',serif",
+                    boxShadow:isH&&c.type==="real"?"0 0 8px rgba(80,180,40,0.2)":isH?"0 0 8px rgba(130,70,220,0.2)":"none",
                   }}>{c.type==="real"?"HIST.":"FAN."}</span>
                   <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
-                    style={{background:"transparent",border:"none",cursor:"pointer",
-                      fontSize:"13px",lineHeight:1,padding:"1px",
-                      opacity:isFav?1:isH?0.4:0.12,transition:"opacity .15s",
-                      color:isFav?"#f0c040":"#a09060"}}>
+                    style={{
+                      background:"transparent",border:"none",cursor:"pointer",
+                      fontSize:"13px",lineHeight:1,padding:"2px",
+                      opacity:isFav?1:isH?0.5:0.15,
+                      transition:"opacity .15s, transform .15s",
+                      color:isFav?"#f0c040":"#c0a060",
+                      transform:isFav?"scale(1.15)":"scale(1)",
+                    }}>
                     {isFav?"⭐":"☆"}
                   </button>
                 </div>
               </div>
 
               {/* Sub */}
-              <div style={{fontSize:"11px",color:isH?ac+"cc":"#5a4828",
-                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"2px"}}>{c.sub}</div>
+              <div style={{
+                fontSize:"11px",
+                color:isH?`${ac}dd`:"#4e3e22",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+                marginBottom:"2px",
+                transition:"color .2s ease",
+              }}>{c.sub}</div>
 
               {/* Meta */}
-              <div style={{fontSize:"10px",color:"#3e3018",
-                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"7px"}}>{c.era} · {c.loc}</div>
+              <div style={{
+                fontSize:"10px",
+                color:isH?"#5a4e34":"#322818",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+                marginBottom:"8px",
+                transition:"color .2s ease",
+              }}>{c.era} · {c.loc}</div>
 
               {/* Stats row */}
-              <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-                <div style={{flex:1,display:"flex",flexDirection:"column",gap:"3px"}}>
+              <div style={{display:"flex",gap:"9px",alignItems:"center"}}>
+                <div style={{flex:1,display:"flex",flexDirection:"column",gap:"4px"}}>
+                  {/* Best stat */}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:"9px",color:isH?ac+"99":"#4a3820",letterSpacing:"0.5px"}}>▲ {RLBL[maxK]}</span>
-                    <span style={{fontSize:"9px",fontFamily:"monospace",color:isH?"#88cc44":"#486618",fontWeight:"bold"}}>{maxV}</span>
+                    <span style={{fontSize:"9px",color:isH?`${ac}cc`:"#4a3820",letterSpacing:"0.5px"}}>
+                      ▲ {RLBL[maxK]}
+                    </span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:isH?"#90d845":"#506a22",fontWeight:"bold"}}>{maxV}</span>
                   </div>
-                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
-                    <div style={{height:"100%",width:`${maxV}%`,borderRadius:"1px",
-                      background:`linear-gradient(90deg,${ac},${ac}55)`,transition:"width .4s"}}/>
+                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                    <div style={{
+                      height:"100%",width:`${maxV}%`,borderRadius:"2px",
+                      background:isH?`linear-gradient(90deg,${ac},${ac}66)`:"linear-gradient(90deg,rgba(201,168,76,0.6),rgba(201,168,76,0.3))",
+                      transition:"width .5s ease, background .25s",
+                      boxShadow:isH?`0 0 6px ${ac}66`:"none",
+                    }}/>
                   </div>
+                  {/* Worst stat */}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <span style={{fontSize:"9px",color:"#3a2810",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
-                    <span style={{fontSize:"9px",fontFamily:"monospace",color:"#774422"}}>{minV}</span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:"#7a3a20"}}>{minV}</span>
                   </div>
-                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
-                    <div style={{height:"100%",width:`${minV}%`,borderRadius:"1px",background:"rgba(180,80,40,0.6)",transition:"width .4s"}}/>
+                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                    <div style={{
+                      height:"100%",width:`${minV}%`,borderRadius:"2px",
+                      background:"rgba(180,70,35,0.55)",
+                      transition:"width .5s ease",
+                    }}/>
                   </div>
                 </div>
 
                 {/* Score ring */}
-                <div style={{flexShrink:0,position:"relative",width:"36px",height:"36px"}}>
-                  <svg width="36" height="36" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5"/>
-                    <circle cx="18" cy="18" r="14" fill="none" stroke={rCol(sc)} strokeWidth="2.5"
-                      strokeDasharray={`${sc*0.879} 87.9`} strokeLinecap="round"
-                      transform="rotate(-90 18 18)"/>
+                <div style={{flexShrink:0,position:"relative",width:"40px",height:"40px"}}>
+                  <svg width="40" height="40" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"/>
+                    <circle cx="20" cy="20" r="16" fill="none" stroke={scoreColor} strokeWidth="3"
+                      strokeDasharray={`${sc*1.005} 100.5`} strokeLinecap="round"
+                      transform="rotate(-90 20 20)"
+                      style={{filter:isH?`drop-shadow(0 0 4px ${scoreColor}88)`:"none",transition:"filter .25s"}}
+                    />
                   </svg>
-                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
-                    alignItems:"center",justifyContent:"center",gap:"0px"}}>
-                    <span style={{fontSize:"10px",fontWeight:"bold",color:rCol(sc),fontFamily:"monospace",lineHeight:1}}>{sc}</span>
+                  <div style={{
+                    position:"absolute",inset:0,display:"flex",flexDirection:"column",
+                    alignItems:"center",justifyContent:"center",
+                  }}>
+                    <span style={{
+                      fontSize:"11px",fontWeight:"800",color:scoreColor,
+                      fontFamily:"'Cinzel',serif",lineHeight:1,
+                      textShadow:isH?`0 0 8px ${scoreColor}88`:"none",
+                      transition:"text-shadow .25s",
+                    }}>{sc}</span>
                     {hs&&<span style={{fontSize:"8px",lineHeight:1,marginTop:"1px"}}>{hs.won?"✅":"❌"}</span>}
                   </div>
                 </div>
@@ -3808,62 +3877,102 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
   const RCOL={europa:"#7788bb",nahost:"#cc9944",ostasien:"#dd6644",suedostasien:"#66bb55",suedamerika:"#cc7722",mittelerde:"#8855cc",westeros:"#44aacc"};
 
   return(
-    <div className="castle-outer" style={{padding:"16px 20px"}}>
+    <div className="castle-outer" style={{padding:"18px 22px"}}>
       {/* ── FILTER BAR ── */}
       <div className="filter-bar" style={{
-        marginBottom:"20px",
-        background:"rgba(12,9,6,0.92)",
-        backdropFilter:"blur(12px)",
-        border:"1px solid rgba(201,168,76,0.14)",
-        borderRadius:"14px",
-        padding:"14px 16px",
-        boxShadow:"0 6px 28px rgba(0,0,0,0.55)",
+        marginBottom:"22px",
+        background:"linear-gradient(145deg,rgba(14,10,6,0.96),rgba(10,8,5,0.94))",
+        backdropFilter:"blur(16px)",
+        WebkitBackdropFilter:"blur(16px)",
+        border:"1px solid rgba(201,168,76,0.16)",
+        borderTop:"1px solid rgba(201,168,76,0.1)",
+        borderRadius:"16px",
+        padding:"14px 18px",
+        boxShadow:"0 8px 32px rgba(0,0,0,0.6),inset 0 1px 0 rgba(201,168,76,0.08)",
       }}>
         {/* Top row */}
-        <div style={{display:"flex",gap:"10px",alignItems:"center",marginBottom:"12px"}}>
+        <div style={{display:"flex",gap:"12px",alignItems:"center",marginBottom:"12px"}}>
           <div>
-            <div style={{fontFamily:"'Cinzel',serif",fontSize:"13px",fontWeight:"600",color:"#e8d498",letterSpacing:"3px"}}>BURGENKATALOG</div>
-            <div style={{fontSize:"10px",color:"#4a3820",letterSpacing:"1px",marginTop:"2px"}}>{filtered.length} von {castles.length} Festungen</div>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",color:"#d4bc78",letterSpacing:"3.5px"}}>
+              BURGENKATALOG
+            </div>
+            <div style={{fontSize:"10px",color:"#5a4a2a",letterSpacing:"1.5px",marginTop:"2px"}}>
+              <span style={{color:"#8a7040",fontWeight:"bold"}}>{filtered.length}</span> von {castles.length} Festungen
+            </div>
           </div>
           <div style={{flex:1}}/>
+          {/* Search */}
           <div style={{position:"relative"}}>
-            <span style={{position:"absolute",left:"11px",top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none",opacity:0.5}}>🔍</span>
-            <input value={search} onChange={e=>setSearch(e.target.value)}
-              placeholder="Suchen…"
-              style={{padding:"7px 14px 7px 32px",background:"rgba(255,255,255,0.06)",
-                border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",
-                color:"#c0a870",fontSize:"12px",outline:"none",width:"150px",fontFamily:"inherit"}}/>
+            <span style={{
+              position:"absolute",left:"12px",top:"50%",transform:"translateY(-50%)",
+              fontSize:"12px",pointerEvents:"none",opacity:0.45,
+            }}>🔍</span>
+            <input
+              className="search-input"
+              value={search} onChange={e=>setSearch(e.target.value)}
+              placeholder="Burg suchen…"
+              style={{
+                padding:"7px 14px 7px 34px",
+                background:"rgba(255,255,255,0.055)",
+                border:"1px solid rgba(201,168,76,0.18)",
+                borderRadius:"20px",
+                color:"#c0a870",fontSize:"12px",outline:"none",
+                width:"160px",fontFamily:"inherit",
+                transition:"border-color .2s, box-shadow .2s",
+              }}
+            />
           </div>
         </div>
-        {/* Filter pills */}
+
+        {/* Filter pills row */}
         <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
+          {/* Type filters */}
           {[{k:"all",l:"Alle"},{k:"real",l:"⚜ Historisch"},{k:"fantasy",l:"✦ Fantasy"}].map(f=>(
-            <button key={f.k} onClick={()=>setFilter(f.k)} style={{
-              padding:"5px 13px",fontSize:"11px",letterSpacing:"0.5px",
-              background:filter===f.k?"rgba(201,168,76,0.15)":"rgba(255,255,255,0.04)",
-              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.08)"}`,
-              color:filter===f.k?"#d4aa56":"#5a4a30",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+            <button key={f.k} onClick={()=>setFilter(f.k)} className="filter-pill" style={{
+              background:filter===f.k
+                ?"linear-gradient(135deg,rgba(201,168,76,0.22),rgba(201,168,76,0.1))"
+                :"rgba(255,255,255,0.04)",
+              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.55)":"rgba(255,255,255,0.08)"}`,
+              color:filter===f.k?"#d8b25a":"#5a4a30",
+              fontFamily:"inherit",
+              boxShadow:filter===f.k?"0 2px 12px rgba(201,168,76,0.2)":"none",
+            }}>
               {f.l}
             </button>
           ))}
-          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
-          <select value={epochFilter} onChange={e=>setEpochFilter(e.target.value)}
-            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
-              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
-            <option value="">Alle Epochen</option>{epochs.map(e=><option key={e} value={e}>{e}</option>)}
-          </select>
-          <select value={regionFilter} onChange={e=>setRegionFilter(e.target.value)}
-            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
-              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
-            <option value="">Alle Regionen</option>{regions.map(r=><option key={r} value={r}>{REGION_LABELS[r]||r}</option>)}
-          </select>
-          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
+
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.3),transparent)",margin:"0 3px"}}/>
+
+          {/* Epoch & Region selects */}
+          {[
+            {value:epochFilter,onChange:e=>setEpochFilter(e.target.value),opts:[{v:"",l:"Alle Epochen"},...epochs.map(e=>({v:e,l:e}))]},
+            {value:regionFilter,onChange:e=>setRegionFilter(e.target.value),opts:[{v:"",l:"Alle Regionen"},...regions.map(r=>({v:r,l:REGION_LABELS[r]||r}))]},
+          ].map((sel,i)=>(
+            <select key={i} value={sel.value} onChange={sel.onChange} style={{
+              padding:"5px 12px",
+              background:"rgba(255,255,255,0.04)",
+              border:"1px solid rgba(201,168,76,0.14)",
+              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",
+              outline:"none",fontFamily:"inherit",cursor:"pointer",
+              transition:"border-color .18s",
+            }}>
+              {sel.opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+            </select>
+          ))}
+
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.3),transparent)",margin:"0 3px"}}/>
+
+          {/* Sort buttons */}
           {[{k:"default",l:"🗺 Karte"},{k:"score",l:"↓ Score"},{k:"epoch",l:"Epoche"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
-            <button key={s.k} onClick={()=>setSortBy(s.k)} style={{
-              padding:"5px 11px",fontSize:"11px",
-              background:sortBy===s.k?"rgba(201,168,76,0.1)":"rgba(255,255,255,0.03)",
-              border:`1px solid ${sortBy===s.k?"rgba(201,168,76,0.32)":"rgba(255,255,255,0.05)"}`,
-              color:sortBy===s.k?"#c9a84c":"#4a3a20",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+            <button key={s.k} onClick={()=>setSortBy(s.k)} className="filter-pill" style={{
+              background:sortBy===s.k
+                ?"linear-gradient(135deg,rgba(111,138,255,0.18),rgba(66,216,207,0.1))"
+                :"rgba(255,255,255,0.03)",
+              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.4)":"rgba(255,255,255,0.05)"}`,
+              color:sortBy===s.k?"#b0c8f8":"#4a3a20",
+              fontFamily:"inherit",
+              boxShadow:sortBy===s.k?"0 2px 12px rgba(111,138,255,0.15)":"none",
+            }}>
               {s.l}
             </button>
           ))}
@@ -3875,21 +3984,34 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
         ? Object.entries(grouped)
             .sort(([a],[b])=>{const o=["europa","nahost","ostasien","suedostasien","suedamerika","mittelerde","westeros"];return(o.indexOf(a)>=0?o.indexOf(a):99)-(o.indexOf(b)>=0?o.indexOf(b):99);})
             .map(([region,cards])=>(
-          <div key={region} style={{marginBottom:"32px"}}>
-            {/* Region header */}
-            <div style={{display:"flex",alignItems:"center",gap:"14px",marginBottom:"14px"}}>
-              <div style={{width:"3px",height:"32px",borderRadius:"2px",flexShrink:0,
-                background:`linear-gradient(180deg,${RCOL[region]||"#c9a84c"} 0%,transparent 100%)`}}/>
+          <div key={region} style={{marginBottom:"36px"}}>
+            {/* Region header — improved */}
+            <div className="region-bar" style={{
+              borderLeftColor:RCOL[region]||"#c9a84c",
+              marginBottom:"16px",
+            }}>
+              <div style={{
+                width:"28px",height:"28px",borderRadius:"8px",flexShrink:0,
+                background:`linear-gradient(135deg,${RCOL[region]||"#c9a84c"}28,${RCOL[region]||"#c9a84c"}10)`,
+                border:`1px solid ${RCOL[region]||"#c9a84c"}40`,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"14px",
+              }}>
+                {region==="europa"?"🏰":region==="nahost"?"🕌":region==="ostasien"?"⛩️":region==="suedostasien"?"🌿":region==="suedamerika"?"🌄":region==="mittelerde"?"🧙":"⚔️"}
+              </div>
               <div>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",
-                  color:RCOL[region]||"#c9a84c",letterSpacing:"3px",textTransform:"uppercase"}}>
+                <div style={{
+                  fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",
+                  color:RCOL[region]||"#c9a84c",letterSpacing:"3px",textTransform:"uppercase",
+                  textShadow:`0 0 16px ${RCOL[region]||"#c9a84c"}55`,
+                }}>
                   {REGION_LABELS[region]||region}
                 </div>
-                <div style={{fontSize:"9px",color:"#3a2a10",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
+                <div style={{fontSize:"9px",color:"#4a3820",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
                   {cards.length} FESTUNG{cards.length!==1?"EN":""}
                 </div>
               </div>
-              <div style={{flex:1,height:"1px",background:`linear-gradient(90deg,${RCOL[region]||"#c9a84c"}55 0%,transparent 100%)`}}/>
+              <div style={{flex:1,height:"1px",background:`linear-gradient(90deg,${RCOL[region]||"#c9a84c"}44,transparent)`}}/>
             </div>
             <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:"10px"}}>
               {cards.map(c=><CastleCard key={c.id} c={c}/>)}
@@ -7160,33 +7282,64 @@ export default function App(){
     <div className="app-shell" style={{height:"100vh",overflow:"hidden",background:uiTheme.appBg,color:uiTheme.appColor,fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column"}}>
       <style>{`
         *{box-sizing:border-box}
-        ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:#070b18}
-        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6f8aff,#42d8cf);border-radius:2px}
+        ::selection{background:rgba(111,138,255,0.35);color:#fff}
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:rgba(7,11,24,0.8)}
+        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6f8aff,#42d8cf);border-radius:3px}
         ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#9baeff,#63e9df)}
-        input::placeholder{color:#6e7ca8}
-        select option{background:#101a2e;color:#d8e6ff}
-        button{transition:all 0.15s ease}
-        button:hover{filter:brightness(1.15)}
-        button:active{transform:scale(0.97)}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes fadeInLeft{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
-        @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
+
+        input::placeholder{color:#5a6a9a}
+        select option{background:#0e1628;color:#d8e6ff}
+
+        /* ── Base button ── */
+        button{transition:all 0.18s cubic-bezier(.4,0,.2,1)}
+        button:hover{filter:brightness(1.18)}
+        button:active{transform:scale(0.96)!important}
+
+        /* ── Keyframes ── */
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeInLeft{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         @keyframes pf{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(2.5)}}
-        @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+        @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.75}}
         @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-        @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(201,168,76,0.1)}50%{box-shadow:0 0 20px rgba(201,168,76,0.25)}}
+        @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(201,168,76,0.12)}50%{box-shadow:0 0 24px rgba(201,168,76,0.32)}}
         @keyframes barFill{from{width:0}to{width:var(--w)}}
-        .castle-card{transition:transform 0.15s ease,border-color 0.15s ease,box-shadow 0.15s ease}
-        .castle-card:hover{transform:translateY(-2px)}
+        @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-5px)}}
+        @keyframes borderGlow{0%,100%{box-shadow:0 0 0 1px rgba(111,138,255,0.15),0 4px 20px rgba(0,0,0,0.4)}50%{box-shadow:0 0 0 1px rgba(111,138,255,0.45),0 8px 32px rgba(111,138,255,0.18)}}
+        @keyframes logoFloat{0%,100%{filter:drop-shadow(0 0 6px rgba(201,168,76,0.5))}50%{filter:drop-shadow(0 0 14px rgba(201,168,76,0.85))}}
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes kpiPop{0%{transform:scale(0.88);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+        @keyframes accentSlide{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+        @keyframes regionPulse{0%,100%{opacity:0.7}50%{opacity:1}}
+        @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(111,138,255,0.5)}50%{box-shadow:0 0 0 5px rgba(111,138,255,0)}}
+        @keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+        /* ── Castle cards ── */
+        .castle-card{
+          transition:transform 0.22s cubic-bezier(.4,0,.2,1),
+            border-color 0.22s ease,
+            box-shadow 0.22s cubic-bezier(.4,0,.2,1),
+            background 0.22s ease;
+          will-change:transform,box-shadow;
+        }
+        .castle-card:hover{
+          transform:translateY(-5px) scale(1.012)!important;
+        }
+
+        /* ── Tab navigation ── */
         .tab-btn{transition:all 0.18s ease;position:relative;overflow:hidden}
         .tab-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:currentColor;transform:scaleX(0);transition:transform 0.2s ease}
         .tab-btn.active::after{transform:scaleX(1)}
         .detail-panel{animation:fadeIn 0.22s ease}
         .score-ring{transition:stroke-dashoffset 0.8s ease}
         .stat-bar{animation:barFill 0.6s ease forwards}
+
+        /* ── Responsive ── */
         @media(max-width:768px){
           .sidebar{display:none!important}
           .main-content{flex-direction:column!important}
@@ -7205,7 +7358,7 @@ export default function App(){
         @media(max-width:600px){
           .castle-grid{grid-template-columns:1fr 1fr!important}
           .castle-outer{padding:8px!important}
-          header{height:40px!important}
+          header{height:44px!important}
           header span{font-size:12px!important}
           .card{width:calc(100vw - 24px)!important;margin:12px auto!important}
           .detail-header-meta{font-size:10px!important;white-space:normal!important}
@@ -7217,71 +7370,350 @@ export default function App(){
         }
         @media(hover:none){
           button:hover{filter:none}
-          .castle-card:hover{transform:none}
+          .castle-card:hover{transform:none!important}
         }
         @media(prefers-reduced-motion:reduce){
           *{animation:none!important;transition:none!important}
         }
+
+        /* ── Typography ── */
         .cinzel{font-family:'Cinzel',serif!important;letter-spacing:0.05em}
         .cinzel-lg{font-family:'Cinzel',serif!important;letter-spacing:0.12em}
         input,textarea,select{font-family:inherit}
-        .castle-card{transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,background 0.18s ease}
 
-        .app-shell::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(143,167,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(143,167,255,0.045) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 35%,transparent 90%)}
+        /* ── App background ── */
+        .app-shell::before{
+          content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+          background:
+            linear-gradient(rgba(111,138,255,0.04) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(111,138,255,0.032) 1px,transparent 1px);
+          background-size:40px 40px;
+          mask-image:radial-gradient(ellipse at center,black 20%,transparent 75%)
+        }
+        .app-shell::after{
+          content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+          background:
+            radial-gradient(circle at 15% 85%,rgba(66,216,207,0.06) 0%,transparent 40%),
+            radial-gradient(circle at 85% 20%,rgba(111,138,255,0.07) 0%,transparent 38%);
+        }
         .app-shell > *{position:relative;z-index:1}
-        .glass{background:linear-gradient(160deg,rgba(18,28,52,0.82),rgba(12,20,40,0.62));backdrop-filter:blur(10px);border:1px solid rgba(138,173,255,0.22);box-shadow:0 14px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)}
+
+        /* ── Glassmorphism ── */
+        .glass{
+          background:linear-gradient(160deg,rgba(20,32,58,0.88),rgba(12,20,40,0.72));
+          backdrop-filter:blur(14px);
+          -webkit-backdrop-filter:blur(14px);
+          border:1px solid rgba(138,173,255,0.2);
+          box-shadow:0 8px 32px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.07)
+        }
+
+        /* ── Typography helpers ── */
         .premium-title{font-family:'Cinzel',serif;letter-spacing:0.2em;text-transform:uppercase}
-        .nav-premium{position:relative;border:1px solid transparent;border-radius:10px;margin:6px 4px;padding:0 12px!important;height:38px!important;display:flex;align-items:center;justify-content:center;font-size:12px!important;font-weight:600;transition:all .2s ease}
-        .nav-premium:hover{border-color:rgba(138,173,255,0.35);background:rgba(138,173,255,0.08);transform:translateY(-1px)}
-        .nav-premium.active{background:linear-gradient(135deg,rgba(111,138,255,0.28),rgba(66,216,207,0.20));color:#eaf1ff!important;border-color:rgba(138,173,255,0.55);box-shadow:0 0 0 1px rgba(138,173,255,0.2),0 8px 24px rgba(66,216,207,0.18)}
-        .panel-premium{background:linear-gradient(155deg,rgba(16,25,45,0.88),rgba(11,17,34,0.75));border:1px solid rgba(138,173,255,0.22);border-radius:14px;box-shadow:0 18px 30px rgba(0,0,0,0.26)}
-        .hero-v2{margin:16px;border:1px solid rgba(130,170,255,0.35);border-radius:16px;padding:18px;background:
-          radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),
-          radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),
-          linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92));
-          box-shadow:0 22px 42px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08)}
-        .hero-kpi{padding:10px 12px;border-radius:10px;background:rgba(8,16,32,0.46);border:1px solid rgba(138,173,255,0.2);text-align:center}
-        .hero-cta{padding:9px 12px;border-radius:10px;border:1px solid rgba(138,173,255,0.38);background:linear-gradient(135deg,rgba(111,138,255,0.35),rgba(66,216,207,0.24));color:#eff5ff;cursor:pointer;font-weight:600}
-        .hero-cta.alt{background:rgba(138,173,255,0.08);color:#b8cbf8}
-        .hero-mini-card{padding:10px;border-radius:12px;background:rgba(9,16,31,0.52);border:1px solid rgba(138,173,255,0.18);display:flex;align-items:center;justify-content:space-between;gap:8px}
-        .hero-mini-card button{padding:6px 8px;border-radius:8px;border:1px solid rgba(138,173,255,0.28);background:rgba(138,173,255,0.1);color:#dce7ff;font-size:11px;cursor:pointer}
-        .content-wrap{max-width:1280px;margin:0 auto;width:100%}
+        .gradient-text{
+          background:linear-gradient(135deg,#f0e6cc 0%,#c9a84c 40%,#f0e6cc 70%,#6f8aff 100%);
+          background-size:200% auto;
+          -webkit-background-clip:text;
+          -webkit-text-fill-color:transparent;
+          background-clip:text;
+          animation:shimmer 4s linear infinite;
+        }
+
+        /* ── Navigation ── */
+        .nav-premium{
+          position:relative;border:1px solid transparent;border-radius:10px;
+          margin:6px 3px;padding:0 11px!important;height:38px!important;
+          display:flex;align-items:center;justify-content:center;
+          font-size:12px!important;font-weight:600;
+          transition:all .22s cubic-bezier(.4,0,.2,1);
+          overflow:hidden;
+        }
+        .nav-premium::before{
+          content:'';position:absolute;inset:0;border-radius:10px;
+          background:linear-gradient(135deg,rgba(111,138,255,0.12),rgba(66,216,207,0.08));
+          opacity:0;transition:opacity .22s ease;
+        }
+        .nav-premium:hover::before{opacity:1}
+        .nav-premium:hover{
+          border-color:rgba(138,173,255,0.4);
+          transform:translateY(-1px);
+          box-shadow:0 4px 16px rgba(111,138,255,0.15);
+        }
+        .nav-premium.active{
+          background:linear-gradient(135deg,rgba(111,138,255,0.32),rgba(66,216,207,0.22));
+          color:#eaf5ff!important;
+          border-color:rgba(138,173,255,0.6);
+          box-shadow:0 0 0 1px rgba(138,173,255,0.22),0 6px 24px rgba(66,216,207,0.2),inset 0 1px 0 rgba(255,255,255,0.1);
+          animation:borderGlow 3s ease infinite;
+        }
+
+        /* ── Panels ── */
+        .panel-premium{
+          background:linear-gradient(155deg,rgba(16,25,48,0.9),rgba(11,17,34,0.78));
+          border:1px solid rgba(138,173,255,0.2);
+          border-radius:14px;
+          box-shadow:0 18px 36px rgba(0,0,0,0.3)
+        }
+
+        /* ── Hero section ── */
+        .hero-v2{
+          margin:16px;
+          border-radius:20px;
+          padding:22px;
+          background:
+            radial-gradient(circle at 8% 12%,rgba(66,216,207,0.18),transparent 32%),
+            radial-gradient(circle at 92% 18%,rgba(111,138,255,0.26),transparent 38%),
+            radial-gradient(circle at 50% 90%,rgba(66,216,207,0.06),transparent 40%),
+            linear-gradient(145deg,rgba(18,32,60,0.94),rgba(8,16,36,0.96));
+          box-shadow:
+            0 24px 48px rgba(0,0,0,0.36),
+            0 0 0 1px rgba(111,138,255,0.22),
+            inset 0 1px 0 rgba(255,255,255,0.08),
+            inset 0 -1px 0 rgba(66,216,207,0.06);
+          position:relative;overflow:hidden;
+        }
+        .hero-v2::before{
+          content:'';position:absolute;top:-1px;left:10%;right:10%;height:1px;
+          background:linear-gradient(90deg,transparent,rgba(138,173,255,0.5),rgba(66,216,207,0.5),transparent);
+        }
+
+        /* ── KPI Cards ── */
+        .hero-kpi{
+          padding:12px 14px;
+          border-radius:12px;
+          background:linear-gradient(135deg,rgba(10,20,40,0.7),rgba(8,14,28,0.5));
+          border:1px solid rgba(138,173,255,0.18);
+          text-align:center;
+          transition:all .22s ease;
+          position:relative;overflow:hidden;
+          animation:kpiPop 0.5s cubic-bezier(.4,0,.2,1) both;
+        }
+        .hero-kpi::before{
+          content:'';position:absolute;top:0;left:0;right:0;height:2px;
+          background:linear-gradient(90deg,rgba(111,138,255,0.6),rgba(66,216,207,0.6));
+          transform:scaleX(0);transform-origin:left;
+          transition:transform .3s ease;
+        }
+        .hero-kpi:hover{
+          border-color:rgba(138,173,255,0.38);
+          background:linear-gradient(135deg,rgba(16,28,56,0.85),rgba(12,20,40,0.65));
+          box-shadow:0 6px 24px rgba(0,0,0,0.3),0 0 0 1px rgba(111,138,255,0.2);
+          transform:translateY(-2px);
+        }
+        .hero-kpi:hover::before{transform:scaleX(1)}
+
+        /* ── CTA Buttons ── */
+        .hero-cta{
+          padding:10px 16px;
+          border-radius:11px;
+          border:1px solid rgba(138,173,255,0.42);
+          background:linear-gradient(135deg,rgba(111,138,255,0.38),rgba(66,216,207,0.26));
+          color:#eff5ff;cursor:pointer;font-weight:600;
+          position:relative;overflow:hidden;
+          transition:all .22s cubic-bezier(.4,0,.2,1);
+          box-shadow:0 4px 16px rgba(111,138,255,0.2);
+        }
+        .hero-cta::before{
+          content:'';position:absolute;inset:0;
+          background:linear-gradient(135deg,rgba(255,255,255,0.12),rgba(255,255,255,0));
+          opacity:0;transition:opacity .2s;
+        }
+        .hero-cta:hover{
+          transform:translateY(-2px)!important;
+          box-shadow:0 8px 28px rgba(111,138,255,0.35),0 0 0 1px rgba(138,173,255,0.55);
+          border-color:rgba(138,173,255,0.65);
+          filter:none!important;
+        }
+        .hero-cta:hover::before{opacity:1}
+        .hero-cta.alt{
+          background:rgba(138,173,255,0.1);
+          color:#c0d0f8;
+          box-shadow:none;
+          border-color:rgba(138,173,255,0.28);
+        }
+        .hero-cta.alt:hover{
+          background:rgba(138,173,255,0.18);
+          box-shadow:0 4px 20px rgba(111,138,255,0.2);
+        }
+
+        /* ── Mini cards ── */
+        .hero-mini-card{
+          padding:11px 12px;
+          border-radius:13px;
+          background:linear-gradient(135deg,rgba(10,18,34,0.7),rgba(8,14,28,0.5));
+          border:1px solid rgba(138,173,255,0.16);
+          display:flex;align-items:center;justify-content:space-between;gap:10px;
+          transition:all .2s ease;
+        }
+        .hero-mini-card:hover{
+          border-color:rgba(138,173,255,0.34);
+          background:linear-gradient(135deg,rgba(14,24,46,0.8),rgba(10,18,36,0.6));
+          box-shadow:0 4px 18px rgba(0,0,0,0.25);
+          transform:translateY(-1px);
+        }
+        .hero-mini-card button{
+          padding:6px 10px;border-radius:8px;
+          border:1px solid rgba(138,173,255,0.3);
+          background:rgba(111,138,255,0.14);
+          color:#d4e2ff;font-size:11px;cursor:pointer;
+          white-space:nowrap;font-weight:600;
+          transition:all .18s ease;
+        }
+        .hero-mini-card button:hover{
+          background:rgba(111,138,255,0.28);
+          border-color:rgba(138,173,255,0.5);
+          transform:translateY(-1px)!important;
+          filter:none!important;
+        }
+
+        /* ── Layout ── */
+        .content-wrap{max-width:1320px;margin:0 auto;width:100%}
         .mobile-quickbar{display:none}
-        .soft-card{border-radius:14px;background:linear-gradient(155deg,rgba(14,22,41,0.78),rgba(10,16,31,0.62));border:1px solid rgba(138,173,255,0.2);box-shadow:0 10px 24px rgba(0,0,0,0.2)}
-        .castle-card:hover{transform:translateY(-3px)}
+        .soft-card{
+          border-radius:16px;
+          background:linear-gradient(155deg,rgba(14,22,44,0.82),rgba(10,16,32,0.65));
+          border:1px solid rgba(138,173,255,0.18);
+          box-shadow:0 12px 28px rgba(0,0,0,0.22)
+        }
+
+        /* ── Filter bar ── */
+        .filter-bar{position:relative}
+        .filter-pill{
+          display:inline-flex;align-items:center;
+          padding:5px 14px;
+          font-size:11px;letter-spacing:0.6px;
+          border-radius:20px;cursor:pointer;
+          font-family:inherit;
+          transition:all .18s cubic-bezier(.4,0,.2,1);
+        }
+        .filter-pill:hover{transform:translateY(-1px)!important;filter:none!important}
+        .filter-pill.active{
+          box-shadow:0 2px 14px rgba(201,168,76,0.25),inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* ── Search input ── */
+        .search-input:focus{
+          outline:none;
+          border-color:rgba(138,173,255,0.5)!important;
+          box-shadow:0 0 0 3px rgba(111,138,255,0.15);
+        }
+
+        /* ── Region headers ── */
+        .region-bar{
+          position:relative;
+          display:flex;align-items:center;gap:14px;
+          margin-bottom:16px;padding:10px 14px;
+          border-radius:10px;
+          background:linear-gradient(135deg,rgba(14,22,40,0.6),rgba(10,16,30,0.4));
+          border:1px solid rgba(255,255,255,0.06);
+          border-left-width:3px;
+          overflow:hidden;
+        }
+        .region-bar::after{
+          content:'';position:absolute;right:0;top:0;bottom:0;width:60%;
+          background:linear-gradient(90deg,transparent,rgba(0,0,0,0.2));
+          pointer-events:none;
+        }
+
+        /* ── Score display ── */
         .gold-text{color:#c9a84c;font-family:'Cinzel',serif}
         .section-title{font-family:'Cinzel',serif;letter-spacing:0.08em;font-size:11px;color:#a08848;text-transform:uppercase}
+
+        /* ── Mobile quick bar ── */
         @media(max-width:768px){
           .mobile-quickbar{
             display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:450;
-            gap:8px;padding:8px;border-radius:12px;
-            background:linear-gradient(155deg,rgba(10,18,36,0.95),rgba(8,14,28,0.92));
-            border:1px solid rgba(138,173,255,0.24);box-shadow:0 14px 24px rgba(0,0,0,0.35)
+            gap:8px;padding:9px;border-radius:14px;
+            background:linear-gradient(155deg,rgba(10,18,38,0.97),rgba(8,14,28,0.95));
+            border:1px solid rgba(138,173,255,0.26);
+            box-shadow:0 16px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(66,216,207,0.08)
           }
           .mobile-quickbar button{
-            flex:1;border-radius:8px;border:1px solid rgba(138,173,255,0.28);
-            background:rgba(138,173,255,0.1);color:#e8f0ff;padding:8px 6px;font-size:12px
+            flex:1;border-radius:9px;
+            border:1px solid rgba(138,173,255,0.28);
+            background:linear-gradient(135deg,rgba(111,138,255,0.15),rgba(66,216,207,0.08));
+            color:#e8f0ff;padding:9px 6px;font-size:12px;font-weight:600;
+          }
+          .mobile-quickbar button:hover{
+            background:linear-gradient(135deg,rgba(111,138,255,0.26),rgba(66,216,207,0.16));
+            filter:none!important;
           }
         }
       `}</style>
 
       {/* ── HEADER ── */}
-      <header className="glass" style={{height:"62px",display:"flex",alignItems:"stretch",borderBottom:uiTheme.headerBorder,background:uiTheme.headerBg,position:"sticky",top:0,zIndex:300,flexShrink:0}}>
-        <div style={{display:"flex",alignItems:"center",gap:"10px",padding:"0 16px",borderRight:"1px solid rgba(201,168,76,0.1)",flexShrink:0}}>
-          <span style={{fontSize:"18px",filter:"drop-shadow(0 0 6px rgba(201,168,76,0.4))"}}>⚔️</span>
-          <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
-            <span className="header-title premium-title" style={{fontSize:"13px",fontWeight:"700",color:"#f1f5ff",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(111,138,255,0.45)"}}>BELAGERUNGS-ATLAS</span>
-            <span style={{fontSize:"9px",color:"#8ea2d8",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
+      <header className="glass" style={{
+        height:"64px",display:"flex",alignItems:"stretch",
+        borderBottom:uiTheme.headerBorder,background:uiTheme.headerBg,
+        position:"sticky",top:0,zIndex:300,flexShrink:0,
+        boxShadow:"0 4px 24px rgba(0,0,0,0.4),0 1px 0 rgba(255,255,255,0.04)"
+      }}>
+        {/* Logo area */}
+        <div style={{
+          display:"flex",alignItems:"center",gap:"11px",
+          padding:"0 18px",flexShrink:0,
+          borderRight:"1px solid rgba(138,173,255,0.1)",
+          background:"linear-gradient(90deg,rgba(111,138,255,0.06),transparent)",
+          position:"relative",
+        }}>
+          <div style={{
+            width:"36px",height:"36px",borderRadius:"10px",
+            background:"linear-gradient(135deg,rgba(111,138,255,0.18),rgba(66,216,207,0.12))",
+            border:"1px solid rgba(138,173,255,0.28)",
+            display:"flex",alignItems:"center",justifyContent:"center",
+            boxShadow:"0 0 16px rgba(111,138,255,0.18),inset 0 1px 0 rgba(255,255,255,0.1)",
+            flexShrink:0,
+          }}>
+            <span style={{fontSize:"18px",animation:"logoFloat 3s ease-in-out infinite"}}>⚔️</span>
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:"2px"}}>
+            <span className="header-title premium-title" style={{
+              fontSize:"13px",fontWeight:"700",color:"#f1f5ff",whiteSpace:"nowrap",
+              textShadow:"0 0 20px rgba(111,138,255,0.5),0 0 40px rgba(66,216,207,0.2)",
+              letterSpacing:"0.18em",
+            }}>BELAGERUNGS-ATLAS</span>
+            <span style={{fontSize:"9px",color:"#6a80b8",letterSpacing:"2.5px",fontFamily:"'Cinzel',serif",opacity:0.85}}>
+              {CASTLES.length} FESTUNGEN
+            </span>
           </div>
         </div>
-        <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
+
+        {/* Nav tabs */}
+        <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto",padding:"0 4px"}}>
           {NAVTABS.map(t=>(
-            <button className={`nav-premium ${tab===t.id?"active":""}`} key={t.id} onClick={()=>setTab(t.id)} style={{background:"transparent",border:"none",color:tab===t.id?"#ebf2ff":"#9aa9d0",cursor:"pointer",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
+            <button
+              className={`nav-premium ${tab===t.id?"active":""}`}
+              key={t.id} onClick={()=>setTab(t.id)}
+              style={{
+                background:"transparent",border:"none",
+                color:tab===t.id?"#ebf4ff":"#7a8ab0",
+                cursor:"pointer",whiteSpace:"nowrap",
+                fontFamily:tab===t.id?"'Cinzel',serif":"inherit",
+                letterSpacing:tab===t.id?"0.04em":"normal",
+              }}
+            >{t.l}</button>
           ))}
         </div>
+
         {/* Setup button */}
-        <button onClick={()=>setShowSetup(s=>!s)} style={{padding:"0 12px",background:showSetup?"rgba(201,168,76,0.08)":"transparent",border:"none",borderBottom:`2px solid ${showSetup?"#c9a84c":"transparent"}`,borderLeft:"1px solid rgba(255,255,255,0.04)",color:showSetup?"#c9a84c":"#7a6a48",cursor:"pointer",fontSize:"13px",whiteSpace:"nowrap",marginBottom:"-1px"}}>
-          ⚙️ {general?general.emoji:""} {season?.emoji||""}
+        <button
+          onClick={()=>setShowSetup(s=>!s)}
+          style={{
+            padding:"0 14px",
+            background:showSetup
+              ?"linear-gradient(135deg,rgba(201,168,76,0.14),rgba(201,168,76,0.06))"
+              :"transparent",
+            border:"none",
+            borderLeft:"1px solid rgba(138,173,255,0.08)",
+            borderBottom:`2px solid ${showSetup?"rgba(201,168,76,0.7)":"transparent"}`,
+            color:showSetup?"#d4b060":"#6a5a48",
+            cursor:"pointer",fontSize:"13px",whiteSpace:"nowrap",
+            transition:"all .2s ease",
+            display:"flex",alignItems:"center",gap:"5px",
+          }}
+        >
+          <span style={{opacity:showSetup?1:0.7}}>⚙️</span>
+          {general&&<span>{general.emoji}</span>}
+          {season?.emoji&&<span>{season.emoji}</span>}
         </button>
       </header>
 
@@ -7345,40 +7777,90 @@ export default function App(){
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
         <div className="content-wrap">
         <section className="hero-v2" style={{border:uiTheme.heroBorder,background:uiTheme.heroBg}}>
-          <div style={{display:"flex",justifyContent:"space-between",gap:"14px",alignItems:"flex-start",flexWrap:"wrap"}}>
-            <div style={{maxWidth:"620px"}}>
-              <div style={{fontSize:"11px",letterSpacing:"2px",color:"#96aee4",marginBottom:"8px"}}>COMMAND OVERVIEW · V2</div>
-              <h2 style={{margin:"0 0 8px",fontSize:"28px",lineHeight:1.15,color:"#f2f7ff",fontFamily:"'Cinzel',serif",letterSpacing:"1px"}}>Strategisches Erlebnis mit Premium-Inszenierung</h2>
-              <p style={{margin:0,color:"#b5c5eb",fontSize:"14px",lineHeight:1.7}}>
-                Entdecke Burgen wie in einem Tactical Command Center: schneller Zugriff auf Weltkarte, Kampagnen und Belagerungssimulation
-                mit klaren KPIs und hochwertiger visueller Dramaturgie.
+          {/* Top row */}
+          <div style={{display:"flex",justifyContent:"space-between",gap:"16px",alignItems:"flex-start",flexWrap:"wrap"}}>
+            <div style={{maxWidth:"640px"}}>
+              <div style={{
+                display:"inline-flex",alignItems:"center",gap:"6px",
+                fontSize:"10px",letterSpacing:"3px",color:"#6a82be",marginBottom:"10px",
+                padding:"3px 10px",borderRadius:"20px",
+                background:"rgba(111,138,255,0.08)",border:"1px solid rgba(111,138,255,0.2)",
+              }}>
+                <span style={{width:"5px",height:"5px",borderRadius:"50%",background:"#6f8aff",boxShadow:"0 0 6px #6f8aff",flexShrink:0,animation:"pulse 2s ease infinite"}}/>
+                INTERAKTIVER FESTUNGS-ATLAS
+              </div>
+              <h2 style={{
+                margin:"0 0 10px",
+                fontSize:"32px",lineHeight:1.12,
+                fontFamily:"'Cinzel',serif",
+                letterSpacing:"0.03em",
+                background:"linear-gradient(135deg,#f5f0ff 0%,#c8d8ff 35%,#42d8cf 65%,#a0b8ff 100%)",
+                backgroundSize:"200% auto",
+                WebkitBackgroundClip:"text",
+                WebkitTextFillColor:"transparent",
+                backgroundClip:"text",
+                animation:"shimmer 5s linear infinite",
+              }}>100 Burgen & Festungen der Geschichte</h2>
+              <p style={{margin:"0 0 4px",color:"#8aa4d8",fontSize:"14px",lineHeight:1.75}}>
+                Von Krak des Chevaliers bis Minas Tirith — erlebe mittelalterliche Belagerungskunst,
+                historische Analysen und taktische Simulationen auf einem Level.
               </p>
             </div>
-            <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
-              <button className="hero-cta" onClick={()=>setTab("worldmap")}>🌍 Weltkarte öffnen</button>
-              <button className="hero-cta alt" onClick={()=>setTab("campaign")}>📖 Kampagne starten</button>
-              <button className="hero-cta alt" onClick={()=>{setTab("detail");setDtab("simulator");}}>⚔️ Simulator direkt</button>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap",alignItems:"flex-start",paddingTop:"4px"}}>
+              <button className="hero-cta" onClick={()=>setTab("worldmap")}>🌍 Weltkarte</button>
+              <button className="hero-cta alt" onClick={()=>setTab("campaign")}>📖 Kampagne</button>
+              <button className="hero-cta alt" onClick={()=>{setTab("detail");setDtab("simulator");}}>⚔️ Simulator</button>
             </div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:"10px",marginTop:"14px"}}>
-            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>FESTUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{CASTLES.length}</div></div>
-            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>ERFOLGE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{checkAchievements(scores,CASTLES,playStats).filter(a=>a.unlocked).length}</div></div>
-            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>BELAGERUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges||0}</div></div>
-            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>SIEGRATE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges?Math.round(((playStats.wins||0)/playStats.sieges)*100):0}%</div></div>
+
+          {/* KPI row */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:"10px",marginTop:"18px"}}>
+            {[
+              {label:"FESTUNGEN",value:CASTLES.length,icon:"🏰",color:"#7ab0ff"},
+              {label:"ERFOLGE",value:checkAchievements(scores,CASTLES,playStats).filter(a=>a.unlocked).length,icon:"🏆",color:"#f0c040"},
+              {label:"BELAGERUNGEN",value:playStats?.sieges||0,icon:"⚔️",color:"#e07050"},
+              {label:"SIEGRATE",value:`${playStats?.sieges?Math.round(((playStats.wins||0)/playStats.sieges)*100):0}%`,icon:"📈",color:"#5ad0a0"},
+            ].map((kpi,i)=>(
+              <div key={kpi.label} className="hero-kpi" style={{animationDelay:`${i*80}ms`}}>
+                <div style={{fontSize:"16px",marginBottom:"5px"}}>{kpi.icon}</div>
+                <div style={{
+                  fontSize:"24px",fontWeight:"800",
+                  color:kpi.color,lineHeight:1,marginBottom:"4px",
+                  fontFamily:"'Cinzel',serif",
+                  textShadow:`0 0 20px ${kpi.color}55`,
+                }}>{kpi.value}</div>
+                <div style={{fontSize:"10px",color:"#5a6a9a",letterSpacing:"1.5px"}}>{kpi.label}</div>
+              </div>
+            ))}
           </div>
-          <div style={{marginTop:"12px"}}>
-            <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8ea2d8",marginBottom:"8px"}}>TOP FESTUNGEN · SCHNELLSTART</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"8px"}}>
-              {topCastles.map(c=>(
-                <div key={c.id} className="hero-mini-card">
-                  <div style={{display:"flex",gap:"8px",alignItems:"center",minWidth:0}}>
-                    <span style={{fontSize:"18px"}}>{c.icon}</span>
+
+          {/* Top castles */}
+          <div style={{marginTop:"16px"}}>
+            <div style={{
+              fontSize:"10px",letterSpacing:"2.5px",color:"#6a80b8",
+              marginBottom:"10px",display:"flex",alignItems:"center",gap:"8px"
+            }}>
+              <span style={{flex:1,height:"1px",background:"linear-gradient(90deg,rgba(111,138,255,0.3),transparent)"}}/>
+              ✦ TOP FESTUNGEN · SCHNELLSTART ✦
+              <span style={{flex:1,height:"1px",background:"linear-gradient(270deg,rgba(111,138,255,0.3),transparent)"}}/>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:"9px"}}>
+              {topCastles.map((c,i)=>(
+                <div key={c.id} className="hero-mini-card" style={{animationDelay:`${200+i*60}ms`,animation:"cardIn 0.4s ease both"}}>
+                  <div style={{display:"flex",gap:"10px",alignItems:"center",minWidth:0}}>
+                    <div style={{
+                      width:"38px",height:"38px",borderRadius:"10px",flexShrink:0,
+                      background:`linear-gradient(135deg,${c.theme.accent}22,${c.theme.bg})`,
+                      border:`1px solid ${c.theme.accent}30`,
+                      display:"flex",alignItems:"center",justifyContent:"center",
+                      fontSize:"20px",
+                    }}>{c.icon}</div>
                     <div style={{minWidth:0}}>
-                      <div style={{fontSize:"12px",color:"#eff5ff",fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
-                      <div style={{fontSize:"10px",color:"#8ea2d8"}}>{c.epoch} · Score {avg(c)}</div>
+                      <div style={{fontSize:"12px",color:"#eff5ff",fontWeight:700,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",fontFamily:"'Cinzel',serif"}}>{c.name}</div>
+                      <div style={{fontSize:"10px",color:"#5a6e9a",marginTop:"1px"}}>{c.epoch} · <span style={{color:rCol(avg(c)),fontWeight:"bold"}}>{avg(c)}</span></div>
                     </div>
                   </div>
-                  <button onClick={()=>{setSel(c);setTab("detail");setDtab("stats");}}>Öffnen</button>
+                  <button onClick={()=>{setSel(c);setTab("detail");setDtab("stats");}}>Öffnen →</button>
                 </div>
               ))}
             </div>
