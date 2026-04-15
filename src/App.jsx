@@ -2487,24 +2487,31 @@ function CastleMapTab({castle}){
   return(
                   <div style={{animation:"fadeIn 0.2s ease"}}>
                     {/* Sub-tab bar */}
-                    <div style={{display:"flex",gap:"6px",marginBottom:"12px",alignItems:"center"}}>
+                    <div style={{display:"flex",gap:"6px",marginBottom:"14px",alignItems:"center"}}>
                       {[{k:"plan",l:"🗺️ Grundriss"},{k:"lage",l:"📍 Historische Lage"}].map(t=>(
                         <button key={t.k} onClick={()=>setMapMode(t.k)}
-                          style={{padding:"6px 14px",fontSize:"12px",
-                            background:mapMode===t.k?`${sel.theme.accent}14`:"rgba(255,255,255,0.02)",
-                            border:`1px solid ${mapMode===t.k?sel.theme.accent+"44":"rgba(255,255,255,0.07)"}`,
-                            color:mapMode===t.k?sel.theme.accent:"#6a5a38",
-                            borderRadius:"5px",cursor:"pointer"}}>
+                          style={{padding:"7px 16px",fontSize:"12px",
+                            fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
+                            background:mapMode===t.k?`linear-gradient(135deg,${sel.theme.accent}22,${sel.theme.accent}0c)`:"rgba(255,255,255,0.03)",
+                            border:`1px solid ${mapMode===t.k?sel.theme.accent+"60":"rgba(255,255,255,0.08)"}`,
+                            color:mapMode===t.k?sel.theme.accent:"#9a8a6a",
+                            borderRadius:"8px",cursor:"pointer",
+                            boxShadow:mapMode===t.k?`0 0 14px ${sel.theme.accent}22, inset 0 1px 0 ${sel.theme.accent}20`:"none",
+                            transition:"all 0.2s ease"}}>
                           {t.l}
                         </button>
                       ))}
                       <div style={{marginLeft:"auto",display:"flex",gap:"5px",alignItems:"center"}}>
                         <button onClick={()=>setAttackMode(a=>!a)}
-                          style={{padding:"5px 10px",fontSize:"11px",
-                            background:attackMode?"rgba(180,50,20,0.15)":"rgba(255,255,255,0.02)",
-                            border:`1px solid ${attackMode?"rgba(180,50,20,0.4)":"rgba(255,255,255,0.07)"}`,
-                            color:attackMode?"#cc5533":"#5a4a28",borderRadius:"4px",cursor:"pointer"}}>
-                          {attackMode?"⚔️ Angriff an":"⚔️ Angriff"}
+                          style={{padding:"6px 12px",fontSize:"11px",
+                            fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
+                            background:attackMode?"rgba(180,50,20,0.18)":"rgba(255,255,255,0.03)",
+                            border:`1px solid ${attackMode?"rgba(200,60,30,0.5)":"rgba(255,255,255,0.08)"}`,
+                            color:attackMode?"#dd6644":"#9a8a6a",
+                            borderRadius:"7px",cursor:"pointer",
+                            boxShadow:attackMode?"0 0 12px rgba(200,60,30,0.25)":"none",
+                            transition:"all 0.2s ease"}}>
+                          {attackMode?"⚔️ Angriff aktiv":"⚔️ Angriff"}
                         </button>
                       </div>
                     </div>
@@ -2515,27 +2522,35 @@ function CastleMapTab({castle}){
                         {/* Left: SVG with zoom */}
                         <div>
                           {/* Zoom controls + 3D toggle */}
-                          <div style={{display:"flex",gap:"5px",marginBottom:"6px",alignItems:"center"}}>
-                            <span style={{fontSize:"11px",color:"#5a4a28"}}>🔍 Zoom:</span>
-                            {[{v:0.8,l:"−"},{v:1,l:"1×"},{v:1.5,l:"1.5×"},{v:2,l:"2×"},{v:2.5,l:"2.5×"}].map(z=>(
-                              <button key={z.v} onClick={()=>setZoom(z.v)}
-                                style={{padding:"2px 7px",fontSize:"11px",
-                                  background:zoom===z.v?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${zoom===z.v?"rgba(201,168,76,0.3)":"rgba(255,255,255,0.06)"}`,
-                                  color:zoom===z.v?"#c9a84c":"#5a4a28",borderRadius:"3px",cursor:"pointer"}}>
-                                {z.l}
-                              </button>
-                            ))}
-                            <div style={{marginLeft:"auto",display:"flex",gap:"4px",alignItems:"center"}}>
+                          <div style={{display:"flex",gap:"6px",marginBottom:"8px",alignItems:"center",flexWrap:"wrap"}}>
+                            <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>🔍</span>
+                            <div style={{display:"flex",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"7px",overflow:"hidden"}}>
+                              {[{v:0.8,l:"−"},{v:1,l:"1×"},{v:1.5,l:"1.5×"},{v:2,l:"2×"},{v:2.5,l:"2.5×"}].map((z,i)=>(
+                                <button key={z.v} onClick={()=>setZoom(z.v)}
+                                  style={{padding:"4px 9px",fontSize:"11px",
+                                    fontFamily:"'Cinzel',serif",
+                                    background:zoom===z.v?`${sel.theme.accent}22`:"transparent",
+                                    border:"none",
+                                    borderLeft:i>0?"1px solid rgba(255,255,255,0.06)":"none",
+                                    color:zoom===z.v?sel.theme.accent:"#9a8a6a",
+                                    cursor:"pointer",transition:"all 0.15s"}}>
+                                  {z.l}
+                                </button>
+                              ))}
+                            </div>
+                            <div style={{marginLeft:"auto",display:"flex",gap:"8px",alignItems:"center"}}>
                               <button onClick={()=>setViewMode(v=>v==="flat"?"iso":"flat")}
-                                style={{padding:"2px 9px",fontSize:"11px",
-                                  background:viewMode==="iso"?`${sel.theme.accent}18`:"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${viewMode==="iso"?sel.theme.accent+"55":"rgba(255,255,255,0.06)"}`,
-                                  color:viewMode==="iso"?sel.theme.accent:"#5a4a28",
-                                  borderRadius:"3px",cursor:"pointer",whiteSpace:"nowrap"}}>
-                                {viewMode==="iso"?"🏰 3D an":"🏰 3D"}
+                                style={{padding:"5px 14px",fontSize:"12px",
+                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
+                                  background:viewMode==="iso"?`linear-gradient(135deg,${sel.theme.accent}28,${sel.theme.accent}10)`:"rgba(255,255,255,0.03)",
+                                  border:`2px solid ${viewMode==="iso"?sel.theme.accent+"70":"rgba(255,255,255,0.09)"}`,
+                                  color:viewMode==="iso"?sel.theme.accent:"#9a8a6a",
+                                  borderRadius:"8px",cursor:"pointer",whiteSpace:"nowrap",
+                                  boxShadow:viewMode==="iso"?`0 0 18px ${sel.theme.accent}30, inset 0 0 10px ${sel.theme.accent}10`:"none",
+                                  transition:"all 0.2s ease"}}>
+                                {viewMode==="iso"?"🏰 3D aktiv":"🏰 3D"}
                               </button>
-                              <span style={{fontSize:"10px",color:"#8a7a60"}}>
+                              <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
                                 {sel.zones.length} Zonen
                               </span>
                             </div>
@@ -2543,10 +2558,11 @@ function CastleMapTab({castle}){
 
                           {/* SVG Container with overflow for zoom */}
                           <div style={{
-                            background:"rgba(8,6,3,0.97)",
-                            border:`1px solid ${sel.theme.accent}18`,
-                            borderRadius:"8px",overflow:"hidden",
-                            boxShadow:`0 4px 24px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.3)`}}>
+                            background:"rgba(6,4,2,0.98)",
+                            border:`1px solid ${sel.theme.accent}28`,
+                            borderRadius:"10px",overflow:"hidden",
+                            boxShadow:`0 6px 32px rgba(0,0,0,0.75), inset 0 0 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6)`,
+                            position:"relative"}}>
                             <div style={{
                               overflow:"auto",
                               maxHeight:"420px",
@@ -2586,14 +2602,17 @@ function CastleMapTab({castle}){
                           </div>
 
                           {/* Zone pill buttons */}
-                          <div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"8px"}}>
+                          <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginTop:"10px"}}>
                             {sel.zones.map(z=>(
                               <button key={z.id} onClick={()=>setSelZone(selZone===z.id?null:z.id)}
-                                style={{padding:"3px 8px",fontSize:"10px",
-                                  background:selZone===z.id?`${z.c}22`:"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${selZone===z.id?z.c+"66":"rgba(255,255,255,0.05)"}`,
-                                  color:selZone===z.id?z.c:"#5a4a28",
-                                  borderRadius:"10px",cursor:"pointer"}}>
+                                style={{padding:"4px 10px",fontSize:"11px",
+                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.3px",
+                                  background:selZone===z.id?`${z.c}28`:"rgba(255,255,255,0.04)",
+                                  border:`1px solid ${selZone===z.id?z.c+"80":"rgba(255,255,255,0.08)"}`,
+                                  color:selZone===z.id?z.c:"#9a8a6a",
+                                  borderRadius:"12px",cursor:"pointer",
+                                  boxShadow:selZone===z.id?`0 0 10px ${z.c}33`:"none",
+                                  transition:"all 0.15s ease"}}>
                                 {z.l}
                               </button>
                             ))}
@@ -2604,21 +2623,22 @@ function CastleMapTab({castle}){
                         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
                           {/* Selected zone detail */}
                           {selZ?(
-                            <div style={{padding:"12px 14px",
-                              background:`${selZ.c}0e`,
-                              border:`1px solid ${selZ.c}33`,
+                            <div style={{padding:"14px 16px",
+                              background:`${selZ.c}10`,
+                              border:`1px solid ${selZ.c}40`,
                               borderLeft:`4px solid ${selZ.c}`,
-                              borderRadius:"5px",animation:"fadeIn 0.15s ease"}}>
-                              <div style={{fontSize:"11px",color:selZ.c,letterSpacing:"2px",marginBottom:"6px",fontWeight:"bold"}}>
+                              borderRadius:"8px",animation:"fadeIn 0.15s ease",
+                              boxShadow:`0 4px 20px ${selZ.c}15`}}>
+                              <div style={{fontSize:"10px",color:selZ.c,letterSpacing:"2.5px",marginBottom:"8px",fontWeight:"bold",fontFamily:"'Cinzel',serif"}}>
                                 {selZ.l.toUpperCase()}
                               </div>
-                              <div style={{fontSize:"13px",color:"#9a8a68",lineHeight:1.8,marginBottom:"10px"}}>
+                              <div style={{fontSize:"13px",color:"#c0b088",lineHeight:1.8,marginBottom:"12px"}}>
                                 {selZ.d}
                               </div>
                               {/* Defence strength bar */}
                               <div style={{marginBottom:"4px"}}>
                                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
-                                  <span style={{fontSize:"10px",color:"#5a4a28",letterSpacing:"1px"}}>VERTEIDIGUNGSWERT</span>
+                                  <span style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"1.5px",fontFamily:"'Cinzel',serif"}}>VERTEIDIGUNG</span>
                                   <span style={{fontSize:"11px",fontWeight:"bold",color:rCol(selZ.a*10+30)}}>{selZ.a}/6</span>
                                 </div>
                                 <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
@@ -2644,41 +2664,49 @@ function CastleMapTab({castle}){
                               )}
                             </div>
                           ):(
-                            <div style={{padding:"12px 14px",background:"rgba(255,255,255,0.02)",
-                              border:"1px solid rgba(255,255,255,0.05)",borderRadius:"5px",
-                              textAlign:"center",color:"#8a7a60",fontSize:"12px",lineHeight:1.7}}>
+                            <div style={{padding:"14px 16px",
+                              background:"rgba(255,255,255,0.02)",
+                              border:"1px solid rgba(255,255,255,0.06)",borderRadius:"8px",
+                              textAlign:"center",color:"#b0a080",fontSize:"12px",lineHeight:1.8,
+                              fontFamily:"'Cinzel',serif"}}>
                               👆 Klicke auf einen Bereich im Grundriss<br/>
-                              oder wähle eine Zone unten
+                              oder wähle eine Zone
                             </div>
                           )}
 
                           {/* All zones list */}
-                          <div style={{fontSize:"11px",color:"#5a4a28",letterSpacing:"1.5px",marginTop:"4px"}}>
-                            ALLE VERTEIDIGUNGSBEREICHE
+                          <div style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"2px",marginTop:"8px",
+                            fontFamily:"'Cinzel',serif",
+                            borderBottom:"1px solid rgba(255,255,255,0.06)",
+                            paddingBottom:"6px",marginBottom:"4px"}}>
+                            VERTEIDIGUNGSBEREICHE
                           </div>
                           {sel.zones.map(z=>(
                             <div key={z.id}
                               onClick={()=>setSelZone(selZone===z.id?null:z.id)}
                               style={{padding:"8px 10px",cursor:"pointer",
-                                background:selZone===z.id?`${z.c}12`:"rgba(255,255,255,0.01)",
-                                border:`1px solid ${selZone===z.id?z.c+"44":"rgba(255,255,255,0.04)"}`,
+                                background:selZone===z.id?`${z.c}15`:"rgba(255,255,255,0.02)",
+                                border:`1px solid ${selZone===z.id?z.c+"55":"rgba(255,255,255,0.05)"}`,
                                 borderLeft:`3px solid ${z.c}`,
-                                borderRadius:"4px",transition:"all 0.15s"}}>
+                                borderRadius:"6px",transition:"all 0.2s ease",
+                                boxShadow:selZone===z.id?`0 2px 12px ${z.c}20`:"none"}}>
                               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"3px"}}>
-                                <div style={{fontSize:"12px",fontWeight:"bold",color:selZone===z.id?z.c:"#7a6a48"}}>
+                                <div style={{fontSize:"12px",fontWeight:"bold",
+                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.3px",
+                                  color:selZone===z.id?z.c:"#b0a080"}}>
                                   {z.l}
                                 </div>
-                                <div style={{display:"flex",gap:"1px"}}>
+                                <div style={{display:"flex",gap:"2px"}}>
                                   {Array.from({length:6},(_,i)=>(
-                                    <div key={i} style={{width:"5px",height:"5px",borderRadius:"1px",
+                                    <div key={i} style={{width:"5px",height:"8px",borderRadius:"2px",
                                       background:i<z.a
                                         ?z.a<=2?"#cc5533":z.a<=4?"#c9a84c":"#6aaa50"
-                                        :"rgba(255,255,255,0.04)"}}/>
+                                        :"rgba(255,255,255,0.05)"}}/>
                                   ))}
                                 </div>
                               </div>
                               {selZone===z.id&&(
-                                <div style={{fontSize:"11px",color:"#9a8a6a",lineHeight:1.7,animation:"fadeIn 0.15s ease"}}>
+                                <div style={{fontSize:"11px",color:"#b0a488",lineHeight:1.7,animation:"fadeIn 0.15s ease",marginTop:"4px"}}>
                                   {z.d}
                                 </div>
                               )}
