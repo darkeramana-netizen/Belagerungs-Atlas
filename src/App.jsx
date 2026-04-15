@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { ROLEPLAY_RESPONSES, PERSONALITY_RESPONSES, SIMULATOR_FALLBACKS, WHATIF_FALLBACKS, getWhatIfFallback, LEXIKON_OFFLINE, getLexikonFacts, getAdvisorFallback } from "./data/fallbacks.js";
 import { TOTAL_RES, BUILDER_BUDGET, SYNERGIES, getActiveSynergies, getSynergyBonuses, SEASONS, DEFENDER_TYPES, CASTLE_PERSONALITIES, getDefenderType, GENERALS, SIEGE_EVENTS, BUILDER, RES, WEATHER_TYPES } from "./data/gameData.js";
 import { COORDS, CASTLES } from "./data/castles.js";
-import CastleDiorama from "./components/diorama/CastleDiorama.jsx";
 import ScoreBar from "./components/ui/ScoreBar.jsx";
 import RadarChart from "./components/ui/RadarChart.jsx";
 
@@ -62,13 +61,15 @@ const CASTLE_PLANS = {
       <ellipse cx="110" cy="110" rx="100" ry="92" fill="rgba(100,78,28,0.18)" stroke="rgba(130,100,35,0.2)" strokeWidth="0.6"/>
       <ellipse cx="110" cy="108" rx="84" ry="76" fill="rgba(85,65,22,0.12)" stroke="rgba(110,85,30,0.15)" strokeWidth="0.4"/>
       {/* Outer wall ring */}
-      <ellipse cx="110" cy="110" rx="70" ry="64" fill={sel==="ou"?"rgba(139,105,20,0.22)":"rgba(139,105,20,0.07)"} stroke={`${ac}66`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>
-      {Array.from({length:9},(_,i)=>{const a=i/9*Math.PI*2;return <rect key={i} x={110+70*Math.cos(a)-5} y={110+64*Math.sin(a)-5} width="10" height="10" rx="1" fill={`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>;}) }
+      {sel==="ou"&&<ellipse cx="110" cy="110" rx="78" ry="72" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="110" rx="70" ry="64" fill={sel==="ou"?"rgba(139,105,20,0.22)":"rgba(139,105,20,0.07)"} stroke={sel==="ou"?`${ac}cc`:`${ac}66`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>
+      {Array.from({length:9},(_,i)=>{const a=i/9*Math.PI*2;return <rect key={i} x={110+70*Math.cos(a)-5} y={110+64*Math.sin(a)-5} width="10" height="10" rx="1" fill={sel==="ou"?`${ac}66`:`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>;}) }
       {/* Killing ground label */}
       <text x="152" y="75" fill={`${ac}44`} fontSize="8" fontFamily="serif">Zwinger</text>
       {/* Inner wall ring */}
-      <ellipse cx="110" cy="108" rx="48" ry="43" fill={sel==="in"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.08)"} stroke={`${ac}cc`} strokeWidth="6" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>
-      {Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2;return <circle key={i} cx={110+48*Math.cos(a)} cy={108+43*Math.sin(a)} r="7.5" fill={`${ac}44`} stroke={`${ac}99`} strokeWidth="1" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>;}) }
+      {sel==="in"&&<ellipse cx="110" cy="108" rx="56" ry="51" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="108" rx="48" ry="43" fill={sel==="in"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.08)"} stroke={sel==="in"?`${ac}ff`:`${ac}cc`} strokeWidth="6" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>
+      {Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2;return <circle key={i} cx={110+48*Math.cos(a)} cy={108+43*Math.sin(a)} r="7.5" fill={sel==="in"?`${ac}66`:`${ac}44`} stroke={`${ac}99`} strokeWidth="1" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>;}) }
       <text x="110" y="84" textAnchor="middle" fill={`${ac}77`} fontSize="9" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("in")}>INNERER RING</text>
       {/* Donjon */}
       <rect x="94" y="93" width="32" height="30" rx="2" fill={sel==="kp"?"rgba(232,200,96,0.42)":"rgba(232,200,96,0.14)"} stroke="#e8c860" strokeWidth="2" style={{cursor:"pointer"}} onClick={()=>onZone("kp")}/>
@@ -142,9 +143,10 @@ const CASTLE_PLANS = {
       {/* Hillside terrain */}
       <ellipse cx="110" cy="105" rx="105" ry="94" fill="rgba(80,65,28,0.14)" stroke="rgba(100,80,32,0.15)" strokeWidth="0.6"/>
       {/* Outer wall (52 towers) */}
-      <ellipse cx="110" cy="105" rx="86" ry="76" fill={sel==="om"?"rgba(122,90,32,0.22)":"rgba(122,90,32,0.07)"} stroke={`${ac}55`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>
+      {sel==="om"&&<ellipse cx="110" cy="105" rx="94" ry="84" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="105" rx="86" ry="76" fill={sel==="om"?"rgba(122,90,32,0.22)":"rgba(122,90,32,0.07)"} stroke={sel==="om"?`${ac}bb`:`${ac}55`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>
       {/* 16 towers around outer wall */}
-      {Array.from({length:16},(_,i)=>{const a=i/16*Math.PI*2;return <rect key={i} x={110+86*Math.cos(a)-4.5} y={105+76*Math.sin(a)-4.5} width="9" height="9" rx="1" fill={`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>;}) }
+      {Array.from({length:16},(_,i)=>{const a=i/16*Math.PI*2;return <rect key={i} x={110+86*Math.cos(a)-4.5} y={105+76*Math.sin(a)-4.5} width="9" height="9" rx="1" fill={sel==="om"?`${ac}66`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>;}) }
       <text x="170" y="58" fill={`${ac}44`} fontSize="8" fontFamily="serif">Äußere</text>
       <text x="170" y="65" fill={`${ac}44`} fontSize="8" fontFamily="serif">Vormauer</text>
       {/* Zwinger space */}
@@ -2166,85 +2168,148 @@ const CASTLE_PLANS = {
   ),
 };
 
-// Generic plan for all other castles
+// Generic plan for all other castles — enhanced top-down view
 function GenericCastlePlan({castle,ac,sel,onZone}){
   const zones=castle.zones;
-  // Smart positions based on zone index and type
+
+  // Crenellations along an ellipse/circle perimeter
+  const crenels=(cx,cy,rx,ry,count,size,color,isH)=>
+    Array.from({length:count},(_,i)=>{
+      const a=i/count*Math.PI*2;
+      return <rect key={i}
+        x={cx+rx*Math.cos(a)-size/2} y={cy+ry*Math.sin(a)-size/2}
+        width={size} height={size} rx="0.5"
+        fill={isH?`${color}70`:`${color}38`}
+        stroke={isH?`${color}aa`:`${color}66`} strokeWidth="0.4"/>;
+    });
+
   const getPos=(z,i,total)=>{
-    // outermost zones get outer ring, innermost get center
     const isOuter=z.r>35;
     const isMid=z.r>15&&z.r<=35;
-    if(isOuter) return {type:"ellipse",cx:110,cy:108,rx:75,ry:68};
-    if(isMid)   return {type:"ellipse",cx:110,cy:108,rx:52,ry:46};
-    // Small zones: distribute around center
+    if(isOuter) return {type:"ellipse",cx:110,cy:104,rx:76,ry:67};
+    if(isMid)   return {type:"ellipse",cx:110,cy:104,rx:50,ry:44};
     const angle=(i/Math.max(total,1))*Math.PI*2-Math.PI/2;
-    const dist=z.r<10?22:34;
-    return {type:"circle",cx:110+dist*Math.cos(angle),cy:108+dist*Math.sin(angle),r:Math.min(z.r,16)};
+    const dist=z.r<10?20:32;
+    return {type:"circle",cx:110+dist*Math.cos(angle),cy:104+dist*Math.sin(angle),r:Math.min(z.r,17)};
   };
+
   return(
     <g>
-      {/* Background */}
-      <rect x="5" y="5" width="210" height="190" rx="6" fill={`${ac}05`} stroke={`${ac}14`} strokeWidth="0.8"/>
-      {/* Subtle grid */}
-      {[40,70,100,130,160].flatMap(v=>[
-        <line key={`gx${v}`} x1={v} y1="5" x2={v} y2="195" stroke={`${ac}06`} strokeWidth="0.4"/>,
-        <line key={`gy${v}`} x1="5" y1={v} x2="215" y2={v} stroke={`${ac}06`} strokeWidth="0.4"/>
-      ])}
-      {/* Terrain hint */}
-      <path d="M 5 170 Q 60 155 110 160 Q 160 165 215 155 L 215 195 L 5 195 Z" fill={`${ac}07`} stroke="none"/>
+      {/* Outer terrain boundary */}
+      <ellipse cx="110" cy="105" rx="106" ry="91"
+        fill={`${ac}04`} stroke={`${ac}10`} strokeWidth="0.5" strokeDasharray="8,5"/>
+      {/* Terrain hash lines */}
+      {Array.from({length:18},(_,i)=>{
+        const a=i/18*Math.PI*2;
+        return <line key={i}
+          x1={110+88*Math.cos(a)} y1={105+76*Math.sin(a)}
+          x2={110+102*Math.cos(a)} y2={105+88*Math.sin(a)}
+          stroke={`${ac}0d`} strokeWidth="0.6"/>;
+      })}
+      {/* Inner ground wash */}
+      <ellipse cx="110" cy="105" rx="80" ry="70" fill={`${ac}05`} stroke="none"/>
+
       {/* Zones */}
       {zones.map((z,i)=>{
         const isH=sel===z.id;
         const pos=getPos(z,i,zones.length);
-        const isWeak=z.l.includes("⚠");
+        const isWeak=z.a<=2;
+        const cCount=pos.type==="ellipse"?Math.floor(pos.rx*0.62):Math.floor(pos.r*0.55);
+        const cSize=isH?5:4;
         return(
           <g key={z.id} style={{cursor:"pointer"}} onClick={()=>onZone(z.id)}>
-            {pos.type==="ellipse"
-              ?<ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx} ry={pos.ry}
-                  fill={isH?`${z.c}28`:`${z.c}0e`}
-                  stroke={isH?z.c:`${z.c}66`}
-                  strokeWidth={isH?3:1.8}/>
-              :<circle cx={pos.cx} cy={pos.cy} r={pos.r}
-                  fill={isH?`${z.c}3a`:`${z.c}14`}
+            {pos.type==="ellipse"?(
+              <>
+                {/* Glow halo */}
+                {isH&&<ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx+9} ry={pos.ry+9}
+                  fill={z.c} opacity="0.09" filter="url(#glowFilter)"/>}
+                {/* Drop shadow */}
+                <ellipse cx={pos.cx} cy={pos.cy+3} rx={pos.rx} ry={pos.ry*0.32}
+                  fill="rgba(0,0,0,0.4)" stroke="none"/>
+                {/* Wall ring */}
+                <ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx} ry={pos.ry}
+                  fill={isH?`${z.c}22`:`${z.c}0d`}
+                  stroke={isH?z.c:`${z.c}55`}
+                  strokeWidth={isH?3.5:2.5}/>
+                {/* Crenellations */}
+                {crenels(pos.cx,pos.cy,pos.rx,pos.ry,cCount,cSize,z.c,isH)}
+                {/* Corner towers */}
+                {[0,2,4,6].map(j=>{
+                  const a=j/8*Math.PI*2+Math.PI/8;
+                  return <circle key={j}
+                    cx={pos.cx+pos.rx*Math.cos(a)} cy={pos.cy+pos.ry*Math.sin(a)}
+                    r={isH?6:5} fill={isH?`${z.c}44`:`${z.c}22`}
+                    stroke={isH?`${z.c}aa`:`${z.c}66`} strokeWidth={isH?1.2:0.8}/>;
+                })}
+                {/* Label background + text */}
+                <rect x={pos.cx-38} y={pos.cy-7} width="76" height="14" rx="2"
+                  fill="rgba(3,2,1,0.75)" stroke={`${z.c}22`} strokeWidth="0.5"/>
+                <text x={pos.cx} y={pos.cy+3} textAnchor="middle"
+                  fill={isH?z.c:`${z.c}dd`} fontSize="9" fontFamily="'Cinzel',serif" letterSpacing="0.5">
+                  {z.l.replace(/ ⚠+/g,"").slice(0,16)}
+                </text>
+                {isWeak&&<text x={pos.cx+pos.rx-2} y={pos.cy-pos.ry+5}
+                  textAnchor="middle" fill="#cc4444" fontSize="11">⚠</text>}
+              </>
+            ):(
+              <>
+                {isH&&<circle cx={pos.cx} cy={pos.cy} r={pos.r+8}
+                  fill={z.c} opacity="0.09" filter="url(#glowFilter)"/>}
+                {/* Drop shadow */}
+                <ellipse cx={pos.cx} cy={pos.cy+2} rx={pos.r} ry={pos.r*0.3}
+                  fill="rgba(0,0,0,0.35)" stroke="none"/>
+                {/* Tower body */}
+                <circle cx={pos.cx} cy={pos.cy} r={pos.r}
+                  fill={isH?`${z.c}38`:`${z.c}18`}
                   stroke={isH?z.c:`${z.c}88`}
                   strokeWidth={isH?2.5:1.5}/>
-            }
-            {/* Zone name */}
-            <text
-              x={pos.type==="ellipse"?pos.cx:pos.cx}
-              y={pos.type==="ellipse"?pos.cy+4:pos.cy+2}
-              textAnchor="middle" fill={isH?z.c:`${z.c}aa`}
-              fontSize="9" fontFamily="serif">
-              {z.l.replace(" ⚠","").replace(" ⚠⚠","")}
-            </text>
-            {isWeak&&<text
-              x={pos.type==="ellipse"?pos.cx:pos.cx}
-              y={pos.type==="ellipse"?pos.cy+14:pos.cy+12}
-              textAnchor="middle" fill="#cc4444" fontSize="8">⚠</text>}
-            {/* Tower dots on ellipse rings */}
-            {pos.type==="ellipse"&&Array.from({length:8},(_,j)=>{
-              const a=j/8*Math.PI*2;
-              return <rect key={j} x={pos.cx+pos.rx*Math.cos(a)-3.5} y={pos.cy+pos.ry*Math.sin(a)-3.5}
-                width="7" height="7" rx="1"
-                fill={`${z.c}33`} stroke={`${z.c}66`} strokeWidth="0.7"
-                style={{cursor:"pointer"}}/>;
-            })}
+                {/* Mini turrets */}
+                {Array.from({length:4},(_,j)=>{
+                  const a=j/4*Math.PI*2+Math.PI/4;
+                  return <circle key={j}
+                    cx={pos.cx+pos.r*0.82*Math.cos(a)} cy={pos.cy+pos.r*0.82*Math.sin(a)}
+                    r="3" fill={`${z.c}55`} stroke={`${z.c}88`} strokeWidth="0.5"/>;
+                })}
+                {/* Crenellations on tower */}
+                {crenels(pos.cx,pos.cy,pos.r,pos.r,cCount,isH?4:3,z.c,isH)}
+                {/* Label */}
+                <rect x={pos.cx-22} y={pos.cy-6} width="44" height="12" rx="2"
+                  fill="rgba(3,2,1,0.75)" stroke={`${z.c}22`} strokeWidth="0.5"/>
+                <text x={pos.cx} y={pos.cy+2} textAnchor="middle"
+                  fill={isH?z.c:`${z.c}dd`} fontSize="8" fontFamily="'Cinzel',serif">
+                  {z.l.replace(/ ⚠+/g,"").slice(0,13)}
+                </text>
+                {isWeak&&<text x={pos.cx+pos.r+2} y={pos.cy-pos.r+3}
+                  fill="#cc4444" fontSize="9">⚠</text>}
+              </>
+            )}
           </g>
         );
       })}
-      {/* Castle name */}
-      <text x="110" y="193" textAnchor="middle" fill={`${ac}44`} fontSize="9" fontFamily="serif" letterSpacing="1.5">
-        {castle.name.toUpperCase().slice(0,22)}
+
+      {/* Compass rose */}
+      <g transform="translate(194,18)">
+        <circle cx="0" cy="0" r="13" fill="rgba(3,2,1,0.78)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-10 -2.5,-2 2.5,-2" fill={ac} opacity="0.88"/>
+        <polygon points="0,10 -2.5,2 2.5,2" fill={`${ac}44`}/>
+        <polygon points="-10,0 -2,-2.5 -2,2.5" fill={`${ac}44`}/>
+        <polygon points="10,0 2,-2.5 2,2.5" fill={`${ac}44`}/>
+        <circle cx="0" cy="0" r="2" fill={ac} opacity="0.6"/>
+        <text x="0" y="-13" textAnchor="middle" fill={ac} fontSize="7"
+          fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+
+      {/* Castle name bar */}
+      <rect x="24" y="189" width="160" height="10" rx="2" fill="rgba(3,2,1,0.7)" stroke={`${ac}18`} strokeWidth="0.5"/>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}99`} fontSize="8"
+        fontFamily="'Cinzel',serif" letterSpacing="1.5">
+        {castle.name.toUpperCase().slice(0,26)}
       </text>
-      {/* Compass */}
-      <text x="198" y="24" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="serif">N</text>
-      <line x1="198" y1="27" x2="198" y2="42" stroke={`${ac}44`} strokeWidth="1"/>
-      <polygon points="198,27 196,35 200,35" fill={`${ac}44`}/>
     </g>
   );
 }
 
-// ── Isometric 2.5D castle view ────────────────────────────────────────────
+// ── IsoCastlePlan removed — diorama replaced by enhanced floor plans ───────
 function IsoCastlePlan({castle,ac,sel,onZone}){
   const zones=castle.zones;
   const CX=110,CY=128;
@@ -2481,7 +2546,6 @@ function CastleMapTab({castle}){
   const [zoom,setZoom]=useState(1);
   const [selZone,setSelZone]=useState(null);
   const [attackMode,setAttackMode]=useState(false);
-  const [viewMode,setViewMode]=useState("flat");
   const selZ=sel.zones.find(z=>z.id===selZone);
   const plan=CASTLE_PLANS[sel.id];
   return(
@@ -2539,17 +2603,6 @@ function CastleMapTab({castle}){
                               ))}
                             </div>
                             <div style={{marginLeft:"auto",display:"flex",gap:"8px",alignItems:"center"}}>
-                              <button onClick={()=>setViewMode(v=>v==="flat"?"iso":"flat")}
-                                style={{padding:"5px 14px",fontSize:"12px",
-                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
-                                  background:viewMode==="iso"?`linear-gradient(135deg,${sel.theme.accent}28,${sel.theme.accent}10)`:"rgba(255,255,255,0.03)",
-                                  border:`2px solid ${viewMode==="iso"?sel.theme.accent+"70":"rgba(255,255,255,0.09)"}`,
-                                  color:viewMode==="iso"?sel.theme.accent:"#9a8a6a",
-                                  borderRadius:"8px",cursor:"pointer",whiteSpace:"nowrap",
-                                  boxShadow:viewMode==="iso"?`0 0 18px ${sel.theme.accent}30, inset 0 0 10px ${sel.theme.accent}10`:"none",
-                                  transition:"all 0.2s ease"}}>
-                                {viewMode==="iso"?"🏰 3D aktiv":"🏰 3D"}
-                              </button>
                               <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
                                 {sel.zones.length} Zonen
                               </span>
@@ -2580,13 +2633,22 @@ function CastleMapTab({castle}){
                                     <stop offset="0%" stopColor="#0e0a06"/>
                                     <stop offset="100%" stopColor="#060402"/>
                                   </radialGradient>
+                                  <pattern id="stoneTexture" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                    <rect width="20" height="20" fill="transparent"/>
+                                    <rect x="0" y="0" width="9" height="9" fill={`${sel.theme.accent}07`} rx="0.5"/>
+                                    <rect x="11" y="11" width="8" height="8" fill={`${sel.theme.accent}05`} rx="0.5"/>
+                                    <rect x="0" y="11" width="9" height="8" fill={`${sel.theme.accent}04`} rx="0.5"/>
+                                    <rect x="11" y="0" width="8" height="9" fill={`${sel.theme.accent}04`} rx="0.5"/>
+                                  </pattern>
+                                  <filter id="glowFilter" x="-60%" y="-60%" width="220%" height="220%">
+                                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                                  </filter>
                                 </defs>
                                 <rect width="220" height="200" fill="url(#bg_grad)"/>
-                                {viewMode==="iso"
-                                  ? <IsoCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
-                                  : plan
-                                    ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-                                    : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
+                                <rect width="220" height="200" fill="url(#stoneTexture)" opacity="0.55"/>
+                                {plan
+                                  ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
+                                  : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
                                 }
                                 {/* Attack arrows overlay */}
                                 {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
@@ -7328,7 +7390,7 @@ export default function App(){
       };
 
   const sc=avg(sel);
-  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
+  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
@@ -8021,7 +8083,6 @@ export default function App(){
             {/* Detail content */}
             <div style={{flex:1,padding:"14px 16px",animation:"fadeIn .2s ease",overflowY:"auto"}}>
               {dtab==="map"&&<CastleMapTab castle={sel}/>}
-              {dtab==="diorama"&&<CastleDiorama castle={sel}/>}
 
               {dtab==="stats"&&(
                 <div className="grid-2col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
