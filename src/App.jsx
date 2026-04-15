@@ -2535,7 +2535,7 @@ function CastleMapTab({castle}){
                                   borderRadius:"3px",cursor:"pointer",whiteSpace:"nowrap"}}>
                                 {viewMode==="iso"?"🏰 3D an":"🏰 3D"}
                               </button>
-                              <span style={{fontSize:"10px",color:"#3a2a14"}}>
+                              <span style={{fontSize:"10px",color:"#8a7a60"}}>
                                 {sel.zones.length} Zonen
                               </span>
                             </div>
@@ -2646,7 +2646,7 @@ function CastleMapTab({castle}){
                           ):(
                             <div style={{padding:"12px 14px",background:"rgba(255,255,255,0.02)",
                               border:"1px solid rgba(255,255,255,0.05)",borderRadius:"5px",
-                              textAlign:"center",color:"#3a2a14",fontSize:"12px",lineHeight:1.7}}>
+                              textAlign:"center",color:"#8a7a60",fontSize:"12px",lineHeight:1.7}}>
                               👆 Klicke auf einen Bereich im Grundriss<br/>
                               oder wähle eine Zone unten
                             </div>
@@ -2678,7 +2678,7 @@ function CastleMapTab({castle}){
                                 </div>
                               </div>
                               {selZone===z.id&&(
-                                <div style={{fontSize:"11px",color:"#6a5a38",lineHeight:1.7,animation:"fadeIn 0.15s ease"}}>
+                                <div style={{fontSize:"11px",color:"#9a8a6a",lineHeight:1.7,animation:"fadeIn 0.15s ease"}}>
                                   {z.d}
                                 </div>
                               )}
@@ -2703,7 +2703,7 @@ function CastleMapTab({castle}){
                             <div style={{fontSize:"16px",fontWeight:"bold",color:"#f0e6cc",marginBottom:"2px"}}>{sel.name}</div>
                             <div style={{fontSize:"13px",color:sel.theme.accent,marginBottom:"4px"}}>{sel.sub}</div>
                             <div style={{fontSize:"12px",color:"#7a6a48"}}>{sel.loc}</div>
-                            <div style={{fontSize:"12px",color:"#6a5a38",marginTop:"2px"}}>{sel.era} · {sel.epoch}</div>
+                            <div style={{fontSize:"12px",color:"#9a8a6a",marginTop:"2px"}}>{sel.era} · {sel.epoch}</div>
                           </div>
 
                           {/* Strategic significance — terrain based */}
@@ -2727,7 +2727,7 @@ function CastleMapTab({castle}){
                             ].map(s=>(
                               <div key={s.l} style={{marginBottom:"7px"}}>
                                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
-                                  <span style={{fontSize:"11px",color:"#6a5a38"}}>{s.i} {s.l}</span>
+                                  <span style={{fontSize:"11px",color:"#9a8a6a"}}>{s.i} {s.l}</span>
                                   <span style={{fontSize:"11px",fontWeight:"bold",color:s.inv?rCol(100-s.v):rCol(s.v)}}>{s.v}</span>
                                 </div>
                                 <div style={{height:"4px",background:"rgba(255,255,255,0.04)",borderRadius:"2px",overflow:"hidden"}}>
@@ -2757,7 +2757,7 @@ function CastleMapTab({castle}){
                                     <span style={{fontSize:"14px"}}>{c.icon}</span>
                                     <div style={{flex:1}}>
                                       <div style={{fontSize:"12px",color:"#8a7a50"}}>{c.name}</div>
-                                      <div style={{fontSize:"10px",color:"#4a3a20"}}>{c.loc}</div>
+                                      <div style={{fontSize:"10px",color:"#8a7860"}}>{c.loc}</div>
                                     </div>
                                     <div style={{fontSize:"11px",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
                                   </div>
@@ -2785,7 +2785,7 @@ function CastleMapTab({castle}){
                               </div>
                             );
                           })():(
-                            <div style={{padding:"40px",textAlign:"center",color:"#4a3a20",fontSize:"12px",
+                            <div style={{padding:"40px",textAlign:"center",color:"#8a7860",fontSize:"12px",
                               background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"8px"}}>
                               Keine Kartendaten verfügbar
                             </div>
@@ -2794,7 +2794,7 @@ function CastleMapTab({castle}){
                           {GEO[sel.id]&&(
                             <div style={{marginTop:"8px",padding:"7px 12px",
                               background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",
-                              borderRadius:"4px",fontSize:"11px",color:"#4a3a20",fontFamily:"monospace"}}>
+                              borderRadius:"4px",fontSize:"11px",color:"#8a7860",fontFamily:"monospace"}}>
                               {(()=>{const g=GEO[sel.id];const lon=((g.x/1000*360)-180).toFixed(2);const lat=(90-(g.y/500*180)).toFixed(2);return`${lat}°N ${lon}°E · ${sel.loc}`;})()}
                             </div>
                           )}
@@ -3378,7 +3378,7 @@ function FantasyMap({castles,onSelect,selected}){
             </div>
             <div style={{textAlign:"center",padding:"5px 10px",background:"rgba(0,0,0,0.3)",borderRadius:"4px"}}>
               <div style={{fontSize:"19px",fontWeight:"bold",color:rCol(avg(c))}}>{avg(c)}</div>
-              <div style={{fontSize:"8px",color:"#4a3a20",letterSpacing:"1px"}}>SCORE</div>
+              <div style={{fontSize:"8px",color:"#8a7860",letterSpacing:"1px"}}>SCORE</div>
             </div>
           </div>
         );
@@ -3507,7 +3507,7 @@ function SorrowlandMap({castles,onSelect,selected}){
               <div style={{fontSize:"11px",color:c.theme.accent,marginTop:"1px"}}>{c.sub}</div>
               <div style={{fontSize:"10px",color:"#5a4a38",marginTop:"1px"}}>{c.era}</div>
             </div>
-            <div style={{fontSize:"11px",color:"#6a5a38",textAlign:"right",maxWidth:"160px",lineHeight:1.5}}>
+            <div style={{fontSize:"11px",color:"#9a8a6a",textAlign:"right",maxWidth:"160px",lineHeight:1.5}}>
               {c.desc.slice(0,80)}…
             </div>
           </div>
@@ -3831,7 +3831,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
                   </div>
                   {/* Worst stat */}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:"9px",color:"#3a2810",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
+                    <span style={{fontSize:"9px",color:"#8a7060",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
                     <span style={{fontSize:"9px",fontFamily:"monospace",color:"#7a3a20"}}>{minV}</span>
                   </div>
                   <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
@@ -3931,9 +3931,9 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
             <button key={f.k} onClick={()=>setFilter(f.k)} className="filter-pill" style={{
               background:filter===f.k
                 ?"linear-gradient(135deg,rgba(201,168,76,0.22),rgba(201,168,76,0.1))"
-                :"rgba(255,255,255,0.04)",
-              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.55)":"rgba(255,255,255,0.08)"}`,
-              color:filter===f.k?"#d8b25a":"#5a4a30",
+                :"rgba(255,255,255,0.05)",
+              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.55)":"rgba(255,255,255,0.1)"}`,
+              color:filter===f.k?"#d8b25a":"#a08e70",
               fontFamily:"inherit",
               boxShadow:filter===f.k?"0 2px 12px rgba(201,168,76,0.2)":"none",
             }}>
@@ -3950,9 +3950,9 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           ].map((sel,i)=>(
             <select key={i} value={sel.value} onChange={sel.onChange} style={{
               padding:"5px 12px",
-              background:"rgba(255,255,255,0.04)",
-              border:"1px solid rgba(201,168,76,0.14)",
-              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",
+              background:"rgba(255,255,255,0.05)",
+              border:"1px solid rgba(201,168,76,0.18)",
+              color:"#9a8a68",fontSize:"11px",borderRadius:"20px",
               outline:"none",fontFamily:"inherit",cursor:"pointer",
               transition:"border-color .18s",
             }}>
@@ -3966,12 +3966,12 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
           {[{k:"default",l:"🗺 Karte"},{k:"score",l:"↓ Score"},{k:"epoch",l:"Epoche"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
             <button key={s.k} onClick={()=>setSortBy(s.k)} className="filter-pill" style={{
               background:sortBy===s.k
-                ?"linear-gradient(135deg,rgba(111,138,255,0.18),rgba(66,216,207,0.1))"
-                :"rgba(255,255,255,0.03)",
-              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.4)":"rgba(255,255,255,0.05)"}`,
-              color:sortBy===s.k?"#b0c8f8":"#4a3a20",
+                ?"linear-gradient(135deg,rgba(111,138,255,0.2),rgba(66,216,207,0.12))"
+                :"rgba(255,255,255,0.04)",
+              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.45)":"rgba(255,255,255,0.09)"}`,
+              color:sortBy===s.k?"#c0d4ff":"#8a8878",
               fontFamily:"inherit",
-              boxShadow:sortBy===s.k?"0 2px 12px rgba(111,138,255,0.15)":"none",
+              boxShadow:sortBy===s.k?"0 2px 12px rgba(111,138,255,0.18)":"none",
             }}>
               {s.l}
             </button>
@@ -4007,7 +4007,7 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
                 }}>
                   {REGION_LABELS[region]||region}
                 </div>
-                <div style={{fontSize:"9px",color:"#4a3820",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
+                <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
                   {cards.length} FESTUNG{cards.length!==1?"EN":""}
                 </div>
               </div>
@@ -4358,7 +4358,7 @@ Nach 5-9 Zügen bei guter Strategie: "**[GEFALLEN]**", bei schlechter: "**[GEHAL
             </div>}
           </button>
         )}
-        <div style={{display:"flex",gap:"3px",flexWrap:"wrap",marginBottom:"6px"}}>{qas.map((q,i)=><button key={i} onClick={()=>setInput(q)} style={{fontSize:"12px",padding:"2px 7px",background:"rgba(201,168,76,0.03)",border:"1px solid rgba(201,168,76,0.09)",color:"#3a2a16",borderRadius:"8px",cursor:"pointer"}}>{q.slice(0,32)}…</button>)}</div>
+        <div style={{display:"flex",gap:"3px",flexWrap:"wrap",marginBottom:"6px"}}>{qas.map((q,i)=><button key={i} onClick={()=>setInput(q)} style={{fontSize:"12px",padding:"2px 7px",background:"rgba(201,168,76,0.03)",border:"1px solid rgba(201,168,76,0.09)",color:"#8a7a60",borderRadius:"8px",cursor:"pointer"}}>{q.slice(0,32)}…</button>)}</div>
         <div style={{display:"flex",gap:"5px"}}>
           <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Dein Angriffszug…" style={{flex:1,padding:"7px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(201,168,76,0.13)",borderRadius:"4px",color:"#e8d8b0",fontSize:"14px",outline:"none",fontFamily:"inherit"}}/>
           <button onClick={send} disabled={loading||!input.trim()} style={{padding:"7px 12px",background:input.trim()&&!loading?"rgba(130,35,8,.18)":"rgba(255,255,255,.02)",border:`1px solid ${input.trim()&&!loading?"rgba(130,35,8,.36)":"rgba(255,255,255,.05)"}`,color:input.trim()&&!loading?"#cc5533":"#1a0e08",borderRadius:"4px",cursor:"pointer",fontSize:"13px"}}>⚔</button>
@@ -4568,11 +4568,11 @@ function SiegeSimulator({castle,onScore,general,season}){
   };
   return(
     <div>
-      <div style={{padding:"9px 12px",background:"rgba(130,60,8,.07)",border:"1px solid rgba(130,60,8,.16)",borderRadius:"4px",marginBottom:"12px",fontSize:"14px",color:"#7a6038",lineHeight:1.7}}>
-        <strong style={{color:"#c9a84c",display:"block",marginBottom:"1px"}}>⚔️ SIMULATOR · {TOTAL_RES} PUNKTE</strong>{castle.siegeCtx}
+      <div style={{padding:"10px 13px",background:"rgba(130,60,8,.1)",border:"1px solid rgba(180,90,20,.22)",borderRadius:"6px",marginBottom:"12px",fontSize:"13px",color:"#b09060",lineHeight:1.75}}>
+        <strong style={{color:"#c9a84c",display:"block",marginBottom:"3px",fontSize:"11px",letterSpacing:"2px"}}>⚔️ BELAGERUNGSSZENARIO · {TOTAL_RES} PUNKTE</strong>{castle.siegeCtx}
       </div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-        <span style={{fontSize:"11px",color:"#9a8a68",letterSpacing:"2px"}}>RESSOURCEN VERTEILEN</span>
+        <span style={{fontSize:"11px",color:"#b09a72",letterSpacing:"2.5px",fontFamily:"'Cinzel',serif"}}>RESSOURCEN VERTEILEN</span>
         <span style={{fontSize:"15px",fontWeight:"bold",color:used===TOTAL_RES?"#8aaa68":"#c9a84c"}}>{used}/{TOTAL_RES}</span>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px",marginBottom:"12px"}}>
@@ -4580,22 +4580,38 @@ function SiegeSimulator({castle,onScore,general,season}){
           const seasonBonus=season?.bonuses?.[k]||0,seasonPen=season?.penalties?.[k]||0;
           const genBonus=general?.bonus?.[k]||0;
           return(
-            <div key={k} style={{padding:"7px 9px",background:"rgba(255,255,255,.016)",border:`1px solid ${alloc[k]>0?`${r.c}28`:"rgba(255,255,255,.03)"}`,borderRadius:"3px"}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
-                <div style={{fontSize:"12px",color:alloc[k]>0?r.c:"#2a1a14"}}>{r.i} {r.l}</div>
+            <div key={k} style={{
+              padding:"8px 10px",
+              background:alloc[k]>0?`${r.c}0d`:"rgba(255,255,255,.022)",
+              border:`1px solid ${alloc[k]>0?`${r.c}35`:"rgba(255,255,255,.06)"}`,
+              borderRadius:"6px",
+              transition:"all .15s ease",
+            }}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"5px"}}>
+                <div style={{fontSize:"12px",color:alloc[k]>0?r.c:"#7a6a58",fontWeight:alloc[k]>0?600:400}}>{r.i} {r.l}</div>
                 <div style={{display:"flex",gap:"3px",alignItems:"center"}}>
-                  {genBonus!==0&&<span style={{fontSize:"11px",color:genBonus>0?"#8aaa68":"#cc5544"}}>{genBonus>0?"+":""}{genBonus}</span>}
-                  {seasonBonus>0&&<span style={{fontSize:"11px",color:"#88cc44"}}>+{seasonBonus}</span>}
-                  {seasonPen<0&&<span style={{fontSize:"11px",color:"#cc4433"}}>{seasonPen}</span>}
-                  <div style={{fontSize:"15px",fontWeight:"bold",color:alloc[k]>0?r.c:"#1a0a00"}}>{alloc[k]}</div>
+                  {genBonus!==0&&<span style={{fontSize:"10px",color:genBonus>0?"#7acc55":"#ee5544",fontWeight:"bold"}}>{genBonus>0?"+":""}{genBonus}</span>}
+                  {seasonBonus>0&&<span style={{fontSize:"10px",color:"#88dd44",fontWeight:"bold"}}>+{seasonBonus}</span>}
+                  {seasonPen<0&&<span style={{fontSize:"10px",color:"#ee4433",fontWeight:"bold"}}>{seasonPen}</span>}
+                  <div style={{fontSize:"14px",fontWeight:"bold",color:alloc[k]>0?r.c:"#6a5a48",minWidth:"14px",textAlign:"right"}}>{alloc[k]}</div>
                 </div>
               </div>
-              <div style={{display:"flex",gap:"2px"}}>{[0,1,2,3,4,5].map(v=><button key={v} onClick={()=>change(k,v)} style={{flex:1,height:"10px",borderRadius:"2px",border:"none",cursor:"pointer",background:v<=alloc[k]?r.c:"rgba(255,255,255,0.03)",opacity:v<=alloc[k]?1:.26,transition:"all .08s"}}/>)}</div>
+              <div style={{display:"flex",gap:"2px"}}>{[0,1,2,3,4,5].map(v=><button key={v} onClick={()=>change(k,v)} style={{flex:1,height:"11px",borderRadius:"3px",border:"none",cursor:"pointer",background:v<=alloc[k]?r.c:"rgba(255,255,255,0.06)",opacity:v<=alloc[k]?1:.3,transition:"all .1s"}}/>)}</div>
             </div>
           );
         })}
       </div>
-      <button onClick={run} disabled={loading||used<3} style={{width:"100%",padding:"9px",fontSize:"13px",letterSpacing:"1px",background:used>=3&&!loading?"rgba(160,60,12,.16)":"rgba(255,255,255,.018)",border:`1px solid ${used>=3&&!loading?"rgba(160,60,12,.36)":"rgba(255,255,255,.04)"}`,color:used>=3&&!loading?"#dd7744":"#1a0e08",borderRadius:"4px",cursor:used>=3?"pointer":"not-allowed"}}>
+      <button onClick={run} disabled={loading||used<3} style={{
+        width:"100%",padding:"10px",fontSize:"13px",letterSpacing:"1.5px",fontWeight:600,
+        background:used>=3&&!loading
+          ?"linear-gradient(135deg,rgba(200,80,20,.22),rgba(160,50,10,.15))"
+          :"rgba(255,255,255,.03)",
+        border:`1px solid ${used>=3&&!loading?"rgba(220,100,40,.45)":"rgba(255,255,255,.06)"}`,
+        color:used>=3&&!loading?"#ee8855":"#5a4a38",
+        borderRadius:"6px",cursor:used>=3?"pointer":"not-allowed",
+        transition:"all .2s ease",
+        boxShadow:used>=3&&!loading?"0 4px 16px rgba(200,80,20,.2)":"none",
+      }}>
         {loading?"⏳ Belagerung läuft…":"⚔️ BELAGERUNG STARTEN"}
       </button>
       {result&&<div style={{marginTop:"12px",padding:"12px",background:result.success?"rgba(22,70,12,.1)":"rgba(85,12,7,.1)",border:`1px solid ${result.success?"rgba(35,95,18,.22)":"rgba(105,18,10,.22)"}`,borderRadius:"4px"}}>
@@ -4604,16 +4620,22 @@ function SiegeSimulator({castle,onScore,general,season}){
           <div><div style={{fontSize:"11px",letterSpacing:"2px",color:result.success?"#5aaa42":"#cc3322",marginBottom:"2px"}}>{result.success?"✅ ERFOLG":"❌ GESCHEITERT"}</div><div style={{fontSize:"12px",fontWeight:"bold",color:"#f0e0c0"}}>{result.title}</div>{result.daysElapsed&&<div style={{fontSize:"12px",color:"#b09a70",marginTop:"1px"}}>~{result.daysElapsed} Tage</div>}</div>
           <div style={{textAlign:"center"}}><div style={{fontSize:"22px",fontWeight:"bold",color:rCol(result.rating*10)}}>{result.rating}</div><div style={{fontSize:"11px",color:"#9a8a68"}}>/10</div></div>
         </div>
-        <div style={{fontSize:"14px",color:"#6a5038",lineHeight:1.75,marginBottom:"8px"}}>{result.outcome}</div>
-        {result.keyMoment&&<div style={{padding:"7px 9px",background:"rgba(0,0,0,.22)",borderLeft:"3px solid rgba(201,168,76,.28)",borderRadius:"2px",fontSize:"13px",color:"#cbb888",lineHeight:1.8,marginBottom:"8px"}}>{result.keyMoment}</div>}
-        {result.phases?.length>0&&<div style={{marginBottom:"8px"}}>{result.phases.map((p,i)=><div key={i} style={{fontSize:"13px",color:"#c0a878",padding:"2px 0",borderBottom:"1px solid rgba(255,255,255,.02)",display:"flex",gap:"5px"}}><span style={{color:"#c9a84c",flexShrink:0}}>{i+1}.</span>{p}</div>)}</div>}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"7px",marginBottom:"7px"}}>
-          {result.whatWorked?.length>0&&<div><div style={{fontSize:"11px",color:"#3a7022",letterSpacing:"2px",marginBottom:"3px"}}>FUNKTIONIERTE</div>{result.whatWorked.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#2a5518",padding:"1px 0"}}>✓ {w}</div>)}</div>}
-          {result.mistakes?.length>0&&<div><div style={{fontSize:"11px",color:"#702a18",letterSpacing:"2px",marginBottom:"3px"}}>FEHLER</div>{result.mistakes.map((m,i)=><div key={i} style={{fontSize:"12px",color:"#5a2010",padding:"1px 0"}}>✗ {m}</div>)}</div>}
+        <div style={{fontSize:"14px",color:"#c0a870",lineHeight:1.75,marginBottom:"8px"}}>{result.outcome}</div>
+        {result.keyMoment&&<div style={{padding:"8px 10px",background:"rgba(0,0,0,.28)",borderLeft:"3px solid rgba(201,168,76,.4)",borderRadius:"3px",fontSize:"13px",color:"#d4bc88",lineHeight:1.8,marginBottom:"8px"}}>{result.keyMoment}</div>}
+        {result.phases?.length>0&&<div style={{marginBottom:"8px"}}>{result.phases.map((p,i)=><div key={i} style={{fontSize:"13px",color:"#c8b080",padding:"3px 0",borderBottom:"1px solid rgba(255,255,255,.04)",display:"flex",gap:"6px"}}><span style={{color:"#c9a84c",flexShrink:0,fontWeight:"bold"}}>{i+1}.</span>{p}</div>)}</div>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
+          {result.whatWorked?.length>0&&<div style={{padding:"8px",background:"rgba(40,100,20,.1)",border:"1px solid rgba(60,140,30,.2)",borderRadius:"4px"}}>
+            <div style={{fontSize:"10px",color:"#70cc44",letterSpacing:"2px",marginBottom:"5px"}}>FUNKTIONIERTE</div>
+            {result.whatWorked.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#90cc68",padding:"2px 0"}}>✓ {w}</div>)}
+          </div>}
+          {result.mistakes?.length>0&&<div style={{padding:"8px",background:"rgba(100,20,12,.1)",border:"1px solid rgba(150,30,20,.2)",borderRadius:"4px"}}>
+            <div style={{fontSize:"10px",color:"#ee6644",letterSpacing:"2px",marginBottom:"5px"}}>FEHLER</div>
+            {result.mistakes.map((m,i)=><div key={i} style={{fontSize:"12px",color:"#cc7060",padding:"2px 0"}}>✗ {m}</div>)}
+          </div>}
         </div>
-        {result.generalBonus&&<div style={{fontSize:"12px",color:"#4a4030",fontStyle:"italic",borderTop:"1px solid rgba(255,255,255,0.03)",paddingTop:"5px",marginBottom:"3px"}}>⚔️ {result.generalBonus}</div>}
-        {result.seasonEffect&&<div style={{fontSize:"12px",color:"#3a4030",fontStyle:"italic"}}>🌿 {result.seasonEffect}</div>}
-        {result.historicalParallel&&<div style={{fontSize:"12px",color:"#9a8a68",fontStyle:"italic",marginTop:"4px"}}>📜 {result.historicalParallel}</div>}
+        {result.generalBonus&&<div style={{fontSize:"12px",color:"#a09068",fontStyle:"italic",borderTop:"1px solid rgba(255,255,255,0.05)",paddingTop:"6px",marginBottom:"3px"}}>⚔️ {result.generalBonus}</div>}
+        {result.seasonEffect&&<div style={{fontSize:"12px",color:"#80a068",fontStyle:"italic"}}>🌿 {result.seasonEffect}</div>}
+        {result.historicalParallel&&<div style={{fontSize:"12px",color:"#b0a07a",fontStyle:"italic",marginTop:"5px"}}>📜 {result.historicalParallel}</div>}
       </div>}
     </div>
   );
@@ -4650,7 +4672,7 @@ function WhatIf({castle}){
         <strong style={{color:"#8899cc",display:"block",marginBottom:"1px"}}>🌀 WAS WÄRE WENN…</strong>Kontrafaktische Analyse: Wie hätte sich die Geschichte geändert?
       </div>
       <div style={{display:"flex",flexWrap:"wrap",gap:"3px",marginBottom:"9px"}}>
-        {presets.map((p,i)=><button key={i} onClick={()=>setScen(p)} style={{fontSize:"12px",padding:"3px 8px",background:scen===p?"rgba(136,153,204,.12)":"rgba(255,255,255,.018)",border:`1px solid ${scen===p?"rgba(136,153,204,.3)":"rgba(255,255,255,.05)"}`,color:scen===p?"#8899cc":"#3a3a5a",borderRadius:"9px",cursor:"pointer"}}>{p.length>52?p.slice(0,50)+"…":p}</button>)}
+        {presets.map((p,i)=><button key={i} onClick={()=>setScen(p)} style={{fontSize:"12px",padding:"4px 10px",background:scen===p?"rgba(136,153,204,.16)":"rgba(255,255,255,.04)",border:`1px solid ${scen===p?"rgba(136,153,204,.4)":"rgba(255,255,255,.08)"}`,color:scen===p?"#a0b0e0":"#8a8aaa",borderRadius:"9px",cursor:"pointer",transition:"all .15s"}}>{p.length>52?p.slice(0,50)+"…":p}</button>)}
       </div>
       <div style={{display:"flex",gap:"5px",marginBottom:"10px"}}>
         <input value={scen} onChange={e=>setScen(e.target.value)} onKeyDown={e=>e.key==="Enter"&&analyze()} placeholder="Eigenes Szenario…" style={{flex:1,padding:"7px 10px",background:"rgba(255,255,255,.04)",border:"1px solid rgba(136,153,204,.18)",borderRadius:"4px",color:"#e8d8b0",fontSize:"14px",outline:"none",fontFamily:"inherit"}}/>
@@ -4661,13 +4683,13 @@ function WhatIf({castle}){
           <div><div style={{fontSize:"11px",letterSpacing:"2px",color:res.wouldHaveFallen?"#cc4433":"#5a9a42",marginBottom:"2px"}}>{res.wouldHaveFallen?"💀 WÄRE GEFALLEN":"🛡️ HÄTTE GEHALTEN"}</div><div style={{fontSize:"12px",fontWeight:"bold",color:"#e0d0b0"}}>{res.outcome}</div></div>
           <div style={{textAlign:"center",padding:"5px 9px",background:"rgba(136,153,204,.08)",border:"1px solid rgba(136,153,204,.14)",borderRadius:"3px"}}>
             <div style={{fontSize:"15px",fontWeight:"bold",color:"#8899cc"}}>{res.likelihood}</div>
-            <div style={{fontSize:"11px",color:"#2a2a40"}}>PLAUSIB.</div>
+            <div style={{fontSize:"11px",color:"#7a7a9a"}}>PLAUSIB.</div>
           </div>
         </div>
-        <div style={{fontSize:"14px",color:"#5a5a80",lineHeight:1.8,marginBottom:"8px",fontStyle:"italic",borderLeft:"3px solid rgba(136,153,204,.22)",paddingLeft:"9px"}}>{res.analysis}</div>
-        {res.keyFactor&&<div style={{padding:"6px 9px",background:"rgba(136,153,204,.06)",border:"1px solid rgba(136,153,204,.1)",borderRadius:"3px",marginBottom:"7px",fontSize:"13px",color:"#6a6a8a"}}><strong style={{color:"#8899cc"}}>Entscheidend:</strong> {res.keyFactor}</div>}
-        {res.timeChange&&<div style={{fontSize:"12px",color:"#4a4a60",marginBottom:"5px"}}>⏱ {res.timeChange}</div>}
-        {res.historicalParallels?.length>0&&<div><div style={{fontSize:"11px",color:"#2a2a48",letterSpacing:"2px",marginBottom:"3px"}}>PARALLELEN</div>{res.historicalParallels.map((p,i)=><div key={i} style={{fontSize:"12px",color:"#3a3a58",padding:"1px 0",display:"flex",gap:"5px"}}><span style={{color:"#8899cc"}}>›</span>{p}</div>)}</div>}
+        <div style={{fontSize:"14px",color:"#9090b8",lineHeight:1.8,marginBottom:"8px",fontStyle:"italic",borderLeft:"3px solid rgba(136,153,204,.3)",paddingLeft:"9px"}}>{res.analysis}</div>
+        {res.keyFactor&&<div style={{padding:"6px 9px",background:"rgba(136,153,204,.08)",border:"1px solid rgba(136,153,204,.16)",borderRadius:"3px",marginBottom:"7px",fontSize:"13px",color:"#9898c0"}}><strong style={{color:"#a0aedd"}}>Entscheidend:</strong> {res.keyFactor}</div>}
+        {res.timeChange&&<div style={{fontSize:"12px",color:"#8080a0",marginBottom:"5px"}}>⏱ {res.timeChange}</div>}
+        {res.historicalParallels?.length>0&&<div><div style={{fontSize:"11px",color:"#7a7a9a",letterSpacing:"2px",marginBottom:"3px"}}>PARALLELEN</div>{res.historicalParallels.map((p,i)=><div key={i} style={{fontSize:"12px",color:"#8888a8",padding:"2px 0",display:"flex",gap:"5px"}}><span style={{color:"#9090c0"}}>›</span>{p}</div>)}</div>}
       </div>}
     </div>
   );
@@ -5030,7 +5052,7 @@ function CastleBuilder(){
               <span style={{fontSize:"16px"}}>{s.emoji}</span>
               <div style={{flex:1}}>
                 <div style={{fontSize:"12px",fontWeight:"bold",color:"#6aaa50"}}>{s.name}</div>
-                <div style={{fontSize:"11px",color:"#3a6a20",lineHeight:1.5}}>{s.desc}</div>
+                <div style={{fontSize:"11px",color:"#7acc4a",lineHeight:1.5}}>{s.desc}</div>
               </div>
             </div>
           ))}
@@ -5055,8 +5077,8 @@ function CastleBuilder(){
         </div>
         {res.flavorText&&<div style={{fontSize:"13px",color:"#c0a878",fontStyle:"italic",lineHeight:1.8,marginBottom:"8px",borderLeft:"3px solid rgba(201,168,76,.2)",paddingLeft:"8px"}}>{res.flavorText}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
-          <div><div style={{fontSize:"10px",color:"#3a6a22",letterSpacing:"2px",marginBottom:"3px"}}>STÄRKEN</div>{res.strengths?.map((s,i)=><div key={i} style={{fontSize:"12px",color:"#2a5018",padding:"1px 0"}}>✓ {s}</div>)}</div>
-          <div><div style={{fontSize:"10px",color:"#6a2a18",letterSpacing:"2px",marginBottom:"3px"}}>SCHWÄCHEN</div>{res.weaknesses?.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#4a1810",padding:"1px 0"}}>✗ {w}</div>)}</div>
+          <div><div style={{fontSize:"10px",color:"#7acc4a",letterSpacing:"2px",marginBottom:"3px"}}>STÄRKEN</div>{res.strengths?.map((s,i)=><div key={i} style={{fontSize:"12px",color:"#7acc5a",padding:"1px 0"}}>✓ {s}</div>)}</div>
+          <div><div style={{fontSize:"10px",color:"#ee6644",letterSpacing:"2px",marginBottom:"3px"}}>SCHWÄCHEN</div>{res.weaknesses?.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#cc7060",padding:"1px 0"}}>✗ {w}</div>)}</div>
         </div>
         {res.worstVulnerability&&<div style={{padding:"6px 9px",background:"rgba(110,18,6,.09)",border:"1px solid rgba(110,18,6,.16)",borderRadius:"3px",marginBottom:"6px",fontSize:"12px",color:"#5a2a18"}}><strong style={{color:"#bb4422",display:"block",marginBottom:"1px"}}>Kritischste Schwachstelle:</strong>{res.worstVulnerability}</div>}
         {res.bestAttack&&<div style={{padding:"6px 9px",background:"rgba(100,15,6,.08)",border:"1px solid rgba(100,15,6,.14)",borderRadius:"3px",marginBottom:"6px",fontSize:"12px",color:"#5a2818",lineHeight:1.7}}><strong style={{color:"#aa3322",display:"block",marginBottom:"1px"}}>Angreifbar durch:</strong>{res.bestAttack}</div>}
@@ -5110,7 +5132,7 @@ function Compare({castles,init}){
               <div style={{fontSize:"10px",color:c1.theme.accent,marginBottom:"6px"}}>{c1.era}</div>
               <div style={{fontSize:"26px",fontWeight:"bold",color:rCol(avg(c1))}}>{avg(c1)}</div>
             </div>
-            <div style={{display:"flex",alignItems:"center",color:"#3a2a14",fontSize:"12px",fontFamily:"serif"}}>VS</div>
+            <div style={{display:"flex",alignItems:"center",color:"#8a7a60",fontSize:"12px",fontFamily:"serif"}}>VS</div>
             <div style={{padding:"12px",background:`${c2.theme.bg}`,border:`1px solid ${c2.theme.accent}33`,borderRight:`4px solid ${c2.theme.accent}`,borderRadius:"5px"}}>
               <div style={{fontSize:"22px",marginBottom:"3px"}}>{c2.icon}</div>
               <div style={{fontSize:"13px",fontWeight:"bold",color:"#d0c090",marginBottom:"2px"}}>{c2.name}</div>
@@ -5121,7 +5143,7 @@ function Compare({castles,init}){
 
           {/* Unified dual radar */}
           <div style={{padding:"14px",background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:"6px",marginBottom:"14px"}}>
-            <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",textAlign:"center",marginBottom:"8px"}}>RADAR-VERGLEICH</div>
+            <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",textAlign:"center",marginBottom:"8px"}}>RADAR-VERGLEICH</div>
             <div style={{maxWidth:"240px",margin:"0 auto"}}>
               <RadarChart castle={c1} compare={c2}/>
             </div>
@@ -5147,7 +5169,7 @@ function Compare({castles,init}){
                 <div key={cat.k} style={{marginBottom:"8px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
                     <span style={{fontSize:"12px",color:w==="l"?c1.theme.accent:"#5a4a28",fontWeight:w==="l"?"bold":"normal"}}>{v1}</span>
-                    <span style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"1px"}}>{cat.i} {cat.l}</span>
+                    <span style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"1px"}}>{cat.i} {cat.l}</span>
                     <span style={{fontSize:"12px",color:w==="r"?c2.theme.accent:"#5a4a28",fontWeight:w==="r"?"bold":"normal"}}>{v2}</span>
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 20px 1fr",gap:"3px",alignItems:"center"}}>
@@ -5177,7 +5199,7 @@ function Compare({castles,init}){
             ].map(row=>(
               <div key={row.l} style={{gridColumn:"1/-1",display:"grid",gridTemplateColumns:"1fr 60px 1fr",gap:"6px",alignItems:"start",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                 <div style={{fontSize:"11px",color:"#a09070",textAlign:"right",paddingRight:"4px"}}>{row.v1}</div>
-                <div style={{fontSize:"10px",color:"#4a3a20",textAlign:"center",letterSpacing:"1px"}}>{row.l}</div>
+                <div style={{fontSize:"10px",color:"#8a7860",textAlign:"center",letterSpacing:"1px"}}>{row.l}</div>
                 <div style={{fontSize:"11px",color:"#a09070",textAlign:"left",paddingLeft:"4px"}}>{row.v2}</div>
               </div>
             ))}
@@ -5700,7 +5722,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
               <span style={{fontSize:"11px",color:"#8a7a58"}}>Kapitel {step+1}/{activeCampaign.castles.length}</span>
               <button onClick={()=>setActiveCampaign(null)}
                 style={{padding:"2px 7px",background:"transparent",border:"1px solid rgba(255,255,255,0.06)",
-                  color:"#4a3a20",borderRadius:"3px",cursor:"pointer",fontSize:"10px"}}>
+                  color:"#8a7860",borderRadius:"3px",cursor:"pointer",fontSize:"10px"}}>
                 Abbrechen
               </button>
             </div>
@@ -5914,7 +5936,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
                       ✅ {saved.score}%</div>}
                   </div>
                   <div style={{fontSize:"12px",color:"#7a6a48",marginBottom:"6px",lineHeight:1.7}}>{camp.desc}</div>
-                  <div style={{fontSize:"11px",color:"#6a5a38",marginBottom:"8px"}}>⏳ {camp.era}</div>
+                  <div style={{fontSize:"11px",color:"#9a8a6a",marginBottom:"8px"}}>⏳ {camp.era}</div>
                   <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
                     {campCastles.map(c=>(
                       <span key={c.id} style={{fontSize:"15px"}} title={c.name}>{c.icon}</span>
@@ -5924,7 +5946,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
                     </span>
                   </div>
                 </div>
-                <div style={{fontSize:"20px",color:"#3a2a14",flexShrink:0,alignSelf:"center"}}>›</div>
+                <div style={{fontSize:"20px",color:"#8a7a60",flexShrink:0,alignSelf:"center"}}>›</div>
               </div>
             </div>
           );
@@ -6031,7 +6053,7 @@ function GlobalStats({scores,playStats,castles}){
               border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",textAlign:"center"}}>
               <div style={{fontSize:"18px",marginBottom:"3px"}}>{s.icon}</div>
               <div style={{fontSize:"21px",fontWeight:"bold",color:s.c}}>{s.v}</div>
-              <div style={{fontSize:"10px",color:"#4a3a1c",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
+              <div style={{fontSize:"10px",color:"#8a7a5a",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
             </div>
           ))}
         </div>
@@ -6055,7 +6077,7 @@ function GlobalStats({scores,playStats,castles}){
             ].map(x=>(
               <div key={x.l} style={{textAlign:"center",padding:"8px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
                 <div style={{fontSize:"16px",fontWeight:"bold",color:x.c}}>{x.v}</div>
-                <div style={{fontSize:"9px",color:"#4a3a20",letterSpacing:"1px",marginTop:"2px"}}>{x.l.toUpperCase()}</div>
+                <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"1px",marginTop:"2px"}}>{x.l.toUpperCase()}</div>
               </div>
             ))}
           </div>
@@ -6069,7 +6091,7 @@ function GlobalStats({scores,playStats,castles}){
               <div style={{flex:wins,height:"100%",background:"linear-gradient(90deg,rgba(80,160,60,0.5),rgba(100,180,80,0.7))",borderRadius:"4px 0 0 4px",minWidth:"4px"}}/>
               <div style={{flex:total-wins,height:"100%",background:"linear-gradient(90deg,rgba(160,50,40,0.7),rgba(180,60,50,0.5))",borderRadius:"0 4px 4px 0",minWidth:"4px"}}/>
             </div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#6a5a38"}}>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#9a8a6a"}}>
               <span>✅ {wins} Siege ({winRate}%)</span>
               <span>❌ {total-wins} Niederlagen</span>
             </div>
@@ -6095,7 +6117,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             </div>
           ))}
-          <div style={{display:"flex",gap:"14px",marginTop:"8px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"8px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(100,180,80,0.55)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gewonnen</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(180,80,50,0.5)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Verloren</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(255,255,255,0.04)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Noch nicht</span>
@@ -6168,7 +6190,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
               <div style={{textAlign:"right",minWidth:"40px"}}>
                 <div style={{fontSize:"14px",fontWeight:"bold",color:g.wins>0?"#c9a84c":"#3a2a14"}}>{g.wins}</div>
-                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>SIEGE</div>
+                <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>SIEGE</div>
               </div>
               {g.wins>0&&(
                 <div style={{width:"60px",height:"4px",background:"rgba(255,255,255,0.04)",borderRadius:"2px",overflow:"hidden"}}>
@@ -6216,7 +6238,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             );
           })}
-          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(201,168,76,0.2)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gesamt</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"#c9a84c",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Belagert</span>
           </div>
@@ -6263,7 +6285,7 @@ function GlobalStats({scores,playStats,castles}){
               <div key={x.l} style={{padding:"8px",background:"rgba(255,255,255,0.015)",borderRadius:"4px",textAlign:"center"}}>
                 <div style={{fontSize:"15px",marginBottom:"2px"}}>{x.icon}</div>
                 <div style={{fontSize:"14px",fontWeight:"bold",color:"#c9a84c"}}>{x.v}</div>
-                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
               </div>
             ))}
           </div>
@@ -6290,7 +6312,7 @@ function GlobalStats({scores,playStats,castles}){
                   ].map(x=>(
                     <div key={x.l} style={{textAlign:"center",padding:"6px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
                       <div style={{fontSize:"15px",fontWeight:"bold",color}}>{x.v}</div>
-                      <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                      <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
                     </div>
                   ))}
                 </div>
@@ -6326,7 +6348,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             );
           })}
-          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(138,170,104,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Historisch</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(153,136,187,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Fantasy</span>
           </div>
@@ -6342,7 +6364,7 @@ function GlobalStats({scores,playStats,castles}){
               <div style={{fontSize:"10px",color,letterSpacing:"1px",marginBottom:"8px"}}>{label}</div>
               {[...list].sort((a,b)=>avg(b)-avg(a)).slice(0,5).map((c,i)=>(
                 <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
-                  <div style={{fontSize:"10px",color:i===0?color:"#4a3a20",width:"13px"}}>{i+1}</div>
+                  <div style={{fontSize:"10px",color:i===0?color:"#8a7860",width:"13px"}}>{i+1}</div>
                   <span style={{fontSize:"12px"}}>{c.icon}</span>
                   <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
                   <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
@@ -6497,7 +6519,7 @@ function Timeline({castles,onSelect}){
       </div>
       <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#9cb0de",fontFamily:"monospace",marginBottom:"16px"}}>
         <span>{minY>0?`${minY} n.Chr.`:`${Math.abs(minY)} v.Chr.`}</span>
-        <span style={{color:"#5a4a30"}}>{sorted.length} Burgen</span>
+        <span style={{color:"#9a8a6a"}}>{sorted.length} Burgen</span>
         <span>{maxY>0?`${maxY} n.Chr.`:`${Math.abs(maxY)} v.Chr.`}</span>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:"5px"}}>
@@ -6632,7 +6654,7 @@ function AchievementsPanel({scores,castles,playStats}){
 
       {cats.map(cat=>(
         <div key={cat} style={{marginBottom:"20px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"10px"}}>{cat}</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"10px"}}>{cat}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"6px"}}>
             {all.filter(a=>a.cat===cat).map(a=>(
               <div key={a.id} style={{padding:"10px 12px",
@@ -6848,7 +6870,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
     <div style={{padding:"40px",textAlign:"center",animation:"fadeIn 0.3s ease"}}>
       <div style={{fontSize:"40px",marginBottom:"12px"}}>🏆</div>
       <div style={{fontSize:"14px",color:"#b09a70",marginBottom:"6px"}}>Noch keine Belagerungen aufgezeichnet.</div>
-      <div style={{fontSize:"12px",color:"#6a5a38",lineHeight:1.7}}>Starte eine Belagerung im Rollenspiel- oder Simulator-Tab<br/>um deine Statistiken hier zu sehen.</div>
+      <div style={{fontSize:"12px",color:"#9a8a6a",lineHeight:1.7}}>Starte eine Belagerung im Rollenspiel- oder Simulator-Tab<br/>um deine Statistiken hier zu sehen.</div>
     </div>
   );
 
@@ -6858,7 +6880,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px"}}>
         <div>
           <div style={{fontSize:"16px",fontWeight:"bold",color:"#f0e6cc"}}>🏆 Belagerungs-Chronik</div>
-          <div style={{fontSize:"11px",color:"#6a5a38",marginTop:"2px"}}>{total} Belagerungen · {winRate}% Siegesquote</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",marginTop:"2px"}}>{total} Belagerungen · {winRate}% Siegesquote</div>
         </div>
         <button onClick={exportStats}
           style={{padding:"6px 12px",background:"rgba(201,168,76,0.07)",
@@ -6889,7 +6911,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       <div style={{marginBottom:"14px",padding:"10px 14px",
         background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"5px"}}>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:"5px"}}>
-          <span style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"1.5px"}}>SIEGESQUOTE</span>
+          <span style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"1.5px"}}>SIEGESQUOTE</span>
           <span style={{fontSize:"12px",fontWeight:"bold",color:rCol(winRate)}}>{winRate}%</span>
         </div>
         <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
@@ -6902,7 +6924,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       {/* Records */}
       {(bestRating||fastestWin||longestSiege||hardestFall)&&(
         <div style={{marginBottom:"14px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"8px"}}>🏅 REKORDE</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"8px"}}>🏅 REKORDE</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
             {[
               bestRating&&{icon:"🏆",label:"Bestes Rating",  value:`${bestRating.icon} ${bestRating.name}`,sub:`${bestRating.rating}/10`,castle:bestRating.castle},
@@ -6914,7 +6936,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
                 style={{padding:"8px 10px",background:"rgba(201,168,76,0.04)",
                   border:"1px solid rgba(201,168,76,0.12)",borderLeft:"3px solid rgba(201,168,76,0.35)",
                   borderRadius:"4px",cursor:"pointer"}}>
-                <div style={{fontSize:"10px",color:"#6a5a38",letterSpacing:"1px",marginBottom:"3px"}}>{r.icon} {r.label.toUpperCase()}</div>
+                <div style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"1px",marginBottom:"3px"}}>{r.icon} {r.label.toUpperCase()}</div>
                 <div style={{fontSize:"12px",color:"#d0c090",marginBottom:"1px"}}>{r.value}</div>
                 <div style={{fontSize:"11px",color:"#c9a84c",fontWeight:"bold"}}>{r.sub}</div>
               </div>
@@ -6927,7 +6949,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       {Object.keys(byRegion).length>1&&(
         <div style={{marginBottom:"14px",padding:"12px 14px",
           background:"rgba(0,0,0,0.18)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"5px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"10px"}}>🌍 NACH REGION</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"10px"}}>🌍 NACH REGION</div>
           {Object.entries(byRegion).sort((a,b)=>b[1].total-a[1].total).map(([region,data])=>{
             const wr=Math.round(data.wins/data.total*100);
             return(
@@ -6961,7 +6983,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
           ))}
         </div>
         <div style={{marginLeft:"auto",display:"flex",gap:"4px",alignItems:"center"}}>
-          <span style={{fontSize:"10px",color:"#4a3a20"}}>Sortieren:</span>
+          <span style={{fontSize:"10px",color:"#8a7860"}}>Sortieren:</span>
           {[{v:"rating",l:"Rating"},{v:"turns",l:"Züge"},{v:"date",l:"Datum"},{v:"name",l:"Name"}].map(s=>(
             <button key={s.v} onClick={()=>setSortBy(s.v)}
               style={{padding:"2px 7px",fontSize:"10px",
@@ -6999,7 +7021,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
               <div style={{fontSize:"11px",display:"flex",gap:"8px",marginTop:"1px"}}>
                 <span style={{color:e.won?"#4a7a32":"#7a2a18"}}>{e.won?"✅ Eingenommen":"❌ Gehalten"}</span>
                 {e.turns>0&&<span style={{color:"#5a4a28"}}>· {e.turns} Züge</span>}
-                {e.ts&&<span style={{color:"#3a2a14"}}>· {new Date(e.ts).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}</span>}
+                {e.ts&&<span style={{color:"#8a7a60"}}>· {new Date(e.ts).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}</span>}
               </div>
             </div>
             {/* Rating bars */}
@@ -7012,12 +7034,12 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
             {/* Rating number */}
             <div style={{textAlign:"center",flexShrink:0,minWidth:"28px"}}>
               <div style={{fontSize:"15px",fontWeight:"bold",color:rCol(e.rating*10)}}>{e.rating}</div>
-              <div style={{fontSize:"9px",color:"#4a3a20"}}>/10</div>
+              <div style={{fontSize:"9px",color:"#8a7860"}}>/10</div>
             </div>
           </div>
         ))}
         {entries.length===0&&(
-          <div style={{padding:"20px",textAlign:"center",color:"#4a3a20",fontSize:"13px"}}>
+          <div style={{padding:"20px",textAlign:"center",color:"#8a7860",fontSize:"13px"}}>
             Keine Einträge für diesen Filter.
           </div>
         )}
@@ -7723,9 +7745,9 @@ export default function App(){
           <div>
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>⚔️ GENERAL</div>
             <div style={{display:"flex",gap:"4px",flexWrap:"wrap"}}>
-              <button onClick={()=>setGeneral(null)} style={{padding:"3px 8px",fontSize:"12px",background:!general?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${!general?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:!general?"#c9a84c":"#2a1a0a",borderRadius:"2px",cursor:"pointer"}}>Keiner</button>
+              <button onClick={()=>setGeneral(null)} style={{padding:"4px 10px",fontSize:"12px",background:!general?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${!general?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:!general?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>Keiner</button>
               {GENERALS.map(g=>(
-                <button key={g.id} onClick={()=>setGeneral(g===general?null:g)} title={g.bio} style={{padding:"3px 8px",fontSize:"12px",background:general?.id===g.id?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${general?.id===g.id?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:general?.id===g.id?"#c9a84c":"#2a1a0a",borderRadius:"2px",cursor:"pointer"}}>
+                <button key={g.id} onClick={()=>setGeneral(g===general?null:g)} title={g.bio} style={{padding:"4px 10px",fontSize:"12px",background:general?.id===g.id?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${general?.id===g.id?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:general?.id===g.id?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>
                   {g.emoji} {g.name}
                 </button>
               ))}
@@ -7735,7 +7757,7 @@ export default function App(){
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>🌿 JAHRESZEIT</div>
             <div style={{display:"flex",gap:"4px"}}>
               {SEASONS.map(s=>(
-                <button key={s.id} onClick={()=>setSeason(s)} title={s.desc} style={{padding:"3px 8px",fontSize:"12px",background:season?.id===s.id?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${season?.id===s.id?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:season?.id===s.id?"#c9a84c":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>
+                <button key={s.id} onClick={()=>setSeason(s)} title={s.desc} style={{padding:"4px 10px",fontSize:"12px",background:season?.id===s.id?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${season?.id===s.id?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:season?.id===s.id?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>
                   {s.emoji} {s.name}
                 </button>
               ))}
@@ -7757,12 +7779,12 @@ export default function App(){
                 <div>
                   <div style={{fontSize:"12px",color:"#c9a84c"}}>{weather.label.split(" ").slice(1).join(" ")}</div>
                   <div style={{fontSize:"10px",color:"#5a4a28"}}>{weather.desc}</div>
-                  <div style={{fontSize:"10px",color:"#6a5a38",marginTop:"1px"}}>
+                  <div style={{fontSize:"10px",color:"#9a8a6a",marginTop:"1px"}}>
                     Angriff {weather.siegeMod>=0?"+":""}{weather.siegeMod} · Verteidigung {weather.defMod>=0?"+":""}{weather.defMod}
                   </div>
                 </div>
               </div>
-              <button onClick={randomizeWeather} title="Wetter zufällig" style={{padding:"5px 8px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",color:"#6a5a38",borderRadius:"4px",cursor:"pointer",fontSize:"14px"}}>🎲</button>
+              <button onClick={randomizeWeather} title="Wetter zufällig" style={{padding:"5px 8px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",color:"#9a8a6a",borderRadius:"4px",cursor:"pointer",fontSize:"14px"}}>🎲</button>
             </div>
           </div>
           {general&&<div style={{padding:"6px 10px",background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"4px",fontSize:"13px",color:"#cbb888"}}>
@@ -7922,12 +7944,12 @@ export default function App(){
                 style={{width:"100%",textAlign:"left",padding:sideOpen?"6px 8px":"6px",background:isA?c.theme.glow:"transparent",border:"none",borderLeft:`2px solid ${isA?c.theme.accent:"transparent"}`,borderBottom:"1px solid rgba(255,255,255,0.018)",cursor:"pointer",display:"flex",gap:"5px",alignItems:"center",transition:"all .09s"}}>
                 <span style={{fontSize:"13px",flexShrink:0}}>{c.icon}</span>
                 {sideOpen&&<><div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:"12px",fontWeight:"bold",color:isA?"#f0e6cc":"#5a4a30",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
-                  <div style={{fontSize:"10px",color:c.type==="real"?"#1a4010":"#1a1a48"}}>{c.type==="real"?"⚜":"✦"} {c.epoch}</div>
+                  <div style={{fontSize:"12px",fontWeight:"bold",color:isA?"#f0e6cc":"#9a8a6a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                  <div style={{fontSize:"10px",color:c.type==="real"?"#5a8040":"#6a6aaa"}}>{c.type==="real"?"⚜":"✦"} {c.epoch}</div>
                 </div>
                 <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"1px"}}>
                   <span style={{fontSize:"12px",fontWeight:"bold",color:rCol(a)}}>{a}</span>
-                  {hs&&<span style={{fontSize:"10px",color:hs.won?"#4a7a32":"#7a2a18"}}>{hs.won?"✅":"❌"}</span>}
+                  {hs&&<span style={{fontSize:"10px",color:hs.won?"#6aaa42":"#aa4a32"}}>{hs.won?"✅":"❌"}</span>}
                 </div></>}
               </button>
             );})}
@@ -7960,7 +7982,7 @@ export default function App(){
             {/* Detail tabs */}
             <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(12,20,36,0.6)",flexShrink:0,overflowX:"auto"}}>
               {DTABS.map(t=>(
-                <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"7px 11px",background:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#7a6a50",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .13s",marginBottom:"-1px",whiteSpace:"nowrap"}}>{t.l}</button>
+                <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"8px 12px",background:dtab===t.id?`${sel.theme.accent}0d`:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#8a7a68",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .18s ease",marginBottom:"-1px",whiteSpace:"nowrap",fontWeight:dtab===t.id?600:400}}>{t.l}</button>
               ))}
             </div>
 
@@ -7990,10 +8012,14 @@ export default function App(){
                     </div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:"5px"}}>
-                    {[{t:"STÄRKEN",items:sel.strengths,c:"rgba(40,70,22,.07)",bc:"rgba(40,70,22,.13)",tc:"#3a5a1e",ic:"#4a6a28"},{t:"SCHWÄCHEN",items:sel.weaknesses,c:"rgba(80,20,10,.07)",bc:"rgba(80,20,10,.13)",tc:"#4a2010",ic:"#622a18"},{t:"ANGRIFFSTIPPS",items:sel.attackTips,c:"rgba(100,40,6,.05)",bc:"rgba(100,40,6,.1)",tc:"#5a3018",ic:"#c9a84c"}].map(g=>(
-                      <div key={g.t} style={{padding:"9px 10px",background:g.c,border:`1px solid ${g.bc}`,borderRadius:"4px"}}>
-                        <div style={{fontSize:"10px",color:g.ic,letterSpacing:"2px",marginBottom:"5px"}}>{g.t}</div>
-                        {g.items.map((s,i)=><div key={i} style={{fontSize:"12px",color:g.tc,padding:"2px 0",borderBottom:i<g.items.length-1?"1px solid rgba(255,255,255,.018)":"none",display:"flex",gap:"4px"}}><span style={{color:g.ic,flexShrink:0}}>›</span>{s}</div>)}
+                    {[
+                      {t:"STÄRKEN",items:sel.strengths,c:"rgba(40,80,22,.1)",bc:"rgba(60,120,30,.2)",tc:"#8acc68",ic:"#70bb44"},
+                      {t:"SCHWÄCHEN",items:sel.weaknesses,c:"rgba(100,25,12,.1)",bc:"rgba(150,40,20,.2)",tc:"#dd8870",ic:"#ee6644"},
+                      {t:"ANGRIFFSTIPPS",items:sel.attackTips,c:"rgba(120,50,8,.08)",bc:"rgba(180,80,20,.18)",tc:"#c8a060",ic:"#c9a84c"}
+                    ].map(g=>(
+                      <div key={g.t} style={{padding:"10px 12px",background:g.c,border:`1px solid ${g.bc}`,borderRadius:"6px"}}>
+                        <div style={{fontSize:"10px",color:g.ic,letterSpacing:"2px",marginBottom:"6px",fontWeight:600}}>{g.t}</div>
+                        {g.items.map((s,i)=><div key={i} style={{fontSize:"12px",color:g.tc,padding:"3px 0",borderBottom:i<g.items.length-1?"1px solid rgba(255,255,255,.04)":"none",display:"flex",gap:"6px",lineHeight:1.5}}><span style={{color:g.ic,flexShrink:0,fontWeight:"bold"}}>›</span>{s}</div>)}
                       </div>
                     ))}
                   </div>
@@ -8017,11 +8043,11 @@ export default function App(){
                     <div style={{flex:1}}>
                       <div style={{fontSize:"18px",fontWeight:"bold",color:"#f0e6cc",marginBottom:"2px"}}>{sel.name}</div>
                       <div style={{fontSize:"13px",color:sel.theme.accent,marginBottom:"1px"}}>{sel.sub}</div>
-                      <div style={{fontSize:"12px",color:"#6a5a38"}}>{sel.loc} · {sel.era} · {sel.epoch}</div>
+                      <div style={{fontSize:"12px",color:"#9a8a68"}}>{sel.loc} · {sel.era} · {sel.epoch}</div>
                     </div>
                     <div style={{textAlign:"center",padding:"10px 16px",background:"rgba(0,0,0,0.3)",borderRadius:"5px",border:`1px solid ${sel.theme.accent}18`}}>
                       <div style={{fontSize:"28px",fontWeight:"bold",color:rCol(avg(sel))}}>{avg(sel)}</div>
-                      <div style={{fontSize:"9px",color:"#4a3a20",letterSpacing:"1.5px"}}>GESAMTWERT</div>
+                      <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"1.5px"}}>GESAMTWERT</div>
                     </div>
                   </div>
 
@@ -8092,7 +8118,7 @@ export default function App(){
                   {/* Siege context */}
                   <div style={{padding:"13px 15px",background:`${sel.theme.accent}06`,border:`1px solid ${sel.theme.accent}18`,borderRadius:"5px"}}>
                     <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"2px",marginBottom:"6px"}}>🎭 BELAGERUNGSSZENARIO</div>
-                    <p style={{fontSize:"13px",color:"#5a4828",lineHeight:1.9,margin:0,fontStyle:"italic"}}>{sel.siegeCtx}</p>
+                    <p style={{fontSize:"13px",color:"#9a8868",lineHeight:1.9,margin:0,fontStyle:"italic"}}>{sel.siegeCtx}</p>
                     {sel.defender&&<div style={{marginTop:"8px",fontSize:"12px",color:"#7a6840"}}>🛡️ Verteidiger: <strong style={{color:sel.theme.accent}}>{sel.defender}</strong></div>}
                   </div>
                 </div>
