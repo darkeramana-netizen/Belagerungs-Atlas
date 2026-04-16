@@ -2912,11 +2912,104 @@ function MiniLeafletMap({lat, lon, castle}){
   );
 }
 
+// ── Pan+Zoom Floor Plan Container ───────────────────────────────────────────
+function PanZoomFloorPlan({children, accent, height=540}){
+  const containerRef=useRef(null);
+  const [tr,setTr]=useState({x:0,y:0,s:1});
+  const drag=useRef(null);
+  const didMove=useRef(false);
+
+  const clampTr=(x,y,s,w,h)=>{
+    const minX=w-w*s; const minY=h-h*s;
+    return{x:Math.min(0,Math.max(minX,x)),y:Math.min(0,Math.max(minY,y)),s};
+  };
+
+  const onWheel=useCallback((e)=>{
+    e.preventDefault();
+    const rect=containerRef.current.getBoundingClientRect();
+    const cx=e.clientX-rect.left; const cy=e.clientY-rect.top;
+    const delta=e.deltaY<0?1.15:1/1.15;
+    setTr(t=>{
+      const ns=Math.min(8,Math.max(0.5,t.s*delta));
+      const nx=cx-(cx-t.x)*(ns/t.s);
+      const ny=cy-(cy-t.y)*(ns/t.s);
+      return clampTr(nx,ny,ns,rect.width,rect.height);
+    });
+  },[]);
+
+  useEffect(()=>{
+    const el=containerRef.current;
+    if(!el)return;
+    el.addEventListener("wheel",onWheel,{passive:false});
+    return()=>el.removeEventListener("wheel",onWheel);
+  },[onWheel]);
+
+  const onMouseDown=useCallback((e)=>{
+    if(e.button!==0)return;
+    drag.current={sx:e.clientX,sy:e.clientY,tx:tr.x,ty:tr.y};
+    didMove.current=false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  },[tr]);
+
+  const onMouseMove=useCallback((e)=>{
+    if(!drag.current)return;
+    const dx=e.clientX-drag.current.sx; const dy=e.clientY-drag.current.sy;
+    if(!didMove.current&&(Math.abs(dx)>3||Math.abs(dy)>3))didMove.current=true;
+    if(!didMove.current)return;
+    const rect=containerRef.current.getBoundingClientRect();
+    setTr(t=>clampTr(drag.current.tx+dx,drag.current.ty+dy,t.s,rect.width,rect.height));
+  },[]);
+
+  const onMouseUp=useCallback(()=>{drag.current=null;},[]);
+
+  const onClickCapture=useCallback((e)=>{if(didMove.current)e.stopPropagation();},[]);
+
+  const btnStyle=(extra={})=>({
+    width:"30px",height:"30px",display:"flex",alignItems:"center",justifyContent:"center",
+    background:"rgba(10,8,5,0.85)",border:`1px solid ${accent}40`,
+    borderRadius:"6px",color:accent,cursor:"pointer",fontSize:"15px",
+    fontFamily:"'Cinzel',serif",transition:"all 0.15s",userSelect:"none",...extra
+  });
+
+  return(
+    <div ref={containerRef}
+      style={{position:"relative",height:`${height}px`,
+        background:"rgba(6,4,2,0.98)",border:`1px solid ${accent}28`,
+        borderRadius:"10px",overflow:"hidden",
+        boxShadow:`0 6px 32px rgba(0,0,0,0.75), inset 0 0 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6)`,
+        cursor:drag.current?"grabbing":"grab"}}
+      onMouseDown={onMouseDown} onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+      onClickCapture={onClickCapture}>
+      <div style={{position:"absolute",top:0,left:0,
+        transform:`translate(${tr.x}px,${tr.y}px) scale(${tr.s})`,
+        transformOrigin:"0 0",width:"100%",height:"100%"}}>
+        {children}
+      </div>
+      {/* Controls overlay */}
+      <div style={{position:"absolute",bottom:"12px",right:"12px",
+        display:"flex",flexDirection:"column",gap:"5px",zIndex:10}}>
+        <button style={btnStyle()} title="Zoom in"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr(t=>{const ns=Math.min(8,t.s*1.3);const rect=containerRef.current.getBoundingClientRect();return clampTr(rect.width/2-(rect.width/2-t.x)*(ns/t.s),rect.height/2-(rect.height/2-t.y)*(ns/t.s),ns,rect.width,rect.height);})}>+</button>
+        <button style={btnStyle()} title="Zoom out"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr(t=>{const ns=Math.max(0.5,t.s/1.3);const rect=containerRef.current.getBoundingClientRect();return clampTr(rect.width/2-(rect.width/2-t.x)*(ns/t.s),rect.height/2-(rect.height/2-t.y)*(ns/t.s),ns,rect.width,rect.height);})}>−</button>
+        <button style={btnStyle()} title="Reset"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr({x:0,y:0,s:1})}>↺</button>
+        <div style={{textAlign:"center",fontSize:"9px",color:accent,fontFamily:"'Cinzel',serif",
+          background:"rgba(10,8,5,0.85)",border:`1px solid ${accent}30`,borderRadius:"5px",
+          padding:"3px 4px",lineHeight:1}}>{Math.round(tr.s*100)}%</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Castle Map Tab ──────────────────────────────────────────────────────────
 function CastleMapTab({castle}){
   const sel=castle;
   const [mapMode,setMapMode]=useState("plan");
-  const [zoom,setZoom]=useState(1);
   const [selZone,setSelZone]=useState(null);
   const [attackMode,setAttackMode]=useState(false);
   const selZ=sel.zones.find(z=>z.id===selZone);
@@ -2958,83 +3051,51 @@ function CastleMapTab({castle}){
                       <div className="map-detail-grid" style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
                         {/* Left: SVG with zoom */}
                         <div>
-                          {/* Zoom controls + 3D toggle */}
-                          <div style={{display:"flex",gap:"6px",marginBottom:"8px",alignItems:"center",flexWrap:"wrap"}}>
-                            <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>🔍</span>
-                            <div style={{display:"flex",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:"7px",overflow:"hidden"}}>
-                              {[{v:0.8,l:"−"},{v:1,l:"1×"},{v:1.5,l:"1.5×"},{v:2,l:"2×"},{v:2.5,l:"2.5×"}].map((z,i)=>(
-                                <button key={z.v} onClick={()=>setZoom(z.v)}
-                                  style={{padding:"4px 9px",fontSize:"11px",
-                                    fontFamily:"'Cinzel',serif",
-                                    background:zoom===z.v?`${sel.theme.accent}22`:"transparent",
-                                    border:"none",
-                                    borderLeft:i>0?"1px solid rgba(255,255,255,0.06)":"none",
-                                    color:zoom===z.v?sel.theme.accent:"#9a8a6a",
-                                    cursor:"pointer",transition:"all 0.15s"}}>
-                                  {z.l}
-                                </button>
-                              ))}
-                            </div>
-                            <div style={{marginLeft:"auto",display:"flex",gap:"8px",alignItems:"center"}}>
-                              <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
-                                {sel.zones.length} Zonen
-                              </span>
-                            </div>
+                          {/* Zone count hint */}
+                          <div style={{display:"flex",alignItems:"center",marginBottom:"6px",gap:"6px"}}>
+                            <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
+                              {sel.zones.length} Zonen · Mausrad zum Zoomen · Ziehen zum Verschieben
+                            </span>
                           </div>
 
-                          {/* SVG Container with overflow for zoom */}
-                          <div style={{
-                            background:"rgba(6,4,2,0.98)",
-                            border:`1px solid ${sel.theme.accent}28`,
-                            borderRadius:"10px",overflow:"hidden",
-                            boxShadow:`0 6px 32px rgba(0,0,0,0.75), inset 0 0 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6)`,
-                            position:"relative"}}>
-                            <div style={{
-                              overflow:"auto",
-                              maxHeight:"420px",
-                              cursor:zoom>1?"grab":"default"}}>
-                              <svg
-                                viewBox="0 0 220 200"
-                                style={{
-                                  width:`${220*zoom}px`,
-                                  height:`${200*zoom}px`,
-                                  display:"block",
-                                  minWidth:"100%",
-                                  transition:"width 0.3s ease, height 0.3s ease"}}>
-                                <defs>
-                                  <radialGradient id="bg_grad" cx="50%" cy="50%" r="60%">
-                                    <stop offset="0%" stopColor="#0e0a06"/>
-                                    <stop offset="100%" stopColor="#060402"/>
-                                  </radialGradient>
-                                  <pattern id="stoneTexture" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                                    <rect width="20" height="20" fill="transparent"/>
-                                    <rect x="0" y="0" width="9" height="9" fill={`${sel.theme.accent}07`} rx="0.5"/>
-                                    <rect x="11" y="11" width="8" height="8" fill={`${sel.theme.accent}05`} rx="0.5"/>
-                                    <rect x="0" y="11" width="9" height="8" fill={`${sel.theme.accent}04`} rx="0.5"/>
-                                    <rect x="11" y="0" width="8" height="9" fill={`${sel.theme.accent}04`} rx="0.5"/>
-                                  </pattern>
-                                  <filter id="glowFilter" x="-60%" y="-60%" width="220%" height="220%">
-                                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                                  </filter>
-                                </defs>
-                                <rect width="220" height="200" fill="url(#bg_grad)"/>
-                                <rect width="220" height="200" fill="url(#stoneTexture)" opacity="0.55"/>
-                                {plan
-                                  ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-                                  : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
-                                }
-                                {/* Attack arrows overlay */}
-                                {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
-                                  <g key={z.id} style={{pointerEvents:"none"}}>
-                                    <circle cx={z.x*2.2} cy={z.y*2} r="8" fill="rgba(200,50,30,0.15)"
-                                      stroke="#cc4433" strokeWidth="1" strokeDasharray="3,2"/>
-                                    <text x={z.x*2.2} y={z.y*2+5} textAnchor="middle"
-                                      fill="#cc4433" fontSize="10">⚠</text>
-                                  </g>
-                                ))}
-                              </svg>
-                            </div>
-                          </div>
+                          {/* Pan+Zoom SVG Container */}
+                          <PanZoomFloorPlan accent={sel.theme.accent} height={540}>
+                            <svg
+                              viewBox="0 0 220 200"
+                              style={{width:"100%",height:"100%",display:"block"}}>
+                              <defs>
+                                <radialGradient id="bg_grad" cx="50%" cy="50%" r="60%">
+                                  <stop offset="0%" stopColor="#0e0a06"/>
+                                  <stop offset="100%" stopColor="#060402"/>
+                                </radialGradient>
+                                <pattern id="stoneTexture" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                                  <rect width="20" height="20" fill="transparent"/>
+                                  <rect x="0" y="0" width="9" height="9" fill={`${sel.theme.accent}07`} rx="0.5"/>
+                                  <rect x="11" y="11" width="8" height="8" fill={`${sel.theme.accent}05`} rx="0.5"/>
+                                  <rect x="0" y="11" width="9" height="8" fill={`${sel.theme.accent}04`} rx="0.5"/>
+                                  <rect x="11" y="0" width="8" height="9" fill={`${sel.theme.accent}04`} rx="0.5"/>
+                                </pattern>
+                                <filter id="glowFilter" x="-60%" y="-60%" width="220%" height="220%">
+                                  <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+                                </filter>
+                              </defs>
+                              <rect width="220" height="200" fill="url(#bg_grad)"/>
+                              <rect width="220" height="200" fill="url(#stoneTexture)" opacity="0.55"/>
+                              {plan
+                                ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
+                                : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
+                              }
+                              {/* Attack arrows overlay */}
+                              {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
+                                <g key={z.id} style={{pointerEvents:"none"}}>
+                                  <circle cx={z.x*2.2} cy={z.y*2} r="8" fill="rgba(200,50,30,0.15)"
+                                    stroke="#cc4433" strokeWidth="1" strokeDasharray="3,2"/>
+                                  <text x={z.x*2.2} y={z.y*2+5} textAnchor="middle"
+                                    fill="#cc4433" fontSize="10">⚠</text>
+                                </g>
+                              ))}
+                            </svg>
+                          </PanZoomFloorPlan>
 
                           {/* Zone pill buttons */}
                           <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginTop:"10px"}}>
