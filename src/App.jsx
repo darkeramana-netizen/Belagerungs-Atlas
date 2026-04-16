@@ -3976,211 +3976,9 @@ function PanZoomFloorPlan({children, accent, height=540, style={}}){
 // ── Castle Map Tab ──────────────────────────────────────────────────────────
 function CastleMapTab({castle}){
   const sel=castle;
-  const [mapMode,setMapMode]=useState("plan");
-  const [selZone,setSelZone]=useState(null);
-  const [attackMode,setAttackMode]=useState(false);
-  const selZ=sel.zones.find(z=>z.id===selZone);
-  const plan=CASTLE_PLANS[sel.id];
   return(
                   <div style={{animation:"fadeIn 0.2s ease"}}>
-                    {/* Sub-tab bar */}
-                    <div style={{display:"flex",gap:"6px",marginBottom:"14px",alignItems:"center"}}>
-                      {[{k:"plan",l:"🗺️ Grundriss"},{k:"lage",l:"📍 Historische Lage"}].map(t=>(
-                        <button key={t.k} onClick={()=>setMapMode(t.k)}
-                          style={{padding:"7px 16px",fontSize:"12px",
-                            fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
-                            background:mapMode===t.k?`linear-gradient(135deg,${sel.theme.accent}22,${sel.theme.accent}0c)`:"rgba(255,255,255,0.03)",
-                            border:`1px solid ${mapMode===t.k?sel.theme.accent+"60":"rgba(255,255,255,0.08)"}`,
-                            color:mapMode===t.k?sel.theme.accent:"#9a8a6a",
-                            borderRadius:"8px",cursor:"pointer",
-                            boxShadow:mapMode===t.k?`0 0 14px ${sel.theme.accent}22, inset 0 1px 0 ${sel.theme.accent}20`:"none",
-                            transition:"all 0.2s ease"}}>
-                          {t.l}
-                        </button>
-                      ))}
-                      <div style={{marginLeft:"auto",display:"flex",gap:"5px",alignItems:"center"}}>
-                        <button onClick={()=>setAttackMode(a=>!a)}
-                          style={{padding:"6px 12px",fontSize:"11px",
-                            fontFamily:"'Cinzel',serif",letterSpacing:"0.5px",
-                            background:attackMode?"rgba(180,50,20,0.18)":"rgba(255,255,255,0.03)",
-                            border:`1px solid ${attackMode?"rgba(200,60,30,0.5)":"rgba(255,255,255,0.08)"}`,
-                            color:attackMode?"#dd6644":"#9a8a6a",
-                            borderRadius:"7px",cursor:"pointer",
-                            boxShadow:attackMode?"0 0 12px rgba(200,60,30,0.25)":"none",
-                            transition:"all 0.2s ease"}}>
-                          {attackMode?"⚔️ Angriff aktiv":"⚔️ Angriff"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* GRUNDRISS MODE */}
-                    {mapMode==="plan"&&(
-                      <div className="map-detail-grid" style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
-                        {/* Left: SVG with zoom */}
-                        <div>
-                          {/* Zone count hint */}
-                          <div style={{display:"flex",alignItems:"center",marginBottom:"6px",gap:"6px"}}>
-                            <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
-                              {sel.zones.length} Zonen · Mausrad zum Zoomen · Ziehen zum Verschieben
-                            </span>
-                          </div>
-
-                          {/* Pan+Zoom SVG Container */}
-                          <PanZoomFloorPlan accent={sel.theme.accent} height={540}>
-                            <svg
-                              viewBox="0 0 220 200"
-                              style={{width:"100%",height:"100%",display:"block"}}>
-                              <defs>
-                                <radialGradient id="bg_grad" cx="50%" cy="50%" r="60%">
-                                  <stop offset="0%" stopColor="#0e0a06"/>
-                                  <stop offset="100%" stopColor="#060402"/>
-                                </radialGradient>
-                                <pattern id="stoneTexture" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                                  <rect width="20" height="20" fill="transparent"/>
-                                  <rect x="0" y="0" width="9" height="9" fill={`${sel.theme.accent}07`} rx="0.5"/>
-                                  <rect x="11" y="11" width="8" height="8" fill={`${sel.theme.accent}05`} rx="0.5"/>
-                                  <rect x="0" y="11" width="9" height="8" fill={`${sel.theme.accent}04`} rx="0.5"/>
-                                  <rect x="11" y="0" width="8" height="9" fill={`${sel.theme.accent}04`} rx="0.5"/>
-                                </pattern>
-                                <filter id="glowFilter" x="-60%" y="-60%" width="220%" height="220%">
-                                  <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                                </filter>
-                              </defs>
-                              <rect width="220" height="200" fill="url(#bg_grad)"/>
-                              <rect width="220" height="200" fill="url(#stoneTexture)" opacity="0.55"/>
-                              {plan
-                                ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-                                : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
-                              }
-                              {/* Attack arrows overlay */}
-                              {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
-                                <g key={z.id} style={{pointerEvents:"none"}}>
-                                  <circle cx={z.x*2.2} cy={z.y*2} r="8" fill="rgba(200,50,30,0.15)"
-                                    stroke="#cc4433" strokeWidth="1" strokeDasharray="3,2"/>
-                                  <text x={z.x*2.2} y={z.y*2+5} textAnchor="middle"
-                                    fill="#cc4433" fontSize="10">⚠</text>
-                                </g>
-                              ))}
-                            </svg>
-                          </PanZoomFloorPlan>
-
-                          {/* Zone pill buttons */}
-                          <div style={{display:"flex",flexWrap:"wrap",gap:"5px",marginTop:"10px"}}>
-                            {sel.zones.map(z=>(
-                              <button key={z.id} onClick={()=>setSelZone(selZone===z.id?null:z.id)}
-                                style={{padding:"4px 10px",fontSize:"11px",
-                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.3px",
-                                  background:selZone===z.id?`${z.c}28`:"rgba(255,255,255,0.04)",
-                                  border:`1px solid ${selZone===z.id?z.c+"80":"rgba(255,255,255,0.08)"}`,
-                                  color:selZone===z.id?z.c:"#9a8a6a",
-                                  borderRadius:"12px",cursor:"pointer",
-                                  boxShadow:selZone===z.id?`0 0 10px ${z.c}33`:"none",
-                                  transition:"all 0.15s ease"}}>
-                                {z.l}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Right: Zone info panel */}
-                        <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                          {/* Selected zone detail */}
-                          {selZ?(
-                            <div style={{padding:"14px 16px",
-                              background:`${selZ.c}10`,
-                              border:`1px solid ${selZ.c}40`,
-                              borderLeft:`4px solid ${selZ.c}`,
-                              borderRadius:"8px",animation:"fadeIn 0.15s ease",
-                              boxShadow:`0 4px 20px ${selZ.c}15`}}>
-                              <div style={{fontSize:"10px",color:selZ.c,letterSpacing:"2.5px",marginBottom:"8px",fontWeight:"bold",fontFamily:"'Cinzel',serif"}}>
-                                {selZ.l.toUpperCase()}
-                              </div>
-                              <div style={{fontSize:"13px",color:"#c0b088",lineHeight:1.8,marginBottom:"12px"}}>
-                                {selZ.d}
-                              </div>
-                              {/* Defence strength bar */}
-                              <div style={{marginBottom:"4px"}}>
-                                <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
-                                  <span style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"1.5px",fontFamily:"'Cinzel',serif"}}>VERTEIDIGUNG</span>
-                                  <span style={{fontSize:"11px",fontWeight:"bold",color:rCol(selZ.a*10+30)}}>{selZ.a}/6</span>
-                                </div>
-                                <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
-                                  <div style={{height:"100%",width:`${(selZ.a/6)*100}%`,
-                                    background:selZ.a>=5?"#6aaa50":selZ.a>=3?"#c9a84c":"#cc5533",
-                                    borderRadius:"3px",transition:"width 0.5s ease"}}/>
-                                </div>
-                              </div>
-                              {/* Tactical note */}
-                              {selZ.a<=2&&(
-                                <div style={{marginTop:"8px",padding:"6px 8px",
-                                  background:"rgba(180,50,20,0.08)",border:"1px solid rgba(180,50,20,0.2)",
-                                  borderRadius:"4px",fontSize:"11px",color:"#aa3322"}}>
-                                  ⚠️ Schwachstelle — Prioritätsziel für Angreifer
-                                </div>
-                              )}
-                              {selZ.a>=6&&(
-                                <div style={{marginTop:"8px",padding:"6px 8px",
-                                  background:"rgba(30,80,15,0.08)",border:"1px solid rgba(30,80,15,0.2)",
-                                  borderRadius:"4px",fontSize:"11px",color:"#4a8a30"}}>
-                                  🛡️ Stärkster Punkt — nahezu unüberwindbar
-                                </div>
-                              )}
-                            </div>
-                          ):(
-                            <div style={{padding:"14px 16px",
-                              background:"rgba(255,255,255,0.02)",
-                              border:"1px solid rgba(255,255,255,0.06)",borderRadius:"8px",
-                              textAlign:"center",color:"#b0a080",fontSize:"12px",lineHeight:1.8,
-                              fontFamily:"'Cinzel',serif"}}>
-                              👆 Klicke auf einen Bereich im Grundriss<br/>
-                              oder wähle eine Zone
-                            </div>
-                          )}
-
-                          {/* All zones list */}
-                          <div style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"2px",marginTop:"8px",
-                            fontFamily:"'Cinzel',serif",
-                            borderBottom:"1px solid rgba(255,255,255,0.06)",
-                            paddingBottom:"6px",marginBottom:"4px"}}>
-                            VERTEIDIGUNGSBEREICHE
-                          </div>
-                          {sel.zones.map(z=>(
-                            <div key={z.id}
-                              onClick={()=>setSelZone(selZone===z.id?null:z.id)}
-                              style={{padding:"8px 10px",cursor:"pointer",
-                                background:selZone===z.id?`${z.c}15`:"rgba(255,255,255,0.02)",
-                                border:`1px solid ${selZone===z.id?z.c+"55":"rgba(255,255,255,0.05)"}`,
-                                borderLeft:`3px solid ${z.c}`,
-                                borderRadius:"6px",transition:"all 0.2s ease",
-                                boxShadow:selZone===z.id?`0 2px 12px ${z.c}20`:"none"}}>
-                              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"3px"}}>
-                                <div style={{fontSize:"12px",fontWeight:"bold",
-                                  fontFamily:"'Cinzel',serif",letterSpacing:"0.3px",
-                                  color:selZone===z.id?z.c:"#b0a080"}}>
-                                  {z.l}
-                                </div>
-                                <div style={{display:"flex",gap:"2px"}}>
-                                  {Array.from({length:6},(_,i)=>(
-                                    <div key={i} style={{width:"5px",height:"8px",borderRadius:"2px",
-                                      background:i<z.a
-                                        ?z.a<=2?"#cc5533":z.a<=4?"#c9a84c":"#6aaa50"
-                                        :"rgba(255,255,255,0.05)"}}/>
-                                  ))}
-                                </div>
-                              </div>
-                              {selZone===z.id&&(
-                                <div style={{fontSize:"11px",color:"#b0a488",lineHeight:1.7,animation:"fadeIn 0.15s ease",marginTop:"4px"}}>
-                                  {z.d}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* LAGE MODE */}
-                    {mapMode==="lage"&&(
+                    {(
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px"}}>
                         {/* Location info */}
                         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
@@ -4293,7 +4091,7 @@ function CastleMapTab({castle}){
                       </div>
                     )}
                   </div>
-);
+  );
 }
 
 
@@ -8791,7 +8589,7 @@ export default function App(){
       };
 
   const sc=avg(sel);
-  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"grundriss",l:"🏰 Grundriss"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
+  const DTABS=[{id:"map",l:"📍 Historische Lage"},{id:"grundriss",l:"🏰 Grundriss"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
