@@ -3735,6 +3735,215 @@ DETAILED_PLANS.red_fort=({ac,sel,onSel})=>{
   );
 };
 
+// ── Himeji ────────────────────────────────────────────────────────────────────
+DETAILED_PLANS.himeji=({ac,sel,onSel})=>{
+  const W=680,H=620;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("dai_tenshu","Dai-Tenshu 大天守","🏯","Hauptturm","Der sechsstöckige Hauptturm ('Weißer Reiher') ist das Wahrzeichen Japans. Außenwände mit weißem Kalkputz (Shikkui) feuerfest verputzt. Innen sieben Ebenen mit asymmetrischen Grundrissen.",["6+1 Stockwerke","Höhe: 46m","Weißer Shikkui-Putz","Erbaut: 1609"],null),
+    S("ko_tenshu_e","Ko-Tenshu Ost 東小天守","🗼","Kleiner Turm","Östlicher Nebenturm, durch watari-yagura (Verbindungsgalerie) mit dem Dai-Tenshu verbunden. Flankiert den Hauptturm gegen Ostangriffe.",["3 Stockwerke","Verbindungsgalerie"],null),
+    S("ko_tenshu_w","Ko-Tenshu West 西小天守","🗼","Kleiner Turm","Westlicher Nebenturm. Zusammen mit dem Nordturm bildet er das 'Hishi-Mon-System' — die viertürmige Verbundanlage.",["3 Stockwerke","Verbindungsgalerie"],null),
+    S("ko_tenshu_n","Ko-Tenshu Nord 乾小天守","🗼","Kleiner Turm","Nördlichster der drei Nebentürme. Schützt den Hauptturm von der einzigen zugänglichen Nordseite des Hügels.",["3 Stockwerke","Steilstes Gelände"],null),
+    S("nishi_maru","Nishi-no-Maru 西の丸","🏰","Westbefestigung","Die lange Westbefestigung (100m) war die Residenz von Senhime, Enkelin Tokugawa Ieyasus. Schmale Galerie mit Schießscharten, entlang des Hügelkamms.",["Länge: 100m","Senhime-Residenz","Kasemattengang"],null),
+    S("honmaru","Honmaru 本丸","⬛","Innerer Hof","Der innerste Hof unmittelbar um den Turm-Komplex. Kasematten, Brunnen und der Hishi-no-Mon-Hauptzugang.",["Brunnen","Kasematten","Kaiserliches Territorium"],null),
+    S("ni_maru","Ni-no-Maru 二の丸","🔲","Zweiter Hof","Zweiter Befestigungsring. Enthält die Kommandantur und die Hauptmagazine. Breiter Wehrgang.",["Kommandantur","Magazine"],null),
+    S("san_maru","San-no-Maru 三の丸","⬜","Äußerer Ring","Äußerster Burghof mit Kasernen und Versorgungsbauten. Schützt die Zugänge von Süden und Westen.",["Kasernen","Versorgung","Hauptzugang"],null),
+    S("moat","Wassergraben 外堀","🌊","Äußerer Graben","Breiter äußerer Wassergraben, der die Anlage von Westen und Süden umgibt. Nordseite durch steile Felsen natürlich geschützt.",["Breite: 30m","Westlich & südlich"],null),
+    S("otemon","Ote-Mon 大手門","🚪","Haupttor","Das Hauptzugangstor von Süden. Großes zweigeschossiges Torhaus mit massiven Holzbeschlägen.",["Hauptzugang Süd","Zugbrücke"],3),
+    S("hishi_gate","Hishi-no-Mon 菱の門","🚪","Inneres Tor","Das aufwendigste Tor der Anlage, direkt vor dem Turm-Komplex. Geschwungenes Dach im Eingangstorhaus-Stil.",["Vorzimmer zum Keep","Feinste Zimmerei"],4),
+    S("maze","83-Tore-Labyrinth","🌀","Verteidigungsweg","Das berühmte Irrwegsystem: Angreifer müssen durch 83 Tore, ständig wendende Wege und Sackgassen. Manche Pfade sind 2km lang.",["83 Tore","Irrweg-System","Keine direkte Linie"],1),
+    S("seppuku_maru","Seppuku-maru 切腹丸","⚔️","Turm","Der 'Selbstmord-Turm' — letzter Rückzugsort für ehrenhaften Tod. Im äußersten Winkel des Honmaru, diente als finales Magazin.",["Letzter Rückzug","Pulvermagazin"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}50`:`${c}1c`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#9a8a6055";
+
+  // helper: yagura (turret) marks along a wall
+  const yagura=(key,positions,c)=>positions.map(([tx,ty],i)=>(
+    <rect key={`${key}_${i}`} x={tx-7} y={ty-7} width="14" height="14" rx="2"
+      fill={`${c}22`} stroke={`${c}66`} strokeWidth="1.2"/>
+  ));
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="hj_bg" cx="50%" cy="55%" r="65%">
+          <stop offset="0%" stopColor="#080a06"/>
+          <stop offset="100%" stopColor="#030402"/>
+        </radialGradient>
+        <filter id="hj_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="hj_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#hj_bg)"/>
+      <rect width={W} height={H} fill="url(#hj_stone)" opacity="0.5"/>
+
+      {/* Outer moat */}
+      <path d="M120,540 Q80,490 70,410 Q60,320 90,240 Q120,170 190,120 Q260,70 360,60 Q460,52 530,90 Q600,130 620,210 Q640,290 600,380 Q570,450 500,500 Q420,545 300,555 Z"
+        fill={glo("moat","#2255aa")} stroke={st("moat","#4488cc")} strokeWidth="1.5"
+        onClick={()=>hit("moat")} style={{cursor:"pointer"}}/>
+      {isSel("moat")&&<path d="M120,540 Q80,490 70,410 Q60,320 90,240 Q120,170 190,120 Q260,70 360,60 Q460,52 530,90 Q600,130 620,210 Q640,290 600,380 Q570,450 500,500 Q420,545 300,555 Z"
+        fill="rgba(30,80,180,0.08)" filter="url(#hj_glow)"/>}
+      <text x="96" y="280" fill="#3366aa" fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(-75,96,280)">WASSERGRABEN</text>
+
+      {/* Hill / San-no-maru (outer ring) */}
+      <path d="M155,515 Q110,460 115,380 Q115,300 155,230 Q200,160 290,120 Q380,82 460,105 Q545,130 570,205 Q595,275 565,360 Q540,425 475,470 Q400,510 280,520 Z"
+        fill={glo("san_maru","#6a7848")} stroke={st("san_maru","#8a9a60")} strokeWidth="2.5"
+        onClick={()=>hit("san_maru")} style={{cursor:"pointer"}}/>
+      {isSel("san_maru")&&<path d="M155,515 Q110,460 115,380 Q115,300 155,230 Q200,160 290,120 Q380,82 460,105 Q545,130 570,205 Q595,275 565,360 Q540,425 475,470 Q400,510 280,520 Z"
+        fill="rgba(80,100,50,0.07)" filter="url(#hj_glow)"/>}
+      <text x="178" y="490" fill={isSel("san_maru")?ac:"#6a7840"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">三の丸 SAN-NO-MARU</text>
+
+      {/* Ni-no-maru */}
+      <path d="M205,460 Q175,415 185,345 Q190,275 230,220 Q280,165 360,145 Q440,130 495,170 Q545,205 545,275 Q545,345 510,400 Q470,450 380,468 Q285,480 205,460 Z"
+        fill={glo("ni_maru","#708860")} stroke={st("ni_maru","#90aa78")} strokeWidth="2.5"
+        onClick={()=>hit("ni_maru")} style={{cursor:"pointer"}}/>
+      {isSel("ni_maru")&&<path d="M205,460 Q175,415 185,345 Q190,275 230,220 Q280,165 360,145 Q440,130 495,170 Q545,205 545,275 Q545,345 510,400 Q470,450 380,468 Q285,480 205,460 Z"
+        fill="rgba(80,120,60,0.07)" filter="url(#hj_glow)"/>}
+      <text x="210" y="440" fill={isSel("ni_maru")?ac:"#708858"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">二の丸 NI-NO-MARU</text>
+
+      {/* Maze / labyrinth approach paths */}
+      <g onClick={()=>hit("maze")} style={{cursor:"pointer"}}>
+        {isSel("maze")&&<path d="M340,475 Q290,450 260,400 Q240,360 255,320 Q265,285 300,265" fill="none" stroke="rgba(180,120,40,0.2)" strokeWidth="20" filter="url(#hj_glow)"/>}
+        {[
+          "M340,475 Q310,455 290,420 Q275,390 280,360",
+          "M280,360 Q285,335 305,318 Q325,302 350,298",
+          "M350,298 Q375,294 390,275 Q400,258 395,235",
+          "M395,235 Q388,212 370,205 Q350,198 335,208",
+          "M335,208 Q318,218 318,238 Q318,252 330,262",
+          "M480,420 Q460,395 445,370 Q435,348 440,322",
+          "M440,322 Q445,300 430,282 Q415,265 395,265",
+        ].map((d,i)=>(
+          <path key={i} d={d} fill="none"
+            stroke={isSel("maze")?"rgba(200,150,60,0.6)":"rgba(160,120,40,0.22)"}
+            strokeWidth="3" strokeDasharray="5,3"/>
+        ))}
+        {/* Gate markers */}
+        {[[340,475],[280,360],[350,298],[395,235],[335,208],[330,262],[480,420],[440,322],[395,265]].map(([x,y],i)=>(
+          <rect key={i} x={x-4} y={y-4} width="8" height="8" rx="1"
+            fill={isSel("maze")?"#cc993355":"#cc993322"} stroke={isSel("maze")?"#cc9933":"#aa7722"} strokeWidth="1"/>
+        ))}
+        <text x="250" y="455" fill={isSel("maze")?"#cc9933":"#886622"} fontSize="8" fontFamily="'Cinzel',serif">迷宮 83 TORE</text>
+      </g>
+
+      {/* West Bailey (Nishi-no-maru) */}
+      <path d="M200,290 L200,195 Q205,180 220,178 L370,165 Q385,165 390,178 L390,195 L240,210 L235,290 Z"
+        fill={glo("nishi_maru","#8870a8")} stroke={st("nishi_maru","#aa88cc")} strokeWidth="2.5"
+        onClick={()=>hit("nishi_maru")} style={{cursor:"pointer"}}/>
+      {isSel("nishi_maru")&&<path d="M200,290 L200,195 Q205,180 220,178 L370,165 Q385,165 390,178 L390,195 L240,210 L235,290 Z"
+        fill="rgba(130,100,180,0.1)" filter="url(#hj_glow)"/>}
+      <text x="290" y="193" textAnchor="middle" fill={isSel("nishi_maru")?ac:"#9070c0"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">西の丸 NISHI-NO-MARU</text>
+      {/* Window slits along west bailey */}
+      {[225,250,275,300,325,350].map(x=>(
+        <rect key={x} x={x-2} y="185" width="4" height="8" rx="1" fill={isSel("nishi_maru")?"#aa88cc55":"#66446622"}/>
+      ))}
+
+      {/* Honmaru */}
+      <path d="M295,340 Q275,310 285,270 Q295,232 330,212 Q365,194 405,198 Q445,202 462,228 Q478,252 472,285 Q466,318 440,338 Q410,358 360,360 Z"
+        fill={glo("honmaru","#c09030")} stroke={st("honmaru","#e0b040")} strokeWidth="3"
+        onClick={()=>hit("honmaru")} style={{cursor:"pointer"}}/>
+      {isSel("honmaru")&&<path d="M295,340 Q275,310 285,270 Q295,232 330,212 Q365,194 405,198 Q445,202 462,228 Q478,252 472,285 Q466,318 440,338 Q410,358 360,360 Z"
+        fill="rgba(180,140,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="380" y="348" textAnchor="middle" fill={isSel("honmaru")?ac:"#b08020"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">本丸 HONMARU</text>
+
+      {/* Seppukumaru (in corner of honmaru) */}
+      <rect x="455" y="278" width="32" height="32" rx="3"
+        fill={glo("seppuku_maru","#aa3322")} stroke={st("seppuku_maru","#cc4433")} strokeWidth="1.8"
+        onClick={()=>hit("seppuku_maru")} style={{cursor:"pointer"}}/>
+      <text x="471" y="298" textAnchor="middle" fill={isSel("seppuku_maru")?"#cc4433":"#882222"} fontSize="7" fontFamily="'Cinzel',serif">切腹</text>
+
+      {/* Ko-tenshu East */}
+      <rect x="418" y="198" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_e","#88bbff")} stroke={st("ko_tenshu_e","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_e")} style={{cursor:"pointer"}}/>
+      {/* Roof */}
+      <polygon points="418,198 450,198 434,188" fill={isSel("ko_tenshu_e")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_e")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="434" y="220" textAnchor="middle" fill={isSel("ko_tenshu_e")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">東小</text>
+
+      {/* Ko-tenshu West */}
+      <rect x="338" y="185" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_w","#88bbff")} stroke={st("ko_tenshu_w","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_w")} style={{cursor:"pointer"}}/>
+      <polygon points="338,185 370,185 354,175" fill={isSel("ko_tenshu_w")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_w")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="354" y="207" textAnchor="middle" fill={isSel("ko_tenshu_w")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">西小</text>
+
+      {/* Ko-tenshu North */}
+      <rect x="362" y="168" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_n","#88bbff")} stroke={st("ko_tenshu_n","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_n")} style={{cursor:"pointer"}}/>
+      <polygon points="362,168 394,168 378,158" fill={isSel("ko_tenshu_n")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_n")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="378" y="190" textAnchor="middle" fill={isSel("ko_tenshu_n")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">乾小</text>
+
+      {/* Connecting corridors between towers */}
+      <rect x="370" y="197" width="48" height="7" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+      <rect x="362" y="204" width="10" height="26" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+      <rect x="416" y="204" width="10" height="26" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+
+      {/* Dai-tenshu (main keep) */}
+      <rect x="365" y="218" width="62" height="66" rx="4"
+        fill={glo("dai_tenshu","#ffffcc")} stroke={st("dai_tenshu","#ffff99")} strokeWidth="3"
+        onClick={()=>hit("dai_tenshu")} style={{cursor:"pointer"}}/>
+      {isSel("dai_tenshu")&&<rect x="358" y="211" width="76" height="80" rx="5" fill="rgba(255,255,180,0.08)" filter="url(#hj_glow)"/>}
+      {/* Roof layers */}
+      {[[365,218,62,7],[369,212,54,7],[374,206,44,7],[379,200,34,7]].map(([rx2,ry,rw,rh],i)=>(
+        <rect key={i} x={rx2} y={ry} width={rw} height={rh} rx="2"
+          fill={isSel("dai_tenshu")?"#ffff9933":"#eeee8822"}
+          stroke={isSel("dai_tenshu")?"#ffff99":"#cccc6644"} strokeWidth="1"/>
+      ))}
+      <text x="396" y="252" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffff99":"#cccc66"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">大天守</text>
+      <text x="396" y="266" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffee88":"#aaaa44"} fontSize="8" fontFamily="'Cinzel',serif">DAI-TENSHU</text>
+      <text x="396" y="278" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffdd66":"#888833"} fontSize="7" fontFamily="'Cinzel',serif">46m · 6F</text>
+
+      {/* Hishi Gate */}
+      <rect x="290" y="260" width="20" height="30" rx="3"
+        fill={glo("hishi_gate","#ffaa44")} stroke={st("hishi_gate","#ffcc66")} strokeWidth="2"
+        onClick={()=>hit("hishi_gate")} style={{cursor:"pointer"}}/>
+      {isSel("hishi_gate")&&<rect x="285" y="255" width="30" height="40" rx="4" fill="rgba(200,140,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="300" y="300" textAnchor="middle" fill={isSel("hishi_gate")?"#ffcc66":"#cc8833"} fontSize="7" fontFamily="'Cinzel',serif">菱門</text>
+
+      {/* Otemon (main outer gate) */}
+      <rect x="335" y="490" width="50" height="34" rx="3"
+        fill={glo("otemon","#ee5533")} stroke={st("otemon","#ff7755")} strokeWidth="2.5"
+        onClick={()=>hit("otemon")} style={{cursor:"pointer"}}/>
+      {isSel("otemon")&&<rect x="329" y="484" width="62" height="46" rx="4" fill="rgba(200,70,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="360" y="511" textAnchor="middle" fill={isSel("otemon")?"#ff7755":"#cc4422"} fontSize="9" fontFamily="'Cinzel',serif">大手門 ⚠</text>
+
+      {/* Yagura turrets along walls */}
+      {yagura("s",[[185,390],[205,430],[245,468],[300,498],[410,490],[470,460],[520,400],[540,330],[530,260]],ac)}
+
+      {/* Compass */}
+      <g transform={`translate(${W-42},42)`}>
+        <circle r="17" fill="rgba(0,0,0,0.65)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*10} y={-Math.cos(r2)*10+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      {/* Scale bar */}
+      <line x1="80" y1={H-22} x2="230" y2={H-22} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="80" y1={H-18} x2="80" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="230" y1={H-18} x2="230" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <text x="155" y={H-10} textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 300m</text>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">姫路城 HIMEJI-JŌ</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Shirasagijō – Weißer Reiher · 1609 · Hyōgo, Japan</text>
+    </svg>
+  );
+};
+
 // ── Castle Floor Plan Explore Tab ───────────────────────────────────────────
 function CastleFloorPlanTab({castle}){
   const sel=castle;
