@@ -2166,6 +2166,379 @@ const CASTLE_PLANS = {
         fontFamily="serif" letterSpacing="2">GRAVECREST — ORDO CUSTODUM</text>
     </g>
   ),
+
+  // ── MALBORK — Größte Burg der Welt, 3 Burghöfe an der Nogat ──────────────
+  malbork: ({ac,sel,onZone}) => (
+    <g>
+      {/* Terrain */}
+      <rect x="4" y="8" width="178" height="184" rx="3" fill="rgba(70,60,28,0.13)"/>
+      {/* Nogat River (east) */}
+      <rect x="184" y="8" width="32" height="184" rx="2" fill="rgba(34,100,170,0.35)" stroke="#4488cc" strokeWidth="0.8"/>
+      {[30,60,90,120,155].map(y=>(
+        <path key={y} d={`M 185 ${y} Q 200 ${y+6} 215 ${y}`} fill="none" stroke="#4488cc" strokeWidth="0.5" opacity="0.5"/>
+      ))}
+      <text x="200" y="105" textAnchor="middle" fill="#4488cc88" fontSize="7" fontFamily="serif" transform="rotate(90,200,105)">NOGAT</text>
+
+      {/* VORBURG — großes äußeres Schloss (Süd) */}
+      {sel==="vb"&&<rect x="8" y="105" width="174" height="85" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <rect x="8" y="105" width="174" height="85" rx="2"
+        fill={sel==="vb"?"rgba(160,130,55,0.2)":"rgba(160,130,55,0.08)"}
+        stroke={sel==="vb"?`${ac}cc`:`${ac}44`} strokeWidth={sel==="vb"?3.5:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("vb")}/>
+      {[[8,105],[8,190],[182,105],[182,190],[95,105],[95,190],[8,147],[182,147]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="vb"?`${ac}55`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7"/>
+      ))}
+      <text x="95" y="150" textAnchor="middle" fill={sel==="vb"?ac:`${ac}99`}
+        fontSize="11" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("vb")}>VORBURG</text>
+      <text x="95" y="162" textAnchor="middle" fill={sel==="vb"?`${ac}bb`:`${ac}66`}
+        fontSize="7.5" fontFamily="serif">Äußeres Schloss</text>
+
+      {/* MITTELBURG — mittleres Schloss */}
+      {sel==="mb2"&&<rect x="20" y="52" width="152" height="60" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <rect x="20" y="52" width="152" height="60" rx="2"
+        fill={sel==="mb2"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.09)"}
+        stroke={sel==="mb2"?`${ac}ee`:`${ac}77`} strokeWidth={sel==="mb2"?4:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("mb2")}/>
+      {[[20,52],[172,52],[20,112],[172,112],[20,82],[172,82],[96,52],[96,112]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="mb2"?`${ac}66`:`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8"/>
+      ))}
+      {/* Hochmeisterpalast */}
+      <rect x="26" y="57" width="44" height="48" rx="1" fill="rgba(201,168,76,0.1)" stroke={`${ac}44`} strokeWidth="0.7"/>
+      <text x="48" y="85" textAnchor="middle" fill={`${ac}55`} fontSize="6.5" fontFamily="serif">Hochmeisterpalast</text>
+      <text x="118" y="85" textAnchor="middle" fill={sel==="mb2"?ac:`${ac}aa`}
+        fontSize="11" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("mb2")}>MITTELBURG</text>
+
+      {/* HOCHBURG — innerstes nördliches Schloss */}
+      {sel==="hb2"&&<rect x="33" y="10" width="108" height="48" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="33" y="10" width="108" height="48" rx="2"
+        fill={sel==="hb2"?"rgba(240,210,96,0.32)":"rgba(240,210,96,0.13)"}
+        stroke={sel==="hb2"?"#e8c860cc":`${ac}99`} strokeWidth={sel==="hb2"?4.5:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("hb2")}/>
+      {/* Innenhof */}
+      <rect x="58" y="20" width="58" height="28" rx="1" fill="rgba(30,22,5,0.45)" stroke={`${ac}22`} strokeWidth="0.5"/>
+      {/* Eckturm */}
+      {[[33,10],[141,10],[33,58],[141,58]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="hb2"?"#e8c860":"#c9a84c"} opacity={sel==="hb2"?0.85:0.55} stroke="#e8c860" strokeWidth="0.8"/>
+      ))}
+      {/* St.-Annen-Kapelle */}
+      <rect x="118" y="12" width="18" height="16" rx="1" fill="rgba(232,200,96,0.3)" stroke="#e8c860" strokeWidth="1"/>
+      <text x="127" y="23" textAnchor="middle" fill="#e8c86077" fontSize="5.5" fontFamily="serif">St. Annen</text>
+      <text x="87" y="38" textAnchor="middle" fill={sel==="hb2"?"#e8c860":ac}
+        fontSize="11" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("hb2")}>HOCHBURG</text>
+
+      {/* Nogat-Fluss Zone */}
+      {sel==="ng2"&&<rect x="165" y="8" width="22" height="184" fill="#4488cc" opacity="0.22" filter="url(#glowFilter)"/>}
+      <rect x="180" y="8" width="8" height="184" rx="2"
+        fill={sel==="ng2"?"rgba(68,136,204,0.6)":"rgba(68,136,204,0.35)"}
+        stroke={sel==="ng2"?"#88ccff":"#4488cc"} strokeWidth={sel==="ng2"?2:1}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ng2")}/>
+
+      {/* Kompass + Titel */}
+      <g transform="translate(18,20)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="95" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">MARIENBURG · GEGR. 1274</text>
+    </g>
+  ),
+
+  // ── BEAUMARIS — Perfekter konzentrischer Grundriss, Edward I., 1295 ────────
+  beaumaris: ({ac,sel,onZone}) => (
+    <g>
+      {/* Meer / Tidenwasser */}
+      <rect x="0" y="0" width="220" height="200" fill="rgba(30,60,100,0.2)"/>
+      {/* Hafenzugang (Süd) */}
+      <rect x="82" y="173" width="56" height="24" rx="3" fill="rgba(34,100,170,0.35)" stroke="#4488cc" strokeWidth="1"/>
+      <text x="110" y="187" textAnchor="middle" fill="#4488cc" fontSize="7.5" fontFamily="serif">⚓ Hafentor</text>
+
+      {/* GRABEN + HAFEN */}
+      {sel==="gv2"&&<rect x="10" y="10" width="200" height="180" rx="6" fill="#4488cc" opacity="0.12" filter="url(#glowFilter)"/>}
+      <rect x="12" y="12" width="196" height="176" rx="5"
+        fill={sel==="gv2"?"rgba(34,100,170,0.22)":"rgba(34,100,170,0.12)"}
+        stroke={sel==="gv2"?"#66aaddbb":"#4488cc55"} strokeWidth={sel==="gv2"?2:1.5}
+        strokeDasharray="8,4"
+        style={{cursor:"pointer"}} onClick={()=>onZone("gv2")}/>
+      <text x="26" y="34" fill={sel==="gv2"?"#66aadd":"#4488cc88"} fontSize="8" fontFamily="serif"
+        style={{cursor:"pointer"}} onClick={()=>onZone("gv2")}>Wassergraben</text>
+
+      {/* ÄUSSERE MAUER (16 Türme) */}
+      {sel==="ow3"&&<rect x="25" y="24" width="170" height="152" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <rect x="25" y="24" width="170" height="152" rx="3"
+        fill={sel==="ow3"?"rgba(140,110,45,0.2)":"rgba(140,110,45,0.07)"}
+        stroke={sel==="ow3"?`${ac}cc`:`${ac}55`} strokeWidth={sel==="ow3"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}/>
+      {Array.from({length:16},(_,i)=>{
+        const t=i/16; const side=Math.floor(t*4); const p=(t*4)%1;
+        let x,y;
+        if(side===0){x=25+170*p;y=24;}
+        else if(side===1){x=195;y=24+152*p;}
+        else if(side===2){x=195-170*p;y=176;}
+        else{x=25;y=176-152*p;}
+        return <rect key={i} x={x-5.5} y={y-5.5} width="11" height="11" rx="1.5"
+          fill={sel==="ow3"?`${ac}66`:`${ac}33`} stroke={sel==="ow3"?`${ac}bb`:`${ac}66`} strokeWidth="0.8"
+          style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}/>;
+      })}
+      <text x="110" y="38" textAnchor="middle" fill={sel==="ow3"?ac:`${ac}99`}
+        fontSize="8.5" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}>ÄUSSERE MAUER · 16 TÜRME</text>
+
+      {/* Zwinger (Killing ground) */}
+      <rect x="52" y="50" width="116" height="100" rx="2" fill="rgba(10,8,3,0.35)" stroke={`${ac}15`} strokeWidth="0.5"/>
+
+      {/* INNERE MAUER (6 Türme) */}
+      {sel==="iw"&&<rect x="55" y="52" width="110" height="96" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="55" y="52" width="110" height="96" rx="2"
+        fill={sel==="iw"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="iw"?`${ac}ff`:`${ac}aa`} strokeWidth={sel==="iw"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("iw")}/>
+      {[[55,52],[165,52],[55,148],[165,148],[55,100],[165,100]].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r={sel==="iw"?8:7}
+          fill={sel==="iw"?`${ac}66`:`${ac}33`} stroke={sel==="iw"?`${ac}dd`:`${ac}88`}
+          strokeWidth={sel==="iw"?1.8:1.2}
+          style={{cursor:"pointer"}} onClick={()=>onZone("iw")}/>
+      ))}
+      {/* Innenhof */}
+      <rect x="70" y="66" width="80" height="68" rx="2" fill="rgba(20,15,4,0.45)" stroke={`${ac}18`} strokeWidth="0.5"/>
+      <text x="110" y="103" textAnchor="middle" fill={`${ac}25`} fontSize="9" fontFamily="serif">Hof</text>
+      <text x="110" y="75" textAnchor="middle" fill={sel==="iw"?ac:`${ac}cc`}
+        fontSize="10.5" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("iw")}>INNERE MAUER</text>
+      <text x="110" y="87" textAnchor="middle" fill={sel==="iw"?`${ac}bb`:`${ac}77`}
+        fontSize="7.5" fontFamily="serif">(6 Türme)</text>
+
+      {/* Kompass */}
+      <g transform="translate(193,22)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">BEAUMARIS · 1295 — EDWARD I.</text>
+    </g>
+  ),
+
+  // ── DOVER CASTLE ─────────────────────────────────────────────────────────
+  dover: ({ac,sel,onZone}) => (
+    <g>
+      <ellipse cx="110" cy="100" rx="104" ry="90" fill="rgba(180,170,140,0.1)" stroke="rgba(160,150,120,0.15)" strokeWidth="0.8"/>
+      {/* Äußerer Mauerring */}
+      {sel==="ow"&&<path d="M 15 58 L 38 14 L 110 8 L 182 14 L 205 58 L 207 132 L 188 178 L 110 187 L 30 178 L 12 132 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 15 58 L 38 14 L 110 8 L 182 14 L 205 58 L 207 132 L 188 178 L 110 187 L 30 178 L 12 132 Z"
+        fill={sel==="ow"?"rgba(140,110,45,0.2)":"rgba(140,110,45,0.07)"}
+        stroke={sel==="ow"?`${ac}cc`:`${ac}44`} strokeWidth={sel==="ow"?4:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ow")}/>
+      {[[38,14],[110,8],[182,14],[205,58],[207,132],[188,178],[110,187],[30,178],[15,58],[12,132],[60,10],[160,10],[205,95],[12,95]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="ow"?`${ac}55`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7"/>
+      ))}
+      <text x="170" y="155" fill={sel==="ow"?ac:`${ac}77`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow")}>Äußerer</text>
+      <text x="170" y="166" fill={sel==="ow"?ac:`${ac}77`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow")}>Mauerring</text>
+      {/* Innere Bailey */}
+      <rect x="55" y="54" width="110" height="96" rx="2" fill="rgba(90,72,25,0.1)" stroke={`${ac}44`} strokeWidth="2"/>
+      {[[55,54],[165,54],[55,150],[165,150],[55,102],[165,102]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={`${ac}33`} stroke={`${ac}55`} strokeWidth="0.7"/>
+      ))}
+      {/* Großer Turm */}
+      {sel==="gt"&&<rect x="78" y="67" width="62" height="60" fill={ac} opacity="0.12" filter="url(#glowFilter)"/>}
+      <rect x="78" y="67" width="62" height="60" rx="1"
+        fill={sel==="gt"?"rgba(232,200,96,0.35)":"rgba(232,200,96,0.14)"}
+        stroke={sel==="gt"?"#e8c860":"#c9a84c"} strokeWidth={sel==="gt"?3.5:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("gt")}/>
+      <rect x="108" y="67" width="22" height="16" rx="1" fill="rgba(201,168,76,0.2)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      {[[78,67],[140,67],[78,127],[140,127]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="gt"?"#e8c860":"#c9a84c"} opacity={sel==="gt"?0.85:0.5} stroke="#e8c860" strokeWidth="0.8"/>
+      ))}
+      <text x="109" y="100" textAnchor="middle" fill={sel==="gt"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gt")}>GROSSER</text>
+      <text x="109" y="112" textAnchor="middle" fill={sel==="gt"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gt")}>TURM</text>
+      {/* Nordtor */}
+      {sel==="nt"&&<path d="M 88 6 L 110 2 L 132 6 L 132 22 L 110 26 L 88 22 Z" fill="#cc4444" opacity="0.25" filter="url(#glowFilter)"/>}
+      <path d="M 88 6 L 110 2 L 132 6 L 132 22 L 110 26 L 88 22 Z"
+        fill={sel==="nt"?"rgba(204,68,68,0.5)":"rgba(204,68,68,0.22)"}
+        stroke="#cc4444" strokeWidth={sel==="nt"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("nt")}/>
+      <text x="110" y="17" textAnchor="middle" fill="#cc4444" fontSize="8" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("nt")}>⚠ NORDTOR</text>
+      <g transform="translate(192,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">DOVER CASTLE · SEIT 1180</text>
+    </g>
+  ),
+
+  // ── OSAKA CASTLE ─────────────────────────────────────────────────────────
+  osaka: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(40,55,25,0.12)"/>
+      {/* Sanomaru (Außenring) */}
+      {sel==="sg2"&&<rect x="8" y="8" width="204" height="184" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <rect x="10" y="10" width="200" height="180" rx="4"
+        fill={sel==="sg2"?"rgba(80,100,50,0.2)":"rgba(80,100,50,0.08)"}
+        stroke={sel==="sg2"?`${ac}bb`:`${ac}44`} strokeWidth={sel==="sg2"?4:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("sg2")}/>
+      <text x="26" y="30" fill={sel==="sg2"?ac:`${ac}88`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("sg2")}>SANOMARU</text>
+      {/* Äußerer Wassergraben */}
+      <rect x="28" y="28" width="164" height="144" rx="3" fill="rgba(20,50,90,0.38)" stroke="#3377bb" strokeWidth="1"/>
+      {/* Ninomaru */}
+      <rect x="46" y="46" width="128" height="108" rx="2" fill="rgba(40,55,25,0.25)" stroke={`${ac}33`} strokeWidth="1"/>
+      {/* Honmaru-Graben */}
+      <rect x="56" y="56" width="108" height="88" rx="2" fill="rgba(20,50,90,0.42)" stroke="#3377bb" strokeWidth="0.8"/>
+      {/* Honmaru */}
+      {sel==="hm"&&<rect x="64" y="63" width="92" height="74" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="64" y="63" width="92" height="74" rx="2"
+        fill={sel==="hm"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="hm"?`${ac}ff`:`${ac}88`} strokeWidth={sel==="hm"?4:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("hm")}/>
+      {[[64,63],[156,63],[64,137],[156,137]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="hm"?`${ac}66`:`${ac}44`} stroke={sel==="hm"?`${ac}cc`:`${ac}77`} strokeWidth="1"/>
+      ))}
+      <text x="110" y="76" textAnchor="middle" fill={sel==="hm"?ac:`${ac}99`} fontSize="9" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("hm")}>HONMARU</text>
+      {/* Wassergräben */}
+      {sel==="gm"&&<rect x="56" y="56" width="108" height="88" fill="#3377bb" opacity="0.1" filter="url(#glowFilter)"/>}
+      <text x="40" y="128" fill={sel==="gm"?"#66aadd":"#3377bb88"} fontSize="7.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("gm")}>Graben</text>
+      {/* Tenshukaku (Hauptturm) */}
+      {sel==="tm"&&<rect x="82" y="76" width="56" height="48" fill={ac} opacity="0.15" filter="url(#glowFilter)"/>}
+      <rect x="82" y="76" width="56" height="48" rx="1"
+        fill={sel==="tm"?"rgba(240,210,100,0.42)":"rgba(240,210,100,0.18)"}
+        stroke={sel==="tm"?"#f0d264":"#c9a84c"} strokeWidth={sel==="tm"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("tm")}/>
+      <rect x="89" y="81" width="42" height="37" rx="1" fill="rgba(240,210,100,0.12)" stroke={`${ac}44`} strokeWidth="0.6"/>
+      <rect x="97" y="86" width="26" height="24" rx="1" fill="rgba(240,210,100,0.1)" stroke={`${ac}33`} strokeWidth="0.5"/>
+      <path d="M 82 76 Q 110 69 138 76" fill="none" stroke="#f0d264" strokeWidth={sel==="tm"?1.8:1.2} opacity="0.65"/>
+      <path d="M 88 81 Q 110 75 132 81" fill="none" stroke="#f0d264" strokeWidth="0.9" opacity="0.4"/>
+      <text x="110" y="102" textAnchor="middle" fill={sel==="tm"?"#f0d264":ac} fontSize="11" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("tm")}>天守閣</text>
+      <text x="110" y="114" textAnchor="middle" fill={sel==="tm"?"#f0d264cc":`${ac}88`} fontSize="7.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("tm")}>Tenshukaku</text>
+      <g transform="translate(193,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">OSAKA · 大坂城 · 1583</text>
+    </g>
+  ),
+
+  // ── STIRLING CASTLE ───────────────────────────────────────────────────────
+  stirling: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(45,60,30,0.12)"/>
+      {/* Vulkanfels (Castle Rock) */}
+      {sel==="vr"&&<path d="M 22 92 Q 24 42 56 22 Q 90 8 142 12 Q 178 16 194 46 Q 207 72 206 112 Q 204 152 180 170 Q 154 185 110 186 Q 64 186 40 168 Q 14 148 22 92 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 22 92 Q 24 42 56 22 Q 90 8 142 12 Q 178 16 194 46 Q 207 72 206 112 Q 204 152 180 170 Q 154 185 110 186 Q 64 186 40 168 Q 14 148 22 92 Z"
+        fill={sel==="vr"?"rgba(80,65,38,0.28)":"rgba(80,65,38,0.16)"}
+        stroke={sel==="vr"?`${ac}88`:`${ac}30`} strokeWidth={sel==="vr"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("vr")}/>
+      {[0,1,2,3].map(i=>(
+        <path key={i} d={`M ${32+i*6} ${105-i*6} Q 110 ${90+i*4} ${188-i*5} ${108+i*4}`} fill="none" stroke={`${ac}09`} strokeWidth="0.6"/>
+      ))}
+      <text x="26" y="168" fill={sel==="vr"?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("vr")}>Castle Rock</text>
+      {/* Esplanade */}
+      {sel==="es"&&<rect x="68" y="10" width="74" height="30" fill="#cc4444" opacity="0.2" filter="url(#glowFilter)"/>}
+      <rect x="68" y="12" width="74" height="26" rx="2"
+        fill={sel==="es"?"rgba(204,68,68,0.38)":"rgba(204,68,68,0.16)"}
+        stroke={sel==="es"?"#cc4444":"rgba(204,68,68,0.45)"} strokeWidth={sel==="es"?2:1}
+        style={{cursor:"pointer"}} onClick={()=>onZone("es")}/>
+      <text x="105" y="28" textAnchor="middle" fill="#cc4444" fontSize="8.5" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("es")}>⚠ ESPLANADE</text>
+      {/* Forework */}
+      {sel==="fp"&&<rect x="78" y="36" width="60" height="22" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="78" y="37" width="60" height="20" rx="1"
+        fill={sel==="fp"?"rgba(170,135,55,0.3)":"rgba(170,135,55,0.12)"}
+        stroke={sel==="fp"?`${ac}cc`:`${ac}66`} strokeWidth={sel==="fp"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("fp")}/>
+      {[[78,37],[138,37],[78,57],[138,57]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={sel==="fp"?`${ac}66`:`${ac}44`} stroke={`${ac}77`} strokeWidth="0.7"/>
+      ))}
+      <path d="M 99 57 L 99 45 Q 108 40 117 45 L 117 57" fill="rgba(0,0,0,0.45)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="108" y="51" textAnchor="middle" fill={sel==="fp"?ac:`${ac}99`} fontSize="8" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("fp")}>FOREWORK</text>
+      {/* Nether Bailey */}
+      {sel==="nk"&&<rect x="58" y="56" width="104" height="44" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="58" y="56" width="104" height="44" rx="1"
+        fill={sel==="nk"?"rgba(170,135,55,0.22)":"rgba(170,135,55,0.09)"}
+        stroke={sel==="nk"?`${ac}dd`:`${ac}66`} strokeWidth={sel==="nk"?3.5:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("nk")}/>
+      {[[58,56],[162,56],[58,100],[162,100]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={sel==="nk"?`${ac}66`:`${ac}44`} stroke={`${ac}77`} strokeWidth="0.7"/>
+      ))}
+      <text x="110" y="82" textAnchor="middle" fill={sel==="nk"?ac:`${ac}99`} fontSize="9.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("nk")}>NETHER BAILEY</text>
+      {/* Great Hall */}
+      {sel==="gh"&&<rect x="65" y="100" width="90" height="58" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="65" y="100" width="90" height="58" rx="1"
+        fill={sel==="gh"?"rgba(232,200,96,0.35)":"rgba(232,200,96,0.14)"}
+        stroke={sel==="gh"?"#e8c860":"#c9a84c"} strokeWidth={sel==="gh"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("gh")}/>
+      <rect x="65" y="100" width="42" height="58" rx="1" fill="rgba(201,168,76,0.07)" stroke={`${ac}28`} strokeWidth="0.5"/>
+      <text x="86" y="133" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif">Kapelle</text>
+      <text x="132" y="133" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif">Palast</text>
+      <text x="110" y="117" textAnchor="middle" fill={sel==="gh"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gh")}>GREAT HALL</text>
+      <g transform="translate(193,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">STIRLING CASTLE · SEIT 1110</text>
+    </g>
+  ),
+
+  // ── RED FORT (Lal Qila) ───────────────────────────────────────────────────
+  red_fort: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(60,35,20,0.1)"/>
+      {/* Yamuna (Ost) */}
+      {sel==="rg"&&<rect x="178" y="0" width="42" height="200" fill="#4488cc" opacity="0.18" filter="url(#glowFilter)"/>}
+      <rect x="183" y="0" width="37" height="200" fill={sel==="rg"?"rgba(34,100,170,0.45)":"rgba(34,100,170,0.28)"} stroke={sel==="rg"?"#66aadd":"#4488cc55"} strokeWidth={sel==="rg"?1.5:1} style={{cursor:"pointer"}} onClick={()=>onZone("rg")}/>
+      {[25,60,95,130,165].map(y=>(
+        <path key={y} d={`M 184 ${y} Q 198 ${y+7} 216 ${y}`} fill="none" stroke="#4488cc" strokeWidth="0.5" opacity="0.45"/>
+      ))}
+      <text x="196" y="102" textAnchor="middle" fill={sel==="rg"?"#66aadd":"#4488cc99"} fontSize="7" fontFamily="serif" transform="rotate(90,196,102)" style={{cursor:"pointer"}} onClick={()=>onZone("rg")}>YAMUNA ⚠</text>
+      {/* Rote Sandsteinmauern */}
+      {sel==="rm"&&<path d="M 10 18 L 178 18 L 178 182 L 10 182 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 10 18 L 178 18 L 178 182 L 10 182 Z"
+        fill={sel==="rm"?"rgba(170,55,35,0.2)":"rgba(170,55,35,0.08)"}
+        stroke={sel==="rm"?"#cc4422":"#aa3312"} strokeWidth={sel==="rm"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("rm")}/>
+      {[[10,18],[10,182],[178,18],[178,182],[10,100],[178,100],[94,18],[94,182]].map(([x,y],i)=>(
+        <polygon key={i} points={`${x},${y-7} ${x+4.5},${y-4.5} ${x+7},${y} ${x+4.5},${y+4.5} ${x},${y+7} ${x-4.5},${y+4.5} ${x-7},${y} ${x-4.5},${y-4.5}`}
+          fill={sel==="rm"?"rgba(204,68,40,0.55)":"rgba(180,60,30,0.32)"} stroke={sel==="rm"?"#dd5533":"#bb4422"} strokeWidth="0.8"/>
+      ))}
+      {/* Tore */}
+      <rect x="2" y="84" width="16" height="32" rx="2" fill="rgba(170,60,35,0.5)" stroke="#cc5533" strokeWidth="1.5"/>
+      <text x="10" y="82" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Lahore</text>
+      <text x="10" y="122" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Tor</text>
+      <rect x="162" y="84" width="16" height="32" rx="2" fill="rgba(170,60,35,0.3)" stroke="#cc5533" strokeWidth="1"/>
+      <text x="178" y="82" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Delhi</text>
+      <text x="178" y="122" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Tor</text>
+      <text x="94" y="32" textAnchor="middle" fill={sel==="rm"?"#ee6644":ac} fontSize="9" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("rm")}>SANDSTEINMAUERN</text>
+      {/* Palastkomplex */}
+      {sel==="pc"&&<rect x="20" y="46" width="102" height="108" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="20" y="46" width="102" height="108" rx="2"
+        fill={sel==="pc"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="pc"?`${ac}ff`:`${ac}77`} strokeWidth={sel==="pc"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("pc")}/>
+      <rect x="26" y="54" width="42" height="32" rx="1" fill="rgba(201,168,76,0.12)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="47" y="74" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif">Diwan-i-Am</text>
+      <rect x="76" y="54" width="38" height="28" rx="1" fill="rgba(201,168,76,0.12)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="95" y="72" textAnchor="middle" fill={`${ac}55`} fontSize="6.5" fontFamily="serif">Diwan-i-Khas</text>
+      <rect x="26" y="96" width="32" height="28" rx="1" fill="rgba(68,136,204,0.1)" stroke="#4488cc33" strokeWidth="0.8"/>
+      <text x="42" y="114" textAnchor="middle" fill="#4488cc44" fontSize="6.5" fontFamily="serif">Hammam</text>
+      <rect x="76" y="92" width="38" height="32" rx="1" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8"/>
+      <text x="95" y="112" textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize="6.5" fontFamily="serif">Moti Masjid</text>
+      <text x="71" y="118" textAnchor="middle" fill={sel==="pc"?ac:`${ac}cc`} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("pc")}>PALASTKOMPLEX</text>
+      <g transform="translate(28,26)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="94" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">LAL QILA · DELHI · 1639</text>
+    </g>
+  ),
 };
 
 // Generic plan for all other castles — enhanced top-down view
