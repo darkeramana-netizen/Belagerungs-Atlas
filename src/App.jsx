@@ -3944,6 +3944,194 @@ DETAILED_PLANS.himeji=({ac,sel,onSel})=>{
   );
 };
 
+// ── Krak des Chevaliers ───────────────────────────────────────────────────────
+DETAILED_PLANS.krak=({ac,sel,onSel})=>{
+  const W=680,H=580;
+  const S=(id,nm,ic,tp,desc,stats,weak)=>({id,name:nm,icon:ic,type:tp,desc,stats,weakness:weak});
+  const EL=[
+    S("outer_wall","Äußerer Mauerring","🧱","Vorhof","13 Türme schützen den Zwinger. Hospitaller-Ritter konnten 2 000 Mann für 5 Jahre beherbergen. Die äußere Mauer wurde zwischen 1142–1271 mehrfach verstärkt.",["13 Türme","Erbaut: 1142","Hospitaller-Orden"],null),
+    S("talus","Talus / Glacis","🪨","Schrägbasis","Die gewaltige gemauerte Schrägbasis (Talus) an der Süd- und Westseite des Innenhofs. Verhindert Untergraben, lässt Sturmleitern abrutschen. Einzigartiges Merkmal des Krak.",["Neigung: 45°","5m Mauerdicke","Gegen Minen"],null),
+    S("great_hall","Salle des Chevaliers","🏛️","Großer Saal","Der berühmteste gotische Saal Syriens (1230er). Drei Schiffe, Kreuzgewölbe, 25m lang. Lawrence of Arabia nannte Krak 'das schönste Schloss der Welt'.",["Länge: 25m","Gotisches Gewölbe","1230er"],null),
+    S("chapel","Kapelle","⛪","Kapelle","Die Hospitallerkapelle (12. Jh.) mit romanischen Bogenfenstern. Nach dem Fall 1271 zur Moschee umgewidmet — ein Minarett wurde hinzugefügt.",["Romanischer Stil","Später Moschee","12. Jh."],null),
+    S("cisterns","Zisternen","💧","Wasserversorgung","Zwei riesige unterirdische Zisternen fassen genug Wasser für die gesamte Besatzung über Jahre. Entscheidend für lange Belagerungen im trockenen Klima.",["2 Zisternen","5-Jahres-Vorrat","Unterirdisch"],null),
+    S("donjon","Donjon / Bergfried","🏯","Kernburg","Der quadratische Kernturm im Nordwesteck des Innenhofs. Letzter Rückzugsort der Ritter. Massivste Mauern der gesamten Anlage.",["Mauern: 5m","Letzter Rückzug"],null),
+    S("south_tower","Großer Südturm","🗼","Südturm","Der mächtigste Einzelturm, halbkreisförmig nach außen gewölbt. Flankiert das Haupttor und die Loggia. Dominiert die Südflanke.",["Halbkreis-Grundriss","Mächtigster Turm"],null),
+    S("loggia","Loggia","🌿","Loggia","Die elegante gotische Loggia vor dem großen Saal — ein offener Säulengang aus dem 13. Jh. Selten in Kreuzritter-Burgen, zeigt den Einfluss westeuropäischer Hofarchitektur.",["Gotische Säulen","13. Jh.","Offen"],null),
+    S("aqueduct","Aquädukt","🌊","Wasserleitung","Ein gemauerts Aquädukt entlang der Nordmauer leitet Bergwasser in die Zisternen. Sicherte die Wasserversorgung auch bei langer Belagerung.",["Entlang Nordmauer","Bergwasser"],null),
+    S("bent_entry","Geknickter Eingang","🌀","Zugangsweg","Der berühmte 'bent entrance': ein langer, dunkler Tunnel mit mehreren 90°-Kurven und Schießscharten. Angreifer können nie geradeaus vorstoßen.",["90°-Kurven","Dunkler Tunnel","Kein Anlauf"],2),
+    S("north_weak","Nordflanke","⚠️","Schwachstelle","Die flachste und breiteste Angriffsroute. Der Zwinger ist hier am weitesten — aber die Mauern sind auch hier doppelt. 1271 hier durch Täuschung eingenommen.",["Flachstes Gelände","Historisch genutzt"],1),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}48`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#9a8a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="kr_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#0e0b05"/>
+          <stop offset="100%" stopColor="#050402"/>
+        </radialGradient>
+        <filter id="kr_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="kr_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#kr_bg)"/>
+      <rect width={W} height={H} fill="url(#kr_stone)" opacity="0.55"/>
+
+      {/* Hill terrain */}
+      <ellipse cx="340" cy="295" rx="290" ry="255" fill="rgba(100,78,28,0.14)" stroke="rgba(130,100,35,0.15)" strokeWidth="1"/>
+
+      {/* Outer wall (irregular ellipse following hill) */}
+      <path d="M155,145 Q130,200 130,270 Q130,345 160,405 Q200,460 275,490 Q350,515 430,500 Q510,482 548,430 Q580,378 575,305 Q570,235 540,180 Q505,120 440,95 Q370,72 295,82 Q215,94 155,145 Z"
+        fill={glo("outer_wall","#8a7040")} stroke={st("outer_wall","#b09050")} strokeWidth="3"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {isSel("outer_wall")&&<path d="M155,145 Q130,200 130,270 Q130,345 160,405 Q200,460 275,490 Q350,515 430,500 Q510,482 548,430 Q580,378 575,305 Q570,235 540,180 Q505,120 440,95 Q370,72 295,82 Q215,94 155,145 Z"
+        fill="rgba(130,100,40,0.07)" filter="url(#kr_glow)"/>}
+      <text x="168" y="460" fill={isSel("outer_wall")?ac:"#8a7040"} fontSize="9" fontFamily="'Cinzel',serif">ÄUSSERER RING</text>
+
+      {/* Outer towers (13) */}
+      {[{x:155,y:145},{x:130,y:200},{x:130,y:270},{x:140,y:340},{x:165,y:405},{x:220,y:462},{x:295,y:500},{x:380,y:508},{x:455,y:488},{x:520,y:445},{x:555,y:375},{x:560,y:295},{x:545,y:200},{x:495,y:125},{x:415,y:90},{x:335,y:78},{x:252,y:90}].map((t,i)=>(
+        <circle key={i} cx={t.x} cy={t.y} r="12"
+          fill={`${ac}${isSel("outer_wall")?"33":"18"}`}
+          stroke={`${ac}${isSel("outer_wall")?"88":"44"}`} strokeWidth="1.8"/>
+      ))}
+
+      {/* Aqueduct (north wall) */}
+      <path d="M210,112 Q280,88 360,82 Q430,78 490,105"
+        fill="none" stroke={isSel("aqueduct")?"#4488cccc":"#4488cc55"} strokeWidth="5"
+        onClick={()=>hit("aqueduct")} style={{cursor:"pointer"}}/>
+      {isSel("aqueduct")&&<path d="M210,112 Q280,88 360,82 Q430,78 490,105" fill="none" stroke="rgba(40,100,200,0.2)" strokeWidth="18" filter="url(#kr_glow)"/>}
+      <text x="345" y="72" textAnchor="middle" fill={isSel("aqueduct")?"#66aaee":"#336688"} fontSize="8" fontFamily="'Cinzel',serif">AQUÄDUKT ↓</text>
+
+      {/* North weakness zone */}
+      <rect x="230" y="88" width="210" height="50" rx="5"
+        fill={glo("north_weak","#cc3322")} stroke={st("north_weak","#ee4433")} strokeWidth="2"
+        onClick={()=>hit("north_weak")} style={{cursor:"pointer"}}/>
+      {isSel("north_weak")&&<rect x="225" y="83" width="220" height="60" rx="6" fill="rgba(180,40,20,0.08)" filter="url(#kr_glow)"/>}
+      <text x="335" y="118" textAnchor="middle" fill={isSel("north_weak")?"#ee4433":"#aa2211"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">⚠ NORD-FLANKE</text>
+
+      {/* Zwinger / killing ground label */}
+      <text x="165" y="285" fill={`${ac}44`} fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(-75,165,285)">ZWINGER</text>
+      <text x="515" y="285" fill={`${ac}44`} fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(75,515,285)">ZWINGER</text>
+
+      {/* Inner ward walls */}
+      <path d="M215,175 Q200,225 200,290 Q200,355 220,410 Q255,460 330,475 Q410,488 470,455 Q520,425 530,365 Q540,300 525,240 Q508,180 465,155 Q420,132 360,132 Q285,132 215,175 Z"
+        fill="rgba(12,9,4,0.55)" stroke={`${ac}44`} strokeWidth="1.5"/>
+
+      {/* Talus / Glacis (south & west of inner ward) */}
+      <path d="M200,310 Q195,370 225,420 Q260,468 335,480 Q415,490 470,458 Q518,428 528,368 Q530,310 200,310 Z"
+        fill={glo("talus","#aa8840")} stroke={st("talus","#ccaa55")} strokeWidth="2.5"
+        onClick={()=>hit("talus")} style={{cursor:"pointer"}}/>
+      {isSel("talus")&&<path d="M200,310 Q195,370 225,420 Q260,468 335,480 Q415,490 470,458 Q518,428 528,368 Q530,310 200,310 Z"
+        fill="rgba(160,130,50,0.08)" filter="url(#kr_glow)"/>}
+      {/* Talus hatching */}
+      {[0,1,2,3,4,5].map(i=>(
+        <line key={i} x1={210+i*55} y1={315+i*8} x2={230+i*48} y2={460-i*5}
+          stroke={isSel("talus")?"#ccaa5544":"#aa884422"} strokeWidth="1.5"/>
+      ))}
+      <text x="340" y="450" textAnchor="middle" fill={isSel("talus")?ac:"#aa8840"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">TALUS / GLACIS</text>
+
+      {/* Inner ward main area */}
+      <path d="M215,175 Q200,225 205,295 L528,295 Q520,230 500,190 Q465,148 400,138 Q330,128 268,148 Z"
+        fill={glo("outer_wall","#705828")} stroke="none" onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+
+      {/* Great Hall (Salle des Chevaliers) — south of inner ward */}
+      <rect x="235" y="255" width="210" height="65" rx="4"
+        fill={glo("great_hall","#ffcc44")} stroke={st("great_hall","#ffdd66")} strokeWidth="2.5"
+        onClick={()=>hit("great_hall")} style={{cursor:"pointer"}}/>
+      {isSel("great_hall")&&<rect x="229" y="249" width="222" height="77" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#kr_glow)"/>}
+      {/* Columns inside hall */}
+      {[260,300,340,380,420].map(x=>(
+        <rect key={x} x={x-3} y="263" width="6" height="50" rx="1"
+          fill={isSel("great_hall")?"#ffdd6644":"#aa882222"} stroke={isSel("great_hall")?"#ffdd66":"#aa8822"} strokeWidth="1"/>
+      ))}
+      <text x="340" y="290" textAnchor="middle" fill={isSel("great_hall")?"#ffdd66":"#aa8822"} fontSize="11" fontFamily="'Cinzel',serif" fontWeight="bold">SALLE DES CHEVALIERS</text>
+
+      {/* Loggia (in front of great hall, south) */}
+      <rect x="235" y="318" width="210" height="28" rx="3"
+        fill={glo("loggia","#88cc88")} stroke={st("loggia","#aaddaa")} strokeWidth="2"
+        onClick={()=>hit("loggia")} style={{cursor:"pointer"}}/>
+      {[265,305,345,385,415].map(x=>(
+        <line key={x} x1={x} y1="318" x2={x} y2="346"
+          stroke={isSel("loggia")?"#aaddaa55":"#88aa8833"} strokeWidth="2"/>
+      ))}
+      <text x="340" y="337" textAnchor="middle" fill={isSel("loggia")?"#aaddaa":"#558855"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">LOGGIA</text>
+
+      {/* Chapel (east inner ward) */}
+      <rect x="440" y="165" width="75" height="90" rx="4"
+        fill={glo("chapel","#5577ff")} stroke={st("chapel","#7799ff")} strokeWidth="2.5"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      {isSel("chapel")&&<rect x="434" y="159" width="87" height="102" rx="5" fill="rgba(70,100,220,0.1)" filter="url(#kr_glow)"/>}
+      {/* Apse */}
+      <ellipse cx="515" cy="178" rx="16" ry="22"
+        fill={glo("chapel","#5577ff")} stroke={st("chapel","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      <text x="470" y="212" textAnchor="middle" fill={isSel("chapel")?"#7799ff":"#4455aa"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KAPELLE</text>
+
+      {/* Cisterns (center inner ward) */}
+      <rect x="295" y="168" width="55" height="45" rx="4"
+        fill={glo("cisterns","#44aacc")} stroke={st("cisterns","#66ccee")} strokeWidth="2.5"
+        onClick={()=>hit("cisterns")} style={{cursor:"pointer"}}/>
+      {isSel("cisterns")&&<rect x="289" y="162" width="67" height="57" rx="5" fill="rgba(40,120,180,0.1)" filter="url(#kr_glow)"/>}
+      <text x="322" y="194" textAnchor="middle" fill={isSel("cisterns")?"#66ccee":"#3388aa"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">ZISTERNEN</text>
+
+      {/* Donjon (NW corner inner ward) */}
+      <rect x="215" y="155" width="65" height="65" rx="4"
+        fill={glo("donjon","#cc8844")} stroke={st("donjon","#eeaa66")} strokeWidth="3"
+        onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      {isSel("donjon")&&<rect x="209" y="149" width="77" height="77" rx="5" fill="rgba(180,120,40,0.1)" filter="url(#kr_glow)"/>}
+      {[[215,155],[278,155],[215,218],[278,218]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-9} y={ty-9} width="18" height="18" rx="2"
+          fill={isSel("donjon")?"#eeaa6644":"#cc884422"} stroke={isSel("donjon")?"#eeaa66":"#cc8844"} strokeWidth="1.5"/>
+      ))}
+      <text x="247" y="186" textAnchor="middle" fill={isSel("donjon")?"#eeaa66":"#995522"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">DONJON</text>
+
+      {/* Great South Tower */}
+      <path d="M200,345 Q175,380 185,415 Q200,448 230,458 Q255,466 265,445 Q272,420 265,390 L235,360 Z"
+        fill={glo("south_tower","#cc6644")} stroke={st("south_tower","#ee8866")} strokeWidth="2.5"
+        onClick={()=>hit("south_tower")} style={{cursor:"pointer"}}/>
+      {isSel("south_tower")&&<path d="M200,345 Q175,380 185,415 Q200,448 230,458 Q255,466 265,445 Q272,420 265,390 L235,360 Z"
+        fill="rgba(180,80,40,0.1)" filter="url(#kr_glow)"/>}
+      <text x="207" y="410" textAnchor="middle" fill={isSel("south_tower")?"#ee8866":"#994433"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">SÜDTURM</text>
+
+      {/* Bent entrance */}
+      <path d="M460,488 Q470,468 490,455 Q510,442 520,420 Q528,400 520,380"
+        fill="none" stroke={isSel("bent_entry")?"#cc9933cc":"#cc993355"} strokeWidth="8"
+        onClick={()=>hit("bent_entry")} style={{cursor:"pointer"}}/>
+      {isSel("bent_entry")&&<path d="M460,488 Q470,468 490,455 Q510,442 520,420 Q528,400 520,380" fill="none" stroke="rgba(180,130,40,0.15)" strokeWidth="20" filter="url(#kr_glow)"/>}
+      <text x="510" y="488" fill={isSel("bent_entry")?"#ccaa44":"#886622"} fontSize="8" fontFamily="'Cinzel',serif">EINGANG 🌀</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-42},42)`}>
+        <circle r="17" fill="rgba(0,0,0,0.65)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*10} y={-Math.cos(r2)*10+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      {/* Scale */}
+      <line x1="80" y1={H-22} x2="230" y2={H-22} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="80" y1={H-18} x2="80" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="230" y1={H-18} x2="230" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <text x="155" y={H-10} textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 200m</text>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">KRAK DES CHEVALIERS</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Hospitaliterorden · 1142–1271 · Syrien</text>
+    </svg>
+  );
+};
+
 // ── Castle Floor Plan Explore Tab ───────────────────────────────────────────
 function CastleFloorPlanTab({castle}){
   const sel=castle;
