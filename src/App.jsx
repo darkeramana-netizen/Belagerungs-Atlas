@@ -4932,6 +4932,216 @@ DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
   );
 };
 
+DETAILED_PLANS.carcassonne=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const isSel=id=>sel&&sel.id===id;
+  const S=(id,nm,ic,tp,desc,stats,weak)=>({id,name:nm,icon:ic,type:tp,desc,stats,weakness:weak});
+  const EL=[
+    S("outer_wall","Äußere Enceinte","🧱","Außenmauer","52 Türme schützen die Äußere Enceinte, errichtet im 13. Jh. unter Ludwig IX. und Philipp III. Viollet-le-Duc restaurierte sie 1853–1879 — umstrittenerweise mit spitzen Türmen statt der historisch flachen Bedachung.",["52 Türme","3–4 m stark","13. Jh."],7),
+    S("lices","Lices — Zwinger","⚔️","Verteidigungszone","Der 8–12 m breite Korridor zwischen Äußerer und Innerer Enceinte. Eindringlinge, die die Außenmauer durchbrachen, gerieten hier unter Kreuzfeuer von beiden Seiten gleichzeitig.",["8–12 m breit","Kreuzfeuer","Tödliche Falle"],5),
+    S("inner_wall","Innere Enceinte","🛡️","Innenmauer","Die ältere Stadtmauer mit gallo-romanischen und westgotischen Fundamenten (3.–6. Jh.). Einige Türme sind hufeisenförmig — typisch westgotisch. Bis zu 5 m dick.",["~30 Türme","Teils röm.","Westgotisch (5. Jh.)"],6),
+    S("chateau","Château Comtal","🏯","Hauptburg","Die Grafenburg im NW der Cité, ursprünglich Residenz der Trencavel-Grafen (12. Jh.). Eigene Doppel-Ummauerung, Halbmond-Barbikan gegen die Stadt, tiefer Graben. Nach 1226 Sitz der königlichen Seneschalle.",["Barbikan","4 Türme","12. Jh."],3),
+    S("saint_nazaire","Basilika Saint-Nazaire","⛪","Kathedrale","Gotische Basilika (11.–14. Jh.) mit romanischem Langhaus (1096) und prächtigen gotischen Querschiffen. Berühmt für Kreuzfahrer-Grabplatten und mittelalterliche Buntglasfenster.",["Romanisch/Gotisch","Rosette 14. Jh.","1096–1330"]),
+    S("porte_narbonnaise","Porte Narbonnaise","🚪","Haupttor","Das Haupttor der Cité im Osten (1280 unter Philipp III.). Zwei mächtige Rundtürme flankieren den Eingang. Zugbrücke, Barbikan-Vorhof, Fallgitter und Schießscharten machen es zum stärksten Punkt.",["Zugbrücke","Fallgitter","Erbaut: 1280"],4),
+    S("porte_aude","Porte d'Aude","🚪","Nebentor","Das Westtor führt den steilen Hang hinunter zur Aude-Brücke und zur Unterstadt. Der gewundene, schmale Aufstieg macht Sturmangriffe praktisch unmöglich.",["Steilweg","Flussseite","Westseite"],5),
+    S("grande_rue","Grande Rue","🛤️","Hauptstraße","Die Hauptstraße verbindet Porte Narbonnaise mit Porte d'Aude auf der ganzen Länge des Hügels. Entlang ihr lagen Tavernen, Händler und Handwerksbetriebe.",["Hauptachse","Märkte","Händler"]),
+    S("cite","Cité Innenstadt","🏘️","Wohnbebauung","Dichte mittelalterliche Bebauung mit engen Gassen, Wohnhäusern und Innenhöfen. Im Mittelalter wohnten hier ca. 1.000 Einwohner.",["~1000 Einw.","Enge Gassen","13. Jh."]),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+
+  const OP="M 175,195 L 215,115 L 285,70 L 380,50 L 480,58 L 562,92 L 622,148 L 652,220 L 656,300 L 635,382 L 582,450 L 475,492 L 360,500 L 240,474 L 162,412 L 138,322 Z";
+  const IP="M 202,212 L 238,140 L 300,100 L 382,80 L 478,87 L 550,116 L 602,162 L 626,228 L 629,302 L 609,376 L 559,434 L 467,468 L 358,476 L 250,452 L 183,393 L 162,310 Z";
+  const CV="M 224,228 L 254,158 L 308,118 L 383,100 L 475,107 L 540,132 L 586,173 L 608,234 L 610,302 L 590,368 L 543,412 L 460,446 L 355,454 L 256,430 L 198,375 L 178,308 Z";
+
+  const OT=[[380,50],[440,52],[490,62],[535,80],[575,110],[610,142],[638,180],[650,225],[654,275],[648,320],[636,360],[614,400],[576,440],[525,475],[460,492],[390,500],[320,496],[252,480],[190,452],[150,410],[136,358],[136,308],[148,252],[170,198],[215,122],[275,72]];
+  const IT=[[382,82],[445,86],[500,102],[540,122],[578,155],[606,190],[622,225],[628,265],[627,305],[618,345],[604,378],[576,415],[538,446],[488,465],[428,473],[360,474],[295,462],[248,440],[210,410],[184,374],[172,330],[168,285],[175,244],[198,210],[232,148]];
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="ca_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#100e06"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <pattern id="ca_st" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <rect width="24" height="24" fill="transparent"/>
+          <rect x="0" y="0" width="11" height="11" fill={`${ac}05`}/>
+          <rect x="13" y="13" width="11" height="11" fill={`${ac}04`}/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#ca_bg)"/>
+
+      {/* Hill terrain */}
+      <ellipse cx="400" cy="275" rx="322" ry="262" fill="rgba(38,28,10,0.22)" stroke={`${ac}0a`} strokeWidth="0.5"/>
+
+      {/* Outer enceinte mass */}
+      <path d={OP} fill={isSel("outer_wall")?"#382710":"#2c2208"}
+        stroke={isSel("outer_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {/* Lices void (cuts inner part of outer fill) */}
+      <path d={IP} fill="#0a0804" stroke="none"/>
+      {/* Outer towers */}
+      {OT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="13"
+          fill={isSel("outer_wall")?"#382710":"#2c2208"}
+          stroke={isSel("outer_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Lices interactive overlay */}
+      <path d={IP} fill={isSel("lices")?"rgba(50,75,28,0.14)":"transparent"}
+        style={{cursor:"pointer"}} onClick={()=>hit("lices")}/>
+
+      {/* Inner enceinte mass */}
+      <path d={IP} fill={isSel("inner_wall")?"#382710":"#2c2208"}
+        stroke={isSel("inner_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      {/* City void */}
+      <path d={CV} fill="#0d0b04" stroke="none"/>
+      {/* Inner towers */}
+      {IT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="11"
+          fill={isSel("inner_wall")?"#382710":"#2c2208"}
+          stroke={isSel("inner_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* City stone texture */}
+      <path d={CV} fill="url(#ca_st)" opacity="0.5"/>
+      {/* Street grid */}
+      {[230,260,290,320,350,380,410].map(y=>(
+        <line key={y} x1="215" y1={y} x2="595" y2={y} stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+      {[270,320,375,430,490,545].map(x=>(
+        <line key={x} x1={x} y1="115" x2={x} y2="448" stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+
+      {/* Building blocks — N strip */}
+      {[[240,118,52,35],[300,112,52,35],[360,106,55,35],[422,104,52,35],[482,110,52,35],[542,122,42,35]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — E strip */}
+      {[[558,162,38,40],[554,210,42,40],[553,260,42,40],[552,310,42,40],[548,360,42,40],[534,406,42,32]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — W strip */}
+      {[[260,168,44,40],[257,218,44,40],[255,266,44,40],[258,314,44,40],[261,362,44,40],[266,408,44,30]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — S strip */}
+      {[[290,416,50,28],[350,423,50,26],[414,427,50,24],[474,421,48,28],[524,412,38,28]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Grande Rue (main N-S street) */}
+      <rect x="388" y="118" width="16" height="316"
+        fill={isSel("grande_rue")?"rgba(50,40,12,0.3)":"rgba(15,12,4,0.6)"}
+        stroke={isSel("grande_rue")?`${ac}55`:`${ac}10`} strokeWidth="0.5"
+        onClick={()=>hit("grande_rue")} style={{cursor:"pointer"}}/>
+
+      {/* Place du Grand Puits */}
+      <circle cx="396" cy="282" r="22"
+        fill={isSel("cite")?"rgba(40,32,10,0.5)":"rgba(18,14,5,0.7)"}
+        stroke={isSel("cite")?`${ac}55`:`${ac}20`} strokeWidth="1"
+        onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      <circle cx="396" cy="282" r="6" fill="none" stroke={`${ac}33`} strokeWidth="1" style={{pointerEvents:"none"}}/>
+
+      {/* CHÂTEAU COMTAL */}
+      <rect x="200" y="192" width="118" height="102" rx="2"
+        fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="222" y="212" width="72" height="62" fill="#0d0b04" stroke="none"/>
+      <rect x="224" y="214" width="32" height="26" fill={isSel("chateau")?"#1a1508":"#161006"}
+        stroke={`${ac}18`} strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+      {[[200,192],[318,192],[200,294],[318,294]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="17"
+          fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+          onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      ))}
+      <path d="M 318,215 Q 362,243 318,277" fill="none"
+        stroke={isSel("chateau")?`${ac}99`:`${ac}55`} strokeWidth={isSel("chateau")?3:2}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="304" y="205" width="10" height="84"
+        fill="rgba(22,44,70,0.65)" stroke="rgba(30,70,110,0.45)" strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+
+      {/* BASILIQUE SAINT-NAZAIRE */}
+      <rect x="348" y="362" width="90" height="52"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="362" y="374" width="62" height="28" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="344" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="351" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="414" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="416" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <path d="M 438,365 Q 462,378 438,411" fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      {[[348,362,14,22],[348,392,14,22]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+          onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* PORTE NARBONNAISE */}
+      {[[648,272],[648,320]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="22"
+          fill={isSel("porte_narbonnaise")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("porte_narbonnaise")?`${ac}cc`:`${ac}77`} strokeWidth="2"
+          onClick={()=>hit("porte_narbonnaise")} style={{cursor:"pointer"}}/>
+      ))}
+      <rect x="641" y="283" width="26" height="28" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      <text x="688" y="300" fill={`${ac}77`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="688" y="310" fill={`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">NARB.</text>
+
+      {/* PORTE D'AUDE */}
+      <rect x="144" y="284" width="26" height="40"
+        fill={isSel("porte_aude")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("porte_aude")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("porte_aude")?2:1.5}
+        onClick={()=>hit("porte_aude")} style={{cursor:"pointer"}}/>
+      <rect x="152" y="293" width="12" height="22" fill="#0d0b04" stroke="none"/>
+      <text x="133" y="304" textAnchor="end" fill={`${ac}55`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="133" y="314" textAnchor="end" fill={`${ac}44`} fontSize="7" fontFamily="'Cinzel',serif">D'AUDE</text>
+
+      {/* Labels */}
+      <text x="252" y="248" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}88`} fontSize="8" fontFamily="'Cinzel',serif">CHÂTEAU</text>
+      <text x="252" y="260" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}77`} fontSize="8" fontFamily="'Cinzel',serif">COMTAL</text>
+      <text x="400" y="396" textAnchor="middle" fill={isSel("saint_nazaire")?ac:`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">ST-NAZAIRE</text>
+      <text x="172" y="448" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(-28,172,448)">LICES</text>
+      <text x="596" y="452" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(22,596,452)">LICES</text>
+
+      {/* Title */}
+      <text x="400" y="22" textAnchor="middle" fill={`${ac}66`} fontSize="12" fontFamily="'Cinzel',serif" letterSpacing="3">CARCASSONNE</text>
+      <text x="400" y="36" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" letterSpacing="1.5">DOPPELTER MAUERRING · 13. JAHRHUNDERT</text>
+      <text x="765" y="32" textAnchor="middle" fill={`${ac}55`} fontSize="10" fontFamily="serif">N</text>
+      <line x1="765" y1="36" x2="765" y2="52" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="761" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="769" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="680" y1="524" x2="780" y2="524" stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="680" y1="519" x2="680" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="780" y1="519" x2="780" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <text x="730" y="537" textAnchor="middle" fill={`${ac}44`} fontSize="8" fontFamily="serif">≈200m</text>
+    </svg>
+  );
+};
 
 function CastleFloorPlanTab({castle}){
   const sel=castle;
