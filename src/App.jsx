@@ -4660,7 +4660,7 @@ DETAILED_PLANS.mont_michel=({ac,sel,onSel})=>{
 
 // ── Gravecrest ────────────────────────────────────────────────────────────────
 DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
-  const W=900,H=500;
+  const W=1000,H=500;
   const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
   const EL=[
     S("rittersaal","Großer Rittersaal","⚔️","Repräsentationssaal","Der große Festsaal der Burg Gravecrest — ein mächtiger, vorspringender Saal mit spitz zulaufendem Westgiebel. Hier hält der Ordo Custodum seine Räte, Schwurzeremonien und Bankette ab.",["Größter Saal","Spitzgiebel","Ordo Custodum"],null),
@@ -4678,6 +4678,13 @@ DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
   const hit=id=>onSel(sel&&sel.id===id?null:el(id));
   const isSel=id=>sel&&sel.id===id;
 
+  // helpers
+  const rm=(x,y,w,h,id)=>(
+    <rect x={x} y={y} width={w} height={h}
+      fill={isSel(id)?"#2a2010":"#1e1808"}
+      stroke={isSel(id)?`${ac}77`:"rgba(150,95,30,0.38)"} strokeWidth={isSel(id)?1.5:1}/>
+  );
+
   return(
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
       <defs>
@@ -4689,215 +4696,218 @@ DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
           <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
           <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
-        <pattern id="gc_hatch" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="8" x2="8" y2="0" stroke="rgba(80,60,20,0.10)" strokeWidth="0.8"/>
-        </pattern>
       </defs>
       <rect width={W} height={H} fill="url(#gc_bg)"/>
 
-      {/* ═══ GROßER RITTERSAAL — pointed west hall ═══ */}
+      {/* ═══ GROßER RITTERSAAL ═══ */}
       <g onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}>
-        {/* Outer wall mass */}
-        <path d="M18,248 L96,192 L120,192 L120,305 L96,305 Z"
+        <path d="M12,252 L148,70 L162,70 L162,434 L148,434 Z"
           fill={isSel("rittersaal")?"#3a2e10":"#2c2208"}
-          stroke={isSel("rittersaal")?`${ac}88`:"#4a3812"} strokeWidth={isSel("rittersaal")?2:1.5}/>
-        {/* Interior void */}
-        <path d="M36,248 L96,202 L112,202 L112,295 L96,295 Z" fill="#0d0b04"/>
-        {/* Corner pillars */}
-        <rect x="96" y="192" width="14" height="14" fill={isSel("rittersaal")?"#4a3c15":"#382c0c"} stroke="#5a4818" strokeWidth="1"/>
-        <rect x="96" y="299" width="14" height="14" fill={isSel("rittersaal")?"#4a3c15":"#382c0c"} stroke="#5a4818" strokeWidth="1"/>
-        {isSel("rittersaal")&&<path d="M18,248 L96,192 L120,192 L120,305 L96,305 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="72" y="244" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">GROSSER</text>
-        <text x="72" y="255" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">RITTERSAAL</text>
+          stroke={isSel("rittersaal")?`${ac}88`:"#4a3814"} strokeWidth={isSel("rittersaal")?2:1.5}/>
+        <path d="M34,252 L146,86 L156,86 L156,418 L146,418 Z" fill="#0d0b04"/>
+        {/* small rooms SE corner */}
+        <rect x="145" y="290" width="15" height="44" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
+        <rect x="145" y="336" width="15" height="44" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
+        <rect x="145" y="382" width="15" height="34" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
+        <text x="152" y="315" textAnchor="middle" fill={isSel("rittersaal")?"#c8a840":"#5a3a12"} fontSize="5.5" fontFamily="'Cinzel',serif" transform="rotate(-90,152,315)">RIRE</text>
+        <text x="152" y="360" textAnchor="middle" fill={isSel("rittersaal")?"#c8a840":"#5a3a12"} fontSize="5.5" fontFamily="'Cinzel',serif" transform="rotate(-90,152,360)">KÖMMEA</text>
+        {isSel("rittersaal")&&<path d="M12,252 L148,70 L162,70 L162,434 L148,434 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="85" y="245" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">GROSSER</text>
+        <text x="85" y="258" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">RITTERSAAL</text>
       </g>
 
-      {/* ═══ PALAS — main palace block ═══ */}
+      {/* ═══ PALAS — 4 large round towers ═══ */}
       <g onClick={()=>hit("palas")} style={{cursor:"pointer"}}>
-        {/* Main wall mass */}
-        <rect x="108" y="105" width="195" height="290"
-          fill={isSel("palas")?"#3a2e10":"#2c2208"}
-          stroke={isSel("palas")?`${ac}88`:"#4a3812"} strokeWidth={isSel("palas")?2:1.5}/>
-        {/* Four large round towers */}
-        <circle cx="120" cy="122" r="32" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}77`:"#5a4418"} strokeWidth="2"/>
-        <circle cx="120" cy="122" r="20" fill="#0d0b04"/>
-        {/* Spiral stair hint in tower */}
-        <circle cx="120" cy="122" r="6" fill={isSel("palas")?"#4a3c1544":"#38280c22"} stroke={isSel("palas")?"#6a5820":"#4a3810"} strokeWidth="1"/>
-        <circle cx="248" cy="122" r="28" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}77`:"#5a4418"} strokeWidth="2"/>
-        <circle cx="248" cy="122" r="17" fill="#0d0b04"/>
-        <circle cx="248" cy="122" r="5" fill={isSel("palas")?"#4a3c1544":"#38280c22"} stroke={isSel("palas")?"#6a5820":"#4a3810"} strokeWidth="1"/>
-        <circle cx="120" cy="380" r="32" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}77`:"#5a4418"} strokeWidth="2"/>
-        <circle cx="120" cy="380" r="20" fill="#0d0b04"/>
-        <circle cx="120" cy="380" r="6" fill={isSel("palas")?"#4a3c1544":"#38280c22"} stroke={isSel("palas")?"#6a5820":"#4a3810"} strokeWidth="1"/>
-        <circle cx="248" cy="380" r="28" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}77`:"#5a4418"} strokeWidth="2"/>
-        <circle cx="248" cy="380" r="17" fill="#0d0b04"/>
-        <circle cx="248" cy="380" r="5" fill={isSel("palas")?"#4a3c1544":"#38280c22"} stroke={isSel("palas")?"#6a5820":"#4a3810"} strokeWidth="1"/>
-        {isSel("palas")&&<rect x="108" y="105" width="195" height="290" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#gc_glow)"/>}
+        <rect x="148" y="62" width="202" height="376" fill={isSel("palas")?"#3a2e10":"#2c2208"}
+          stroke={isSel("palas")?`${ac}88`:"#4a3814"} strokeWidth={isSel("palas")?2:1.5}/>
+        {/* NW tower */}
+        <circle cx="178" cy="88" r="42" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
+        <circle cx="178" cy="88" r="27" fill="#0d0b04"/>
+        <circle cx="178" cy="88" r="9" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
+        <circle cx="178" cy="88" r="4" fill={isSel("palas")?"#5a441844":"#3a2c1022"}/>
+        {/* NE tower */}
+        <circle cx="310" cy="88" r="36" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
+        <circle cx="310" cy="88" r="23" fill="#0d0b04"/>
+        <circle cx="310" cy="88" r="8" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
+        {/* SW tower */}
+        <circle cx="178" cy="414" r="42" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
+        <circle cx="178" cy="414" r="27" fill="#0d0b04"/>
+        <circle cx="178" cy="414" r="9" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
+        <circle cx="178" cy="414" r="4" fill={isSel("palas")?"#5a441844":"#3a2c1022"}/>
+        {/* SE tower */}
+        <circle cx="310" cy="414" r="36" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
+        <circle cx="310" cy="414" r="23" fill="#0d0b04"/>
+        <circle cx="310" cy="414" r="8" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
+        {isSel("palas")&&<rect x="148" y="62" width="202" height="376" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#gc_glow)"/>}
       </g>
+      {/* Tower labels */}
+      <text x="140" y="57" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Nordturm</text>
+      <text x="274" y="57" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Südturm</text>
+      <text x="140" y="473" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Nordturm</text>
+      <text x="274" y="473" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Südturm</text>
 
-      {/* Palas interior rooms */}
+      {/* Palas rooms — left column */}
       <g onClick={()=>hit("palas_kueche")} style={{cursor:"pointer"}}>
-        <rect x="118" y="152" width="66" height="56" fill={isSel("palas_kueche")?"#2a2010":"#1e1808"}
-          stroke={isSel("palas_kueche")?`${ac}88`:"rgba(140,90,30,0.3)"} strokeWidth={isSel("palas_kueche")?1.5:1}/>
-        {isSel("palas_kueche")&&<rect x="114" y="148" width="74" height="64" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="151" y="183" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">PALAS-</text>
-        <text x="151" y="194" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KÜCHE</text>
+        {rm(158,128,74,74,"palas_kueche")}
+        {isSel("palas_kueche")&&<rect x="154" y="124" width="82" height="82" fill="none" stroke={`${ac}44`} strokeWidth="1.5" filter="url(#gc_glow)"/>}
+        <text x="195" y="162" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7.5" fontFamily="'Cinzel',serif">PALAS-</text>
+        <text x="195" y="174" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7.5" fontFamily="'Cinzel',serif">KÜCHE</text>
       </g>
       <g onClick={()=>hit("kaiserzimmer")} style={{cursor:"pointer"}}>
-        <rect x="118" y="212" width="66" height="50" fill={isSel("kaiserzimmer")?"#2a2010":"#1e1808"}
-          stroke={isSel("kaiserzimmer")?`${ac}88`:"rgba(140,90,30,0.3)"} strokeWidth={isSel("kaiserzimmer")?1.5:1}/>
-        <rect x="118" y="265" width="66" height="50" fill={isSel("kaiserzimmer")?"#2a2010":"#1e1808"}
-          stroke={isSel("kaiserzimmer")?`${ac}88`:"rgba(140,90,30,0.3)"} strokeWidth={isSel("kaiserzimmer")?1.5:1}/>
-        {isSel("kaiserzimmer")&&<rect x="114" y="208" width="74" height="111" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="151" y="240" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KAISER-</text>
-        <text x="151" y="251" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
-        <text x="151" y="292" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#5a3a18"} fontSize="7" fontFamily="'Cinzel',serif">KÄMMER-</text>
-        <text x="151" y="303" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#5a3a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
+        {rm(158,206,74,70,"kaiserzimmer")}
+        {rm(158,280,74,68,"kaiserzimmer")}
+        {isSel("kaiserzimmer")&&<rect x="154" y="202" width="82" height="152" fill="none" stroke={`${ac}44`} strokeWidth="1.5" filter="url(#gc_glow)"/>}
+        <text x="195" y="238" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KAISER-</text>
+        <text x="195" y="250" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
+        <text x="195" y="312" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KAINER-</text>
+        <text x="195" y="324" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
       </g>
-      {/* Wohngemächer (right side of palas) */}
-      <rect x="188" y="152" width="100" height="50" fill="#1e1808" stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-      <rect x="188" y="205" width="100" height="50" fill="#1e1808" stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-      <text x="238" y="181" textAnchor="middle" fill="#6a4a18" fontSize="7" fontFamily="'Cinzel',serif">WOHN-</text>
-      <text x="238" y="192" textAnchor="middle" fill="#6a4a18" fontSize="7" fontFamily="'Cinzel',serif">GEMÄCHER</text>
-      <text x="238" y="234" textAnchor="middle" fill="#6a4a18" fontSize="7" fontFamily="'Cinzel',serif">WOHN-</text>
-      <text x="238" y="245" textAnchor="middle" fill="#6a4a18" fontSize="7" fontFamily="'Cinzel',serif">GEMÄCHER</text>
-      {/* Badgang + Sommer */}
-      <rect x="188" y="258" width="100" height="32" fill="#1e1808" stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-      <rect x="188" y="292" width="100" height="42" fill="#1e1808" stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-      <text x="238" y="278" textAnchor="middle" fill="#6a4a18" fontSize="7" fontFamily="'Cinzel',serif">BADGANG</text>
-      <text x="238" y="316" textAnchor="middle" fill="#5a3a18" fontSize="7" fontFamily="'Cinzel',serif">SOMMER-</text>
-      <text x="238" y="327" textAnchor="middle" fill="#5a3a18" fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
+      {/* right column */}
+      <rect x="236" y="128" width="108" height="74" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="236" y="206" width="108" height="70" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <text x="290" y="164" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">WOHN-</text>
+      <text x="290" y="176" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">GEMÄCHER</text>
+      <text x="290" y="240" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">WOHN-</text>
+      <text x="290" y="252" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">GEMÄCHER</text>
+      <rect x="236" y="280" width="108" height="44" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="236" y="328" width="108" height="54" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <text x="290" y="305" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">BADGANG</text>
+      <text x="290" y="352" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">SOMMER-</text>
+      <text x="290" y="364" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">ZIMMER</text>
+      {/* Bibliothek spanning full width */}
       <g onClick={()=>hit("bibliothek")} style={{cursor:"pointer"}}>
-        <rect x="118" y="320" width="170" height="55" fill={isSel("bibliothek")?"#1e2030":"#14182a"}
-          stroke={isSel("bibliothek")?`${ac}88`:"rgba(60,80,160,0.3)"} strokeWidth={isSel("bibliothek")?1.5:1}/>
-        {isSel("bibliothek")&&<rect x="114" y="316" width="178" height="63" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="203" y="350" textAnchor="middle" fill={isSel("bibliothek")?ac:"#3a4880"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">BIBLIOTHEK</text>
+        <rect x="158" y="352" width="186" height="70" fill={isSel("bibliothek")?"#1e2030":"#141828"}
+          stroke={isSel("bibliothek")?`${ac}88`:"rgba(60,80,160,0.38)"} strokeWidth={isSel("bibliothek")?1.5:1}/>
+        {isSel("bibliothek")&&<rect x="154" y="348" width="194" height="78" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="251" y="390" textAnchor="middle" fill={isSel("bibliothek")?ac:"#3a4880"} fontSize="9.5" fontFamily="'Cinzel',serif" fontWeight="bold">BIBLIOTHEK</text>
       </g>
 
       {/* ═══ ÄUSSERER VORHOF ═══ */}
       <g onClick={()=>hit("vorhof")} style={{cursor:"pointer"}}>
-        <rect x="303" y="105" width="88" height="290" fill={isSel("vorhof")?"#2a2010":"#1c1808"}
+        <rect x="350" y="62" width="84" height="376" fill={isSel("vorhof")?"#2a2010":"#1e1808"}
           stroke={isSel("vorhof")?`${ac}88`:"#3a2810"} strokeWidth={isSel("vorhof")?2:1.5}/>
-        {/* Interior courtyard void */}
-        <rect x="315" y="118" width="64" height="264" fill="#0d0b04"/>
-        {/* Arrow slits on walls */}
-        {[135,165,195,225,255,285,315].map(y=>(
-          <rect key={y} x="310" y={y} width="6" height="8" fill="#080604" stroke="rgba(120,80,25,0.3)" strokeWidth="0.5"/>
+        <rect x="363" y="76" width="58" height="348" fill="#0d0b04"/>
+        {[90,116,142,168,194,220,246,272,298,324,350,376,402].map(y=>(
+          <rect key={y} x="358" y={y} width="7" height="9" fill="#070503" stroke="rgba(110,68,18,0.3)" strokeWidth="0.5"/>
         ))}
-        {[135,165,195,225,255,285,315].map(y=>(
-          <rect key={y+1000} x="378" y={y} width="6" height="8" fill="#080604" stroke="rgba(120,80,25,0.3)" strokeWidth="0.5"/>
+        {[90,116,142,168,194,220,246,272,298,324,350,376,402].map(y=>(
+          <rect key={y+2000} x="420" y={y} width="7" height="9" fill="#070503" stroke="rgba(110,68,18,0.3)" strokeWidth="0.5"/>
         ))}
-        {isSel("vorhof")&&<rect x="303" y="105" width="88" height="290" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="347" y="248" textAnchor="middle" fill={isSel("vorhof")?ac:"#5a3a18"} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(-90,347,248)">ÄUSS. VORHOF</text>
+        {isSel("vorhof")&&<rect x="350" y="62" width="84" height="376" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="392" y="252" textAnchor="middle" fill={isSel("vorhof")?ac:"#5a3a18"} fontSize="7.5" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(-90,392,252)">ÄUSS. VORHOF</text>
+        <text x="350" y="55" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Schießscharten</text>
       </g>
 
-      {/* ═══ MAIN CASTLE BODY — outer wall ═══ */}
-      <rect x="391" y="102" width="280" height="296"
-        fill="#221808" stroke="rgba(150,100,40,0.4)" strokeWidth="2.5"/>
-      {/* Wall towers along top */}
-      {[415,455,495,535,575,615,655].map(x=>(
-        <rect key={x} x={x-10} y="94" width="20" height="18" fill="#2e2010" stroke="rgba(150,100,40,0.4)" strokeWidth="1"/>
+      {/* ═══ MAIN CASTLE BODY ═══ */}
+      {/* Outer wall rectangle — thick */}
+      <rect x="434" y="58" width="356" height="384" fill="#221808" stroke="rgba(160,104,40,0.48)" strokeWidth="2.5"/>
+      {/* Connecting passage strips inside perimeter */}
+      <rect x="434" y="58" width="356" height="16" fill="#281c0a"/>
+      <rect x="434" y="426" width="356" height="16" fill="#281c0a"/>
+      <rect x="434" y="58" width="16" height="384" fill="#281c0a"/>
+      <rect x="774" y="58" width="16" height="384" fill="#281c0a"/>
+      {/* Defensive towers along N wall — projecting outward */}
+      {[458,502,548,596,644,694,744,776].map(x=>(
+        <rect key={x} x={x-14} y="42" width="28" height="24" fill="#2e2010" stroke="rgba(160,104,40,0.48)" strokeWidth="1.2"/>
       ))}
-      {/* Wall towers along bottom */}
-      {[415,455,495,535,575,615,655].map(x=>(
-        <rect key={x+1000} x={x-10} y="388" width="20" height="18" fill="#2e2010" stroke="rgba(150,100,40,0.4)" strokeWidth="1"/>
+      {/* Defensive towers along S wall */}
+      {[458,502,548,596,644,694,744,776].map(x=>(
+        <rect key={x+5000} x={x-14} y="434" width="28" height="24" fill="#2e2010" stroke="rgba(160,104,40,0.48)" strokeWidth="1.2"/>
       ))}
-      {/* Vertical dividing wall between courtyards */}
-      <rect x="524" y="118" width="14" height="264" fill="#2c1e0e" stroke="rgba(140,90,30,0.3)" strokeWidth="1"/>
+      {/* Courtyard divider wall */}
+      <rect x="602" y="74" width="16" height="352" fill="#2c1e0e" stroke="rgba(150,95,30,0.38)" strokeWidth="1"/>
 
-      {/* ═══ UNTERER HAUPTHOF (west courtyard) ═══ */}
+      {/* North building strip rooms */}
+      <rect x="450" y="74" width="58" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="511" y="74" width="52" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="566" y="74" width="32" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="618" y="74" width="64" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="685" y="74" width="88" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      {/* South building strip rooms */}
+      <rect x="450" y="308" width="66" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="519" y="308" width="79" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="618" y="308" width="64" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      <rect x="685" y="308" width="88" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+
+      {/* ═══ UNTERER HAUPTHOF ═══ */}
       <g onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}>
-        {/* Courtyard void */}
-        <rect x="406" y="198" width="114" height="196" fill={isSel("haupthof")?"#130f06":"#0d0b04"}
-          stroke={isSel("haupthof")?`${ac}55`:"rgba(100,65,22,0.15)"} strokeWidth="1"/>
-        {/* North strip: Ställe, Waffenkammer, Wachstuben */}
-        <rect x="401" y="110" width="44" height="86" fill={isSel("haupthof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        <rect x="448" y="110" width="42" height="86" fill={isSel("haupthof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        <rect x="493" y="110" width="28" height="86" fill={isSel("haupthof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        {/* South strip: Küchenhof, Wachstuben */}
-        <rect x="401" y="396" width="58" height="80" fill={isSel("haupthof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        <rect x="462" y="396" width="59" height="80" fill={isSel("haupthof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        {isSel("haupthof")&&<rect x="397" y="106" width="122" height="374" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="401" y="148" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">STÄLLE</text>
-        <text x="448" y="148" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WAFFEN-</text>
-        <text x="448" y="158" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">KAMMER</text>
-        <text x="507" y="148" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WACHT</text>
-        <text x="430" y="430" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
-        <text x="491" y="430" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
-        <text x="462" y="295" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">UNTERER</text>
-        <text x="462" y="308" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">HAUPTHOF</text>
+        <rect x="450" y="192" width="148" height="114"
+          fill={isSel("haupthof")?"#140f06":"#0d0b04"}
+          stroke={isSel("haupthof")?`${ac}55`:"rgba(100,62,20,0.18)"} strokeWidth="1"/>
+        {isSel("haupthof")&&<rect x="446" y="70" width="156" height="360" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="480" y="122" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif" fontWeight="bold">STÄLLE</text>
+        <text x="537" y="116" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WAFFEN-</text>
+        <text x="537" y="127" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">KAMMER</text>
+        <text x="582" y="122" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WACHT-</text>
+        <text x="582" y="133" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">STUBEN</text>
+        <text x="483" y="360" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
+        <text x="558" y="360" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
+        <text x="524" y="245" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">UNTERER</text>
+        <text x="524" y="259" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">HAUPTHOF</text>
       </g>
 
-      {/* ═══ OBERER INNENHOF (east courtyard) ═══ */}
+      {/* ═══ OBERER INNENHOF ═══ */}
       <g onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}>
-        {/* Courtyard void */}
-        <rect x="542" y="198" width="124" height="196" fill={isSel("innenhof")?"#130f06":"#0d0b04"}
-          stroke={isSel("innenhof")?`${ac}55`:"rgba(100,65,22,0.15)"} strokeWidth="1"/>
-        {/* North strip: Küchenhof, Lagerhäuser */}
-        <rect x="538" y="110" width="56" height="86" fill={isSel("innenhof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        <rect x="597" y="110" width="68" height="86" fill={isSel("innenhof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        {/* South strip: Schmiede, Lagerhäuser */}
-        <rect x="538" y="396" width="56" height="80" fill={isSel("innenhof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        <rect x="597" y="396" width="68" height="80" fill={isSel("innenhof")?"#2a2010":"#1e1808"} stroke="rgba(140,90,30,0.28)" strokeWidth="1"/>
-        {isSel("innenhof")&&<rect x="534" y="106" width="135" height="374" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="566" y="148" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
-        <text x="631" y="148" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
-        <text x="566" y="430" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">SCHMIEDE</text>
-        <text x="631" y="430" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
-        <text x="604" y="295" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">OBERER</text>
-        <text x="604" y="308" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">INNENHOF</text>
+        <rect x="618" y="192" width="155" height="114"
+          fill={isSel("innenhof")?"#140f06":"#0d0b04"}
+          stroke={isSel("innenhof")?`${ac}55`:"rgba(100,62,20,0.18)"} strokeWidth="1"/>
+        {isSel("innenhof")&&<rect x="614" y="70" width="163" height="360" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="650" y="122" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
+        <text x="729" y="122" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
+        <text x="650" y="360" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">SCHMIEDE</text>
+        <text x="729" y="360" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
+        <text x="695" y="245" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">OBERER</text>
+        <text x="695" y="259" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">INNENHOF</text>
       </g>
+      <text x="596" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Wehrtürme</text>
+      <text x="700" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Zinnen · Wehrtürme</text>
+      <text x="500" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Verbindungsgänge</text>
 
-      {/* ═══ TORHAUS (gatehouse, red) ═══ */}
+      {/* ═══ TORHAUS ═══ */}
       <g onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}>
-        {/* Main torhaus body */}
-        <rect x="675" y="148" width="95" height="204"
+        <rect x="795" y="134" width="112" height="232"
           fill={isSel("torhaus")?"#3a1010":"#2a0c0c"}
-          stroke={isSel("torhaus")?`${ac}cc`:"rgba(180,50,40,0.5)"} strokeWidth={isSel("torhaus")?2:1.5}/>
-        {/* Four corner towers */}
-        <rect x="658" y="144" width="26" height="48" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}88`:"rgba(180,50,40,0.4)"} strokeWidth="1.5"/>
-        <rect x="761" y="144" width="26" height="48" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}88`:"rgba(180,50,40,0.4)"} strokeWidth="1.5"/>
-        <rect x="658" y="308" width="26" height="48" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}88`:"rgba(180,50,40,0.4)"} strokeWidth="1.5"/>
-        <rect x="761" y="308" width="26" height="48" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}88`:"rgba(180,50,40,0.4)"} strokeWidth="1.5"/>
-        {/* Tower voids */}
-        <rect x="664" y="150" width="14" height="36" fill="#100606"/>
-        <rect x="767" y="150" width="14" height="36" fill="#100606"/>
-        <rect x="664" y="314" width="14" height="36" fill="#100606"/>
-        <rect x="767" y="314" width="14" height="36" fill="#100606"/>
-        {/* Gate passage */}
-        <rect x="706" y="148" width="33" height="204" fill="#130606" stroke="rgba(180,50,40,0.2)" strokeWidth="0.5"/>
-        {/* Wachstuben rooms */}
-        <rect x="685" y="158" width="18" height="80" fill="#180808" stroke="rgba(180,50,40,0.2)" strokeWidth="0.5"/>
-        <rect x="685" y="262" width="18" height="80" fill="#180808" stroke="rgba(180,50,40,0.2)" strokeWidth="0.5"/>
-        <rect x="742" y="158" width="18" height="80" fill="#180808" stroke="rgba(180,50,40,0.2)" strokeWidth="0.5"/>
-        <rect x="742" y="262" width="18" height="80" fill="#180808" stroke="rgba(180,50,40,0.2)" strokeWidth="0.5"/>
+          stroke={isSel("torhaus")?`${ac}cc`:"rgba(190,55,45,0.55)"} strokeWidth={isSel("torhaus")?2:1.5}/>
+        {/* 4 square corner towers */}
+        <rect x="776" y="124" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
+        <rect x="899" y="124" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
+        <rect x="776" y="318" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
+        <rect x="899" y="318" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
+        <rect x="782" y="130" width="16" height="46" fill="#100606"/>
+        <rect x="905" y="130" width="16" height="46" fill="#100606"/>
+        <rect x="782" y="324" width="16" height="46" fill="#100606"/>
+        <rect x="905" y="324" width="16" height="46" fill="#100606"/>
+        {/* Central gate passage */}
+        <rect x="836" y="134" width="36" height="232" fill="#130606" stroke="rgba(180,50,40,0.18)" strokeWidth="0.5"/>
+        {/* Wachstuben rooms (4) */}
+        <rect x="803" y="142" width="30" height="96" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
+        <rect x="803" y="242" width="30" height="116" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
+        <rect x="875" y="142" width="30" height="96" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
+        <rect x="875" y="242" width="30" height="116" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
         {/* Zugbrücke */}
-        <rect x="787" y="215" width="28" height="70" fill={isSel("torhaus")?"#3a2808":"#281c06"} stroke={isSel("torhaus")?"#aa8830":"rgba(150,100,30,0.4)"} strokeWidth="1.5"/>
-        <line x1="787" y1="225" x2="815" y2="215" stroke={isSel("torhaus")?"#aa8830aa":"rgba(150,100,30,0.35)"} strokeWidth="1.5"/>
-        <line x1="787" y1="275" x2="815" y2="285" stroke={isSel("torhaus")?"#aa8830aa":"rgba(150,100,30,0.35)"} strokeWidth="1.5"/>
-        {isSel("torhaus")&&<rect x="654" y="140" width="175" height="220" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="722" y="253" textAnchor="middle" fill={isSel("torhaus")?ac:"#882222"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">TORHAUS</text>
-        <text x="694" y="198" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#662222"} fontSize="5.5" fontFamily="'Cinzel',serif">WACHT-</text>
-        <text x="694" y="208" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#662222"} fontSize="5.5" fontFamily="'Cinzel',serif">STUBEN</text>
-        <text x="750" y="198" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#662222"} fontSize="5.5" fontFamily="'Cinzel',serif">WACHT-</text>
-        <text x="750" y="208" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#662222"} fontSize="5.5" fontFamily="'Cinzel',serif">STUBEN</text>
-        <text x="801" y="253" textAnchor="middle" fill={isSel("torhaus")?"#cc9933":"#886622"} fontSize="6.5" fontFamily="'Cinzel',serif" transform="rotate(90,801,253)">ZUGBRÜCKE</text>
+        <rect x="927" y="228" width="34" height="62" fill={isSel("torhaus")?"#3a2808":"#281c06"} stroke={isSel("torhaus")?"#aa8830":"rgba(150,100,30,0.45)"} strokeWidth="1.5"/>
+        <line x1="927" y1="238" x2="961" y2="226" stroke={isSel("torhaus")?"#aa883099":"rgba(150,100,30,0.4)"} strokeWidth="1.5"/>
+        <line x1="927" y1="282" x2="961" y2="290" stroke={isSel("torhaus")?"#aa883099":"rgba(150,100,30,0.4)"} strokeWidth="1.5"/>
+        {isSel("torhaus")&&<rect x="772" y="120" width="195" height="260" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="851" y="256" textAnchor="middle" fill={isSel("torhaus")?ac:"#882222"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">TORHAUS</text>
+        <text x="818" y="186" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">TORHAUS-</text>
+        <text x="818" y="197" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
+        <text x="890" y="186" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">TORHAUS-</text>
+        <text x="890" y="197" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
+        <text x="944" y="262" textAnchor="middle" fill={isSel("torhaus")?"#cc9933":"#886622"} fontSize="6.5" fontFamily="'Cinzel',serif" transform="rotate(90,944,262)">ZUGBRÜCKE</text>
       </g>
 
       {/* ═══ SUBTERRANE GÄNGE ═══ */}
       <g onClick={()=>hit("keller")} style={{cursor:"pointer"}}>
-        {/* Underground passages below main castle */}
-        <path d="M120,430 L670,430 L670,472 L120,472 Z"
-          fill={isSel("keller")?"#1a1820":"#0e0c14"} stroke={isSel("keller")?`${ac}88`:"rgba(80,60,120,0.3)"} strokeWidth="1.5" strokeDasharray="6,3"/>
-        {/* Passage lines */}
-        {[180,240,300,360,420,480,540,600].map(x=>(
-          <line key={x} x1={x} y1="430" x2={x} y2="472" stroke={isSel("keller")?"rgba(80,60,120,0.3)":"rgba(60,45,90,0.18)"} strokeWidth="1" strokeDasharray="3,4"/>
+        <rect x="148" y="452" width="644" height="38"
+          fill={isSel("keller")?"#1a1820":"#0e0c14"} stroke={isSel("keller")?`${ac}88`:"rgba(80,58,120,0.35)"} strokeWidth="1.5" strokeDasharray="7,3"/>
+        {[220,310,400,490,580,670].map(x=>(
+          <line key={x} x1={x} y1="452" x2={x} y2="490" stroke={isSel("keller")?"rgba(80,58,120,0.28)":"rgba(58,44,90,0.16)"} strokeWidth="1" strokeDasharray="3,4"/>
         ))}
-        {isSel("keller")&&<path d="M120,430 L670,430 L670,472 L120,472 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="395" y="455" textAnchor="middle" fill={isSel("keller")?ac:"#4a3880"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">SUBTERRANE GÄNGE &amp; GRÜFTE</text>
+        {isSel("keller")&&<rect x="144" y="448" width="652" height="46" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
+        <text x="470" y="474" textAnchor="middle" fill={isSel("keller")?ac:"#4a3880"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">SUBTERRANE GÄNGE &amp; GRÜFTE</text>
       </g>
-
-      {/* Verbindungsgänge label */}
-      <text x="395" y="415" textAnchor="middle" fill="rgba(120,90,40,0.35)" fontSize="7" fontFamily="'Cinzel',serif">— Verbindungsgänge —</text>
+      <text x="434" y="447" textAnchor="middle" fill="rgba(110,84,34,0.3)" fontSize="6.5" fontFamily="'Cinzel',serif">— Verbindungsgänge —</text>
 
       {/* Compass */}
       <g transform={`translate(${W-44},44)`}>
@@ -4909,21 +4919,229 @@ DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
         })}
         <circle r="2" fill={ac} opacity="0.6"/>
       </g>
-
-      {/* Scale 1:200 */}
-      <g transform={`translate(50,${H-22})`}>
+      <g transform={`translate(50,${H-18})`}>
         <line x1="0" y1="0" x2="100" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
         <line x1="0" y1="-4" x2="0" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
         <line x1="100" y1="-4" x2="100" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
-        <text x="50" y="13" textAnchor="middle" fill={`${ac}66`} fontSize="7.5" fontFamily="'Cinzel',serif">Maßstab 1:200</text>
+        <text x="50" y="12" textAnchor="middle" fill={`${ac}66`} fontSize="7.5" fontFamily="'Cinzel',serif">Maßstab 1:200</text>
       </g>
 
-      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">GRUNDRISS DER BURG GRAVECREST</text>
+      <text x="20" y="26" fill={ac} fontSize="14" fontFamily="'Cinzel',serif" fontWeight="bold">GRUNDRISS DER BURG GRAVECREST</text>
       <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Ordo Custodum · Fiktive Burg</text>
     </svg>
   );
 };
 
+DETAILED_PLANS.carcassonne=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const isSel=id=>sel&&sel.id===id;
+  const S=(id,nm,ic,tp,desc,stats,weak)=>({id,name:nm,icon:ic,type:tp,desc,stats,weakness:weak});
+  const EL=[
+    S("outer_wall","Äußere Enceinte","🧱","Außenmauer","52 Türme schützen die Äußere Enceinte, errichtet im 13. Jh. unter Ludwig IX. und Philipp III. Viollet-le-Duc restaurierte sie 1853–1879 — umstrittenerweise mit spitzen Türmen statt der historisch flachen Bedachung.",["52 Türme","3–4 m stark","13. Jh."],7),
+    S("lices","Lices — Zwinger","⚔️","Verteidigungszone","Der 8–12 m breite Korridor zwischen Äußerer und Innerer Enceinte. Eindringlinge, die die Außenmauer durchbrachen, gerieten hier unter Kreuzfeuer von beiden Seiten gleichzeitig.",["8–12 m breit","Kreuzfeuer","Tödliche Falle"],5),
+    S("inner_wall","Innere Enceinte","🛡️","Innenmauer","Die ältere Stadtmauer mit gallo-romanischen und westgotischen Fundamenten (3.–6. Jh.). Einige Türme sind hufeisenförmig — typisch westgotisch. Bis zu 5 m dick.",["~30 Türme","Teils röm.","Westgotisch (5. Jh.)"],6),
+    S("chateau","Château Comtal","🏯","Hauptburg","Die Grafenburg im NW der Cité, ursprünglich Residenz der Trencavel-Grafen (12. Jh.). Eigene Doppel-Ummauerung, Halbmond-Barbikan gegen die Stadt, tiefer Graben. Nach 1226 Sitz der königlichen Seneschalle.",["Barbikan","4 Türme","12. Jh."],3),
+    S("saint_nazaire","Basilika Saint-Nazaire","⛪","Kathedrale","Gotische Basilika (11.–14. Jh.) mit romanischem Langhaus (1096) und prächtigen gotischen Querschiffen. Berühmt für Kreuzfahrer-Grabplatten und mittelalterliche Buntglasfenster.",["Romanisch/Gotisch","Rosette 14. Jh.","1096–1330"]),
+    S("porte_narbonnaise","Porte Narbonnaise","🚪","Haupttor","Das Haupttor der Cité im Osten (1280 unter Philipp III.). Zwei mächtige Rundtürme flankieren den Eingang. Zugbrücke, Barbikan-Vorhof, Fallgitter und Schießscharten machen es zum stärksten Punkt.",["Zugbrücke","Fallgitter","Erbaut: 1280"],4),
+    S("porte_aude","Porte d'Aude","🚪","Nebentor","Das Westtor führt den steilen Hang hinunter zur Aude-Brücke und zur Unterstadt. Der gewundene, schmale Aufstieg macht Sturmangriffe praktisch unmöglich.",["Steilweg","Flussseite","Westseite"],5),
+    S("grande_rue","Grande Rue","🛤️","Hauptstraße","Die Hauptstraße verbindet Porte Narbonnaise mit Porte d'Aude auf der ganzen Länge des Hügels. Entlang ihr lagen Tavernen, Händler und Handwerksbetriebe.",["Hauptachse","Märkte","Händler"]),
+    S("cite","Cité Innenstadt","🏘️","Wohnbebauung","Dichte mittelalterliche Bebauung mit engen Gassen, Wohnhäusern und Innenhöfen. Im Mittelalter wohnten hier ca. 1.000 Einwohner.",["~1000 Einw.","Enge Gassen","13. Jh."]),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+
+  const OP="M 175,195 L 215,115 L 285,70 L 380,50 L 480,58 L 562,92 L 622,148 L 652,220 L 656,300 L 635,382 L 582,450 L 475,492 L 360,500 L 240,474 L 162,412 L 138,322 Z";
+  const IP="M 202,212 L 238,140 L 300,100 L 382,80 L 478,87 L 550,116 L 602,162 L 626,228 L 629,302 L 609,376 L 559,434 L 467,468 L 358,476 L 250,452 L 183,393 L 162,310 Z";
+  const CV="M 224,228 L 254,158 L 308,118 L 383,100 L 475,107 L 540,132 L 586,173 L 608,234 L 610,302 L 590,368 L 543,412 L 460,446 L 355,454 L 256,430 L 198,375 L 178,308 Z";
+
+  const OT=[[380,50],[440,52],[490,62],[535,80],[575,110],[610,142],[638,180],[650,225],[654,275],[648,320],[636,360],[614,400],[576,440],[525,475],[460,492],[390,500],[320,496],[252,480],[190,452],[150,410],[136,358],[136,308],[148,252],[170,198],[215,122],[275,72]];
+  const IT=[[382,82],[445,86],[500,102],[540,122],[578,155],[606,190],[622,225],[628,265],[627,305],[618,345],[604,378],[576,415],[538,446],[488,465],[428,473],[360,474],[295,462],[248,440],[210,410],[184,374],[172,330],[168,285],[175,244],[198,210],[232,148]];
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="ca_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#100e06"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <pattern id="ca_st" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <rect width="24" height="24" fill="transparent"/>
+          <rect x="0" y="0" width="11" height="11" fill={`${ac}05`}/>
+          <rect x="13" y="13" width="11" height="11" fill={`${ac}04`}/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#ca_bg)"/>
+
+      {/* Hill terrain */}
+      <ellipse cx="400" cy="275" rx="322" ry="262" fill="rgba(38,28,10,0.22)" stroke={`${ac}0a`} strokeWidth="0.5"/>
+
+      {/* Outer enceinte mass */}
+      <path d={OP} fill={isSel("outer_wall")?"#382710":"#2c2208"}
+        stroke={isSel("outer_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {/* Lices void (cuts inner part of outer fill) */}
+      <path d={IP} fill="#0a0804" stroke="none"/>
+      {/* Outer towers */}
+      {OT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="13"
+          fill={isSel("outer_wall")?"#382710":"#2c2208"}
+          stroke={isSel("outer_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Lices interactive overlay */}
+      <path d={IP} fill={isSel("lices")?"rgba(50,75,28,0.14)":"transparent"}
+        style={{cursor:"pointer"}} onClick={()=>hit("lices")}/>
+
+      {/* Inner enceinte mass */}
+      <path d={IP} fill={isSel("inner_wall")?"#382710":"#2c2208"}
+        stroke={isSel("inner_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      {/* City void */}
+      <path d={CV} fill="#0d0b04" stroke="none"/>
+      {/* Inner towers */}
+      {IT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="11"
+          fill={isSel("inner_wall")?"#382710":"#2c2208"}
+          stroke={isSel("inner_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* City stone texture */}
+      <path d={CV} fill="url(#ca_st)" opacity="0.5"/>
+      {/* Street grid */}
+      {[230,260,290,320,350,380,410].map(y=>(
+        <line key={y} x1="215" y1={y} x2="595" y2={y} stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+      {[270,320,375,430,490,545].map(x=>(
+        <line key={x} x1={x} y1="115" x2={x} y2="448" stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+
+      {/* Building blocks — N strip */}
+      {[[240,118,52,35],[300,112,52,35],[360,106,55,35],[422,104,52,35],[482,110,52,35],[542,122,42,35]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — E strip */}
+      {[[558,162,38,40],[554,210,42,40],[553,260,42,40],[552,310,42,40],[548,360,42,40],[534,406,42,32]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — W strip */}
+      {[[260,168,44,40],[257,218,44,40],[255,266,44,40],[258,314,44,40],[261,362,44,40],[266,408,44,30]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — S strip */}
+      {[[290,416,50,28],[350,423,50,26],[414,427,50,24],[474,421,48,28],[524,412,38,28]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Grande Rue (main N-S street) */}
+      <rect x="388" y="118" width="16" height="316"
+        fill={isSel("grande_rue")?"rgba(50,40,12,0.3)":"rgba(15,12,4,0.6)"}
+        stroke={isSel("grande_rue")?`${ac}55`:`${ac}10`} strokeWidth="0.5"
+        onClick={()=>hit("grande_rue")} style={{cursor:"pointer"}}/>
+
+      {/* Place du Grand Puits */}
+      <circle cx="396" cy="282" r="22"
+        fill={isSel("cite")?"rgba(40,32,10,0.5)":"rgba(18,14,5,0.7)"}
+        stroke={isSel("cite")?`${ac}55`:`${ac}20`} strokeWidth="1"
+        onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      <circle cx="396" cy="282" r="6" fill="none" stroke={`${ac}33`} strokeWidth="1" style={{pointerEvents:"none"}}/>
+
+      {/* CHÂTEAU COMTAL */}
+      <rect x="200" y="192" width="118" height="102" rx="2"
+        fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="222" y="212" width="72" height="62" fill="#0d0b04" stroke="none"/>
+      <rect x="224" y="214" width="32" height="26" fill={isSel("chateau")?"#1a1508":"#161006"}
+        stroke={`${ac}18`} strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+      {[[200,192],[318,192],[200,294],[318,294]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="17"
+          fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+          onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      ))}
+      <path d="M 318,215 Q 362,243 318,277" fill="none"
+        stroke={isSel("chateau")?`${ac}99`:`${ac}55`} strokeWidth={isSel("chateau")?3:2}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="304" y="205" width="10" height="84"
+        fill="rgba(22,44,70,0.65)" stroke="rgba(30,70,110,0.45)" strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+
+      {/* BASILIQUE SAINT-NAZAIRE */}
+      <rect x="348" y="362" width="90" height="52"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="362" y="374" width="62" height="28" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="344" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="351" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="414" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="416" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <path d="M 438,365 Q 462,378 438,411" fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      {[[348,362,14,22],[348,392,14,22]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+          onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* PORTE NARBONNAISE */}
+      {[[648,272],[648,320]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="22"
+          fill={isSel("porte_narbonnaise")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("porte_narbonnaise")?`${ac}cc`:`${ac}77`} strokeWidth="2"
+          onClick={()=>hit("porte_narbonnaise")} style={{cursor:"pointer"}}/>
+      ))}
+      <rect x="641" y="283" width="26" height="28" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      <text x="688" y="300" fill={`${ac}77`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="688" y="310" fill={`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">NARB.</text>
+
+      {/* PORTE D'AUDE */}
+      <rect x="144" y="284" width="26" height="40"
+        fill={isSel("porte_aude")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("porte_aude")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("porte_aude")?2:1.5}
+        onClick={()=>hit("porte_aude")} style={{cursor:"pointer"}}/>
+      <rect x="152" y="293" width="12" height="22" fill="#0d0b04" stroke="none"/>
+      <text x="133" y="304" textAnchor="end" fill={`${ac}55`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="133" y="314" textAnchor="end" fill={`${ac}44`} fontSize="7" fontFamily="'Cinzel',serif">D'AUDE</text>
+
+      {/* Labels */}
+      <text x="252" y="248" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}88`} fontSize="8" fontFamily="'Cinzel',serif">CHÂTEAU</text>
+      <text x="252" y="260" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}77`} fontSize="8" fontFamily="'Cinzel',serif">COMTAL</text>
+      <text x="400" y="396" textAnchor="middle" fill={isSel("saint_nazaire")?ac:`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">ST-NAZAIRE</text>
+      <text x="172" y="448" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(-28,172,448)">LICES</text>
+      <text x="596" y="452" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(22,596,452)">LICES</text>
+
+      {/* Title */}
+      <text x="400" y="22" textAnchor="middle" fill={`${ac}66`} fontSize="12" fontFamily="'Cinzel',serif" letterSpacing="3">CARCASSONNE</text>
+      <text x="400" y="36" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" letterSpacing="1.5">DOPPELTER MAUERRING · 13. JAHRHUNDERT</text>
+      <text x="765" y="32" textAnchor="middle" fill={`${ac}55`} fontSize="10" fontFamily="serif">N</text>
+      <line x1="765" y1="36" x2="765" y2="52" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="761" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="769" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="680" y1="524" x2="780" y2="524" stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="680" y1="519" x2="680" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="780" y1="519" x2="780" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <text x="730" y="537" textAnchor="middle" fill={`${ac}44`} fontSize="8" fontFamily="serif">≈200m</text>
+    </svg>
+  );
+};
 
 function CastleFloorPlanTab({castle}){
   const sel=castle;
