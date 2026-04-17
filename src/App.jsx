@@ -4660,274 +4660,272 @@ DETAILED_PLANS.mont_michel=({ac,sel,onSel})=>{
 
 // ── Gravecrest ────────────────────────────────────────────────────────────────
 DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
-  const W=1000,H=500;
+  const W=1100,H=500;
   const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
   const EL=[
-    S("rittersaal","Großer Rittersaal","⚔️","Repräsentationssaal","Der große Festsaal der Burg Gravecrest — ein mächtiger, vorspringender Saal mit spitz zulaufendem Westgiebel. Hier hält der Ordo Custodum seine Räte, Schwurzeremonien und Bankette ab.",["Größter Saal","Spitzgiebel","Ordo Custodum"],null),
-    S("palas","Palas","🏰","Hauptgebäude","Der zentrale Palas beherbergt die wichtigsten Räume der Burg: Kaiserzimmer, Kämmererzimmer, Wohngemächer und die Palasküche. Vier mächtige Rundtürme flankieren den Bau.",["4 Rundtürme","Wohngemächer","Kaiserzimmer"],null),
-    S("palas_kueche","Palasküche","🍖","Küche","Die Palasküche versorgt den gesamten Innenhof. Große Kamine, Backöfen und Vorratskammern. Täglich werden hier hunderte von Burgbewohnern verpflegt.",["Kamine","Backöfen","Vorratskammern"],null),
-    S("kaiserzimmer","Kaiserzimmer","👑","Gemächer","Die Kaisergemächer des Ordo Custodum — reich ausgestattet mit Wandteppichen und einem Kamin. Nur wenige haben je diesen Raum betreten.",["Wandteppiche","Kamin","Streng bewacht"],null),
-    S("bibliothek","Bibliothek","📚","Bibliothek","Die Bibliothek des Ordo bewahrt alte Manuskripte, Karten und Geheimnisse vergessener Zeiten. Verbotenes Wissen lagert in den verschlossenen Schränken.",["Alte Manuskripte","Verbotenes Wissen","Verschlossene Schränke"],null),
-    S("vorhof","Äußerer Vorhof","🏛️","Vorhof","Der überdachte Verbindungsgang zwischen Palas und Hauptburg. Schießscharten in den Wänden ermöglichen die Verteidigung des Durchgangs.",["Schießscharten","Verbindungsgang","Überdacht"],null),
-    S("haupthof","Unterer Haupthof","🌿","Haupthof","Der große untere Innenhof — Herz des Burglebens. Ställe, Waffenkammer und Wachstuben säumen den Hof. Bei Belagerung versammelt sich hier die Burgbesatzung.",["Ställe","Waffenkammer","Wachstuben"],null),
-    S("innenhof","Oberer Innenhof","⚒️","Wirtschaftshof","Der obere Innenhof beherbergt Schmieden, Lager und Küchenhöfe. Handwerker und Vorräte halten die Burg kampfbereit.",["Schmiede","Lagerhäuser","Küchenhof"],null),
-    S("torhaus","Torhaus","🚪","Torhaus","Das massiv bewehrte Torhaus mit Fallgitter, Zugbrücke und Torhaus-Wachstuben. Vier flankierende Türme, ein Hebewerk für die Zugbrücke. Das einzige Tor der Burg.",["Zugbrücke","Fallgitter","4 Türme"],4),
-    S("keller","Subterrane Gänge & Grüfte","💀","Untergeschoss","Ein Netz geheimer Tunnel und Grüfte verläuft unter der gesamten Burg. Verbindungen zu den Türmen, Waffenkammern und einem unbekannten Ausgang außerhalb der Mauern.",["Geheimgänge","Grüfte","Unbekannter Ausgang"],null),
+    S("rittersaal","Großer Rittersaal","⚔️","Repräsentationssaal","Der weitläufige Rittersaal folgt dem natürlichen Felsverlauf des Hügels. Hier hielt der Ordo Custodum Rittergelübde, Gerichtstage und Kriegsräte ab. Waffen und Rüstkammer flankieren den SE-Eingang.",["Natürlicher Fels","Wandmalereien","Kriegsrat"],null),
+    S("palas","Palas-Wohntrakt","🏰","Wohngebäude","Der zentrale Wohntrakt mit vier massiven Rundtürmen. Mehrgeschossig mit Palas-Küche, Wohngemächern, Kaiserzimmer, Konvent-Zimmer, Schatzkammer und Bibliothek.",["4 Rundtürme","Mehrgeschossig","Residenz"],null),
+    S("palas_kueche","Palas-Küche","🍖","Küche","Die große Burgküche im NW-Turm. Zwei Herdstellen, Bratspieß und Vorratskammern versorgen die gesamte Besatzung.",["2 Herdstellen","NW-Turm","Vorräte"],null),
+    S("wohngemaecher","Wohngemächer","🛏️","Wohnräume","Herrschaftliche Schlafgemächer im NE-Flügel. Zugang über die Wendeltreppe im NE-Turm.",["Herrschaftlich","NE-Turm","Privaträume"],null),
+    S("kaiserzimmer","Kaiserzimmer","👑","Repräsentationsraum","Prunksaal für Audienzen hochrangiger Gäste. Deckengewölbe mit Wappen des Ordo Custodum.",["Audienzraum","Gewölbe","Wappen"],null),
+    S("konventzimmer","Konvent-Zimmer","📜","Ordensraum","Geheime Versammlungsräume des inneren Ordensrats. Schalldichte Steinwände, keine Außenfenster.",["Ordensrat","Geheim","Schalldicht"],null),
+    S("schatzkammer","Schatzkammer","💎","Tresorraum","Gesicherter Tresor für Ordensgold, Reliquien und Archive. Dreifachschloss-Mechanismus.",["Dreifachschloss","Ordensgold","Archive"],null),
+    S("bibliothek","Bibliothek","📚","Wissenszentrum","Ordensbibliothek im SW-Flügel. Seltene Manuskripte über Belagerungstechnik, Alchemie und verbotenes Wissen.",["Manuskripte","SW-Turm","Verbotenes Wissen"],null),
+    S("innenhof","Oberer Innenhof","🏛️","Kleinerer Hof","Der kleinere Innenhof — Übungsplatz mit Galeriegängen, Kleinen Schmieden und Apotheken. Badehaus und Garderobe auf der Westseite.",["Galeriegänge","Übungsplatz","Kleinerer Hof"],null),
+    S("mittleres_tor","Mittleres Burgtor","🚪","Quertor","Massives Quertor zwischen Ober- und Unterhof. Fallgitter, Schießscharten, beidseitige Torwächter.",["Fallgitter","Quertor","Zwischentor"],4),
+    S("donjon","Großer Hauptturm (Donjon)","🏯","Bergfried","Zylindrischer Bergfried mit 4m Mauerdicke — stärkster Punkt der Burg. Letzter Rückzugsort der Ordenskrieger.",["4m Mauerdicke","Zylindrisch","Letzter Rückzug"],2),
+    S("haupthof","Unterer Haupthof","🌿","Größerer Hof","Weitläufiger Haupthof — wirtschaftliches Zentrum mit Schmieden, Lagerhäusern, Ställen, Küchenhof und Flaschenzug.",["Wirtschaftszentrum","Größerer Hof","Flaschenzug"],null),
+    S("torhaus","Torhaus","⚔️","Toranlage","Separat stehendes Torhaus mit vier Eckwachstuben und Zugbrücke. Letzte Verteidigungslinie.",["Zugbrücke","Eckwachstuben","Letztes Tor"],3),
+    S("keller","Subterrane Gänge & Grüfte","💀","Unterirdisch","Weitverzweigtes Tunnelnetz unter der gesamten Burg — Kerker, Vorratsräume und geheime Fluchttunnel.",["Kerker","Fluchttunnel","Geheim"],null),
   ];
   const el=id=>EL.find(e=>e.id===id)||null;
   const hit=id=>onSel(sel&&sel.id===id?null:el(id));
   const isSel=id=>sel&&sel.id===id;
-
-  // helpers
-  const rm=(x,y,w,h,id)=>(
-    <rect x={x} y={y} width={w} height={h}
-      fill={isSel(id)?"#2a2010":"#1e1808"}
-      stroke={isSel(id)?`${ac}77`:"rgba(150,95,30,0.38)"} strokeWidth={isSel(id)?1.5:1}/>
-  );
+  const wf=id=>isSel(id)?"#382710":"#2c2208";
+  const ws=id=>isSel(id)?`${ac}88`:`${ac}33`;
 
   return(
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
       <defs>
-        <radialGradient id="gc_bg" cx="50%" cy="50%" r="70%">
-          <stop offset="0%" stopColor="#0a0906"/>
-          <stop offset="100%" stopColor="#050403"/>
+        <radialGradient id="gc2_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#0e0c05"/>
+          <stop offset="100%" stopColor="#060402"/>
         </radialGradient>
-        <filter id="gc_glow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
-          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
+        <pattern id="gc2_st" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="0" y="0" width="9" height="9" fill={`${ac}04`}/>
+          <rect x="11" y="11" width="9" height="9" fill={`${ac}03`}/>
+        </pattern>
       </defs>
-      <rect width={W} height={H} fill="url(#gc_bg)"/>
+      <rect width={W} height={H} fill="url(#gc2_bg)"/>
 
-      {/* ═══ GROßER RITTERSAAL ═══ */}
-      <g onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}>
-        <path d="M12,252 L148,70 L162,70 L162,434 L148,434 Z"
-          fill={isSel("rittersaal")?"#3a2e10":"#2c2208"}
-          stroke={isSel("rittersaal")?`${ac}88`:"#4a3814"} strokeWidth={isSel("rittersaal")?2:1.5}/>
-        <path d="M34,252 L146,86 L156,86 L156,418 L146,418 Z" fill="#0d0b04"/>
-        {/* small rooms SE corner */}
-        <rect x="145" y="290" width="15" height="44" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
-        <rect x="145" y="336" width="15" height="44" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
-        <rect x="145" y="382" width="15" height="34" fill="#130e06" stroke="rgba(140,88,28,0.32)" strokeWidth="0.8"/>
-        <text x="152" y="315" textAnchor="middle" fill={isSel("rittersaal")?"#c8a840":"#5a3a12"} fontSize="5.5" fontFamily="'Cinzel',serif" transform="rotate(-90,152,315)">RIRE</text>
-        <text x="152" y="360" textAnchor="middle" fill={isSel("rittersaal")?"#c8a840":"#5a3a12"} fontSize="5.5" fontFamily="'Cinzel',serif" transform="rotate(-90,152,360)">KÖMMEA</text>
-        {isSel("rittersaal")&&<path d="M12,252 L148,70 L162,70 L162,434 L148,434 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="85" y="245" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">GROSSER</text>
-        <text x="85" y="258" textAnchor="middle" fill={isSel("rittersaal")?ac:"#7a6020"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">RITTERSAAL</text>
-      </g>
-
-      {/* ═══ PALAS — 4 large round towers ═══ */}
-      <g onClick={()=>hit("palas")} style={{cursor:"pointer"}}>
-        <rect x="148" y="62" width="202" height="376" fill={isSel("palas")?"#3a2e10":"#2c2208"}
-          stroke={isSel("palas")?`${ac}88`:"#4a3814"} strokeWidth={isSel("palas")?2:1.5}/>
-        {/* NW tower */}
-        <circle cx="178" cy="88" r="42" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
-        <circle cx="178" cy="88" r="27" fill="#0d0b04"/>
-        <circle cx="178" cy="88" r="9" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
-        <circle cx="178" cy="88" r="4" fill={isSel("palas")?"#5a441844":"#3a2c1022"}/>
-        {/* NE tower */}
-        <circle cx="310" cy="88" r="36" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
-        <circle cx="310" cy="88" r="23" fill="#0d0b04"/>
-        <circle cx="310" cy="88" r="8" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
-        {/* SW tower */}
-        <circle cx="178" cy="414" r="42" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
-        <circle cx="178" cy="414" r="27" fill="#0d0b04"/>
-        <circle cx="178" cy="414" r="9" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
-        <circle cx="178" cy="414" r="4" fill={isSel("palas")?"#5a441844":"#3a2c1022"}/>
-        {/* SE tower */}
-        <circle cx="310" cy="414" r="36" fill={isSel("palas")?"#3e3210":"#302608"} stroke={isSel("palas")?`${ac}88`:"#5a4420"} strokeWidth="2.5"/>
-        <circle cx="310" cy="414" r="23" fill="#0d0b04"/>
-        <circle cx="310" cy="414" r="8" fill="none" stroke={isSel("palas")?"#7a602888":"#5a441844"} strokeWidth="1.5"/>
-        {isSel("palas")&&<rect x="148" y="62" width="202" height="376" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#gc_glow)"/>}
-      </g>
-      {/* Tower labels */}
-      <text x="140" y="57" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Nordturm</text>
-      <text x="274" y="57" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Südturm</text>
-      <text x="140" y="473" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Nordturm</text>
-      <text x="274" y="473" textAnchor="middle" fill={isSel("palas")?"#c8a840":"#6a5020"} fontSize="6.5" fontFamily="'Cinzel',serif">Palas-Südturm</text>
-
-      {/* Palas rooms — left column */}
-      <g onClick={()=>hit("palas_kueche")} style={{cursor:"pointer"}}>
-        {rm(158,128,74,74,"palas_kueche")}
-        {isSel("palas_kueche")&&<rect x="154" y="124" width="82" height="82" fill="none" stroke={`${ac}44`} strokeWidth="1.5" filter="url(#gc_glow)"/>}
-        <text x="195" y="162" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7.5" fontFamily="'Cinzel',serif">PALAS-</text>
-        <text x="195" y="174" textAnchor="middle" fill={isSel("palas_kueche")?ac:"#6a4a18"} fontSize="7.5" fontFamily="'Cinzel',serif">KÜCHE</text>
-      </g>
-      <g onClick={()=>hit("kaiserzimmer")} style={{cursor:"pointer"}}>
-        {rm(158,206,74,70,"kaiserzimmer")}
-        {rm(158,280,74,68,"kaiserzimmer")}
-        {isSel("kaiserzimmer")&&<rect x="154" y="202" width="82" height="152" fill="none" stroke={`${ac}44`} strokeWidth="1.5" filter="url(#gc_glow)"/>}
-        <text x="195" y="238" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KAISER-</text>
-        <text x="195" y="250" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
-        <text x="195" y="312" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">KAINER-</text>
-        <text x="195" y="324" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:"#6a4a18"} fontSize="7" fontFamily="'Cinzel',serif">ZIMMER</text>
-      </g>
-      {/* right column */}
-      <rect x="236" y="128" width="108" height="74" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="236" y="206" width="108" height="70" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <text x="290" y="164" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">WOHN-</text>
-      <text x="290" y="176" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">GEMÄCHER</text>
-      <text x="290" y="240" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">WOHN-</text>
-      <text x="290" y="252" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">GEMÄCHER</text>
-      <rect x="236" y="280" width="108" height="44" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="236" y="328" width="108" height="54" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <text x="290" y="305" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">BADGANG</text>
-      <text x="290" y="352" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">SOMMER-</text>
-      <text x="290" y="364" textAnchor="middle" fill="#6a4a18" fontSize="7.5" fontFamily="'Cinzel',serif">ZIMMER</text>
-      {/* Bibliothek spanning full width */}
-      <g onClick={()=>hit("bibliothek")} style={{cursor:"pointer"}}>
-        <rect x="158" y="352" width="186" height="70" fill={isSel("bibliothek")?"#1e2030":"#141828"}
-          stroke={isSel("bibliothek")?`${ac}88`:"rgba(60,80,160,0.38)"} strokeWidth={isSel("bibliothek")?1.5:1}/>
-        {isSel("bibliothek")&&<rect x="154" y="348" width="194" height="78" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="251" y="390" textAnchor="middle" fill={isSel("bibliothek")?ac:"#3a4880"} fontSize="9.5" fontFamily="'Cinzel',serif" fontWeight="bold">BIBLIOTHEK</text>
-      </g>
-
-      {/* ═══ ÄUSSERER VORHOF ═══ */}
-      <g onClick={()=>hit("vorhof")} style={{cursor:"pointer"}}>
-        <rect x="350" y="62" width="84" height="376" fill={isSel("vorhof")?"#2a2010":"#1e1808"}
-          stroke={isSel("vorhof")?`${ac}88`:"#3a2810"} strokeWidth={isSel("vorhof")?2:1.5}/>
-        <rect x="363" y="76" width="58" height="348" fill="#0d0b04"/>
-        {[90,116,142,168,194,220,246,272,298,324,350,376,402].map(y=>(
-          <rect key={y} x="358" y={y} width="7" height="9" fill="#070503" stroke="rgba(110,68,18,0.3)" strokeWidth="0.5"/>
-        ))}
-        {[90,116,142,168,194,220,246,272,298,324,350,376,402].map(y=>(
-          <rect key={y+2000} x="420" y={y} width="7" height="9" fill="#070503" stroke="rgba(110,68,18,0.3)" strokeWidth="0.5"/>
-        ))}
-        {isSel("vorhof")&&<rect x="350" y="62" width="84" height="376" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="392" y="252" textAnchor="middle" fill={isSel("vorhof")?ac:"#5a3a18"} fontSize="7.5" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(-90,392,252)">ÄUSS. VORHOF</text>
-        <text x="350" y="55" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Schießscharten</text>
-      </g>
-
-      {/* ═══ MAIN CASTLE BODY ═══ */}
-      {/* Outer wall rectangle — thick */}
-      <rect x="434" y="58" width="356" height="384" fill="#221808" stroke="rgba(160,104,40,0.48)" strokeWidth="2.5"/>
-      {/* Connecting passage strips inside perimeter */}
-      <rect x="434" y="58" width="356" height="16" fill="#281c0a"/>
-      <rect x="434" y="426" width="356" height="16" fill="#281c0a"/>
-      <rect x="434" y="58" width="16" height="384" fill="#281c0a"/>
-      <rect x="774" y="58" width="16" height="384" fill="#281c0a"/>
-      {/* Defensive towers along N wall — projecting outward */}
-      {[458,502,548,596,644,694,744,776].map(x=>(
-        <rect key={x} x={x-14} y="42" width="28" height="24" fill="#2e2010" stroke="rgba(160,104,40,0.48)" strokeWidth="1.2"/>
+      {/* ═══ RITTERSAAL (x=20-168) ═══ */}
+      <path d="M 168,60 L 105,60 L 68,48 L 34,78 L 18,162 L 16,250 L 18,362 L 42,440 L 112,440 L 168,440 Z"
+        fill={wf("rittersaal")} stroke={ws("rittersaal")} strokeWidth="1.5"
+        onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+      {[[40,88,72,106],[24,204,46,224],[20,318,42,338],[52,432,88,440]].map(([x1,y1,x2,y2],i)=>(
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" style={{pointerEvents:"none"}}/>
       ))}
-      {/* Defensive towers along S wall */}
-      {[458,502,548,596,644,694,744,776].map(x=>(
-        <rect key={x+5000} x={x-14} y="434" width="28" height="24" fill="#2e2010" stroke="rgba(160,104,40,0.48)" strokeWidth="1.2"/>
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z" fill="#0d0b04" stroke="none"/>
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z" fill="url(#gc2_st)" opacity="0.4" style={{pointerEvents:"none"}}/>
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z"
+        fill={isSel("rittersaal")?"rgba(50,35,8,0.14)":"transparent"}
+        onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+      <text x="88" y="252" textAnchor="middle" fill={isSel("rittersaal")?ac:`${ac}77`} fontSize="8" fontFamily="'Cinzel',serif" style={{pointerEvents:"none"}}>Großer</text>
+      <text x="88" y="263" textAnchor="middle" fill={isSel("rittersaal")?ac:`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif" style={{pointerEvents:"none"}}>Rittersaal</text>
+      {/* SE rooms: Waffen, Rüstkammer */}
+      {[[354,30,388,388,30],[388,30,422,388,30]].map(([y,w,y2,y3,w2],i)=>(
+        <g key={i}>
+          <rect x="118" y={y} width="48" height="30" fill={wf("rittersaal")} stroke={ws("rittersaal")} strokeWidth="1" onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+          <rect x="124" y={y+6} width="36" height="18" fill="#0d0b04" stroke="none"/>
+        </g>
       ))}
-      {/* Courtyard divider wall */}
-      <rect x="602" y="74" width="16" height="352" fill="#2c1e0e" stroke="rgba(150,95,30,0.38)" strokeWidth="1"/>
+      <text x="142" y="372" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Waffen</text>
+      <text x="142" y="406" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Rüstkammer</text>
 
-      {/* North building strip rooms */}
-      <rect x="450" y="74" width="58" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="511" y="74" width="52" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="566" y="74" width="32" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="618" y="74" width="64" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="685" y="74" width="88" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      {/* South building strip rooms */}
-      <rect x="450" y="308" width="66" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="519" y="308" width="79" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="618" y="308" width="64" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
-      <rect x="685" y="308" width="88" height="118" fill="#1e1808" stroke="rgba(150,95,30,0.34)" strokeWidth="1"/>
+      {/* ═══ PALAS BLOCK (x=168-366) ═══ */}
+      <rect x="168" y="60" width="198" height="380" fill={wf("palas")} stroke={ws("palas")} strokeWidth="1.5" onClick={()=>hit("palas")} style={{cursor:"pointer"}}/>
+      <rect x="186" y="78" width="162" height="344" fill="#0d0b04" stroke="none"/>
+      {/* 4 corner towers */}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="26" fill={wf("palas")} stroke={ws("palas")} strokeWidth="1.5" onClick={()=>hit("palas")} style={{cursor:"pointer"}}/>
+      ))}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="13" fill="#0d0b04" stroke="none"/>
+      ))}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="6" fill="none" stroke={`${ac}22`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      ))}
+      {/* Room dividers */}
+      {[150,228,308].map((y,i)=>(
+        <rect key={i} x="186" y={y} width="162" height="8" fill={wf("palas")} stroke="none" style={{pointerEvents:"none"}}/>
+      ))}
+      <rect x="252" y="78" width="8" height="230" fill={wf("palas")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Palas-Küche */}
+      <rect x="186" y="78" width="66" height="72" fill={isSel("palas_kueche")?"#2a2010":"#1e1808"} stroke={isSel("palas_kueche")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("palas_kueche")?1.5:1} onClick={()=>hit("palas_kueche")} style={{cursor:"pointer"}}/>
+      <text x="219" y="112" textAnchor="middle" fill={isSel("palas_kueche")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Palas-</text>
+      <text x="219" y="123" textAnchor="middle" fill={isSel("palas_kueche")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Küche</text>
+      {/* Wohngemächer */}
+      <rect x="260" y="78" width="88" height="72" fill={isSel("wohngemaecher")?"#2a2010":"#1e1808"} stroke={isSel("wohngemaecher")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("wohngemaecher")?1.5:1} onClick={()=>hit("wohngemaecher")} style={{cursor:"pointer"}}/>
+      <text x="304" y="112" textAnchor="middle" fill={isSel("wohngemaecher")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Wohn-</text>
+      <text x="304" y="123" textAnchor="middle" fill={isSel("wohngemaecher")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>gemächer</text>
+      {/* Kaiserzimmer */}
+      <rect x="186" y="158" width="66" height="70" fill={isSel("kaiserzimmer")?"#2a2010":"#1e1808"} stroke={isSel("kaiserzimmer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("kaiserzimmer")?1.5:1} onClick={()=>hit("kaiserzimmer")} style={{cursor:"pointer"}}/>
+      <text x="219" y="191" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Kaiser-</text>
+      <text x="219" y="202" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>zimmer</text>
+      {/* Konvent-Zimmer */}
+      <rect x="260" y="158" width="88" height="70" fill={isSel("konventzimmer")?"#2a2010":"#1e1808"} stroke={isSel("konventzimmer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("konventzimmer")?1.5:1} onClick={()=>hit("konventzimmer")} style={{cursor:"pointer"}}/>
+      <text x="304" y="191" textAnchor="middle" fill={isSel("konventzimmer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Konvent-</text>
+      <text x="304" y="202" textAnchor="middle" fill={isSel("konventzimmer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Zimmer</text>
+      {/* Schatzkammer */}
+      <rect x="186" y="236" width="66" height="72" fill={isSel("schatzkammer")?"#2a2010":"#1e1808"} stroke={isSel("schatzkammer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("schatzkammer")?1.5:1} onClick={()=>hit("schatzkammer")} style={{cursor:"pointer"}}/>
+      <text x="219" y="270" textAnchor="middle" fill={isSel("schatzkammer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Schatz-</text>
+      <text x="219" y="281" textAnchor="middle" fill={isSel("schatzkammer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>kammer</text>
+      {/* Bibliothek (bottom, full width) */}
+      <rect x="186" y="316" width="162" height="106" fill={isSel("bibliothek")?"#1a2420":"#111a18"} stroke={isSel("bibliothek")?`${ac}88`:"rgba(40,90,70,0.5)"} strokeWidth={isSel("bibliothek")?2:1} onClick={()=>hit("bibliothek")} style={{cursor:"pointer"}}/>
+      <text x="267" y="372" textAnchor="middle" fill={isSel("bibliothek")?ac:"rgba(70,140,100,0.7)"} fontSize="9" fontFamily="serif" style={{pointerEvents:"none"}}>Bibliothek</text>
+      <text x="168" y="44" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">NW-Turm</text>
+      <text x="366" y="44" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">NE-Turm</text>
+      <text x="168" y="476" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">SW-Turm</text>
+      <text x="366" y="476" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">SE-Turm</text>
 
-      {/* ═══ UNTERER HAUPTHOF ═══ */}
-      <g onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}>
-        <rect x="450" y="192" width="148" height="114"
-          fill={isSel("haupthof")?"#140f06":"#0d0b04"}
-          stroke={isSel("haupthof")?`${ac}55`:"rgba(100,62,20,0.18)"} strokeWidth="1"/>
-        {isSel("haupthof")&&<rect x="446" y="70" width="156" height="360" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="480" y="122" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif" fontWeight="bold">STÄLLE</text>
-        <text x="537" y="116" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WAFFEN-</text>
-        <text x="537" y="127" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">KAMMER</text>
-        <text x="582" y="122" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">WACHT-</text>
-        <text x="582" y="133" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="6" fontFamily="'Cinzel',serif">STUBEN</text>
-        <text x="483" y="360" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
-        <text x="558" y="360" textAnchor="middle" fill={isSel("haupthof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
-        <text x="524" y="245" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">UNTERER</text>
-        <text x="524" y="259" textAnchor="middle" fill={isSel("haupthof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">HAUPTHOF</text>
+      {/* ═══ CENTRAL SECTION (x=366-512): INNENHOF + FUNCTIONAL ═══ */}
+      {/* N/S outer walls (continuous strip) */}
+      <rect x="366" y="60" width="146" height="18" fill={wf("innenhof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="366" y="422" width="146" height="18" fill={wf("innenhof")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Fill entire central interior with wall mass */}
+      <rect x="366" y="78" width="146" height="344" fill={wf("innenhof")} stroke="none" onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}/>
+      {/* Galeriegang N void */}
+      <rect x="372" y="80" width="134" height="20" fill="#0d0b04" stroke="none"/>
+      <text x="439" y="93" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Galeriegang</text>
+      {/* Galeriegang S void */}
+      <rect x="372" y="344" width="134" height="20" fill="#0d0b04" stroke="none"/>
+      <text x="439" y="357" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Galeriegang</text>
+      {/* W rooms: Badehaus (top void), Garderobe (bottom void) */}
+      <rect x="374" y="108" width="30" height="98" fill="#0d0b04" stroke="none"/>
+      <text x="389" y="155" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Bade-</text>
+      <text x="389" y="165" textAnchor="middle" fill={`${ac}38`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>haus</text>
+      <rect x="374" y="216" width="30" height="118" fill="#0d0b04" stroke="none"/>
+      <text x="389" y="273" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Garde-</text>
+      <text x="389" y="283" textAnchor="middle" fill={`${ac}38`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>robe</text>
+      {/* N rooms above Innenhof: Kleine Schmieden, Apotheken */}
+      <rect x="412" y="102" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="435" y="122" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Kl.</text>
+      <text x="435" y="132" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>Schm.</text>
+      <rect x="462" y="102" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="485" y="122" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apothe-</text>
+      <text x="485" y="132" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>ken</text>
+      {/* Oberer Innenhof void */}
+      <rect x="412" y="148" width="96" height="148" fill="#0d0b04" stroke={`${ac}22`} strokeWidth="1" onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}/>
+      <text x="460" y="218" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Oberer</text>
+      <text x="460" y="230" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Innenhof</text>
+      <text x="460" y="241" textAnchor="middle" fill={`${ac}25`} fontSize="6" fontFamily="serif" style={{pointerEvents:"none"}}>(Kleinerer Hof)</text>
+      {/* S rooms below Innenhof */}
+      <rect x="412" y="298" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="435" y="318" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Kl.</text>
+      <text x="435" y="328" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>Schm.</text>
+      <rect x="462" y="298" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="485" y="318" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apothe-</text>
+      <text x="485" y="328" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>ken</text>
+
+      {/* ═══ MITTLERES BURGTOR (x=512-534) ═══ */}
+      <rect x="512" y="60" width="22" height="380" fill={wf("mittleres_tor")} stroke={ws("mittleres_tor")} strokeWidth="1.5" onClick={()=>hit("mittleres_tor")} style={{cursor:"pointer"}}/>
+      <rect x="517" y="192" width="12" height="116" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      <text x="523" y="258" textAnchor="middle" fill={isSel("mittleres_tor")?ac:`${ac}55`} fontSize="6" fontFamily="serif" transform="rotate(-90,523,258)" style={{pointerEvents:"none"}}>MITTL. BURGTOR</text>
+
+      {/* ═══ RIGHT SECTION (x=534-870): HAUPTHOF + DONJON ═══ */}
+      {/* Outer walls */}
+      <rect x="534" y="60" width="336" height="18" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="534" y="422" width="336" height="18" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="852" y="60" width="18" height="380" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="534" y="60" width="18" height="380" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Zinnen-Wehrtürme along N wall */}
+      {[556,584,612,640,668,696,724,752,780,808,836].map((x,i)=>(
+        <rect key={i} x={x} y="46" width="14" height="16" fill={wf("haupthof")} stroke={ws("haupthof")} strokeWidth="1" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      ))}
+      <text x="696" y="38" textAnchor="middle" fill={`${ac}33`} fontSize="7" fontFamily="serif">Zinnen-Wehrtürme</text>
+      {/* Fill entire right section interior with wall mass */}
+      <rect x="552" y="78" width="300" height="344" fill={wf("haupthof")} stroke="none" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      {/* N room voids */}
+      <rect x="560" y="84" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="585" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Waffen-</text>
+      <text x="585" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>kämmer</text>
+      <rect x="620" y="84" width="46" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="643" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wach-</text>
+      <text x="643" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>stuben</text>
+      <rect x="676" y="84" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="701" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Küchen-</text>
+      <text x="701" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>hof</text>
+      <rect x="736" y="84" width="108" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="790" y="108" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Lagerhäuser</text>
+      {/* Haupthof courtyard void */}
+      <rect x="558" y="132" width="286" height="166" fill="#0d0b04" stroke={`${ac}22`} strokeWidth="1" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      <text x="701" y="292" textAnchor="middle" fill={`${ac}28`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Unterer Haupthof (Größerer Hof)</text>
+      {/* Großer Hauptturm / Donjon — large round */}
+      <circle cx="701" cy="215" r="52" fill={wf("donjon")} stroke={ws("donjon")} strokeWidth="2.5" onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      <circle cx="701" cy="215" r="36" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="1" style={{pointerEvents:"none"}}/>
+      <circle cx="701" cy="215" r="20" fill={wf("donjon")} stroke={`${ac}55`} strokeWidth="1.5" onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      <circle cx="701" cy="215" r="10" fill="#0d0b04" stroke="none" style={{pointerEvents:"none"}}/>
+      <text x="701" y="213" textAnchor="middle" fill={isSel("donjon")?ac:`${ac}77`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Donjon</text>
+      <text x="701" y="222" textAnchor="middle" fill={isSel("donjon")?ac:`${ac}55`} fontSize="6" fontFamily="serif" style={{pointerEvents:"none"}}>(Hauptturm)</text>
+      {/* S room voids */}
+      <rect x="560" y="306" width="62" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="591" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Ställe</text>
+      <rect x="632" y="306" width="44" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="654" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wach-</text>
+      <text x="654" y="337" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>stuben</text>
+      <rect x="686" y="306" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="711" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Schmieden</text>
+      <rect x="746" y="306" width="98" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="795" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Lagerhäuser</text>
+      {/* Extra bottom: Apotheke, Militärakademie */}
+      <rect x="616" y="356" width="54" height="38" fill="#0d0b04" stroke="none"/>
+      <text x="643" y="378" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apotheke</text>
+      <rect x="680" y="356" width="164" height="38" fill="#0d0b04" stroke="none"/>
+      <text x="762" y="378" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Militärakademie</text>
+      {/* Unterirdische Gänge label (N side of right section) */}
+      <text x="701" y="52" textAnchor="middle" fill={`${ac}33`} fontSize="6.5" fontFamily="serif">Unterirdische Gänge</text>
+
+      {/* ═══ CONNECTION PASSAGE (x=870-932) ═══ */}
+      <rect x="870" y="228" width="62" height="44" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="1" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      <rect x="876" y="234" width="50" height="32" fill="#0d0b04" stroke="none"/>
+
+      {/* ═══ TORHAUS (x=932-1082) ═══ */}
+      <rect x="932" y="148" width="122" height="204" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="2" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      {/* Gate passage void */}
+      <rect x="984" y="148" width="18" height="204" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      {/* 4 wachstuben room voids */}
+      <rect x="940" y="156" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="1002" y="156" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="940" y="262" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="1002" y="262" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      {/* Corner square towers */}
+      {[[932,148],[1054,148],[932,352],[1054,352]].map(([x,y],i)=>(
+        <rect key={i} x={x-16} y={y-16} width="32" height="32" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="2" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Labels */}
+      <text x="961" y="199" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="961" y="208" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="1027" y="199" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="1027" y="208" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="961" y="305" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="961" y="314" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="1027" y="305" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="1027" y="314" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="993" y="256" textAnchor="middle" fill={isSel("torhaus")?"#ff7755":"#cc3322"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold" style={{pointerEvents:"none"}}>TORHAUS</text>
+      {/* Zugbrücke */}
+      <rect x="1054" y="226" width="36" height="48" fill={isSel("torhaus")?"#2e1010":"#1e0e08"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="1.5" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      <rect x="1060" y="232" width="24" height="36" fill="#0d0b04" stroke="none"/>
+      <line x1="1060" y1="234" x2="1052" y2="242" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1084" y1="234" x2="1090" y2="242" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1060" y1="264" x2="1052" y2="256" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1084" y1="264" x2="1090" y2="256" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <text x="1072" y="253" textAnchor="middle" fill="#882222" fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Zug-</text>
+      <text x="1072" y="262" textAnchor="middle" fill="#882222" fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>brücke</text>
+
+      {/* ═══ UNDERGROUND PASSAGES ═══ */}
+      <rect x="42" y="448" width="828" height="16" rx="2" fill="rgba(6,5,2,0.85)" stroke={isSel("keller")?"rgba(120,90,30,0.7)":"rgba(60,45,20,0.4)"} strokeWidth="1" strokeDasharray="7,3" onClick={()=>hit("keller")} style={{cursor:"pointer"}}/>
+      <text x="90" y="43" textAnchor="middle" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Subterrane Gänge &amp; Grüfte</text>
+      <text x="220" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Unterirdische Gänge</text>
+      <text x="500" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Unterirdische Gänge &amp; Grüfte</text>
+      <text x="810" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Flaschenzug</text>
+
+      {/* ═══ TITLE + COMPASS + SCALE ═══ */}
+      <text x="540" y="20" textAnchor="middle" fill={ac} fontSize="13" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="2">GRUNDRISS DER BURG GRAVECREST</text>
+      <text x="540" y="34" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="'Cinzel',serif">Ordo Custodum · Fiktive Burg</text>
+      <g transform="translate(1060,460)">
+        <circle r="18" fill="rgba(8,6,3,0.65)" stroke={`${ac}33`} strokeWidth="1"/>
+        <text x="0" y="-5" textAnchor="middle" fill={`${ac}77`} fontSize="9" fontFamily="serif">N</text>
+        <line x1="0" y1="-2" x2="0" y2="-14" stroke={`${ac}66`} strokeWidth="1.5"/>
+        <line x1="-10" y1="8" x2="0" y2="-2" stroke={`${ac}44`} strokeWidth="1"/>
+        <line x1="10" y1="8" x2="0" y2="-2" stroke={`${ac}44`} strokeWidth="1"/>
       </g>
-
-      {/* ═══ OBERER INNENHOF ═══ */}
-      <g onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}>
-        <rect x="618" y="192" width="155" height="114"
-          fill={isSel("innenhof")?"#140f06":"#0d0b04"}
-          stroke={isSel("innenhof")?`${ac}55`:"rgba(100,62,20,0.18)"} strokeWidth="1"/>
-        {isSel("innenhof")&&<rect x="614" y="70" width="163" height="360" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="650" y="122" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">KÜCHENHOF</text>
-        <text x="729" y="122" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
-        <text x="650" y="360" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">SCHMIEDE</text>
-        <text x="729" y="360" textAnchor="middle" fill={isSel("innenhof")?ac:"#5a3a18"} fontSize="6.5" fontFamily="'Cinzel',serif">LAGERHÄUSER</text>
-        <text x="695" y="245" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">OBERER</text>
-        <text x="695" y="259" textAnchor="middle" fill={isSel("innenhof")?ac:"#6a4a18"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">INNENHOF</text>
-      </g>
-      <text x="596" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Wehrtürme</text>
-      <text x="700" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Zinnen · Wehrtürme</text>
-      <text x="500" y="36" textAnchor="middle" fill="rgba(140,98,32,0.38)" fontSize="6" fontFamily="'Cinzel',serif">Verbindungsgänge</text>
-
-      {/* ═══ TORHAUS ═══ */}
-      <g onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}>
-        <rect x="795" y="134" width="112" height="232"
-          fill={isSel("torhaus")?"#3a1010":"#2a0c0c"}
-          stroke={isSel("torhaus")?`${ac}cc`:"rgba(190,55,45,0.55)"} strokeWidth={isSel("torhaus")?2:1.5}/>
-        {/* 4 square corner towers */}
-        <rect x="776" y="124" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
-        <rect x="899" y="124" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
-        <rect x="776" y="318" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
-        <rect x="899" y="318" width="28" height="58" fill={isSel("torhaus")?"#4a1818":"#381010"} stroke={isSel("torhaus")?`${ac}99`:"rgba(190,55,45,0.5)"} strokeWidth="1.5"/>
-        <rect x="782" y="130" width="16" height="46" fill="#100606"/>
-        <rect x="905" y="130" width="16" height="46" fill="#100606"/>
-        <rect x="782" y="324" width="16" height="46" fill="#100606"/>
-        <rect x="905" y="324" width="16" height="46" fill="#100606"/>
-        {/* Central gate passage */}
-        <rect x="836" y="134" width="36" height="232" fill="#130606" stroke="rgba(180,50,40,0.18)" strokeWidth="0.5"/>
-        {/* Wachstuben rooms (4) */}
-        <rect x="803" y="142" width="30" height="96" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
-        <rect x="803" y="242" width="30" height="116" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
-        <rect x="875" y="142" width="30" height="96" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
-        <rect x="875" y="242" width="30" height="116" fill="#180808" stroke="rgba(180,50,40,0.25)" strokeWidth="0.8"/>
-        {/* Zugbrücke */}
-        <rect x="927" y="228" width="34" height="62" fill={isSel("torhaus")?"#3a2808":"#281c06"} stroke={isSel("torhaus")?"#aa8830":"rgba(150,100,30,0.45)"} strokeWidth="1.5"/>
-        <line x1="927" y1="238" x2="961" y2="226" stroke={isSel("torhaus")?"#aa883099":"rgba(150,100,30,0.4)"} strokeWidth="1.5"/>
-        <line x1="927" y1="282" x2="961" y2="290" stroke={isSel("torhaus")?"#aa883099":"rgba(150,100,30,0.4)"} strokeWidth="1.5"/>
-        {isSel("torhaus")&&<rect x="772" y="120" width="195" height="260" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="851" y="256" textAnchor="middle" fill={isSel("torhaus")?ac:"#882222"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">TORHAUS</text>
-        <text x="818" y="186" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">TORHAUS-</text>
-        <text x="818" y="197" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
-        <text x="890" y="186" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">TORHAUS-</text>
-        <text x="890" y="197" textAnchor="middle" fill={isSel("torhaus")?"#cc6644":"#661818"} fontSize="5.8" fontFamily="'Cinzel',serif">WACHSTUBEN</text>
-        <text x="944" y="262" textAnchor="middle" fill={isSel("torhaus")?"#cc9933":"#886622"} fontSize="6.5" fontFamily="'Cinzel',serif" transform="rotate(90,944,262)">ZUGBRÜCKE</text>
-      </g>
-
-      {/* ═══ SUBTERRANE GÄNGE ═══ */}
-      <g onClick={()=>hit("keller")} style={{cursor:"pointer"}}>
-        <rect x="148" y="452" width="644" height="38"
-          fill={isSel("keller")?"#1a1820":"#0e0c14"} stroke={isSel("keller")?`${ac}88`:"rgba(80,58,120,0.35)"} strokeWidth="1.5" strokeDasharray="7,3"/>
-        {[220,310,400,490,580,670].map(x=>(
-          <line key={x} x1={x} y1="452" x2={x} y2="490" stroke={isSel("keller")?"rgba(80,58,120,0.28)":"rgba(58,44,90,0.16)"} strokeWidth="1" strokeDasharray="3,4"/>
-        ))}
-        {isSel("keller")&&<rect x="144" y="448" width="652" height="46" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#gc_glow)"/>}
-        <text x="470" y="474" textAnchor="middle" fill={isSel("keller")?ac:"#4a3880"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">SUBTERRANE GÄNGE &amp; GRÜFTE</text>
-      </g>
-      <text x="434" y="447" textAnchor="middle" fill="rgba(110,84,34,0.3)" fontSize="6.5" fontFamily="'Cinzel',serif">— Verbindungsgänge —</text>
-
-      {/* Compass */}
-      <g transform={`translate(${W-44},44)`}>
-        <circle r="18" fill="rgba(0,0,0,0.7)" stroke={`${ac}44`} strokeWidth="1"/>
-        {[["N",0,"#e8d8b0"],["S",180,"#7a6a48"],["O",90,"#7a6a48"],["W",270,"#7a6a48"]].map(([l,a,c])=>{
-          const r2=Number(a)*Math.PI/180;
-          return<text key={l} x={Math.sin(r2)*11} y={-Math.cos(r2)*11+4}
-            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
-        })}
-        <circle r="2" fill={ac} opacity="0.6"/>
-      </g>
-      <g transform={`translate(50,${H-18})`}>
+      <g transform="translate(50,482)">
         <line x1="0" y1="0" x2="100" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
         <line x1="0" y1="-4" x2="0" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
         <line x1="100" y1="-4" x2="100" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
         <text x="50" y="12" textAnchor="middle" fill={`${ac}66`} fontSize="7.5" fontFamily="'Cinzel',serif">Maßstab 1:200</text>
       </g>
-
-      <text x="20" y="26" fill={ac} fontSize="14" fontFamily="'Cinzel',serif" fontWeight="bold">GRUNDRISS DER BURG GRAVECREST</text>
-      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Ordo Custodum · Fiktive Burg</text>
     </svg>
   );
 };
