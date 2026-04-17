@@ -4425,6 +4425,239 @@ DETAILED_PLANS.alhambra=({ac,sel,onSel})=>{
   );
 };
 
+// ── Mont Saint-Michel ─────────────────────────────────────────────────────────
+DETAILED_PLANS.mont_michel=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
+  const EL=[
+    S("ramparts","Stadtmauer & Türme","🏰","Befestigung","Die mittelalterlichen Befestigungsmauern umschließen die gesamte Felseninsel. Im 14.–15. Jh. nach englischen Angriffen massiv verstärkt. Drei Tore, zahlreiche Türme.",["14.–15. Jh.","3 Tore","Nie eingenommen"],null),
+    S("grande_rue","Grande Rue","🛤️","Hauptstraße","Die einzige Straße des Dorfs, steil gepflastert und von Pilgerhäusern, Tavernen und kleinen Kapellen gesäumt. Im Mittelalter zogen hier täglich tausende Pilger hinauf.",["Pflasterstein","Mittelalterlich","Pilgerroute"],null),
+    S("village","Dorf","🏘️","Mittelalterliches Dorf","Am Fuß des Berges lebten Fischer, Händler und Pilgerherbergen. Enge Gassen, alte Häuser, die Pfarrkirche Saint-Pierre.",["Fischer & Händler","Pfarrkirche","Enge Gassen"],null),
+    S("chatelet","Châtelet","🚪","Abteitor","Das befestigte Tor des 15. Jh. führt von der Terrasse in die Abtei. Zwei flankierende Türme, Fallgitter. Hier begann das Heilige.",["15. Jh.","Fallgitter","Doppeltürme"],3),
+    S("church","Abteikirche","⛪","Abteikirche","Die romanisch-gotische Kirche thront auf 92m. Langhaus 11. Jh., Chor im Flamboyantstil 1523 vollendet. Das Kirchenschiff ruht auf Krypten über dem Abgrund — ein Ingenieurswerk des Mittelalters.",["Romanik + Gotik","11.–16. Jh.","92m Höhe"],null),
+    S("merveille","La Merveille","✨","Klosterkomplex","Das 'Wunder': drei Stockwerke übereinander gebaut — Almosenkammer & Gästehaus (unten), Rittersaal & Refektorium (Mitte), Kreuzgang (oben). Errichtet 1211–1228 in reiner Gotik.",["1211–1228","3 Stockwerke","Gotisches Meisterwerk"],null),
+    S("cloister","Kreuzgang","🌿","Kreuzgang","Krönt La Merveille im obersten Stockwerk. Doppelte versetzte Säulenreihen in Granit schaffen ein Gefühl von Schwerelosigkeit — ein offenes gotisches Wunder über dem Meer.",["Doppelsäulen","Obergschoss","Über dem Abgrund"],null),
+    S("crypts","Krypten & Unterbau","⚒️","Unterbau","Mehrere Krypten stützen die Abteikirche: Notre-Dame-sous-Terre (vorromanisch, 10. Jh.), Krypta der Großen Säulen (trägt den Chor), Krypta des Ecureuil.",["10. Jh.","Vorromanisch","Stützpfeiler"],null),
+    S("gardens","Terrassen & Gärten","🌿","Terrassen","Die Südterrasse und der Klostergarten bieten Blick über die Bucht. Hier verweilten die Benediktinermönche bei Gebet und Betrachtung.",["Buchtblick","Benediktiner","Südterrasse"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="mm_sea" cx="50%" cy="60%" r="70%">
+          <stop offset="0%" stopColor="#0c1318"/>
+          <stop offset="100%" stopColor="#060a0d"/>
+        </radialGradient>
+        <filter id="mm_glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width={W} height={H} fill="url(#mm_sea)"/>
+      {/* Tidal water lines */}
+      {[80,140,200,260,320,380,440,500].map(y=>(
+        <line key={y} x1="50" y1={y} x2="750" y2={y} stroke="rgba(40,80,120,0.07)" strokeWidth="1.5"/>
+      ))}
+
+      {/* Causeway from south */}
+      <rect x="390" y="468" width="20" height="80" fill="#241a0e" stroke="rgba(100,70,30,0.3)" strokeWidth="1"/>
+      <text x="400" y="530" textAnchor="middle" fill="rgba(80,120,160,0.35)" fontSize="8" fontFamily="'Cinzel',serif">DAMM</text>
+
+      {/* Island rock (Mont Tombe) */}
+      <path d="M400,130 C476,132 540,174 560,232 C576,286 566,352 540,398 C512,440 456,468 418,478 L400,484 L382,478 C344,468 288,440 260,398 C234,352 224,286 240,232 C260,174 324,132 400,130 Z"
+        fill="#1e1508" stroke="rgba(100,65,30,0.3)" strokeWidth="1.5"/>
+
+      {/* Outer rampart wall mass */}
+      <path d="M400,142 C470,144 528,182 546,238 C560,290 552,352 526,394 C500,432 450,458 418,468 L400,473 L382,468 C350,458 300,432 274,394 C248,352 240,290 254,238 C272,182 330,144 400,142 Z"
+        fill="#2c1e0e" stroke="rgba(130,85,35,0.5)" strokeWidth="2"/>
+
+      {/* Rampart towers */}
+      {[
+        [400,143],[450,153],[498,180],[532,218],[546,268],[540,322],[518,368],[482,408],[440,438],[400,450],
+        [360,438],[318,408],[282,368],[260,322],[254,268],[268,218],[302,180],[350,153]
+      ].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="10" fill="#3a2612" stroke="rgba(150,95,40,0.55)" strokeWidth="1.5"/>
+      ))}
+
+      {/* Interior island — slightly lighter void */}
+      <path d="M400,160 C464,162 514,196 530,246 C542,292 534,348 510,386 C486,420 444,442 416,450 L400,454 L384,450 C356,442 314,420 290,386 C266,348 258,292 270,246 C286,196 336,162 400,160 Z"
+        fill="#170e06"/>
+
+      {/* Main south gate */}
+      <rect x="391" y="452" width="18" height="14" fill="#120906" stroke="rgba(150,90,35,0.6)" strokeWidth="1.5"/>
+
+      {/* ═══ VILLAGE ═══ */}
+      <g onClick={()=>hit("village")} style={{cursor:"pointer"}}>
+        {[
+          [314,390,40,28],[358,390,30,28],[296,355,36,26],[336,355,30,26],[370,355,30,26],
+          [282,318,34,26],[320,318,30,26],[280,280,32,26],[316,280,28,26]
+        ].map(([x,y,w,h],i)=>(
+          <rect key={i} x={x} y={y} width={w} height={h}
+            fill={isSel("village")?"#2a1c0c":"#1e1408"} stroke={isSel("village")?"rgba(160,100,40,0.4)":"rgba(110,65,22,0.22)"} strokeWidth="0.8"/>
+        ))}
+        {[
+          [446,390,40,28],[412,390,30,28],[464,355,36,26],[434,355,30,26],[400,355,30,26],
+          [484,318,34,26],[450,318,30,26],[488,280,32,26],[456,280,28,26]
+        ].map(([x,y,w,h],i)=>(
+          <rect key={i+20} x={x} y={y} width={w} height={h}
+            fill={isSel("village")?"#2a1c0c":"#1e1408"} stroke={isSel("village")?"rgba(160,100,40,0.4)":"rgba(110,65,22,0.22)"} strokeWidth="0.8"/>
+        ))}
+        {isSel("village")&&<path d="M400,160 C464,162 514,196 530,246 C542,292 534,348 510,386 C486,420 444,442 416,450 L400,454 L384,450 C356,442 314,420 290,386 C266,348 258,292 270,246 C286,196 336,162 400,160 Z"
+          fill="none" stroke={`${ac}33`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="330" y="370" textAnchor="middle" fill={isSel("village")?ac:"#5a3a1a"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">DORF</text>
+      </g>
+
+      {/* Grande Rue */}
+      <g onClick={()=>hit("grande_rue")} style={{cursor:"pointer"}}>
+        <rect x="396" y="248" width="8" height="200" fill={isSel("grande_rue")?"#4a3820":"#2e2010"}
+          stroke={isSel("grande_rue")?`${ac}88`:"rgba(130,85,30,0.5)"} strokeWidth="1"/>
+        {isSel("grande_rue")&&<rect x="392" y="244" width="16" height="208" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="376" y="348" textAnchor="end" fill={isSel("grande_rue")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif">Grande</text>
+        <text x="376" y="360" textAnchor="end" fill={isSel("grande_rue")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif">Rue</text>
+      </g>
+
+      {/* Ramparts clickable overlay */}
+      <g onClick={()=>hit("ramparts")} style={{cursor:"pointer"}}>
+        {isSel("ramparts")&&<path d="M400,142 C470,144 528,182 546,238 C560,290 552,352 526,394 C500,432 450,458 418,468 L400,473 L382,468 C350,458 300,432 274,394 C248,352 240,290 254,238 C272,182 330,144 400,142 Z"
+          fill="none" stroke={`${ac}55`} strokeWidth="3" filter="url(#mm_glow)"/>}
+        <text x="555" y="310" textAnchor="middle" fill={isSel("ramparts")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(25,555,310)">STADTMAUER</text>
+      </g>
+
+      {/* Gardens / South Terrace */}
+      <g onClick={()=>hit("gardens")} style={{cursor:"pointer"}}>
+        <path d="M332,248 L468,248 L466,262 L408,270 L400,274 L392,270 L334,262 Z"
+          fill={isSel("gardens")?"#1a2214":"#101808"} stroke={isSel("gardens")?`${ac}88`:"rgba(40,70,20,0.35)"} strokeWidth="1.5"/>
+        {[345,365,385,405,425,445,460].map(x=>(
+          <line key={x} x1={x} y1="249" x2={x} y2="261" stroke={isSel("gardens")?"rgba(60,90,30,0.3)":"rgba(40,60,20,0.18)"} strokeWidth="0.7"/>
+        ))}
+        {isSel("gardens")&&<path d="M332,248 L468,248 L466,262 L408,270 L400,274 L392,270 L334,262 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="258" textAnchor="middle" fill={isSel("gardens")?ac:"#3a5020"} fontSize="7" fontFamily="'Cinzel',serif">TERRASSEN</text>
+      </g>
+
+      {/* Crypts */}
+      <g onClick={()=>hit("crypts")} style={{cursor:"pointer"}}>
+        <rect x="340" y="228" width="120" height="24" fill={isSel("crypts")?"#251a10":"#1a1108"}
+          stroke={isSel("crypts")?`${ac}88`:"rgba(120,70,30,0.3)"} strokeWidth="1.5"/>
+        {[352,368,386,400,418,436,450].map(x=>(
+          <circle key={x} cx={x} cy="240" r="2.5" fill={isSel("crypts")?"#5a3a1888":"#3a221033"} stroke={isSel("crypts")?"#5a3a18":"#3a2210"} strokeWidth="0.7"/>
+        ))}
+        {isSel("crypts")&&<rect x="336" y="224" width="128" height="32" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="242" textAnchor="middle" fill={isSel("crypts")?ac:"#5a3a18"} fontSize="7.5" fontFamily="'Cinzel',serif">KRYPTEN</text>
+      </g>
+
+      {/* ═══ ABBEY CHURCH ═══ */}
+      <g onClick={()=>hit("church")} style={{cursor:"pointer"}}>
+        {/* Nave */}
+        <rect x="348" y="172" width="106" height="52" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* N transept */}
+        <rect x="372" y="150" width="32" height="28" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* S transept */}
+        <rect x="372" y="218" width="32" height="26" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* Choir (east) */}
+        <rect x="450" y="178" width="38" height="40" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        <path d="M488,184 Q504,198 488,212" fill={isSel("church")?"#221a0e":"#180e08"} stroke={isSel("church")?`${ac}66`:"rgba(160,110,40,0.35)"} strokeWidth="1.5"/>
+        {/* Nave interior void */}
+        <rect x="360" y="180" width="84" height="36" fill="#0e0a05"/>
+        {/* Column pairs */}
+        {[372,386,400,414,428].map(x=>(
+          <g key={x}>
+            <circle cx={x} cy="185" r="2" fill={isSel("church")?"#aa882244":"#6a551511"} stroke={isSel("church")?"#aa8822":"#6a5515"} strokeWidth="0.7"/>
+            <circle cx={x} cy="211" r="2" fill={isSel("church")?"#aa882244":"#6a551511"} stroke={isSel("church")?"#aa8822":"#6a5515"} strokeWidth="0.7"/>
+          </g>
+        ))}
+        {/* Crossing dashed outline */}
+        <rect x="372" y="172" width="32" height="52" fill="none" stroke={isSel("church")?"rgba(200,160,60,0.4)":"rgba(140,100,30,0.18)"} strokeWidth="1.5" strokeDasharray="4,2"/>
+        {/* West platform */}
+        <rect x="330" y="180" width="22" height="36" fill={isSel("church")?"#281e0e":"#1c1508"}
+          stroke={isSel("church")?`${ac}55`:"rgba(140,90,30,0.28)"} strokeWidth="1"/>
+        {isSel("church")&&<><rect x="344" y="168" width="152" height="80" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#mm_glow)"/>
+          <rect x="368" y="146" width="40" height="32" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/></>}
+        <text x="400" y="196" textAnchor="middle" fill={isSel("church")?ac:"#7a6020"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">ABTEIKIRCHE</text>
+        <text x="400" y="208" textAnchor="middle" fill={isSel("church")?"#c8a840":"#5a4010"} fontSize="6.5" fontFamily="'Cinzel',serif">11.–16. Jh.</text>
+      </g>
+
+      {/* ═══ LA MERVEILLE ═══ */}
+      <g onClick={()=>hit("merveille")} style={{cursor:"pointer"}}>
+        <rect x="286" y="150" width="66" height="90" fill={isSel("merveille")?"#1e2430":"#141820"}
+          stroke={isSel("merveille")?`${ac}88`:"rgba(80,100,160,0.35)"} strokeWidth={isSel("merveille")?2:1.5}/>
+        <line x1="290" y1="180" x2="348" y2="180" stroke={isSel("merveille")?"rgba(80,100,160,0.4)":"rgba(60,80,130,0.2)"} strokeWidth="1"/>
+        <line x1="290" y1="210" x2="348" y2="210" stroke={isSel("merveille")?"rgba(80,100,160,0.4)":"rgba(60,80,130,0.2)"} strokeWidth="1"/>
+        <rect x="294" y="156" width="26" height="20" fill="#0e1018"/>
+        <rect x="322" y="156" width="26" height="20" fill="#0e1018"/>
+        <rect x="294" y="184" width="26" height="22" fill="#0e1018"/>
+        <rect x="322" y="184" width="26" height="22" fill="#0e1018"/>
+        <rect x="294" y="214" width="26" height="22" fill="#0e1018"/>
+        <rect x="322" y="214" width="26" height="22" fill="#0e1018"/>
+        {isSel("merveille")&&<rect x="282" y="146" width="74" height="98" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="319" y="248" textAnchor="middle" fill={isSel("merveille")?ac:"#3a5080"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">LA MERVEILLE</text>
+        <text x="319" y="260" textAnchor="middle" fill={isSel("merveille")?"#6080cc":"#2a3860"} fontSize="6.5" fontFamily="'Cinzel',serif">1211–1228</text>
+      </g>
+
+      {/* ═══ CLOISTER ═══ */}
+      <g onClick={()=>hit("cloister")} style={{cursor:"pointer"}}>
+        <rect x="292" y="152" width="52" height="52" fill={isSel("cloister")?"#1a2218":"#101810"}
+          stroke={isSel("cloister")?`${ac}88`:"rgba(40,80,30,0.38)"} strokeWidth={isSel("cloister")?2:1.5}/>
+        {/* Garden void */}
+        <rect x="304" y="164" width="28" height="28" fill="#0c1009"/>
+        {/* Column dots */}
+        {[304,310,316,322,330].map(x=>(
+          <circle key={x} cx={x} cy="164" r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[304,310,316,322,330].map(x=>(
+          <circle key={x+100} cx={x} cy="192" r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[164,170,176,182,188].map(y=>(
+          <circle key={y} cx="304" cy={y} r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[164,170,176,182,188].map(y=>(
+          <circle key={y+100} cx="332" cy={y} r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {isSel("cloister")&&<rect x="288" y="148" width="60" height="60" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="318" y="148" textAnchor="middle" fill={isSel("cloister")?ac:"#3a6030"} fontSize="7" fontFamily="'Cinzel',serif">KREUZGANG</text>
+      </g>
+
+      {/* ═══ CHÂTELET ═══ */}
+      <g onClick={()=>hit("chatelet")} style={{cursor:"pointer"}}>
+        <rect x="384" y="246" width="32" height="16" fill={isSel("chatelet")?"#3a1808":"#2a1006"}
+          stroke={isSel("chatelet")?`${ac}cc`:"rgba(180,60,30,0.5)"} strokeWidth={isSel("chatelet")?2:1.5}/>
+        <rect x="384" y="246" width="10" height="16" fill={isSel("chatelet")?"#4a2010":"#341208"} stroke="rgba(180,60,30,0.25)" strokeWidth="0.5"/>
+        <rect x="406" y="246" width="10" height="16" fill={isSel("chatelet")?"#4a2010":"#341208"} stroke="rgba(180,60,30,0.25)" strokeWidth="0.5"/>
+        {isSel("chatelet")&&<rect x="380" y="242" width="40" height="24" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="243" textAnchor="middle" fill={isSel("chatelet")?ac:"#8a3020"} fontSize="7" fontFamily="'Cinzel',serif">CHÂTELET ⚠</text>
+      </g>
+
+      {/* Compass */}
+      <g transform={`translate(${W-44},44)`}>
+        <circle r="18" fill="rgba(0,0,0,0.7)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#e8d8b0"],["S",180,"#7a6a48"],["O",90,"#7a6a48"],["W",270,"#7a6a48"]].map(([l,a,c])=>{
+          const r2=Number(a)*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*11} y={-Math.cos(r2)*11+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+        <circle r="2" fill={ac} opacity="0.6"/>
+      </g>
+
+      {/* Scale */}
+      <g transform={`translate(50,${H-28})`}>
+        <line x1="0" y1="0" x2="100" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="0" y1="-5" x2="0" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="100" y1="-5" x2="100" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <text x="50" y="14" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 100m</text>
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">MONT SAINT-MICHEL</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Normandie · 8.–16. Jh. · Frankreich</text>
+    </svg>
+  );
+};
+
 // ── Castle Floor Plan Explore Tab ───────────────────────────────────────────
 function CastleFloorPlanTab({castle}){
   const sel=castle;
