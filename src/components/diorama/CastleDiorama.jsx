@@ -121,34 +121,115 @@ export default function CastleDiorama({ castle }) {
   useEffect(() => { setRot(0); }, [castle?.id]);
 
   const ac  = castle?.theme?.accent || '#c9a84c';
-  const btn = (label, onClick) => (
-    <button onClick={onClick} style={{
-      background:'rgba(0,0,0,0.6)', border:`1px solid ${ac}44`, color:ac,
-      borderRadius:'3px', padding:'2px 8px', cursor:'pointer',
-      fontSize:'13px', lineHeight:1.4, fontFamily:'monospace',
-      transition:'background .12s',
-    }}>{label}</button>
-  );
 
   return (
-    <div style={{width:'100%',background:'#060504',borderRadius:'8px',overflow:'hidden',position:'relative',userSelect:'none'}}>
+    <div style={{
+      width:'100%',
+      background:`linear-gradient(180deg,#12100a 0%,#080604 60%,#060402 100%)`,
+      borderRadius:'12px',
+      overflow:'hidden',
+      position:'relative',
+      userSelect:'none',
+      border:`1px solid ${ac}28`,
+      boxShadow:`0 8px 40px rgba(0,0,0,0.85), 0 0 0 1px rgba(0,0,0,0.5), inset 0 1px 0 ${ac}18`,
+    }}>
+
+      {/* Top header bar */}
+      <div style={{
+        position:'absolute',top:0,left:0,right:0,zIndex:3,
+        padding:'10px 14px 18px',
+        background:`linear-gradient(180deg,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0) 100%)`,
+        display:'flex',justifyContent:'space-between',alignItems:'center',
+        pointerEvents:'none',
+      }}>
+        <span style={{
+          color:ac,fontSize:'10px',fontFamily:"'Cinzel',serif",
+          letterSpacing:'3px',fontWeight:700,
+          textShadow:`0 0 16px ${ac}99, 0 1px 3px rgba(0,0,0,0.9)`,
+        }}>3D DIORAMA</span>
+        <span style={{
+          color:ac+'bb',fontSize:'11px',fontFamily:"'Cinzel',serif",
+          letterSpacing:'1.5px',
+          textShadow:`0 0 10px ${ac}66`,
+        }}>{castle?.icon||'🏰'}</span>
+      </div>
+
       <canvas ref={ref} width={600} height={380} style={{width:'100%',display:'block'}}/>
 
-      {/* Rotationssteuerung */}
-      <div style={{position:'absolute',top:8,right:10,display:'flex',gap:'4px',alignItems:'center'}}>
-        {btn('◀', ()=>setRot(r=>(r+3)%4))}
-        <span style={{color:ac+'99',fontSize:'10px',fontFamily:'monospace',minWidth:'20px',textAlign:'center'}}>
-          {ROT_LABELS[rot]}
-        </span>
-        {btn('▶', ()=>setRot(r=>(r+1)%4))}
+      {/* Rotation controls */}
+      <div style={{
+        position:'absolute',top:'50%',right:10,transform:'translateY(-50%)',
+        display:'flex',flexDirection:'column',gap:'5px',alignItems:'center',
+        background:'rgba(5,3,2,0.7)',
+        backdropFilter:'blur(6px)',
+        border:`1px solid ${ac}30`,
+        borderRadius:'10px',
+        padding:'8px 6px',
+        boxShadow:`0 4px 16px rgba(0,0,0,0.6), inset 0 0 12px rgba(0,0,0,0.4)`,
+      }}>
+        <button onClick={()=>setRot(r=>(r+3)%4)} style={{
+          background:'transparent',border:'none',
+          color:ac,cursor:'pointer',
+          fontSize:'15px',lineHeight:1,
+          padding:'4px 8px',borderRadius:'6px',
+          transition:'all 0.15s',
+          textShadow:`0 0 8px ${ac}88`,
+        }}>▲</button>
+        <span style={{
+          color:ac,fontSize:'10px',fontFamily:"'Cinzel',serif",
+          letterSpacing:'1px',minWidth:'22px',textAlign:'center',
+          fontWeight:700,textShadow:`0 0 8px ${ac}88`,
+        }}>{ROT_LABELS[rot]}</span>
+        <button onClick={()=>setRot(r=>(r+1)%4)} style={{
+          background:'transparent',border:'none',
+          color:ac,cursor:'pointer',
+          fontSize:'15px',lineHeight:1,
+          padding:'4px 8px',borderRadius:'6px',
+          transition:'all 0.15s',
+          textShadow:`0 0 8px ${ac}88`,
+        }}>▼</button>
       </div>
 
-      <div style={{position:'absolute',bottom:8,left:10,right:10,display:'flex',
-        justifyContent:'space-between',alignItems:'flex-end',
-        fontSize:'11px',fontFamily:'monospace',pointerEvents:'none'}}>
-        <span style={{color:'rgba(255,255,255,0.38)'}}>{castle?.name}</span>
-        <span style={{color:ac+'88',fontSize:'10px'}}>{castle?.era}</span>
+      {/* Bottom info bar */}
+      <div style={{
+        position:'absolute',bottom:0,left:0,right:0,
+        padding:'20px 14px 10px',
+        background:`linear-gradient(0deg,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0) 100%)`,
+        display:'flex',justifyContent:'space-between',alignItems:'flex-end',
+        pointerEvents:'none',
+      }}>
+        <div>
+          <div style={{
+            color:'rgba(255,255,255,0.92)',fontSize:'14px',
+            fontFamily:"'Cinzel',serif",fontWeight:600,
+            letterSpacing:'0.5px',
+            textShadow:'0 1px 6px rgba(0,0,0,0.9)',
+          }}>{castle?.name}</div>
+          {castle?.sub&&<div style={{
+            color:ac+'aa',fontSize:'10px',marginTop:'2px',
+            fontFamily:"'Cinzel',serif",letterSpacing:'0.5px',
+          }}>{castle?.sub}</div>}
+        </div>
+        <div style={{
+          color:ac+'cc',fontSize:'11px',fontFamily:"'Cinzel',serif",
+          letterSpacing:'1px',textAlign:'right',
+          textShadow:`0 0 8px ${ac}55`,
+        }}>{castle?.era}</div>
       </div>
+
+      {/* Corner accent lines */}
+      <div style={{position:'absolute',top:0,left:0,width:'20px',height:'20px',
+        borderTop:`2px solid ${ac}55`,borderLeft:`2px solid ${ac}55`,
+        borderRadius:'8px 0 0 0',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',top:0,right:0,width:'20px',height:'20px',
+        borderTop:`2px solid ${ac}55`,borderRight:`2px solid ${ac}55`,
+        borderRadius:'0 8px 0 0',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:0,left:0,width:'20px',height:'20px',
+        borderBottom:`2px solid ${ac}55`,borderLeft:`2px solid ${ac}55`,
+        borderRadius:'0 0 0 8px',pointerEvents:'none'}}/>
+      <div style={{position:'absolute',bottom:0,right:0,width:'20px',height:'20px',
+        borderBottom:`2px solid ${ac}55`,borderRight:`2px solid ${ac}55`,
+        borderRadius:'0 0 8px 0',pointerEvents:'none'}}/>
     </div>
   );
 }
@@ -158,6 +239,22 @@ function render(ctx, W, H, castle, rot=0) {
   const rng   = mkRng(castle?.id || 'x');
   const ac    = castle?.theme?.accent || '#c9a84c';
   const base  = PAL[castle?.region] || PAL.default;
+
+  // ── Canvas background atmosphere ─────────────────────────────────────────
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+  bgGrad.addColorStop(0,   '#1e1810');
+  bgGrad.addColorStop(0.4, '#0e0b06');
+  bgGrad.addColorStop(1,   '#060402');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle ground glow in accent color
+  const groundGlow = ctx.createRadialGradient(W/2, H*0.68, 0, W/2, H*0.68, W*0.42);
+  groundGlow.addColorStop(0, ac+'12');
+  groundGlow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = groundGlow;
+  ctx.fillRect(0, 0, W, H);
+
   const pal   = { ...base, ...(PAL_OVERRIDE[castle?.id] || {}) };
   const rat   = castle?.ratings || {walls:70,garrison:60,morale:70,supply:70,position:60};
   const style = selectStyle(castle);
@@ -461,26 +558,56 @@ function render(ctx, W, H, castle, rot=0) {
 
 // ── Isometrischer Block ───────────────────────────────────────────────────
 function drawBlock(ctx, pt, bx, by, bz, bh, topC, lftC, rgtC) {
-  const z0=bz, z1=bz+bh, ol='rgba(0,0,0,0.22)';
+  const z0=bz, z1=bz+bh;
+  const ol='rgba(0,0,0,0.18)';
+  const hl='rgba(255,255,255,0.06)';
 
+  // Top face
   const [ax,ay]   = pt(bx,  by,  z1);
   const [bpx,bpy] = pt(bx+1,by,  z1);
   const [cpx,cpy] = pt(bx+1,by+1,z1);
   const [dpx,dpy] = pt(bx,  by+1,z1);
   ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bpx,bpy); ctx.lineTo(cpx,cpy); ctx.lineTo(dpx,dpy);
-  ctx.closePath(); ctx.fillStyle=topC; ctx.fill(); ctx.strokeStyle=ol; ctx.lineWidth=0.5; ctx.stroke();
+  ctx.closePath();
+  // Subtle top-face gradient (brighter toward top-left = light source)
+  const topGrad = ctx.createLinearGradient(ax,ay,cpx,cpy);
+  topGrad.addColorStop(0, topC);
+  topGrad.addColorStop(1, shadeColor(topC, -18));
+  ctx.fillStyle=topGrad; ctx.fill();
+  ctx.strokeStyle=hl; ctx.lineWidth=0.5; ctx.stroke();
 
+  // Left face
   const [lax,lay] = pt(bx,  by+1,z1);
   const [lbx,lby] = pt(bx+1,by+1,z1);
   const [lcx,lcy] = pt(bx+1,by+1,z0);
   const [ldx,ldy] = pt(bx,  by+1,z0);
   ctx.beginPath(); ctx.moveTo(lax,lay); ctx.lineTo(lbx,lby); ctx.lineTo(lcx,lcy); ctx.lineTo(ldx,ldy);
-  ctx.closePath(); ctx.fillStyle=lftC; ctx.fill(); ctx.strokeStyle=ol; ctx.lineWidth=0.5; ctx.stroke();
+  ctx.closePath();
+  const lftGrad = ctx.createLinearGradient(lax,lay,ldx,ldy);
+  lftGrad.addColorStop(0, lftC);
+  lftGrad.addColorStop(1, shadeColor(lftC, -12));
+  ctx.fillStyle=lftGrad; ctx.fill();
+  ctx.strokeStyle=ol; ctx.lineWidth=0.5; ctx.stroke();
 
+  // Right face
   const [rax,ray] = pt(bx+1,by,  z1);
   const [rbx,rby] = pt(bx+1,by+1,z1);
   const [rcx,rcy] = pt(bx+1,by+1,z0);
   const [rdx,rdy] = pt(bx+1,by,  z0);
   ctx.beginPath(); ctx.moveTo(rax,ray); ctx.lineTo(rbx,rby); ctx.lineTo(rcx,rcy); ctx.lineTo(rdx,rdy);
-  ctx.closePath(); ctx.fillStyle=rgtC; ctx.fill(); ctx.strokeStyle=ol; ctx.lineWidth=0.5; ctx.stroke();
+  ctx.closePath();
+  const rgtGrad = ctx.createLinearGradient(rax,ray,rdx,rdy);
+  rgtGrad.addColorStop(0, rgtC);
+  rgtGrad.addColorStop(1, shadeColor(rgtC, -15));
+  ctx.fillStyle=rgtGrad; ctx.fill();
+  ctx.strokeStyle=ol; ctx.lineWidth=0.5; ctx.stroke();
+}
+
+// Helper: darken/lighten a hex color by amt (-255..255)
+function shadeColor(hex, amt) {
+  const n = parseInt(hex.replace('#',''), 16);
+  const r = Math.min(255, Math.max(0, (n>>16) + amt));
+  const g = Math.min(255, Math.max(0, ((n>>8)&0xff) + amt));
+  const b = Math.min(255, Math.max(0, (n&0xff) + amt));
+  return `#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`;
 }
