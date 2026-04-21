@@ -1999,72 +1999,71 @@ const CASTLE_PLANS = {
 
   castle_sorrow: ({ac,sel,onZone}) => (
     <g>
-      {/* Terrain / river-side atmosphere */}
-      <rect x="0" y="0" width="220" height="200" fill="rgba(18,12,8,0.62)"/>
-      <path d="M 0 168 Q 45 156 95 164 Q 145 172 220 156 L 220 200 L 0 200 Z" fill="rgba(45,28,18,0.45)"/>
-
-      {/* Äußere Ringmauer */}
-      <rect x="16" y="34" width="188" height="152"
-        fill={sel==="am"?"rgba(138,106,63,0.22)":"rgba(95,70,35,0.08)"}
-        stroke={`${ac}66`} strokeWidth="5"
-        style={{cursor:"pointer"}} onClick={()=>onZone("am")}/>
-      {[[16,34],[110,34],[204,34],[204,110],[204,186],[110,186],[16,186],[16,110]].map(([x,y],i)=>(
-        <rect key={i} x={x-7} y={y-7} width="14" height="14" rx="2"
-          fill={`${ac}33`} stroke={`${ac}77`} strokeWidth="1.2"/>
+      {/* parchment-like terrain */}
+      <rect x="0" y="0" width="220" height="200" fill="rgba(46,32,18,0.20)"/>
+      {[24,40,56,72,88,104,120,136].map(y=>(
+        <path key={y} d={`M 0 ${y} Q 55 ${y-8} 110 ${y} Q 165 ${y+8} 220 ${y-2}`} fill="none" stroke="rgba(70,52,30,0.15)" strokeWidth="0.8"/>
       ))}
-      <text x="110" y="52" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif"
+
+      {/* outer ring wall, closer to original shape */}
+      <path d="M 18 160 Q 6 132 26 98 Q 46 62 82 42 Q 126 20 178 28 Q 205 31 214 54 Q 212 79 201 100 Q 209 128 191 156 Q 171 178 132 184 Q 84 190 48 178 Q 26 170 18 160 Z"
+        fill={sel==="am"?"rgba(138,106,63,0.26)":"rgba(98,74,40,0.10)"}
+        stroke={`${ac}77`} strokeWidth="5.2"
+        style={{cursor:"pointer"}} onClick={()=>onZone("am")}/>
+      {[ [20,160],[30,98],[84,42],[178,28],[214,54],[201,100],[191,156],[132,184],[48,178] ].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r="5.5" fill={`${ac}30`} stroke={`${ac}88`} strokeWidth="1"/>
+      ))}
+      <text x="112" y="30" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="serif"
         style={{cursor:"pointer"}} onClick={()=>onZone("am")}>ÄUSSERE RINGMAUER</text>
 
-      {/* Drei Burghöfe */}
-      <rect x="46" y="68" width="58" height="70" rx="3"
+      {/* town blocks */}
+      {Array.from({length:32},(_,i)=>{
+        const col=i%8,row=Math.floor(i/8);
+        return <rect key={i} x={38+col*10+(row%2?2:0)} y={126+row*9} width="8" height="6" fill="rgba(90,72,52,0.24)" stroke="rgba(120,92,62,0.22)" strokeWidth="0.4"/>;
+      })}
+
+      {/* three inner courtyards */}
+      <path d="M 56 108 L 64 66 L 102 58 L 108 104 L 84 118 Z"
         fill={sel==="ub"?"rgba(185,137,82,0.34)":"rgba(140,98,54,0.16)"}
-        stroke={`${ac}88`} strokeWidth="3"
-        style={{cursor:"pointer"}} onClick={()=>onZone("ub")}/>
-      <text x="75" y="104" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">UNTERER</text>
-      <text x="75" y="112" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">BURGHOF</text>
+        stroke={`${ac}aa`} strokeWidth="2.8" style={{cursor:"pointer"}} onClick={()=>onZone("ub")}/>
+      <text x="82" y="90" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">UNTERER</text>
+      <text x="82" y="98" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">BURGHOF</text>
 
-      <rect x="96" y="62" width="54" height="76" rx="3"
+      <path d="M 105 110 L 112 62 L 152 58 L 156 110 L 132 124 Z"
         fill={sel==="mb"?"rgba(197,150,88,0.34)":"rgba(150,108,62,0.16)"}
-        stroke={`${ac}aa`} strokeWidth="3"
-        style={{cursor:"pointer"}} onClick={()=>onZone("mb")}/>
-      <text x="123" y="101" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">MITTLERER</text>
-      <text x="123" y="109" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">BURGHOF</text>
+        stroke={`${ac}bb`} strokeWidth="2.8" style={{cursor:"pointer"}} onClick={()=>onZone("mb")}/>
+      <text x="132" y="89" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">MITTLERER</text>
+      <text x="132" y="97" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">BURGHOF</text>
 
-      <rect x="145" y="58" width="42" height="72" rx="3"
+      <path d="M 154 112 L 160 64 L 187 68 L 190 110 L 176 126 Z"
         fill={sel==="ob"?"rgba(216,173,112,0.34)":"rgba(166,122,73,0.18)"}
-        stroke={`${ac}bb`} strokeWidth="3"
-        style={{cursor:"pointer"}} onClick={()=>onZone("ob")}/>
-      <text x="166" y="94" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">OBERER</text>
-      <text x="166" y="102" textAnchor="middle" fill={`${ac}cc`} fontSize="8" fontFamily="serif">BURGHOF</text>
+        stroke={`${ac}cc`} strokeWidth="2.8" style={{cursor:"pointer"}} onClick={()=>onZone("ob")}/>
+      <text x="173" y="90" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">OBERER</text>
+      <text x="173" y="98" textAnchor="middle" fill={`${ac}dd`} fontSize="7.5" fontFamily="serif">BURGHOF</text>
 
-      {/* Bergfried */}
-      <rect x="176" y="74" width="26" height="30" rx="2"
-        fill={sel==="bf"?"rgba(232,198,138,0.45)":"rgba(192,154,92,0.22)"}
-        stroke="#e8c68a" strokeWidth="2.5"
-        style={{cursor:"pointer"}} onClick={()=>onZone("bf")}/>
-      <text x="189" y="91" textAnchor="middle" fill="#e8c68a" fontSize="8" fontWeight="bold"
-        style={{cursor:"pointer"}} onClick={()=>onZone("bf")}>BERG-</text>
-      <text x="189" y="99" textAnchor="middle" fill="#e8c68a" fontSize="8" fontWeight="bold"
-        style={{cursor:"pointer"}} onClick={()=>onZone("bf")}>FRIED</text>
+      {/* bergfried + chapel zone */}
+      <rect x="182" y="84" width="24" height="24" rx="2.5"
+        fill={sel==="bf"?"rgba(232,198,138,0.50)":"rgba(192,154,92,0.22)"}
+        stroke="#e8c68a" strokeWidth="2.2" style={{cursor:"pointer"}} onClick={()=>onZone("bf")}/>
+      <text x="194" y="97" textAnchor="middle" fill="#e8c68a" fontSize="7.5" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("bf")}>BERGFRIED</text>
 
-      {/* Hafenviertel / Stadttor Schwächen */}
-      <rect x="20" y="148" width="58" height="36" rx="2"
-        fill={sel==="hf"?"rgba(77,143,191,0.40)":"rgba(60,112,152,0.18)"}
-        stroke="#4d8fbf" strokeWidth="2"
-        style={{cursor:"pointer"}} onClick={()=>onZone("hf")}/>
-      <text x="49" y="166" textAnchor="middle" fill="#4d8fbf" fontSize="8" fontFamily="serif"
-        style={{cursor:"pointer"}} onClick={()=>onZone("hf")}>HAFENVIERTEL</text>
+      {/* harbor quarter */}
+      <path d="M 22 162 L 34 152 L 62 160 L 66 180 L 34 186 L 18 176 Z"
+        fill={sel==="hf"?"rgba(77,143,191,0.42)":"rgba(60,112,152,0.20)"}
+        stroke="#4d8fbf" strokeWidth="2" style={{cursor:"pointer"}} onClick={()=>onZone("hf")}/>
+      <text x="42" y="174" textAnchor="middle" fill="#4d8fbf" fontSize="7.2" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("hf")}>HAFEN</text>
+      <text x="42" y="181" textAnchor="middle" fill="#4d8fbf" fontSize="7.2" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("hf")}>VIERTEL</text>
 
-      <rect x="88" y="174" width="44" height="16" rx="2"
+      {/* city gate weakness */}
+      <rect x="96" y="180" width="36" height="12" rx="2"
         fill={sel==="st"?"rgba(204,85,68,0.45)":"rgba(170,70,58,0.22)"}
-        stroke="#cc5544" strokeWidth="2"
-        style={{cursor:"pointer"}} onClick={()=>onZone("st")}/>
-      <text x="110" y="185" textAnchor="middle" fill="#cc5544" fontSize="7" fontWeight="bold"
-        style={{cursor:"pointer"}} onClick={()=>onZone("st")}>STADTTOR ⚠</text>
+        stroke="#cc5544" strokeWidth="1.8" style={{cursor:"pointer"}} onClick={()=>onZone("st")}/>
+      <text x="114" y="188" textAnchor="middle" fill="#cc5544" fontSize="7" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("st")}>STADTTOR ⚠</text>
 
-      {/* Innenbeschriftung */}
-      <text x="115" y="70" textAnchor="middle" fill={`${ac}66`} fontSize="7" fontFamily="serif">PALAS · ZEUGHAUS · KEMENATEN</text>
-      <text x="115" y="125" textAnchor="middle" fill={`${ac}66`} fontSize="7" fontFamily="serif">ZISTERNEN · VOGTEI · KAPELLE</text>
+      {/* labels as in provided map style */}
+      <text x="125" y="53" textAnchor="middle" fill={`${ac}55`} fontSize="6.8" fontFamily="serif">PALAS · ZEUGHAUS · VOGTEI</text>
+      <text x="126" y="122" textAnchor="middle" fill={`${ac}55`} fontSize="6.8" fontFamily="serif">KEMENATE · ZISTERNE · KAPELLE</text>
+      <text x="78" y="144" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif">MARKTPLATZ / WERKSTÄTTEN</text>
 
       {/* Compass + title */}
       <text x="196" y="100" textAnchor="middle" fill={`${ac}55`} fontSize="10" fontFamily="serif">N</text>
