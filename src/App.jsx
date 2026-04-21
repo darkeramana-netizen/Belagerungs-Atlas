@@ -2710,7 +2710,7 @@ function CastleMapTab({castle}){
                           <div style={{padding:"12px 14px",background:"rgba(0,0,0,0.2)",
                             border:"1px solid rgba(255,255,255,0.05)",borderRadius:"5px"}}>
                             <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"2px",marginBottom:"8px"}}>⛰️ STRATEGISCHE LAGE</div>
-                            <div style={{fontSize:"13px",color:"#7a6a50",lineHeight:1.85}}>
+                            <div style={{fontSize:"13px",color:"#90a2cc",lineHeight:1.85}}>
                               {getTerrainDesc(sel)}
                             </div>
                           </div>
@@ -4894,7 +4894,7 @@ function CastleBuilder(){
           <div key={s.l} style={{textAlign:"center",padding:"7px 4px",background:"rgba(255,255,255,.018)",border:"1px solid rgba(255,255,255,.03)",borderRadius:"4px"}}>
             <div style={{fontSize:"17px",fontWeight:"bold",color:rCol(s.v)}}>{s.v}</div>
             {s.b>0&&<div style={{fontSize:"10px",color:"#6aaa50"}}>+{s.b} Synergie</div>}
-            <div style={{fontSize:"11px",color:"#8a7a60",letterSpacing:"1px",marginTop:"1px"}}>{s.l.toUpperCase()}</div>
+            <div style={{fontSize:"11px",color:"#9cb0de",letterSpacing:"1px",marginTop:"1px"}}>{s.l.toUpperCase()}</div>
           </div>
         ))}
       </div>
@@ -4918,7 +4918,7 @@ function CastleBuilder(){
         {BUILDER.map(el=>{const isS=sel.includes(el.id),canA=rem>=(el.cost)||isS;return(
           <button key={el.id} onClick={()=>toggle(el.id)} style={{padding:"7px 9px",textAlign:"left",background:isS?"rgba(201,168,76,0.07)":"rgba(255,255,255,0.016)",border:`1px solid ${isS?"rgba(201,168,76,0.26)":canA?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.016)"}`,borderRadius:"4px",cursor:canA?"pointer":"not-allowed",opacity:canA?1:.3,transition:"all .1s"}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:"1px"}}><div style={{fontSize:"13px",color:isS?"#e0c878":"#4a3a28"}}>{el.i} {el.l}</div><div style={{fontSize:"12px",fontWeight:"bold",color:isS?"#c9a84c":"#1a0e08"}}>💰{el.cost}</div></div>
-            <div style={{fontSize:"11px",color:"#8a7a60",lineHeight:1.4}}>{el.desc}</div>
+            <div style={{fontSize:"11px",color:"#9cb0de",lineHeight:1.4}}>{el.desc}</div>
             {isS&&<div style={{display:"flex",gap:"4px",marginTop:"2px"}}>{el.def>0&&<span style={{fontSize:"10px",color:"#cc7744"}}>🛡+{el.def}</span>}{el.sup>0&&<span style={{fontSize:"10px",color:"#4488cc"}}>📦+{el.sup}</span>}{el.pos>0&&<span style={{fontSize:"10px",color:"#88aa44"}}>⛰+{el.pos}</span>}</div>}
           </button>);})}
       </div>
@@ -6367,13 +6367,13 @@ function Timeline({castles,onSelect}){
                 {isUp&&<div style={{fontSize:"10px",color:"#b09a70",whiteSpace:"nowrap",maxWidth:"60px",overflow:"hidden",textOverflow:"ellipsis",textAlign:"center"}}>{c.name.split(" ")[0]}</div>}
                 <div style={{fontSize:"13px",padding:"2px",background:`${c.theme.accent}12`,border:`1px solid ${c.theme.accent}28`,borderRadius:"50%",width:"24px",height:"24px",display:"flex",alignItems:"center",justifyContent:"center"}}>{c.icon}</div>
                 {!isUp&&<div style={{fontSize:"10px",color:"#b09a70",whiteSpace:"nowrap",maxWidth:"60px",overflow:"hidden",textOverflow:"ellipsis",textAlign:"center"}}>{c.name.split(" ")[0]}</div>}
-                <div style={{fontSize:"9px",color:"#8a7a60",fontFamily:"monospace"}}>{c.year>0?c.year:`${Math.abs(c.year)}v`}</div>
+                <div style={{fontSize:"9px",color:"#9cb0de",fontFamily:"monospace"}}>{c.year>0?c.year:`${Math.abs(c.year)}v`}</div>
               </div>
             </button>
           );
         })}
       </div>
-      <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#8a7a60",fontFamily:"monospace",marginBottom:"16px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#9cb0de",fontFamily:"monospace",marginBottom:"16px"}}>
         <span>{minY>0?`${minY} n.Chr.`:`${Math.abs(minY)} v.Chr.`}</span>
         <span style={{color:"#5a4a30"}}>{sorted.length} Burgen</span>
         <span>{maxY>0?`${maxY} n.Chr.`:`${Math.abs(maxY)} v.Chr.`}</span>
@@ -6387,7 +6387,7 @@ function Timeline({castles,onSelect}){
             <span style={{fontSize:"16px"}}>{c.icon}</span>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:"12px",fontWeight:"bold",color:"#9a8860",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
-              <div style={{fontSize:"11px",color:"#8a7a60"}}>{c.era}</div>
+              <div style={{fontSize:"11px",color:"#9cb0de"}}>{c.era}</div>
             </div>
             <div style={{fontSize:"14px",fontWeight:"bold",color:rCol(avg(c)),flexShrink:0}}>{avg(c)}</div>
           </button>
@@ -7089,6 +7089,7 @@ export default function App(){
   const [season,setSeason]=useState(SEASONS[0]);
   const {weather,randomize:randomizeWeather}=useWeather();
   const [showSetup,setShowSetup]=useState(false);
+  const [visualPreset,setVisualPreset]=useState("blue");
   const [achievementToast,setAchievementToast]=useState(null);
   const prevAchievements=useRef(new Set());
 
@@ -7128,21 +7129,51 @@ export default function App(){
     if(search&&!c.name.toLowerCase().includes(search.toLowerCase()))return false;
     return true;
   }),[filter,epochFilter,regionFilter,search]);
+  const topCastles=useMemo(()=>[...CASTLES].sort((a,b)=>avg(b)-avg(a)).slice(0,4),[]);
+  const uiTheme=visualPreset==="gold"
+    ? {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(214,164,77,0.18) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(139,96,45,0.16) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#120d07 0%,#1a1209 45%,#080604 100%)",
+        appColor:"#f4ead7",
+        headerBg:"linear-gradient(180deg,rgba(31,20,12,0.96) 0%,rgba(17,12,7,0.94) 100%)",
+        headerBorder:"1px solid rgba(201,168,76,0.30)",
+        setupBg:"rgba(24,16,10,0.92)",
+        setupBorder:"1px solid rgba(201,168,76,0.25)",
+        heroBorder:"1px solid rgba(201,168,76,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(201,168,76,0.16),transparent 36%),radial-gradient(circle at 90% 15%,rgba(232,200,120,0.18),transparent 42%),linear-gradient(145deg,rgba(30,20,12,0.9),rgba(14,10,6,0.92))",
+        accent:"rgba(201,168,76,0.75)",
+        accentSoft:"rgba(201,168,76,0.28)",
+        textMuted:"#cbb38b",
+        textStrong:"#f8edd8",
+      }
+    : {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(111,138,255,0.26) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(64,224,208,0.15) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#070a14 0%,#080d1b 45%,#05070f 100%)",
+        appColor:"#e8eeff",
+        headerBg:"linear-gradient(180deg,rgba(16,24,44,0.96) 0%,rgba(10,16,32,0.94) 100%)",
+        headerBorder:"1px solid rgba(138,173,255,0.28)",
+        setupBg:"rgba(11,20,38,0.9)",
+        setupBorder:"1px solid rgba(138,173,255,0.25)",
+        heroBorder:"1px solid rgba(130,170,255,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92))",
+        accent:"rgba(138,173,255,0.78)",
+        accentSoft:"rgba(138,173,255,0.28)",
+        textMuted:"#9cb0de",
+        textStrong:"#f1f6ff",
+      };
 
   const sc=avg(sel);
   const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
-    <div style={{height:"100vh",overflow:"hidden",background:"radial-gradient(ellipse 120% 40% at 50% -10%, rgba(50,35,10,0.45) 0%, transparent 60%), #080604",color:"#ede4cf",fontFamily:"'Crimson Text',Georgia,serif",display:"flex",flexDirection:"column"}}>
+    <div className="app-shell" style={{height:"100vh",overflow:"hidden",background:uiTheme.appBg,color:uiTheme.appColor,fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column","--ui-accent":uiTheme.accent,"--ui-accent-soft":uiTheme.accentSoft,"--ui-muted":uiTheme.textMuted,"--ui-strong":uiTheme.textStrong}}>
       <style>{`
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:#080604}
-        ::-webkit-scrollbar-thumb{background:#3a2010;border-radius:2px}
-        ::-webkit-scrollbar-thumb:hover{background:#5a3018}
-        input::placeholder{color:#2a1a0a}
-        select option{background:#100c06;color:#c0a070}
+        ::-webkit-scrollbar-track{background:#070b18}
+        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6f8aff,#42d8cf);border-radius:2px}
+        ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#9baeff,#63e9df)}
+        input::placeholder{color:#6e7ca8}
+        select option{background:#101a2e;color:#d8e6ff}
         button{transition:all 0.15s ease}
         button:hover{filter:brightness(1.15)}
         button:active{transform:scale(0.97)}
@@ -7203,23 +7234,57 @@ export default function App(){
         .cinzel-lg{font-family:'Cinzel',serif!important;letter-spacing:0.12em}
         input,textarea,select{font-family:inherit}
         .castle-card{transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,background 0.18s ease}
+
+        .app-shell::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(143,167,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(143,167,255,0.045) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 35%,transparent 90%)}
+        .app-shell > *{position:relative;z-index:1}
+        .glass{background:linear-gradient(160deg,rgba(18,28,52,0.82),rgba(12,20,40,0.62));backdrop-filter:blur(10px);border:1px solid var(--ui-accent-soft);box-shadow:0 14px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)}
+        .premium-title{font-family:'Cinzel',serif;letter-spacing:0.2em;text-transform:uppercase}
+        .nav-premium{position:relative;border:1px solid transparent;border-radius:10px;margin:6px 4px;padding:0 12px!important;height:38px!important;display:flex;align-items:center;justify-content:center;font-size:12px!important;font-weight:600;transition:all .2s ease}
+        .nav-premium:hover{border-color:var(--ui-accent-soft);background:color-mix(in oklab,var(--ui-accent) 12%, transparent);transform:translateY(-1px)}
+        .nav-premium.active{background:linear-gradient(135deg,color-mix(in oklab,var(--ui-accent) 32%, transparent),rgba(66,216,207,0.20));color:var(--ui-strong)!important;border-color:var(--ui-accent);box-shadow:0 0 0 1px color-mix(in oklab,var(--ui-accent) 32%, transparent),0 8px 24px rgba(66,216,207,0.18)}
+        .panel-premium{background:linear-gradient(155deg,rgba(16,25,45,0.88),rgba(11,17,34,0.75));border:1px solid var(--ui-accent-soft);border-radius:14px;box-shadow:0 18px 30px rgba(0,0,0,0.26)}
+        .hero-v2{margin:16px;border:1px solid rgba(130,170,255,0.35);border-radius:16px;padding:18px;background:
+          radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),
+          radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),
+          linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92));
+          box-shadow:0 22px 42px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08)}
+        .hero-kpi{padding:10px 12px;border-radius:10px;background:rgba(8,16,32,0.46);border:1px solid var(--ui-accent-soft);text-align:center}
+        .hero-cta{padding:9px 12px;border-radius:10px;border:1px solid var(--ui-accent);background:linear-gradient(135deg,color-mix(in oklab,var(--ui-accent) 42%, transparent),rgba(66,216,207,0.24));color:var(--ui-strong);cursor:pointer;font-weight:600}
+        .hero-cta.alt{background:color-mix(in oklab,var(--ui-accent) 10%, transparent);color:var(--ui-muted)}
+        .hero-mini-card{padding:10px;border-radius:12px;background:rgba(9,16,31,0.52);border:1px solid var(--ui-accent-soft);display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .hero-mini-card button{padding:6px 8px;border-radius:8px;border:1px solid var(--ui-accent-soft);background:color-mix(in oklab,var(--ui-accent) 14%, transparent);color:var(--ui-strong);font-size:11px;cursor:pointer}
+        .content-wrap{max-width:1280px;margin:0 auto;width:100%}
+        .mobile-quickbar{display:none}
+        .soft-card{border-radius:14px;background:linear-gradient(155deg,rgba(14,22,41,0.78),rgba(10,16,31,0.62));border:1px solid var(--ui-accent-soft);box-shadow:0 10px 24px rgba(0,0,0,0.2)}
         .castle-card:hover{transform:translateY(-3px)}
         .gold-text{color:#c9a84c;font-family:'Cinzel',serif}
         .section-title{font-family:'Cinzel',serif;letter-spacing:0.08em;font-size:11px;color:#a08848;text-transform:uppercase}
+        @media(max-width:768px){
+          .mobile-quickbar{
+            display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:450;
+            gap:8px;padding:8px;border-radius:12px;
+            background:linear-gradient(155deg,rgba(10,18,36,0.95),rgba(8,14,28,0.92));
+            border:1px solid rgba(138,173,255,0.24);box-shadow:0 14px 24px rgba(0,0,0,0.35)
+          }
+          .mobile-quickbar button{
+            flex:1;border-radius:8px;border:1px solid rgba(138,173,255,0.28);
+            background:rgba(138,173,255,0.1);color:#e8f0ff;padding:8px 6px;font-size:12px
+          }
+        }
       `}</style>
 
       {/* ── HEADER ── */}
-      <header style={{height:"52px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(201,168,76,0.14)",background:"linear-gradient(180deg,rgba(14,11,7,0.99) 0%,rgba(8,6,4,0.99) 100%)",boxShadow:"0 2px 24px rgba(0,0,0,0.6),0 1px 0 rgba(201,168,76,0.08)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
+      <header className="glass" style={{height:"62px",display:"flex",alignItems:"stretch",borderBottom:uiTheme.headerBorder,background:uiTheme.headerBg,position:"sticky",top:0,zIndex:300,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:"10px",padding:"0 16px",borderRight:"1px solid rgba(201,168,76,0.1)",flexShrink:0}}>
           <span style={{fontSize:"18px",filter:"drop-shadow(0 0 6px rgba(201,168,76,0.4))"}}>⚔️</span>
           <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
-            <span className="header-title cinzel-lg" style={{fontSize:"13px",fontWeight:"700",color:"#e8d498",letterSpacing:"4px",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(201,168,76,0.35)"}}>BELAGERUNGS-ATLAS</span>
-            <span style={{fontSize:"9px",color:"#6a5530",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
+            <span className="header-title premium-title" style={{fontSize:"13px",fontWeight:"700",color:"#f1f5ff",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(111,138,255,0.45)"}}>BELAGERUNGS-ATLAS</span>
+            <span style={{fontSize:"9px",color:"#8ea2d8",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
           </div>
         </div>
         <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
           {NAVTABS.map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{height:"100%",padding:"0 13px",background:tab===t.id?"rgba(201,168,76,0.06)":"transparent",border:"none",borderBottom:`2px solid ${tab===t.id?"#c9a84c":"transparent"}`,borderTop:`1px solid ${tab===t.id?"rgba(201,168,76,0.12)":"transparent"}`,color:tab===t.id?"#d4aa56":"#6a5a40",cursor:"pointer",fontSize:"12px",letterSpacing:"0.3px",transition:"all .16s",marginBottom:"-1px",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
+            <button className={`nav-premium ${tab===t.id?"active":""}`} key={t.id} onClick={()=>setTab(t.id)} style={{background:"transparent",border:"none",color:tab===t.id?"#ebf2ff":"#9aa9d0",cursor:"pointer",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
           ))}
         </div>
         {/* Setup button */}
@@ -7230,7 +7295,7 @@ export default function App(){
 
       {/* ── SETUP PANEL ── */}
       {showSetup&&(
-        <div style={{background:"rgba(8,6,4,0.98)",borderBottom:"1px solid rgba(201,168,76,0.1)",padding:"12px 14px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
+        <div className="glass" style={{background:uiTheme.setupBg,borderBottom:uiTheme.setupBorder,padding:"14px 16px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
           <div>
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>⚔️ GENERAL</div>
             <div style={{display:"flex",gap:"4px",flexWrap:"wrap"}}>
@@ -7250,6 +7315,13 @@ export default function App(){
                   {s.emoji} {s.name}
                 </button>
               ))}
+            </div>
+          </div>
+          <div>
+            <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>🎨 DESIGN</div>
+            <div style={{display:"flex",gap:"4px"}}>
+              <button onClick={()=>setVisualPreset("blue")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="blue"?"rgba(111,138,255,0.22)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="blue"?"rgba(138,173,255,0.5)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="blue"?"#dce8ff":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🔹 Premium Blue</button>
+              <button onClick={()=>setVisualPreset("gold")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="gold"?"rgba(201,168,76,0.18)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="gold"?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="gold"?"#e8cc98":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🟡 Royal Gold</button>
             </div>
           </div>
           {/* Weather display */}
@@ -7279,7 +7351,51 @@ export default function App(){
 
       {/* ── OVERVIEW ── */}
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
-        <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        <div className="content-wrap">
+        <section className="hero-v2" style={{border:uiTheme.heroBorder,background:uiTheme.heroBg}}>
+          <div style={{display:"flex",justifyContent:"space-between",gap:"14px",alignItems:"flex-start",flexWrap:"wrap"}}>
+            <div style={{maxWidth:"620px"}}>
+              <div style={{fontSize:"11px",letterSpacing:"2px",color:"#96aee4",marginBottom:"8px"}}>COMMAND OVERVIEW · V2</div>
+              <h2 style={{margin:"0 0 8px",fontSize:"28px",lineHeight:1.15,color:"#f2f7ff",fontFamily:"'Cinzel',serif",letterSpacing:"1px"}}>Strategisches Erlebnis mit Premium-Inszenierung</h2>
+              <p style={{margin:0,color:"#b5c5eb",fontSize:"14px",lineHeight:1.7}}>
+                Entdecke Burgen wie in einem Tactical Command Center: schneller Zugriff auf Weltkarte, Kampagnen und Belagerungssimulation
+                mit klaren KPIs und hochwertiger visueller Dramaturgie.
+              </p>
+            </div>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+              <button className="hero-cta" onClick={()=>setTab("worldmap")}>🌍 Weltkarte öffnen</button>
+              <button className="hero-cta alt" onClick={()=>setTab("campaign")}>📖 Kampagne starten</button>
+              <button className="hero-cta alt" onClick={()=>{setTab("detail");setDtab("simulator");}}>⚔️ Simulator direkt</button>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:"10px",marginTop:"14px"}}>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>FESTUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{CASTLES.length}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>ERFOLGE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{checkAchievements(scores,CASTLES,playStats).filter(a=>a.unlocked).length}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>BELAGERUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges||0}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>SIEGRATE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges?Math.round(((playStats.wins||0)/playStats.sieges)*100):0}%</div></div>
+          </div>
+          <div style={{marginTop:"12px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8ea2d8",marginBottom:"8px"}}>TOP FESTUNGEN · SCHNELLSTART</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"8px"}}>
+              {topCastles.map(c=>(
+                <div key={c.id} className="hero-mini-card">
+                  <div style={{display:"flex",gap:"8px",alignItems:"center",minWidth:0}}>
+                    <span style={{fontSize:"18px"}}>{c.icon}</span>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontSize:"12px",color:"#eff5ff",fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                      <div style={{fontSize:"10px",color:"#8ea2d8"}}>{c.epoch} · Score {avg(c)}</div>
+                    </div>
+                  </div>
+                  <button onClick={()=>{setSel(c);setTab("detail");setDtab("stats");}}>Öffnen</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        <div className="soft-card" style={{margin:"0 16px 16px",padding:"2px"}}>
+          <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        </div>
+        </div>
       </div>}
 
       {/* ── WORLD MAP ── */}
@@ -7307,6 +7423,12 @@ export default function App(){
       {tab==="achievements"&&<div style={{flex:1,overflowY:"auto"}}><AchievementsPanel scores={scores} castles={CASTLES} playStats={playStats}/></div>}
       {tab==="highscores"&&<div style={{flex:1,overflowY:"auto"}}><Highscores scores={scores} onSelect={go} playStats={playStats}/></div>}
 
+      <div className="mobile-quickbar">
+        <button onClick={()=>setTab("overview")}>🏰 Übersicht</button>
+        <button onClick={()=>setTab("worldmap")}>🌍 Karte</button>
+        <button onClick={()=>setTab("campaign")}>📖 Kampagne</button>
+      </div>
+
       {/* Achievement toast notification */}
       {achievementToast&&(
         <AchievementToast
@@ -7319,8 +7441,8 @@ export default function App(){
       {tab==="detail"&&(
         <div style={{display:"flex",flex:1,overflow:"hidden"}}>
           {/* Sidebar */}
-          <aside className="sidebar" style={{width:sideOpen?"195px":"40px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.16)",overflowY:"auto",overflowX:"hidden"}}>
-            <button onClick={()=>setSideOpen(e=>!e)} style={{width:"100%",padding:"6px",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.02)",color:"#8a7a60",cursor:"pointer",fontSize:"14px",textAlign:sideOpen?"right":"center"}}>{sideOpen?"◀":"▶"}</button>
+          <aside className="sidebar" style={{width:sideOpen?"225px":"44px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(138,173,255,0.15)",background:"linear-gradient(180deg,rgba(10,16,30,0.88),rgba(8,12,24,0.84))",borderRadius:"14px",overflowY:"auto",overflowX:"hidden"}}>
+            <button onClick={()=>setSideOpen(e=>!e)} style={{width:"100%",padding:"6px",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.02)",color:"#9cb0de",cursor:"pointer",fontSize:"14px",textAlign:sideOpen?"right":"center"}}>{sideOpen?"◀":"▶"}</button>
             {sideFiltered.map(c=>{const a=avg(c),isA=sel.id===c.id,hs=scores[c.id];return(
               <button key={c.id} onClick={()=>{setSel(c);setDtab("map");setAttackMode(false);}} title={c.name}
                 style={{width:"100%",textAlign:"left",padding:sideOpen?"6px 8px":"6px",background:isA?c.theme.glow:"transparent",border:"none",borderLeft:`2px solid ${isA?c.theme.accent:"transparent"}`,borderBottom:"1px solid rgba(255,255,255,0.018)",cursor:"pointer",display:"flex",gap:"5px",alignItems:"center",transition:"all .09s"}}>
@@ -7338,15 +7460,15 @@ export default function App(){
           </aside>
 
           {/* Main detail area */}
-          <main style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
+          <main className="panel-premium" style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
             {/* Castle header */}
-            <div style={{padding:"13px 16px 10px",borderBottom:"1px solid rgba(201,168,76,0.05)",background:`linear-gradient(135deg,${sel.theme.bg} 0%,rgba(6,5,4,0.9) 100%)`,flexShrink:0}}>
+            <div style={{padding:"13px 16px 10px",borderBottom:"1px solid rgba(201,168,76,0.05)",background:`linear-gradient(135deg,${sel.theme.bg} 0%,rgba(12,20,40,0.88) 100%)`,flexShrink:0}}>
               <div style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
                 <div style={{fontSize:"30px",width:"48px",height:"48px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:`${sel.theme.accent}12`,border:`1px solid ${sel.theme.accent}24`,borderRadius:"4px"}}>{sel.icon}</div>
                 <div style={{flex:1}}>
                   <div style={{display:"flex",gap:"4px",alignItems:"center",marginBottom:"2px",flexWrap:"wrap"}}>
                     <span style={{fontSize:"11px",letterSpacing:"2px",padding:"1px 6px",borderRadius:"2px",background:sel.type==="real"?"rgba(40,70,25,0.18)":"rgba(40,40,90,0.18)",color:sel.type==="real"?"#5a7a38":"#6a6aaa",border:`1px solid ${sel.type==="real"?"rgba(40,70,25,0.28)":"rgba(40,40,90,0.28)"}`}}>{sel.type==="real"?"⚜ HISTORISCH":"✦ FANTASY"}</span>
-                    <span className="detail-header-meta" style={{fontSize:"11px",color:"#8a7a60",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
+                    <span className="detail-header-meta" style={{fontSize:"11px",color:"#9cb0de",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
                   </div>
                   <h1 style={{fontSize:"15px",fontWeight:"bold",color:"#f5edd8",margin:"0 0 1px"}}>{sel.name}</h1>
                   <div style={{fontSize:"12px",color:sel.theme.accent,marginBottom:"3px"}}>{sel.sub}</div>
@@ -7354,7 +7476,7 @@ export default function App(){
                 </div>
                 <div style={{flexShrink:0,textAlign:"center",padding:"8px 11px",background:"rgba(0,0,0,0.35)",border:`1px solid ${sel.theme.accent}1e`,borderRadius:"4px"}}>
                   <div style={{fontSize:"20px",fontWeight:"bold",color:rCol(sc)}}>{sc}</div>
-                  <div style={{fontSize:"10px",color:"#8a7a60",letterSpacing:"2px",marginTop:"1px"}}>GESAMT</div>
+                  <div style={{fontSize:"10px",color:"#9cb0de",letterSpacing:"2px",marginTop:"1px"}}>GESAMT</div>
                   {general&&<div style={{fontSize:"12px",color:sel.theme.accent,marginTop:"2px"}}>{general.emoji}</div>}
                   {season&&<div style={{fontSize:"13px",marginTop:"1px"}}>{season.emoji}</div>}
                 </div>
@@ -7362,7 +7484,7 @@ export default function App(){
             </div>
 
             {/* Detail tabs */}
-            <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.06)",flexShrink:0,overflowX:"auto"}}>
+            <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(12,20,36,0.6)",flexShrink:0,overflowX:"auto"}}>
               {DTABS.map(t=>(
                 <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"7px 11px",background:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#7a6a50",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .13s",marginBottom:"-1px",whiteSpace:"nowrap"}}>{t.l}</button>
               ))}
@@ -7384,7 +7506,7 @@ export default function App(){
                       <ScoreBar label="Garnison" value={sel.ratings.garrison} delay={150} accent={sel.theme.accent}/>
                       <ScoreBar label="Moral" value={sel.ratings.morale} delay={200} accent={sel.theme.accent}/>
                       <div style={{marginTop:"9px",paddingTop:"8px",borderTop:"1px solid rgba(255,255,255,.03)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span style={{fontSize:"11px",color:"#8a7a60",letterSpacing:"2px"}}>GESAMT</span>
+                        <span style={{fontSize:"11px",color:"#9cb0de",letterSpacing:"2px"}}>GESAMT</span>
                         <span style={{fontSize:"16px",fontWeight:"bold",color:rCol(sc)}}>{sc}</span>
                       </div>
                     </div>
