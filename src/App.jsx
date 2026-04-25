@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { ROLEPLAY_RESPONSES, PERSONALITY_RESPONSES, SIMULATOR_FALLBACKS, WHATIF_FALLBACKS, getWhatIfFallback, LEXIKON_OFFLINE, getLexikonFacts, getAdvisorFallback } from "./data/fallbacks.js";
 import { TOTAL_RES, BUILDER_BUDGET, SYNERGIES, getActiveSynergies, getSynergyBonuses, SEASONS, DEFENDER_TYPES, CASTLE_PERSONALITIES, getDefenderType, GENERALS, SIEGE_EVENTS, BUILDER, RES, WEATHER_TYPES } from "./data/gameData.js";
 import { COORDS, CASTLES } from "./data/castles.js";
-import CastleDiorama from "./components/diorama/CastleDiorama.jsx";
 import ScoreBar from "./components/ui/ScoreBar.jsx";
 import RadarChart from "./components/ui/RadarChart.jsx";
 
@@ -62,13 +61,15 @@ const CASTLE_PLANS = {
       <ellipse cx="110" cy="110" rx="100" ry="92" fill="rgba(100,78,28,0.18)" stroke="rgba(130,100,35,0.2)" strokeWidth="0.6"/>
       <ellipse cx="110" cy="108" rx="84" ry="76" fill="rgba(85,65,22,0.12)" stroke="rgba(110,85,30,0.15)" strokeWidth="0.4"/>
       {/* Outer wall ring */}
-      <ellipse cx="110" cy="110" rx="70" ry="64" fill={sel==="ou"?"rgba(139,105,20,0.22)":"rgba(139,105,20,0.07)"} stroke={`${ac}66`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>
-      {Array.from({length:9},(_,i)=>{const a=i/9*Math.PI*2;return <rect key={i} x={110+70*Math.cos(a)-5} y={110+64*Math.sin(a)-5} width="10" height="10" rx="1" fill={`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>;}) }
+      {sel==="ou"&&<ellipse cx="110" cy="110" rx="78" ry="72" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="110" rx="70" ry="64" fill={sel==="ou"?"rgba(139,105,20,0.22)":"rgba(139,105,20,0.07)"} stroke={sel==="ou"?`${ac}cc`:`${ac}66`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>
+      {Array.from({length:9},(_,i)=>{const a=i/9*Math.PI*2;return <rect key={i} x={110+70*Math.cos(a)-5} y={110+64*Math.sin(a)-5} width="10" height="10" rx="1" fill={sel==="ou"?`${ac}66`:`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8" style={{cursor:"pointer"}} onClick={()=>onZone("ou")}/>;}) }
       {/* Killing ground label */}
       <text x="152" y="75" fill={`${ac}44`} fontSize="8" fontFamily="serif">Zwinger</text>
       {/* Inner wall ring */}
-      <ellipse cx="110" cy="108" rx="48" ry="43" fill={sel==="in"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.08)"} stroke={`${ac}cc`} strokeWidth="6" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>
-      {Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2;return <circle key={i} cx={110+48*Math.cos(a)} cy={108+43*Math.sin(a)} r="7.5" fill={`${ac}44`} stroke={`${ac}99`} strokeWidth="1" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>;}) }
+      {sel==="in"&&<ellipse cx="110" cy="108" rx="56" ry="51" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="108" rx="48" ry="43" fill={sel==="in"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.08)"} stroke={sel==="in"?`${ac}ff`:`${ac}cc`} strokeWidth="6" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>
+      {Array.from({length:6},(_,i)=>{const a=i/6*Math.PI*2;return <circle key={i} cx={110+48*Math.cos(a)} cy={108+43*Math.sin(a)} r="7.5" fill={sel==="in"?`${ac}66`:`${ac}44`} stroke={`${ac}99`} strokeWidth="1" style={{cursor:"pointer"}} onClick={()=>onZone("in")}/>;}) }
       <text x="110" y="84" textAnchor="middle" fill={`${ac}77`} fontSize="9" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("in")}>INNERER RING</text>
       {/* Donjon */}
       <rect x="94" y="93" width="32" height="30" rx="2" fill={sel==="kp"?"rgba(232,200,96,0.42)":"rgba(232,200,96,0.14)"} stroke="#e8c860" strokeWidth="2" style={{cursor:"pointer"}} onClick={()=>onZone("kp")}/>
@@ -142,9 +143,10 @@ const CASTLE_PLANS = {
       {/* Hillside terrain */}
       <ellipse cx="110" cy="105" rx="105" ry="94" fill="rgba(80,65,28,0.14)" stroke="rgba(100,80,32,0.15)" strokeWidth="0.6"/>
       {/* Outer wall (52 towers) */}
-      <ellipse cx="110" cy="105" rx="86" ry="76" fill={sel==="om"?"rgba(122,90,32,0.22)":"rgba(122,90,32,0.07)"} stroke={`${ac}55`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>
+      {sel==="om"&&<ellipse cx="110" cy="105" rx="94" ry="84" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <ellipse cx="110" cy="105" rx="86" ry="76" fill={sel==="om"?"rgba(122,90,32,0.22)":"rgba(122,90,32,0.07)"} stroke={sel==="om"?`${ac}bb`:`${ac}55`} strokeWidth="5.5" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>
       {/* 16 towers around outer wall */}
-      {Array.from({length:16},(_,i)=>{const a=i/16*Math.PI*2;return <rect key={i} x={110+86*Math.cos(a)-4.5} y={105+76*Math.sin(a)-4.5} width="9" height="9" rx="1" fill={`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>;}) }
+      {Array.from({length:16},(_,i)=>{const a=i/16*Math.PI*2;return <rect key={i} x={110+86*Math.cos(a)-4.5} y={105+76*Math.sin(a)-4.5} width="9" height="9" rx="1" fill={sel==="om"?`${ac}66`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7" style={{cursor:"pointer"}} onClick={()=>onZone("om")}/>;}) }
       <text x="170" y="58" fill={`${ac}44`} fontSize="8" fontFamily="serif">Äußere</text>
       <text x="170" y="65" fill={`${ac}44`} fontSize="8" fontFamily="serif">Vormauer</text>
       {/* Zwinger space */}
@@ -2244,87 +2246,523 @@ const CASTLE_PLANS = {
         fontFamily="serif" letterSpacing="2">GRAVECREST — ORDO CUSTODUM</text>
     </g>
   ),
+
+  // ── MALBORK — Größte Burg der Welt, 3 Burghöfe an der Nogat ──────────────
+  malbork: ({ac,sel,onZone}) => (
+    <g>
+      {/* Terrain */}
+      <rect x="4" y="8" width="178" height="184" rx="3" fill="rgba(70,60,28,0.13)"/>
+      {/* Nogat River (east) */}
+      <rect x="184" y="8" width="32" height="184" rx="2" fill="rgba(34,100,170,0.35)" stroke="#4488cc" strokeWidth="0.8"/>
+      {[30,60,90,120,155].map(y=>(
+        <path key={y} d={`M 185 ${y} Q 200 ${y+6} 215 ${y}`} fill="none" stroke="#4488cc" strokeWidth="0.5" opacity="0.5"/>
+      ))}
+      <text x="200" y="105" textAnchor="middle" fill="#4488cc88" fontSize="7" fontFamily="serif" transform="rotate(90,200,105)">NOGAT</text>
+
+      {/* VORBURG — großes äußeres Schloss (Süd) */}
+      {sel==="vb"&&<rect x="8" y="105" width="174" height="85" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <rect x="8" y="105" width="174" height="85" rx="2"
+        fill={sel==="vb"?"rgba(160,130,55,0.2)":"rgba(160,130,55,0.08)"}
+        stroke={sel==="vb"?`${ac}cc`:`${ac}44`} strokeWidth={sel==="vb"?3.5:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("vb")}/>
+      {[[8,105],[8,190],[182,105],[182,190],[95,105],[95,190],[8,147],[182,147]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="vb"?`${ac}55`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7"/>
+      ))}
+      <text x="95" y="150" textAnchor="middle" fill={sel==="vb"?ac:`${ac}99`}
+        fontSize="11" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("vb")}>VORBURG</text>
+      <text x="95" y="162" textAnchor="middle" fill={sel==="vb"?`${ac}bb`:`${ac}66`}
+        fontSize="7.5" fontFamily="serif">Äußeres Schloss</text>
+
+      {/* MITTELBURG — mittleres Schloss */}
+      {sel==="mb2"&&<rect x="20" y="52" width="152" height="60" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <rect x="20" y="52" width="152" height="60" rx="2"
+        fill={sel==="mb2"?"rgba(201,168,76,0.22)":"rgba(201,168,76,0.09)"}
+        stroke={sel==="mb2"?`${ac}ee`:`${ac}77`} strokeWidth={sel==="mb2"?4:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("mb2")}/>
+      {[[20,52],[172,52],[20,112],[172,112],[20,82],[172,82],[96,52],[96,112]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="mb2"?`${ac}66`:`${ac}44`} stroke={`${ac}88`} strokeWidth="0.8"/>
+      ))}
+      {/* Hochmeisterpalast */}
+      <rect x="26" y="57" width="44" height="48" rx="1" fill="rgba(201,168,76,0.1)" stroke={`${ac}44`} strokeWidth="0.7"/>
+      <text x="48" y="85" textAnchor="middle" fill={`${ac}55`} fontSize="6.5" fontFamily="serif">Hochmeisterpalast</text>
+      <text x="118" y="85" textAnchor="middle" fill={sel==="mb2"?ac:`${ac}aa`}
+        fontSize="11" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("mb2")}>MITTELBURG</text>
+
+      {/* HOCHBURG — innerstes nördliches Schloss */}
+      {sel==="hb2"&&<rect x="33" y="10" width="108" height="48" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="33" y="10" width="108" height="48" rx="2"
+        fill={sel==="hb2"?"rgba(240,210,96,0.32)":"rgba(240,210,96,0.13)"}
+        stroke={sel==="hb2"?"#e8c860cc":`${ac}99`} strokeWidth={sel==="hb2"?4.5:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("hb2")}/>
+      {/* Innenhof */}
+      <rect x="58" y="20" width="58" height="28" rx="1" fill="rgba(30,22,5,0.45)" stroke={`${ac}22`} strokeWidth="0.5"/>
+      {/* Eckturm */}
+      {[[33,10],[141,10],[33,58],[141,58]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="hb2"?"#e8c860":"#c9a84c"} opacity={sel==="hb2"?0.85:0.55} stroke="#e8c860" strokeWidth="0.8"/>
+      ))}
+      {/* St.-Annen-Kapelle */}
+      <rect x="118" y="12" width="18" height="16" rx="1" fill="rgba(232,200,96,0.3)" stroke="#e8c860" strokeWidth="1"/>
+      <text x="127" y="23" textAnchor="middle" fill="#e8c86077" fontSize="5.5" fontFamily="serif">St. Annen</text>
+      <text x="87" y="38" textAnchor="middle" fill={sel==="hb2"?"#e8c860":ac}
+        fontSize="11" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("hb2")}>HOCHBURG</text>
+
+      {/* Nogat-Fluss Zone */}
+      {sel==="ng2"&&<rect x="165" y="8" width="22" height="184" fill="#4488cc" opacity="0.22" filter="url(#glowFilter)"/>}
+      <rect x="180" y="8" width="8" height="184" rx="2"
+        fill={sel==="ng2"?"rgba(68,136,204,0.6)":"rgba(68,136,204,0.35)"}
+        stroke={sel==="ng2"?"#88ccff":"#4488cc"} strokeWidth={sel==="ng2"?2:1}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ng2")}/>
+
+      {/* Kompass + Titel */}
+      <g transform="translate(18,20)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="95" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">MARIENBURG · GEGR. 1274</text>
+    </g>
+  ),
+
+  // ── BEAUMARIS — Perfekter konzentrischer Grundriss, Edward I., 1295 ────────
+  beaumaris: ({ac,sel,onZone}) => (
+    <g>
+      {/* Meer / Tidenwasser */}
+      <rect x="0" y="0" width="220" height="200" fill="rgba(30,60,100,0.2)"/>
+      {/* Hafenzugang (Süd) */}
+      <rect x="82" y="173" width="56" height="24" rx="3" fill="rgba(34,100,170,0.35)" stroke="#4488cc" strokeWidth="1"/>
+      <text x="110" y="187" textAnchor="middle" fill="#4488cc" fontSize="7.5" fontFamily="serif">⚓ Hafentor</text>
+
+      {/* GRABEN + HAFEN */}
+      {sel==="gv2"&&<rect x="10" y="10" width="200" height="180" rx="6" fill="#4488cc" opacity="0.12" filter="url(#glowFilter)"/>}
+      <rect x="12" y="12" width="196" height="176" rx="5"
+        fill={sel==="gv2"?"rgba(34,100,170,0.22)":"rgba(34,100,170,0.12)"}
+        stroke={sel==="gv2"?"#66aaddbb":"#4488cc55"} strokeWidth={sel==="gv2"?2:1.5}
+        strokeDasharray="8,4"
+        style={{cursor:"pointer"}} onClick={()=>onZone("gv2")}/>
+      <text x="26" y="34" fill={sel==="gv2"?"#66aadd":"#4488cc88"} fontSize="8" fontFamily="serif"
+        style={{cursor:"pointer"}} onClick={()=>onZone("gv2")}>Wassergraben</text>
+
+      {/* ÄUSSERE MAUER (16 Türme) */}
+      {sel==="ow3"&&<rect x="25" y="24" width="170" height="152" fill={ac} opacity="0.08" filter="url(#glowFilter)"/>}
+      <rect x="25" y="24" width="170" height="152" rx="3"
+        fill={sel==="ow3"?"rgba(140,110,45,0.2)":"rgba(140,110,45,0.07)"}
+        stroke={sel==="ow3"?`${ac}cc`:`${ac}55`} strokeWidth={sel==="ow3"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}/>
+      {Array.from({length:16},(_,i)=>{
+        const t=i/16; const side=Math.floor(t*4); const p=(t*4)%1;
+        let x,y;
+        if(side===0){x=25+170*p;y=24;}
+        else if(side===1){x=195;y=24+152*p;}
+        else if(side===2){x=195-170*p;y=176;}
+        else{x=25;y=176-152*p;}
+        return <rect key={i} x={x-5.5} y={y-5.5} width="11" height="11" rx="1.5"
+          fill={sel==="ow3"?`${ac}66`:`${ac}33`} stroke={sel==="ow3"?`${ac}bb`:`${ac}66`} strokeWidth="0.8"
+          style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}/>;
+      })}
+      <text x="110" y="38" textAnchor="middle" fill={sel==="ow3"?ac:`${ac}99`}
+        fontSize="8.5" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow3")}>ÄUSSERE MAUER · 16 TÜRME</text>
+
+      {/* Zwinger (Killing ground) */}
+      <rect x="52" y="50" width="116" height="100" rx="2" fill="rgba(10,8,3,0.35)" stroke={`${ac}15`} strokeWidth="0.5"/>
+
+      {/* INNERE MAUER (6 Türme) */}
+      {sel==="iw"&&<rect x="55" y="52" width="110" height="96" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="55" y="52" width="110" height="96" rx="2"
+        fill={sel==="iw"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="iw"?`${ac}ff`:`${ac}aa`} strokeWidth={sel==="iw"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("iw")}/>
+      {[[55,52],[165,52],[55,148],[165,148],[55,100],[165,100]].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r={sel==="iw"?8:7}
+          fill={sel==="iw"?`${ac}66`:`${ac}33`} stroke={sel==="iw"?`${ac}dd`:`${ac}88`}
+          strokeWidth={sel==="iw"?1.8:1.2}
+          style={{cursor:"pointer"}} onClick={()=>onZone("iw")}/>
+      ))}
+      {/* Innenhof */}
+      <rect x="70" y="66" width="80" height="68" rx="2" fill="rgba(20,15,4,0.45)" stroke={`${ac}18`} strokeWidth="0.5"/>
+      <text x="110" y="103" textAnchor="middle" fill={`${ac}25`} fontSize="9" fontFamily="serif">Hof</text>
+      <text x="110" y="75" textAnchor="middle" fill={sel==="iw"?ac:`${ac}cc`}
+        fontSize="10.5" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("iw")}>INNERE MAUER</text>
+      <text x="110" y="87" textAnchor="middle" fill={sel==="iw"?`${ac}bb`:`${ac}77`}
+        fontSize="7.5" fontFamily="serif">(6 Türme)</text>
+
+      {/* Kompass */}
+      <g transform="translate(193,22)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">BEAUMARIS · 1295 — EDWARD I.</text>
+    </g>
+  ),
+
+  // ── DOVER CASTLE ─────────────────────────────────────────────────────────
+  dover: ({ac,sel,onZone}) => (
+    <g>
+      <ellipse cx="110" cy="100" rx="104" ry="90" fill="rgba(180,170,140,0.1)" stroke="rgba(160,150,120,0.15)" strokeWidth="0.8"/>
+      {/* Äußerer Mauerring */}
+      {sel==="ow"&&<path d="M 15 58 L 38 14 L 110 8 L 182 14 L 205 58 L 207 132 L 188 178 L 110 187 L 30 178 L 12 132 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 15 58 L 38 14 L 110 8 L 182 14 L 205 58 L 207 132 L 188 178 L 110 187 L 30 178 L 12 132 Z"
+        fill={sel==="ow"?"rgba(140,110,45,0.2)":"rgba(140,110,45,0.07)"}
+        stroke={sel==="ow"?`${ac}cc`:`${ac}44`} strokeWidth={sel==="ow"?4:3}
+        style={{cursor:"pointer"}} onClick={()=>onZone("ow")}/>
+      {[[38,14],[110,8],[182,14],[205,58],[207,132],[188,178],[110,187],[30,178],[15,58],[12,132],[60,10],[160,10],[205,95],[12,95]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1"
+          fill={sel==="ow"?`${ac}55`:`${ac}33`} stroke={`${ac}66`} strokeWidth="0.7"/>
+      ))}
+      <text x="170" y="155" fill={sel==="ow"?ac:`${ac}77`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow")}>Äußerer</text>
+      <text x="170" y="166" fill={sel==="ow"?ac:`${ac}77`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("ow")}>Mauerring</text>
+      {/* Innere Bailey */}
+      <rect x="55" y="54" width="110" height="96" rx="2" fill="rgba(90,72,25,0.1)" stroke={`${ac}44`} strokeWidth="2"/>
+      {[[55,54],[165,54],[55,150],[165,150],[55,102],[165,102]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={`${ac}33`} stroke={`${ac}55`} strokeWidth="0.7"/>
+      ))}
+      {/* Großer Turm */}
+      {sel==="gt"&&<rect x="78" y="67" width="62" height="60" fill={ac} opacity="0.12" filter="url(#glowFilter)"/>}
+      <rect x="78" y="67" width="62" height="60" rx="1"
+        fill={sel==="gt"?"rgba(232,200,96,0.35)":"rgba(232,200,96,0.14)"}
+        stroke={sel==="gt"?"#e8c860":"#c9a84c"} strokeWidth={sel==="gt"?3.5:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("gt")}/>
+      <rect x="108" y="67" width="22" height="16" rx="1" fill="rgba(201,168,76,0.2)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      {[[78,67],[140,67],[78,127],[140,127]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="gt"?"#e8c860":"#c9a84c"} opacity={sel==="gt"?0.85:0.5} stroke="#e8c860" strokeWidth="0.8"/>
+      ))}
+      <text x="109" y="100" textAnchor="middle" fill={sel==="gt"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gt")}>GROSSER</text>
+      <text x="109" y="112" textAnchor="middle" fill={sel==="gt"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gt")}>TURM</text>
+      {/* Nordtor */}
+      {sel==="nt"&&<path d="M 88 6 L 110 2 L 132 6 L 132 22 L 110 26 L 88 22 Z" fill="#cc4444" opacity="0.25" filter="url(#glowFilter)"/>}
+      <path d="M 88 6 L 110 2 L 132 6 L 132 22 L 110 26 L 88 22 Z"
+        fill={sel==="nt"?"rgba(204,68,68,0.5)":"rgba(204,68,68,0.22)"}
+        stroke="#cc4444" strokeWidth={sel==="nt"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("nt")}/>
+      <text x="110" y="17" textAnchor="middle" fill="#cc4444" fontSize="8" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("nt")}>⚠ NORDTOR</text>
+      <g transform="translate(192,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">DOVER CASTLE · SEIT 1180</text>
+    </g>
+  ),
+
+  // ── OSAKA CASTLE ─────────────────────────────────────────────────────────
+  osaka: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(40,55,25,0.12)"/>
+      {/* Sanomaru (Außenring) */}
+      {sel==="sg2"&&<rect x="8" y="8" width="204" height="184" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <rect x="10" y="10" width="200" height="180" rx="4"
+        fill={sel==="sg2"?"rgba(80,100,50,0.2)":"rgba(80,100,50,0.08)"}
+        stroke={sel==="sg2"?`${ac}bb`:`${ac}44`} strokeWidth={sel==="sg2"?4:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("sg2")}/>
+      <text x="26" y="30" fill={sel==="sg2"?ac:`${ac}88`} fontSize="8.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("sg2")}>SANOMARU</text>
+      {/* Äußerer Wassergraben */}
+      <rect x="28" y="28" width="164" height="144" rx="3" fill="rgba(20,50,90,0.38)" stroke="#3377bb" strokeWidth="1"/>
+      {/* Ninomaru */}
+      <rect x="46" y="46" width="128" height="108" rx="2" fill="rgba(40,55,25,0.25)" stroke={`${ac}33`} strokeWidth="1"/>
+      {/* Honmaru-Graben */}
+      <rect x="56" y="56" width="108" height="88" rx="2" fill="rgba(20,50,90,0.42)" stroke="#3377bb" strokeWidth="0.8"/>
+      {/* Honmaru */}
+      {sel==="hm"&&<rect x="64" y="63" width="92" height="74" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="64" y="63" width="92" height="74" rx="2"
+        fill={sel==="hm"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="hm"?`${ac}ff`:`${ac}88`} strokeWidth={sel==="hm"?4:2.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("hm")}/>
+      {[[64,63],[156,63],[64,137],[156,137]].map(([x,y],i)=>(
+        <rect key={i} x={x-6} y={y-6} width="12" height="12" rx="1"
+          fill={sel==="hm"?`${ac}66`:`${ac}44`} stroke={sel==="hm"?`${ac}cc`:`${ac}77`} strokeWidth="1"/>
+      ))}
+      <text x="110" y="76" textAnchor="middle" fill={sel==="hm"?ac:`${ac}99`} fontSize="9" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("hm")}>HONMARU</text>
+      {/* Wassergräben */}
+      {sel==="gm"&&<rect x="56" y="56" width="108" height="88" fill="#3377bb" opacity="0.1" filter="url(#glowFilter)"/>}
+      <text x="40" y="128" fill={sel==="gm"?"#66aadd":"#3377bb88"} fontSize="7.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("gm")}>Graben</text>
+      {/* Tenshukaku (Hauptturm) */}
+      {sel==="tm"&&<rect x="82" y="76" width="56" height="48" fill={ac} opacity="0.15" filter="url(#glowFilter)"/>}
+      <rect x="82" y="76" width="56" height="48" rx="1"
+        fill={sel==="tm"?"rgba(240,210,100,0.42)":"rgba(240,210,100,0.18)"}
+        stroke={sel==="tm"?"#f0d264":"#c9a84c"} strokeWidth={sel==="tm"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("tm")}/>
+      <rect x="89" y="81" width="42" height="37" rx="1" fill="rgba(240,210,100,0.12)" stroke={`${ac}44`} strokeWidth="0.6"/>
+      <rect x="97" y="86" width="26" height="24" rx="1" fill="rgba(240,210,100,0.1)" stroke={`${ac}33`} strokeWidth="0.5"/>
+      <path d="M 82 76 Q 110 69 138 76" fill="none" stroke="#f0d264" strokeWidth={sel==="tm"?1.8:1.2} opacity="0.65"/>
+      <path d="M 88 81 Q 110 75 132 81" fill="none" stroke="#f0d264" strokeWidth="0.9" opacity="0.4"/>
+      <text x="110" y="102" textAnchor="middle" fill={sel==="tm"?"#f0d264":ac} fontSize="11" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("tm")}>天守閣</text>
+      <text x="110" y="114" textAnchor="middle" fill={sel==="tm"?"#f0d264cc":`${ac}88`} fontSize="7.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("tm")}>Tenshukaku</text>
+      <g transform="translate(193,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">OSAKA · 大坂城 · 1583</text>
+    </g>
+  ),
+
+  // ── STIRLING CASTLE ───────────────────────────────────────────────────────
+  stirling: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(45,60,30,0.12)"/>
+      {/* Vulkanfels (Castle Rock) */}
+      {sel==="vr"&&<path d="M 22 92 Q 24 42 56 22 Q 90 8 142 12 Q 178 16 194 46 Q 207 72 206 112 Q 204 152 180 170 Q 154 185 110 186 Q 64 186 40 168 Q 14 148 22 92 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 22 92 Q 24 42 56 22 Q 90 8 142 12 Q 178 16 194 46 Q 207 72 206 112 Q 204 152 180 170 Q 154 185 110 186 Q 64 186 40 168 Q 14 148 22 92 Z"
+        fill={sel==="vr"?"rgba(80,65,38,0.28)":"rgba(80,65,38,0.16)"}
+        stroke={sel==="vr"?`${ac}88`:`${ac}30`} strokeWidth={sel==="vr"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("vr")}/>
+      {[0,1,2,3].map(i=>(
+        <path key={i} d={`M ${32+i*6} ${105-i*6} Q 110 ${90+i*4} ${188-i*5} ${108+i*4}`} fill="none" stroke={`${ac}09`} strokeWidth="0.6"/>
+      ))}
+      <text x="26" y="168" fill={sel==="vr"?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("vr")}>Castle Rock</text>
+      {/* Esplanade */}
+      {sel==="es"&&<rect x="68" y="10" width="74" height="30" fill="#cc4444" opacity="0.2" filter="url(#glowFilter)"/>}
+      <rect x="68" y="12" width="74" height="26" rx="2"
+        fill={sel==="es"?"rgba(204,68,68,0.38)":"rgba(204,68,68,0.16)"}
+        stroke={sel==="es"?"#cc4444":"rgba(204,68,68,0.45)"} strokeWidth={sel==="es"?2:1}
+        style={{cursor:"pointer"}} onClick={()=>onZone("es")}/>
+      <text x="105" y="28" textAnchor="middle" fill="#cc4444" fontSize="8.5" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("es")}>⚠ ESPLANADE</text>
+      {/* Forework */}
+      {sel==="fp"&&<rect x="78" y="36" width="60" height="22" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="78" y="37" width="60" height="20" rx="1"
+        fill={sel==="fp"?"rgba(170,135,55,0.3)":"rgba(170,135,55,0.12)"}
+        stroke={sel==="fp"?`${ac}cc`:`${ac}66`} strokeWidth={sel==="fp"?2.5:1.5}
+        style={{cursor:"pointer"}} onClick={()=>onZone("fp")}/>
+      {[[78,37],[138,37],[78,57],[138,57]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={sel==="fp"?`${ac}66`:`${ac}44`} stroke={`${ac}77`} strokeWidth="0.7"/>
+      ))}
+      <path d="M 99 57 L 99 45 Q 108 40 117 45 L 117 57" fill="rgba(0,0,0,0.45)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="108" y="51" textAnchor="middle" fill={sel==="fp"?ac:`${ac}99`} fontSize="8" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("fp")}>FOREWORK</text>
+      {/* Nether Bailey */}
+      {sel==="nk"&&<rect x="58" y="56" width="104" height="44" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="58" y="56" width="104" height="44" rx="1"
+        fill={sel==="nk"?"rgba(170,135,55,0.22)":"rgba(170,135,55,0.09)"}
+        stroke={sel==="nk"?`${ac}dd`:`${ac}66`} strokeWidth={sel==="nk"?3.5:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("nk")}/>
+      {[[58,56],[162,56],[58,100],[162,100]].map(([x,y],i)=>(
+        <rect key={i} x={x-5} y={y-5} width="10" height="10" rx="1" fill={sel==="nk"?`${ac}66`:`${ac}44`} stroke={`${ac}77`} strokeWidth="0.7"/>
+      ))}
+      <text x="110" y="82" textAnchor="middle" fill={sel==="nk"?ac:`${ac}99`} fontSize="9.5" fontFamily="serif" style={{cursor:"pointer"}} onClick={()=>onZone("nk")}>NETHER BAILEY</text>
+      {/* Great Hall */}
+      {sel==="gh"&&<rect x="65" y="100" width="90" height="58" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="65" y="100" width="90" height="58" rx="1"
+        fill={sel==="gh"?"rgba(232,200,96,0.35)":"rgba(232,200,96,0.14)"}
+        stroke={sel==="gh"?"#e8c860":"#c9a84c"} strokeWidth={sel==="gh"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("gh")}/>
+      <rect x="65" y="100" width="42" height="58" rx="1" fill="rgba(201,168,76,0.07)" stroke={`${ac}28`} strokeWidth="0.5"/>
+      <text x="86" y="133" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif">Kapelle</text>
+      <text x="132" y="133" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif">Palast</text>
+      <text x="110" y="117" textAnchor="middle" fill={sel==="gh"?"#e8c860":ac} fontSize="10" fontFamily="serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("gh")}>GREAT HALL</text>
+      <g transform="translate(193,24)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">STIRLING CASTLE · SEIT 1110</text>
+    </g>
+  ),
+
+  // ── RED FORT (Lal Qila) ───────────────────────────────────────────────────
+  red_fort: ({ac,sel,onZone}) => (
+    <g>
+      <rect x="0" y="0" width="220" height="200" fill="rgba(60,35,20,0.1)"/>
+      {/* Yamuna (Ost) */}
+      {sel==="rg"&&<rect x="178" y="0" width="42" height="200" fill="#4488cc" opacity="0.18" filter="url(#glowFilter)"/>}
+      <rect x="183" y="0" width="37" height="200" fill={sel==="rg"?"rgba(34,100,170,0.45)":"rgba(34,100,170,0.28)"} stroke={sel==="rg"?"#66aadd":"#4488cc55"} strokeWidth={sel==="rg"?1.5:1} style={{cursor:"pointer"}} onClick={()=>onZone("rg")}/>
+      {[25,60,95,130,165].map(y=>(
+        <path key={y} d={`M 184 ${y} Q 198 ${y+7} 216 ${y}`} fill="none" stroke="#4488cc" strokeWidth="0.5" opacity="0.45"/>
+      ))}
+      <text x="196" y="102" textAnchor="middle" fill={sel==="rg"?"#66aadd":"#4488cc99"} fontSize="7" fontFamily="serif" transform="rotate(90,196,102)" style={{cursor:"pointer"}} onClick={()=>onZone("rg")}>YAMUNA ⚠</text>
+      {/* Rote Sandsteinmauern */}
+      {sel==="rm"&&<path d="M 10 18 L 178 18 L 178 182 L 10 182 Z" fill={ac} opacity="0.07" filter="url(#glowFilter)"/>}
+      <path d="M 10 18 L 178 18 L 178 182 L 10 182 Z"
+        fill={sel==="rm"?"rgba(170,55,35,0.2)":"rgba(170,55,35,0.08)"}
+        stroke={sel==="rm"?"#cc4422":"#aa3312"} strokeWidth={sel==="rm"?5:4}
+        style={{cursor:"pointer"}} onClick={()=>onZone("rm")}/>
+      {[[10,18],[10,182],[178,18],[178,182],[10,100],[178,100],[94,18],[94,182]].map(([x,y],i)=>(
+        <polygon key={i} points={`${x},${y-7} ${x+4.5},${y-4.5} ${x+7},${y} ${x+4.5},${y+4.5} ${x},${y+7} ${x-4.5},${y+4.5} ${x-7},${y} ${x-4.5},${y-4.5}`}
+          fill={sel==="rm"?"rgba(204,68,40,0.55)":"rgba(180,60,30,0.32)"} stroke={sel==="rm"?"#dd5533":"#bb4422"} strokeWidth="0.8"/>
+      ))}
+      {/* Tore */}
+      <rect x="2" y="84" width="16" height="32" rx="2" fill="rgba(170,60,35,0.5)" stroke="#cc5533" strokeWidth="1.5"/>
+      <text x="10" y="82" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Lahore</text>
+      <text x="10" y="122" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Tor</text>
+      <rect x="162" y="84" width="16" height="32" rx="2" fill="rgba(170,60,35,0.3)" stroke="#cc5533" strokeWidth="1"/>
+      <text x="178" y="82" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Delhi</text>
+      <text x="178" y="122" textAnchor="middle" fill="#cc5533" fontSize="6.5" fontFamily="serif">Tor</text>
+      <text x="94" y="32" textAnchor="middle" fill={sel==="rm"?"#ee6644":ac} fontSize="9" fontFamily="'Cinzel',serif" style={{cursor:"pointer"}} onClick={()=>onZone("rm")}>SANDSTEINMAUERN</text>
+      {/* Palastkomplex */}
+      {sel==="pc"&&<rect x="20" y="46" width="102" height="108" fill={ac} opacity="0.1" filter="url(#glowFilter)"/>}
+      <rect x="20" y="46" width="102" height="108" rx="2"
+        fill={sel==="pc"?"rgba(201,168,76,0.25)":"rgba(201,168,76,0.1)"}
+        stroke={sel==="pc"?`${ac}ff`:`${ac}77`} strokeWidth={sel==="pc"?3:2}
+        style={{cursor:"pointer"}} onClick={()=>onZone("pc")}/>
+      <rect x="26" y="54" width="42" height="32" rx="1" fill="rgba(201,168,76,0.12)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="47" y="74" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif">Diwan-i-Am</text>
+      <rect x="76" y="54" width="38" height="28" rx="1" fill="rgba(201,168,76,0.12)" stroke={`${ac}44`} strokeWidth="0.8"/>
+      <text x="95" y="72" textAnchor="middle" fill={`${ac}55`} fontSize="6.5" fontFamily="serif">Diwan-i-Khas</text>
+      <rect x="26" y="96" width="32" height="28" rx="1" fill="rgba(68,136,204,0.1)" stroke="#4488cc33" strokeWidth="0.8"/>
+      <text x="42" y="114" textAnchor="middle" fill="#4488cc44" fontSize="6.5" fontFamily="serif">Hammam</text>
+      <rect x="76" y="92" width="38" height="32" rx="1" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8"/>
+      <text x="95" y="112" textAnchor="middle" fill="rgba(255,255,255,0.28)" fontSize="6.5" fontFamily="serif">Moti Masjid</text>
+      <text x="71" y="118" textAnchor="middle" fill={sel==="pc"?ac:`${ac}cc`} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold" style={{cursor:"pointer"}} onClick={()=>onZone("pc")}>PALASTKOMPLEX</text>
+      <g transform="translate(28,26)">
+        <circle cx="0" cy="0" r="11" fill="rgba(3,2,1,0.75)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-9 -2,-2 2,-2" fill={ac} opacity="0.9"/>
+        <polygon points="0,9 -2,2 2,2" fill={`${ac}44`}/>
+        <text x="0" y="-11" textAnchor="middle" fill={ac} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+      <text x="94" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="serif" letterSpacing="1.2">LAL QILA · DELHI · 1639</text>
+    </g>
+  ),
 };
 
-// Generic plan for all other castles
+// Generic plan for all other castles — enhanced top-down view
 function GenericCastlePlan({castle,ac,sel,onZone}){
   const zones=castle.zones;
-  // Smart positions based on zone index and type
+
+  // Crenellations along an ellipse/circle perimeter
+  const crenels=(cx,cy,rx,ry,count,size,color,isH)=>
+    Array.from({length:count},(_,i)=>{
+      const a=i/count*Math.PI*2;
+      return <rect key={i}
+        x={cx+rx*Math.cos(a)-size/2} y={cy+ry*Math.sin(a)-size/2}
+        width={size} height={size} rx="0.5"
+        fill={isH?`${color}70`:`${color}38`}
+        stroke={isH?`${color}aa`:`${color}66`} strokeWidth="0.4"/>;
+    });
+
   const getPos=(z,i,total)=>{
-    // outermost zones get outer ring, innermost get center
     const isOuter=z.r>35;
     const isMid=z.r>15&&z.r<=35;
-    if(isOuter) return {type:"ellipse",cx:110,cy:108,rx:75,ry:68};
-    if(isMid)   return {type:"ellipse",cx:110,cy:108,rx:52,ry:46};
-    // Small zones: distribute around center
+    if(isOuter) return {type:"ellipse",cx:110,cy:104,rx:76,ry:67};
+    if(isMid)   return {type:"ellipse",cx:110,cy:104,rx:50,ry:44};
     const angle=(i/Math.max(total,1))*Math.PI*2-Math.PI/2;
-    const dist=z.r<10?22:34;
-    return {type:"circle",cx:110+dist*Math.cos(angle),cy:108+dist*Math.sin(angle),r:Math.min(z.r,16)};
+    const dist=z.r<10?20:32;
+    return {type:"circle",cx:110+dist*Math.cos(angle),cy:104+dist*Math.sin(angle),r:Math.min(z.r,17)};
   };
+
   return(
     <g>
-      {/* Background */}
-      <rect x="5" y="5" width="210" height="190" rx="6" fill={`${ac}05`} stroke={`${ac}14`} strokeWidth="0.8"/>
-      {/* Subtle grid */}
-      {[40,70,100,130,160].flatMap(v=>[
-        <line key={`gx${v}`} x1={v} y1="5" x2={v} y2="195" stroke={`${ac}06`} strokeWidth="0.4"/>,
-        <line key={`gy${v}`} x1="5" y1={v} x2="215" y2={v} stroke={`${ac}06`} strokeWidth="0.4"/>
-      ])}
-      {/* Terrain hint */}
-      <path d="M 5 170 Q 60 155 110 160 Q 160 165 215 155 L 215 195 L 5 195 Z" fill={`${ac}07`} stroke="none"/>
+      {/* Outer terrain boundary */}
+      <ellipse cx="110" cy="105" rx="106" ry="91"
+        fill={`${ac}04`} stroke={`${ac}10`} strokeWidth="0.5" strokeDasharray="8,5"/>
+      {/* Terrain hash lines */}
+      {Array.from({length:18},(_,i)=>{
+        const a=i/18*Math.PI*2;
+        return <line key={i}
+          x1={110+88*Math.cos(a)} y1={105+76*Math.sin(a)}
+          x2={110+102*Math.cos(a)} y2={105+88*Math.sin(a)}
+          stroke={`${ac}0d`} strokeWidth="0.6"/>;
+      })}
+      {/* Inner ground wash */}
+      <ellipse cx="110" cy="105" rx="80" ry="70" fill={`${ac}05`} stroke="none"/>
+
       {/* Zones */}
       {zones.map((z,i)=>{
         const isH=sel===z.id;
         const pos=getPos(z,i,zones.length);
-        const isWeak=z.l.includes("⚠");
+        const isWeak=z.a<=2;
+        const cCount=pos.type==="ellipse"?Math.floor(pos.rx*0.62):Math.floor(pos.r*0.55);
+        const cSize=isH?5:4;
         return(
           <g key={z.id} style={{cursor:"pointer"}} onClick={()=>onZone(z.id)}>
-            {pos.type==="ellipse"
-              ?<ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx} ry={pos.ry}
-                  fill={isH?`${z.c}28`:`${z.c}0e`}
-                  stroke={isH?z.c:`${z.c}66`}
-                  strokeWidth={isH?3:1.8}/>
-              :<circle cx={pos.cx} cy={pos.cy} r={pos.r}
-                  fill={isH?`${z.c}3a`:`${z.c}14`}
+            {pos.type==="ellipse"?(
+              <>
+                {/* Glow halo */}
+                {isH&&<ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx+9} ry={pos.ry+9}
+                  fill={z.c} opacity="0.09" filter="url(#glowFilter)"/>}
+                {/* Drop shadow */}
+                <ellipse cx={pos.cx} cy={pos.cy+3} rx={pos.rx} ry={pos.ry*0.32}
+                  fill="rgba(0,0,0,0.4)" stroke="none"/>
+                {/* Wall ring */}
+                <ellipse cx={pos.cx} cy={pos.cy} rx={pos.rx} ry={pos.ry}
+                  fill={isH?`${z.c}22`:`${z.c}0d`}
+                  stroke={isH?z.c:`${z.c}55`}
+                  strokeWidth={isH?3.5:2.5}/>
+                {/* Crenellations */}
+                {crenels(pos.cx,pos.cy,pos.rx,pos.ry,cCount,cSize,z.c,isH)}
+                {/* Corner towers */}
+                {[0,2,4,6].map(j=>{
+                  const a=j/8*Math.PI*2+Math.PI/8;
+                  return <circle key={j}
+                    cx={pos.cx+pos.rx*Math.cos(a)} cy={pos.cy+pos.ry*Math.sin(a)}
+                    r={isH?6:5} fill={isH?`${z.c}44`:`${z.c}22`}
+                    stroke={isH?`${z.c}aa`:`${z.c}66`} strokeWidth={isH?1.2:0.8}/>;
+                })}
+                {/* Label background + text */}
+                <rect x={pos.cx-38} y={pos.cy-7} width="76" height="14" rx="2"
+                  fill="rgba(3,2,1,0.75)" stroke={`${z.c}22`} strokeWidth="0.5"/>
+                <text x={pos.cx} y={pos.cy+3} textAnchor="middle"
+                  fill={isH?z.c:`${z.c}dd`} fontSize="9" fontFamily="'Cinzel',serif" letterSpacing="0.5">
+                  {z.l.replace(/ ⚠+/g,"").slice(0,16)}
+                </text>
+                {isWeak&&<text x={pos.cx+pos.rx-2} y={pos.cy-pos.ry+5}
+                  textAnchor="middle" fill="#cc4444" fontSize="11">⚠</text>}
+              </>
+            ):(
+              <>
+                {isH&&<circle cx={pos.cx} cy={pos.cy} r={pos.r+8}
+                  fill={z.c} opacity="0.09" filter="url(#glowFilter)"/>}
+                {/* Drop shadow */}
+                <ellipse cx={pos.cx} cy={pos.cy+2} rx={pos.r} ry={pos.r*0.3}
+                  fill="rgba(0,0,0,0.35)" stroke="none"/>
+                {/* Tower body */}
+                <circle cx={pos.cx} cy={pos.cy} r={pos.r}
+                  fill={isH?`${z.c}38`:`${z.c}18`}
                   stroke={isH?z.c:`${z.c}88`}
                   strokeWidth={isH?2.5:1.5}/>
-            }
-            {/* Zone name */}
-            <text
-              x={pos.type==="ellipse"?pos.cx:pos.cx}
-              y={pos.type==="ellipse"?pos.cy+4:pos.cy+2}
-              textAnchor="middle" fill={isH?z.c:`${z.c}aa`}
-              fontSize="9" fontFamily="serif">
-              {z.l.replace(" ⚠","").replace(" ⚠⚠","")}
-            </text>
-            {isWeak&&<text
-              x={pos.type==="ellipse"?pos.cx:pos.cx}
-              y={pos.type==="ellipse"?pos.cy+14:pos.cy+12}
-              textAnchor="middle" fill="#cc4444" fontSize="8">⚠</text>}
-            {/* Tower dots on ellipse rings */}
-            {pos.type==="ellipse"&&Array.from({length:8},(_,j)=>{
-              const a=j/8*Math.PI*2;
-              return <rect key={j} x={pos.cx+pos.rx*Math.cos(a)-3.5} y={pos.cy+pos.ry*Math.sin(a)-3.5}
-                width="7" height="7" rx="1"
-                fill={`${z.c}33`} stroke={`${z.c}66`} strokeWidth="0.7"
-                style={{cursor:"pointer"}}/>;
-            })}
+                {/* Mini turrets */}
+                {Array.from({length:4},(_,j)=>{
+                  const a=j/4*Math.PI*2+Math.PI/4;
+                  return <circle key={j}
+                    cx={pos.cx+pos.r*0.82*Math.cos(a)} cy={pos.cy+pos.r*0.82*Math.sin(a)}
+                    r="3" fill={`${z.c}55`} stroke={`${z.c}88`} strokeWidth="0.5"/>;
+                })}
+                {/* Crenellations on tower */}
+                {crenels(pos.cx,pos.cy,pos.r,pos.r,cCount,isH?4:3,z.c,isH)}
+                {/* Label */}
+                <rect x={pos.cx-22} y={pos.cy-6} width="44" height="12" rx="2"
+                  fill="rgba(3,2,1,0.75)" stroke={`${z.c}22`} strokeWidth="0.5"/>
+                <text x={pos.cx} y={pos.cy+2} textAnchor="middle"
+                  fill={isH?z.c:`${z.c}dd`} fontSize="8" fontFamily="'Cinzel',serif">
+                  {z.l.replace(/ ⚠+/g,"").slice(0,13)}
+                </text>
+                {isWeak&&<text x={pos.cx+pos.r+2} y={pos.cy-pos.r+3}
+                  fill="#cc4444" fontSize="9">⚠</text>}
+              </>
+            )}
           </g>
         );
       })}
-      {/* Castle name */}
-      <text x="110" y="193" textAnchor="middle" fill={`${ac}44`} fontSize="9" fontFamily="serif" letterSpacing="1.5">
-        {castle.name.toUpperCase().slice(0,22)}
+
+      {/* Compass rose */}
+      <g transform="translate(194,18)">
+        <circle cx="0" cy="0" r="13" fill="rgba(3,2,1,0.78)" stroke={`${ac}30`} strokeWidth="0.8"/>
+        <polygon points="0,-10 -2.5,-2 2.5,-2" fill={ac} opacity="0.88"/>
+        <polygon points="0,10 -2.5,2 2.5,2" fill={`${ac}44`}/>
+        <polygon points="-10,0 -2,-2.5 -2,2.5" fill={`${ac}44`}/>
+        <polygon points="10,0 2,-2.5 2,2.5" fill={`${ac}44`}/>
+        <circle cx="0" cy="0" r="2" fill={ac} opacity="0.6"/>
+        <text x="0" y="-13" textAnchor="middle" fill={ac} fontSize="7"
+          fontFamily="'Cinzel',serif" fontWeight="bold">N</text>
+      </g>
+
+      {/* Castle name bar */}
+      <rect x="24" y="189" width="160" height="10" rx="2" fill="rgba(3,2,1,0.7)" stroke={`${ac}18`} strokeWidth="0.5"/>
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}99`} fontSize="8"
+        fontFamily="'Cinzel',serif" letterSpacing="1.5">
+        {castle.name.toUpperCase().slice(0,26)}
       </text>
-      {/* Compass */}
-      <text x="198" y="24" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="serif">N</text>
-      <line x1="198" y1="27" x2="198" y2="42" stroke={`${ac}44`} strokeWidth="1"/>
-      <polygon points="198,27 196,35 200,35" fill={`${ac}44`}/>
     </g>
   );
 }
 
-// ── Isometric 2.5D castle view ────────────────────────────────────────────
+// ── IsoCastlePlan removed — diorama replaced by enhanced floor plans ───────
 function IsoCastlePlan({castle,ac,sel,onZone}){
   const zones=castle.zones;
   const CX=110,CY=128;
@@ -2554,222 +2992,2478 @@ function MiniLeafletMap({lat, lon, castle}){
   );
 }
 
+// ── Detailed Floor Plans (large viewBox, many clickable elements) ───────────
+const DETAILED_PLANS={};
+
+// ── Malbork ─────────────────────────────────────────────────────────────────
+DETAILED_PLANS.malbork=({ac,sel,onSel})=>{
+  const W=700,H=580;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("hb_keep","Hochburg – Hauptburg","🏯","Hochmeisterburg","Der innerste Kern von Malbork, erbaut um 1280 vom Deutschen Orden. Massiver Donjon mit Kapelle der Heiligen Anna im Erdgeschoss.",["Mauerstärke: 4m","Höhe: 28m","Erbaut: 1280"],null),
+    S("hb_chapel","Kapelle St. Anna","⛪","Kapelle","Zweigeschossige Palastkapelle unter dem Kapitelsaal. Enthält die Grablege der Hochmeister – strategisch unantastbarer Sakralraum.",["Goldmosaiken","Gotisches Gewölbe"],null),
+    S("hb_great","Großer Remter","🏛️","Palastsaal","Repräsentativer Speisesaal der Hochmeister, 30m lang. Granitsäule trägt das gesamte Sternengewölbe – Schwachstelle!",["Länge: 30m","Kapazität: 400 Ritter"],2),
+    S("mb_palace","Hochmeisterpalast","👑","Palast","Prachtbau mit vier Türmen, errichtet 1382–1399 unter Hochmeister Konrad Zöllner. Repräsentativster Raum des Ordens.",["4 Türme","Größter Palast Nordeuropas","Heizung durch Hypokausten"],null),
+    S("mb_wall","Mittelburg – Ringmauer","🧱","Curtainwall","Mittlerer Mauerring mit Zinnen und Schießscharten. Verbindet Hoch- und Vorburg. Breite Wehrgang-Plattform.",["Höhe: 12m","Dicke: 2.5m"],null),
+    S("mb_gate","Mittelburger Tor","🚪","Torhaus","Hauptzugang zur Mittelburg über Zugbrücke und Fallgitter. Doppeltes Tortürme-System mit Pechnasen.",["Zugbrücke","Fallgitter","Pechnasen"],3),
+    S("vb_outer","Vorburg – Außenwall","🏰","Vorburg","Größtes der drei Vorwerke. Enthält Werkstätten, Stallungen, Mühlen und Unterkünfte für Hunderte Knappen und Handwerker.",["400m Ausdehnung","Schmiede & Mühlen","Brauerei"],null),
+    S("vb_gate","Vordertor / Danzig-Tor","⚔️","Haupttor","Einziger Zugang zur Vorburg, geschützt durch Barbakane und tiefen Graben. Schwächster Punkt der Gesamtanlage.",["Barbakane vorgelagert","Wassergraben 8m tief"],1),
+    S("nogat","Fluss Nogat","🌊","Flussbarriere","Natürliche Ostgrenze der Burganlage. Schiffbare Verbindung zur Ostsee ermöglichte Nachschub für den Deutschen Orden.",["Breite: 60m","Schiffbar","Ostschutz"],null),
+    S("nb_gate","Nordtor","🚧","Schwachstelle","Schmaler Zugang an der Nordseite mit weniger Verteidigungstiefe. Historisch mehrfach angegriffen.",["Wenig Tiefe","Flaches Gelände"],2),
+  ];
+  const el=(id)=>EL.find(e=>e.id===id)||null;
+  const hit=(id)=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=(id)=>sel&&sel.id===id;
+  const zone=(id,fill,stroke)=>isSel(id)?`${fill}55`:`${fill}20`;
+  const str=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="m_bg" cx="50%" cy="55%" r="65%">
+          <stop offset="0%" stopColor="#100d07"/>
+          <stop offset="100%" stopColor="#050402"/>
+        </radialGradient>
+        <filter id="m_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="m_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}07`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}05`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#m_bg)"/>
+      <rect width={W} height={H} fill="url(#m_stone)" opacity="0.6"/>
+
+      {/* Nogat River (east) */}
+      <rect x="580" y="0" width="120" height={H} fill="rgba(34,100,180,0.28)" onClick={()=>hit("nogat")} style={{cursor:"pointer"}}/>
+      {isSel("nogat")&&<rect x="580" y="0" width="120" height={H} fill="rgba(34,100,180,0.18)" filter="url(#m_glow)"/>}
+      <text x="640" y="290" textAnchor="middle" fill="#4488cc" fontSize="13" fontFamily="'Cinzel',serif" transform="rotate(-90,640,290)">FLUSS NOGAT</text>
+      <line x1="580" y1="0" x2="580" y2={H} stroke="#4488cc" strokeWidth="1.5" strokeDasharray="6,3"/>
+
+      {/* Vorburg (outer ward) */}
+      <rect x="60" y="80" width="500" height="420" rx="6"
+        fill={zone("vb_outer","#a08040","#c0a050")} stroke={str("vb_outer","#c0a050")} strokeWidth="2.5"
+        onClick={()=>hit("vb_outer")} style={{cursor:"pointer"}}/>
+      {isSel("vb_outer")&&<rect x="60" y="80" width="500" height="420" rx="6" fill="rgba(180,140,40,0.08)" filter="url(#m_glow)"/>}
+      <text x="92" y="112" fill={isSel("vb_outer")?ac:"#9a8040"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="1">VORBURG</text>
+
+      {/* Vordertor */}
+      <rect x="60" y="248" width="40" height="60" rx="3"
+        fill={zone("vb_gate","#cc3322","#ee4433")} stroke={str("vb_gate","#ee4433")} strokeWidth="2.5"
+        onClick={()=>hit("vb_gate")} style={{cursor:"pointer"}}/>
+      {isSel("vb_gate")&&<rect x="56" y="244" width="48" height="68" rx="4" fill="rgba(220,50,30,0.15)" filter="url(#m_glow)"/>}
+      <text x="80" y="282" textAnchor="middle" fill={isSel("vb_gate")?"#ee4433":"#cc5544"} fontSize="8" fontFamily="'Cinzel',serif">HAUPTTOR</text>
+
+      {/* Mittelburg (middle ward) */}
+      <rect x="190" y="130" width="340" height="300" rx="5"
+        fill={zone("mb_wall","#8870a8","#9980c0")} stroke={str("mb_wall","#9980c0")} strokeWidth="2.5"
+        onClick={()=>hit("mb_wall")} style={{cursor:"pointer"}}/>
+      {isSel("mb_wall")&&<rect x="190" y="130" width="340" height="300" rx="5" fill="rgba(150,120,200,0.08)" filter="url(#m_glow)"/>}
+      <text x="210" y="158" fill={isSel("mb_wall")?ac:"#9980c0"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="1">MITTELBURG</text>
+
+      {/* Mittelburg Gate */}
+      <rect x="190" y="245" width="35" height="70" rx="3"
+        fill={zone("mb_gate","#cc5500","#ee7700")} stroke={str("mb_gate","#ee7700")} strokeWidth="2.5"
+        onClick={()=>hit("mb_gate")} style={{cursor:"pointer"}}/>
+      <text x="207" y="285" textAnchor="middle" fill={isSel("mb_gate")?"#ee7700":"#cc6600"} fontSize="7" fontFamily="'Cinzel',serif">TOR</text>
+
+      {/* Hochmeisterpalast */}
+      <rect x="220" y="160" width="180" height="110" rx="4"
+        fill={zone("mb_palace","#cc9922","#ffcc44")} stroke={str("mb_palace","#ffcc44")} strokeWidth="2.5"
+        onClick={()=>hit("mb_palace")} style={{cursor:"pointer"}}/>
+      {isSel("mb_palace")&&<rect x="215" y="155" width="190" height="120" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#m_glow)"/>}
+      {/* Palace towers */}
+      {[[220,160],[398,160],[220,268],[398,268]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-10} y={ty-10} width="20" height="20" rx="2"
+          fill={isSel("mb_palace")?"#ffcc4444":"#cc992222"} stroke={isSel("mb_palace")?"#ffcc44":"#cc9922"} strokeWidth="1.5"/>
+      ))}
+      <text x="310" y="218" textAnchor="middle" fill={isSel("mb_palace")?"#ffcc44":"#aa8822"} fontSize="11" fontFamily="'Cinzel',serif" fontWeight="bold">HOCHMEISTER-</text>
+      <text x="310" y="232" textAnchor="middle" fill={isSel("mb_palace")?"#ffcc44":"#aa8822"} fontSize="11" fontFamily="'Cinzel',serif" fontWeight="bold">PALAST</text>
+
+      {/* Hochburg (inner ward) */}
+      <rect x="360" y="155" width="180" height="210" rx="4"
+        fill={zone("hb_keep","#cc4488","#ee55aa")} stroke={str("hb_keep","#ee55aa")} strokeWidth="3"
+        onClick={()=>hit("hb_keep")} style={{cursor:"pointer"}}/>
+      {isSel("hb_keep")&&<rect x="355" y="150" width="190" height="220" rx="5" fill="rgba(200,60,130,0.1)" filter="url(#m_glow)"/>}
+      <text x="450" y="180" textAnchor="middle" fill={isSel("hb_keep")?ac:"#cc4488"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="1">HOCHBURG</text>
+      {/* Corner towers */}
+      {[[360,155],[538,155],[360,363],[538,363]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-12} y={ty-12} width="24" height="24" rx="3"
+          fill={isSel("hb_keep")?"#ee55aa33":"#cc448822"} stroke={isSel("hb_keep")?"#ee55aa":"#cc4488"} strokeWidth="2"/>
+      ))}
+
+      {/* Great Remter */}
+      <rect x="375" y="195" width="150" height="55" rx="3"
+        fill={zone("hb_great","#ee4433","#ff5544")} stroke={str("hb_great","#ff5544")} strokeWidth="2"
+        onClick={()=>hit("hb_great")} style={{cursor:"pointer"}}/>
+      {isSel("hb_great")&&<rect x="370" y="190" width="160" height="65" rx="4" fill="rgba(220,60,40,0.1)" filter="url(#m_glow)"/>}
+      <text x="450" y="225" textAnchor="middle" fill={isSel("hb_great")?"#ff5544":"#cc4433"} fontSize="9" fontFamily="'Cinzel',serif">GROSSER REMTER</text>
+
+      {/* Chapel St. Anna */}
+      <rect x="375" y="262" width="70" height="85" rx="3"
+        fill={zone("hb_chapel","#5588ff","#7799ff")} stroke={str("hb_chapel","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("hb_chapel")} style={{cursor:"pointer"}}/>
+      {isSel("hb_chapel")&&<rect x="370" y="257" width="80" height="95" rx="4" fill="rgba(80,120,220,0.1)" filter="url(#m_glow)"/>}
+      <text x="410" y="307" textAnchor="middle" fill={isSel("hb_chapel")?"#7799ff":"#5566cc"} fontSize="8" fontFamily="'Cinzel',serif">ST. ANNA</text>
+
+      {/* North gate */}
+      <rect x="320" y="80" width="60" height="36" rx="3"
+        fill={zone("nb_gate","#cc3322","#ee4433")} stroke={str("nb_gate","#ee4433")} strokeWidth="2"
+        onClick={()=>hit("nb_gate")} style={{cursor:"pointer"}}/>
+      {isSel("nb_gate")&&<rect x="315" y="75" width="70" height="46" rx="4" fill="rgba(200,50,30,0.12)" filter="url(#m_glow)"/>}
+      <text x="350" y="100" textAnchor="middle" fill={isSel("nb_gate")?"#ee4433":"#cc4433"} fontSize="8" fontFamily="'Cinzel',serif">NORDTOR ⚠</text>
+
+      {/* Labels for wells/stables etc. */}
+      <text x="130" y="440" fill="#7a6a40" fontSize="8" fontFamily="'Cinzel',serif">Stallungen</text>
+      <text x="130" y="455" fill="#7a6a40" fontSize="8" fontFamily="'Cinzel',serif">Mühlen</text>
+      <text x="130" y="395" fill="#7a6a40" fontSize="8" fontFamily="'Cinzel',serif">Schmieden</text>
+      <text x="130" y="200" fill="#7a6a40" fontSize="8" fontFamily="'Cinzel',serif">Brauerei</text>
+
+      {/* Scale */}
+      <line x1="80" y1={H-24} x2="230" y2={H-24} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="80" y1={H-20} x2="80" y2={H-28} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="230" y1={H-20} x2="230" y2={H-28} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <text x="155" y={H-10} textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 200m</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-44},44)`}>
+        <circle r="18" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*11} y={-Math.cos(r2)*11+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      {/* Title */}
+      <text x="20" y="28" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">MARIENBURG / MALBORK</text>
+      <text x="20" y="44" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Ordensburg · 1274–1457 · Weichsel-Delta</text>
+    </svg>
+  );
+};
+
+// ── Beaumaris ────────────────────────────────────────────────────────────────
+DETAILED_PLANS.beaumaris=({ac,sel,onSel})=>{
+  const W=620,H=580;
+  const cx=W/2,cy=H/2+20;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("outer_wall","Äußere Ringmauer","🧱","Curtainwall","Äußerer Mauerring mit 16 Türmen auf einem fast perfekten Quadrat. Erbaut 1295–1330 unter Edward I. Gilt als technisch vollkommenstes konzentrisch angelegtes Schloss der Welt.",["16 Türme","Höhe: 9m","Dicke: 2m"],null),
+    S("inner_ward","Innerer Wehrhof","🏯","Innerer Ring","Der innere Mauerring bildet ein nahezu rundes Quadrat mit 6 massiven Türmen. Enthält Kapelle, Wohn- und Versorgungsgebäude.",["6 Türme","Höhe: 14m","2 Tore"],null),
+    S("north_gate","Nordtor","🚪","Haupttor","Das mächtigste Tor der Anlage. Dreigliedrig mit Torhaus, Barbakane und Zugbrücke. Angriffsrichtung des geringsten Widerstands.",["Zugbrücke","Portcullis","Barbakane"],3),
+    S("south_gate","Südtor","🚪","Tor","Südlicher Hauptzugang, leicht kleiner als das Nordtor. Ebenfalls mit Pechnasen und Mörder­löchern ausgestattet.",["Mörderlöcher","Fallgitter"],4),
+    S("dock_gate","Hafentor","⚓","Seezugang","Schmales Tor an der Südseite, das den direkten Nachschub per Schiff ermöglichte. Strategisch entscheidend für die Versorgung.",["Direkter Seeweg","Wichtig für Versorgung"],2),
+    S("moat","Gezeitengraben","🌊","Tidal Moat","Der Wassergraben um die gesamte Anlage war durch Gezeiten gefüllt. Machte eine direkte Belagerung ohne Schiffe nahezu unmöglich.",["Breite: 18m","Tidal gesteuert"],null),
+    S("killing_ground","Zwinger","⚔️","Zwingergasse","Der schmale Korridor zwischen äußerem und innerem Mauerring. Angreifer, die den äußeren Ring überwanden, gerieten in dieses Kreuzfeuer.",["Breite: 8m","Kreuzfeuer","Keine Deckung"],null),
+    S("chapel","Kapelle","⛪","Kapelle","Im Innenhof des inneren Rings gelegen. Kleiner aber solider Sakralbau im Stil der edwardianischen Gotik.",["Gotischer Stil","1320 erbaut"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glow=(id,c)=>isSel(id)?`${c}55`:`${c}20`;
+  const str2=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  // Tower helper
+  const tower=(key,tx,ty,r,c)=>(
+    <g key={key}>
+      {isSel(key)&&<circle cx={tx} cy={ty} r={r+6} fill={`${c}22`} filter="url(#b_glow)"/>}
+      <circle cx={tx} cy={ty} r={r} fill={`${c}${isSel(key)?"44":"22"}`}
+        stroke={`${c}${isSel(key)?"cc":"66"}`} strokeWidth={isSel(key)?2:1.5}/>
+    </g>
+  );
+
+  // Outer wall towers (16, evenly spaced)
+  const outerR=230,innerR=140,killW=40;
+  const outerTowers=Array.from({length:16},(_,i)=>{
+    const a=(i/16)*Math.PI*2;
+    return{x:cx+Math.cos(a)*outerR,y:cy+Math.sin(a)*outerR};
+  });
+  const innerTowers=[0,1,2,3,4,5].map(i=>{
+    const a=(i/6)*Math.PI*2-Math.PI/4;
+    return{x:cx+Math.cos(a)*innerR,y:cy+Math.sin(a)*innerR};
+  });
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="b_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#06100e"/>
+          <stop offset="100%" stopColor="#020608"/>
+        </radialGradient>
+        <filter id="b_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="b_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+        <radialGradient id="b_sea" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="rgba(20,70,140,0.35)"/>
+          <stop offset="100%" stopColor="rgba(10,40,90,0.55)"/>
+        </radialGradient>
+      </defs>
+      <rect width={W} height={H} fill="url(#b_bg)"/>
+      <rect width={W} height={H} fill="url(#b_stone)" opacity="0.5"/>
+
+      {/* Sea / moat background */}
+      <circle cx={cx} cy={cy} r={outerR+30} fill="url(#b_sea)" onClick={()=>hit("moat")} style={{cursor:"pointer"}}/>
+      {isSel("moat")&&<circle cx={cx} cy={cy} r={outerR+30} fill="rgba(30,100,180,0.12)" filter="url(#b_glow)"/>}
+      <text x={cx} y={cy-outerR-10} textAnchor="middle" fill="#4488cc" fontSize="9" fontFamily="'Cinzel',serif">GEZEITENGRABEN</text>
+
+      {/* Outer ring wall */}
+      <circle cx={cx} cy={cy} r={outerR} fill={glow("outer_wall","#7a8860")}
+        stroke={str2("outer_wall","#9aaa70")} strokeWidth="3"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {isSel("outer_wall")&&<circle cx={cx} cy={cy} r={outerR} fill="rgba(120,140,80,0.08)" filter="url(#b_glow)"/>}
+
+      {/* Killing ground (zwinger) */}
+      <circle cx={cx} cy={cy} r={outerR-killW} fill={glow("killing_ground","#cc4433")}
+        stroke={str2("killing_ground","#ee5544")} strokeWidth="2"
+        onClick={()=>hit("killing_ground")} style={{cursor:"pointer"}}/>
+      {isSel("killing_ground")&&<circle cx={cx} cy={cy} r={outerR-killW} fill="rgba(180,50,30,0.08)" filter="url(#b_glow)"/>}
+      <text x={cx+outerR-killW/2-16} y={cy+4} fill={isSel("killing_ground")?"#ee5544":"#7a3322"} fontSize="7" fontFamily="'Cinzel',serif">ZWINGER</text>
+
+      {/* Inner ring wall */}
+      <circle cx={cx} cy={cy} r={innerR} fill={glow("inner_ward","#8870a8")}
+        stroke={str2("inner_ward","#aa88cc")} strokeWidth="3"
+        onClick={()=>hit("inner_ward")} style={{cursor:"pointer"}}/>
+      {isSel("inner_ward")&&<circle cx={cx} cy={cy} r={innerR} fill="rgba(130,100,180,0.1)" filter="url(#b_glow)"/>}
+
+      {/* Inner ward courtyard */}
+      <circle cx={cx} cy={cy} r={innerR-30} fill="rgba(40,30,20,0.4)"/>
+
+      {/* Outer towers */}
+      {outerTowers.map((t,i)=>tower(`ot${i}`,t.x,t.y,11,"#9aaa70"))}
+
+      {/* Inner towers */}
+      {innerTowers.map((t,i)=>tower(`it${i}`,t.x,t.y,14,"#aa88cc"))}
+
+      {/* North gate */}
+      <rect x={cx-20} y={cy-outerR-8} width="40" height="36" rx="3"
+        fill={glow("north_gate","#ffcc44")} stroke={str2("north_gate","#ffdd66")} strokeWidth="2.5"
+        onClick={()=>hit("north_gate")} style={{cursor:"pointer"}}/>
+      {isSel("north_gate")&&<rect x={cx-25} y={cy-outerR-13} width="50" height="46" rx="4" fill="rgba(220,180,40,0.1)" filter="url(#b_glow)"/>}
+      <text x={cx} y={cy-outerR+44} textAnchor="middle" fill={isSel("north_gate")?"#ffdd66":"#cc9922"} fontSize="8" fontFamily="'Cinzel',serif">NORDTOR</text>
+
+      {/* South gate */}
+      <rect x={cx-20} y={cy+outerR-28} width="40" height="36" rx="3"
+        fill={glow("south_gate","#ff8844")} stroke={str2("south_gate","#ffaa66")} strokeWidth="2.5"
+        onClick={()=>hit("south_gate")} style={{cursor:"pointer"}}/>
+      {isSel("south_gate")&&<rect x={cx-25} y={cy+outerR-33} width="50" height="46" rx="4" fill="rgba(220,120,40,0.1)" filter="url(#b_glow)"/>}
+      <text x={cx} y={cy+outerR+22} textAnchor="middle" fill={isSel("south_gate")?"#ffaa66":"#cc6633"} fontSize="8" fontFamily="'Cinzel',serif">SÜDTOR</text>
+
+      {/* Dock gate */}
+      <rect x={cx+outerR-28} y={cy-18} width="36" height="36" rx="3"
+        fill={glow("dock_gate","#44aacc")} stroke={str2("dock_gate","#66ccee")} strokeWidth="2"
+        onClick={()=>hit("dock_gate")} style={{cursor:"pointer"}}/>
+      <text x={cx+outerR+14} y={cy+4} fill={isSel("dock_gate")?"#66ccee":"#3388aa"} fontSize="8" fontFamily="'Cinzel',serif">HAFEN</text>
+
+      {/* Chapel */}
+      <rect x={cx-18} y={cy-18} width="36" height="36" rx="3"
+        fill={glow("chapel","#5577ff")} stroke={str2("chapel","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      <text x={cx} y={cy+4} textAnchor="middle" fill={isSel("chapel")?"#7799ff":"#445588"} fontSize="8" fontFamily="'Cinzel',serif">KAP.</text>
+
+      {/* INNER label */}
+      <text x={cx} y={cy-innerR+18} textAnchor="middle" fill={isSel("inner_ward")?ac:"#9070c0"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">INNERER HOF</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-40},40)`}>
+        <circle r="16" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*9} y={-Math.cos(r2)*9+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">BEAUMARIS CASTLE</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Konzentrisch · 1295–1330 · Anglesey, Wales</text>
+    </svg>
+  );
+};
+
+// ── Dover ────────────────────────────────────────────────────────────────────
+DETAILED_PLANS.dover=({ac,sel,onSel})=>{
+  const W=640,H=580;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("great_tower","Großer Turm (Keep)","🏯","Donjon","Einer der mächtigsten Türme Englands, erbaut 1180 unter Heinrich II. Quadratischer Kern mit Vorgebäude, 29m hoch, Mauern 6.4m dick. Gilt als nahezu unbezwingbar.",["Höhe: 29m","Mauern: 6.4m","Erbaut: 1180"],null),
+    S("forebuilding","Vorgebäude","🚪","Eingangsanlage","Dreigliedrige Eingangsanlage zum Great Tower. Kontrollierter Zugang über mehrere Torräume und eine Wendeltreppe – Angreifer müssen im Uhrzeigersinn aufsteigen.",["Rechtshändige Treppen","3 Torkammern"],3),
+    S("inner_bailey","Innerer Wehrhof","🏰","Innerer Ring","Ovaler innerer Mauerring mit 14 Türmen. Enthält den Great Tower, die Kapelle und Speicherbauten.",["14 Türme","Ovale Form"],null),
+    S("outer_bailey","Äußerer Mauerring","🧱","Äußerer Ring","Unregelmäßiger äußerer Mauerring, der dem Kliffverlauf folgt. 20 Türme. Philipps-Tor im Norden ist die historisch schwächste Stelle.",["20 Türme","Dem Kliff angepasst"],null),
+    S("north_gate","Philipps-Tor (Nord)","⚠️","Schwachstelle","Der nördliche Zugang ist die historisch anfälligste Stelle. 1216 gelang es Prinz Ludwig von Frankreich beinahe, hier einzudringen.",["Historisch angegriffen","Flacheres Gelände"],1),
+    S("coltons_gate","Colton-Tor","🚪","Südtor","Südlicher Eingang, durch zwei massige Türme flankiert. Sicherste Zugangsroute aufgrund des steilsten Kliffabschnitts.",["Steilstes Gelände","Sicherste Route"],null),
+    S("cliff","Kreidefelsklippe","⛰️","Natürliche Barriere","Senkrechte Kreideklippen auf der Ost- und Südseite machen Angriffe von dieser Seite nahezu unmöglich.",["Höhe: 100m","Vertikaler Fels"],null),
+    S("chapel","Kapelle St. Maria","⛪","Kapelle","Römisch-sächsischer Leuchtturm (Pharos) diente als Grundlage der Burgkapelle. Eines der ältesten Gebäude der Anlage.",["Römisches Fundament","Pharos-Turm"],null),
+    S("well","Brunnen im Keep","💧","Wasserversorgung","Tiefer Brunnenschacht im inneren des Great Tower sichert die autonome Wasserversorgung – entscheidend für lange Belagerungen.",["Tiefe: 40m","Belagerungssicherheit"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}44`:`${c}18`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="d_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#0e0b06"/>
+          <stop offset="100%" stopColor="#050402"/>
+        </radialGradient>
+        <filter id="d_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="d_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#d_bg)"/>
+      <rect width={W} height={H} fill="url(#d_stone)" opacity="0.55"/>
+
+      {/* Cliff (east) */}
+      <path d="M540,0 Q560,100 555,200 Q565,300 550,400 Q545,500 540,580 L640,580 L640,0 Z"
+        fill="rgba(100,80,40,0.25)" stroke="rgba(140,110,50,0.4)" strokeWidth="1.5"
+        onClick={()=>hit("cliff")} style={{cursor:"pointer"}}/>
+      {isSel("cliff")&&<path d="M540,0 Q560,100 555,200 Q565,300 550,400 Q545,500 540,580 L640,580 L640,0 Z" fill="rgba(140,110,50,0.1)" filter="url(#d_glow)"/>}
+      <text x="590" y="290" textAnchor="middle" fill="#8a7040" fontSize="10" fontFamily="'Cinzel',serif" transform="rotate(90,590,290)">KREIDEKLIPPEN</text>
+
+      {/* Outer bailey (irregular polygon) */}
+      <path d="M80,100 L200,60 L420,55 L530,100 L535,200 Q540,300 530,400 L420,500 L200,510 L80,460 L60,300 Z"
+        fill={glo("outer_bailey","#7a8860")} stroke={st("outer_bailey","#9aaa70")} strokeWidth="2.5"
+        onClick={()=>hit("outer_bailey")} style={{cursor:"pointer"}}/>
+      {isSel("outer_bailey")&&<path d="M80,100 L200,60 L420,55 L530,100 L535,200 Q540,300 530,400 L420,500 L200,510 L80,460 L60,300 Z"
+        fill="rgba(100,130,70,0.07)" filter="url(#d_glow)"/>}
+      <text x="110" y="480" fill={isSel("outer_bailey")?ac:"#7a8860"} fontSize="9" fontFamily="'Cinzel',serif">ÄUSSERER RING</text>
+
+      {/* Outer towers (20) */}
+      {[{x:80,y:100},{x:130,y:65},{x:200,y:60},{x:280,y:56},{x:360,y:55},{x:420,y:55},{x:480,y:70},{x:530,y:100},{x:534,y:160},{x:535,y:220},{x:536,y:290},{x:533,y:360},{x:528,y:420},{x:500,y:480},{x:420,y:500},{x:330,y:508},{x:240,y:510},{x:155,y:505},{x:90,y:470},{x:62,y:380}].map((t,i)=>(
+        <circle key={i} cx={t.x} cy={t.y} r="10" fill={`${ac}18`} stroke={`${ac}55`} strokeWidth="1.5"/>
+      ))}
+
+      {/* Inner bailey */}
+      <ellipse cx="310" cy="290" rx="150" ry="170"
+        fill={glo("inner_bailey","#8870a8")} stroke={st("inner_bailey","#aa88cc")} strokeWidth="2.5"
+        onClick={()=>hit("inner_bailey")} style={{cursor:"pointer"}}/>
+      {isSel("inner_bailey")&&<ellipse cx="310" cy="290" rx="150" ry="170" fill="rgba(130,100,180,0.08)" filter="url(#d_glow)"/>}
+      <text x="310" y="150" textAnchor="middle" fill={isSel("inner_bailey")?ac:"#9070c0"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">INNERER HOF</text>
+
+      {/* Inner towers (14) */}
+      {[{x:165,y:220},{x:165,y:290},{x:165,y:360},{x:220,y:140},{x:310,y:127},{x:400,y:140},{x:452,y:220},{x:458,y:290},{x:452,y:360},{x:400,y:435},{x:310,y:455},{x:220,y:435},{x:190,y:170},{x:430,y:170}].map((t,i)=>(
+        <rect key={i} x={t.x-8} y={t.y-8} width="16" height="16" rx="2"
+          fill={`${ac}22`} stroke={`${ac}66`} strokeWidth="1.5"/>
+      ))}
+
+      {/* Great Tower */}
+      <rect x="265" y="240" width="90" height="90" rx="4"
+        fill={glo("great_tower","#ffcc44")} stroke={st("great_tower","#ffdd66")} strokeWidth="3"
+        onClick={()=>hit("great_tower")} style={{cursor:"pointer"}}/>
+      {isSel("great_tower")&&<rect x="258" y="233" width="104" height="104" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#d_glow)"/>}
+      {[[265,240],[353,240],[265,328],[353,328]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-10} y={ty-10} width="20" height="20" rx="2"
+          fill={isSel("great_tower")?"#ffdd6644":"#cc992222"} stroke={isSel("great_tower")?"#ffdd66":"#cc9922"} strokeWidth="1.5"/>
+      ))}
+      <text x="310" y="286" textAnchor="middle" fill={isSel("great_tower")?"#ffdd66":"#aa8822"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">GREAT</text>
+      <text x="310" y="300" textAnchor="middle" fill={isSel("great_tower")?"#ffdd66":"#aa8822"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">TOWER</text>
+
+      {/* Forebuilding */}
+      <rect x="353" y="258" width="40" height="54" rx="3"
+        fill={glo("forebuilding","#ff8844")} stroke={st("forebuilding","#ffaa66")} strokeWidth="2"
+        onClick={()=>hit("forebuilding")} style={{cursor:"pointer"}}/>
+      <text x="373" y="289" textAnchor="middle" fill={isSel("forebuilding")?"#ffaa66":"#994422"} fontSize="7" fontFamily="'Cinzel',serif">VORB.</text>
+
+      {/* North gate */}
+      <rect x="280" y="55" width="60" height="34" rx="3"
+        fill={glo("north_gate","#ee3322")} stroke={st("north_gate","#ff4433")} strokeWidth="2.5"
+        onClick={()=>hit("north_gate")} style={{cursor:"pointer"}}/>
+      {isSel("north_gate")&&<rect x="274" y="49" width="72" height="46" rx="4" fill="rgba(200,40,30,0.12)" filter="url(#d_glow)"/>}
+      <text x="310" y="76" textAnchor="middle" fill={isSel("north_gate")?"#ff4433":"#cc3322"} fontSize="8" fontFamily="'Cinzel',serif">PHILIPPS-TOR ⚠</text>
+
+      {/* South gate */}
+      <rect x="265" y="500" width="60" height="32" rx="3"
+        fill={glo("coltons_gate","#44aacc")} stroke={st("coltons_gate","#66ccee")} strokeWidth="2"
+        onClick={()=>hit("coltons_gate")} style={{cursor:"pointer"}}/>
+      <text x="295" y="520" textAnchor="middle" fill={isSel("coltons_gate")?"#66ccee":"#336688"} fontSize="8" fontFamily="'Cinzel',serif">COLTON-TOR</text>
+
+      {/* Chapel */}
+      <rect x="222" y="220" width="36" height="44" rx="3"
+        fill={glo("chapel","#5577ff")} stroke={st("chapel","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      <text x="240" y="246" textAnchor="middle" fill={isSel("chapel")?"#7799ff":"#445588"} fontSize="7" fontFamily="'Cinzel',serif">PHAROS</text>
+
+      {/* Well */}
+      <circle cx="290" cy="300" r="8" fill={glo("well","#44ccff")} stroke={st("well","#66ddff")} strokeWidth="1.5"
+        onClick={()=>hit("well")} style={{cursor:"pointer"}}/>
+      <text x="290" y="328" textAnchor="middle" fill={isSel("well")?"#66ddff":"#336688"} fontSize="7" fontFamily="'Cinzel',serif">BRUNN.</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-40},40)`}>
+        <circle r="16" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*9} y={-Math.cos(r2)*9+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">DOVER CASTLE</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Königliche Festung · 1180 · Kent, England</text>
+    </svg>
+  );
+};
+
+// ── Osaka ─────────────────────────────────────────────────────────────────────
+DETAILED_PLANS.osaka=({ac,sel,onSel})=>{
+  const W=640,H=600;
+  const cx=W/2,cy=H/2+20;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("tenshukaku","Tenshukaku (天守閣)","🏯","Hauptturm","Fünfstöckiger Hauptturm, erbaut 1583 von Toyotomi Hideyoshi. 58m hoch, mit geschwungenen Dächern (Irimoya) und vergoldeten Tigerdekorationen. Symbol japanischer Macht.",["Höhe: 58m","5 Stockwerke","Gold-Dekoration"],null),
+    S("honmaru","Honmaru (本丸)","🏰","Innerste Zone","Das innerste der drei konzentrischen Vierecke. Enthält den Tenshukaku, den Otemon und mehrere Yagura (Ecktürme).",["6 Yagura","Wassergraben: 30m"],null),
+    S("ninomaru","Ninomaru (二の丸)","🧱","Zweite Zone","Mittlerer Mauerring. Enthält Verwaltungsgebäude und dient als Pufferzone. Breiterer Wassergraben.",["Breite: 400m","Steinmauern: 14m"],null),
+    S("sannomaru","Sannomaru (三の丸)","🟤","Äußere Zone","Äußerster Ring. Ehemalige Stadtteile der Vasallen. Im 17. Jh. mit Wassergraben und Steinwällen gesichert.",["Größte Zone","Stadtartig angelegt"],null),
+    S("otemon","Otemon (大手門)","🚪","Haupttor","Das prächtigste Tor der Anlage. Doppeltes Torhaus-System mit riesigen Eingangspfosten. Direkter Angriffspunkt.",["Riesige Holztore","Wachttürme beidseitig"],3),
+    S("sakuramon","Sakuramon (桜門)","🚪","Tor","Das Kirschblütentor. Zweites Haupttor mit den berühmten 'Sanraku'-Dekorationen. Führt direkt zum Honmaru.",["Stein-Fundament","Kirschblüten-Motiv"],4),
+    S("moat_inner","Innerer Wassergraben","🌊","Wassergraben","Innerer Graben trennt Honmaru von Ninomaru. Breite 30m, tiefe Steinböschungen machen Überwinden sehr schwer.",["Breite: 30m","Steinböschung"],null),
+    S("moat_outer","Äußerer Wassergraben","🌊","Wassergraben","Äußerer Graben. Historisch gefüllt, heute teilweise trocken. Schützte ursprünglich die gesamte Burg.",["Breite: 50m","2.5km Umfang"],null),
+    S("yagura_ne","Nordost-Yagura","🗼","Eckturm","Sogenannte 'Taubenturm' – wichtigster Eckturm im Nordosten. Diente als Lager und Beobachtungsposten.",["3 Stockwerke","Nachschublager"],null),
+    S("kin_tiger","Goldener Tiger","⭐","Dekoration","Die goldenen Tigerfiguren auf den Dachgiebeln sind Symbol der Toyotomi-Macht. Reine Repräsentation.",["24-karätiges Gold","Toyotomi-Symbol"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}44`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  const ringRects=[
+    {id:"sannomaru",w:560,h:520,c:"#8a7040"},
+    {id:"ninomaru",w:400,h:360,c:"#7a8060"},
+    {id:"honmaru",w:240,h:220,c:"#9080c0"},
+  ];
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="o_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#0a0c06"/>
+          <stop offset="100%" stopColor="#040502"/>
+        </radialGradient>
+        <filter id="o_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="o_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#o_bg)"/>
+      <rect width={W} height={H} fill="url(#o_stone)" opacity="0.55"/>
+
+      {/* Concentric rings + moats */}
+      {ringRects.map((r,i)=>{
+        const x=cx-r.w/2, y=cy-r.h/2;
+        const moatW=i===0?12:18;
+        return(
+          <g key={r.id}>
+            {/* Moat */}
+            {i<2&&<rect x={x-moatW} y={y-moatW} width={r.w+moatW*2} height={r.h+moatW*2} rx="6"
+              fill={`rgba(30,80,160,${i===0?0.2:0.3})`}
+              stroke={`rgba(50,120,200,${i===0?0.3:0.45})`} strokeWidth="1.5"
+              onClick={()=>hit(i===0?"moat_outer":"moat_inner")} style={{cursor:"pointer"}}/>}
+            {/* Wall */}
+            <rect x={x} y={y} width={r.w} height={r.h} rx="4"
+              fill={glo(r.id,r.c)} stroke={st(r.id,r.c)} strokeWidth={i===2?3:2}
+              onClick={()=>hit(r.id)} style={{cursor:"pointer"}}/>
+            {isSel(r.id)&&<rect x={x-4} y={y-4} width={r.w+8} height={r.h+8} rx="5"
+              fill={`${r.c}08`} filter="url(#o_glow)"/>}
+          </g>
+        );
+      })}
+
+      {/* Zone labels */}
+      <text x={cx-265} y={cy-248} fill={isSel("sannomaru")?ac:"#8a7040"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">三の丸 SANNOMARU</text>
+      <text x={cx-185} y={cy-168} fill={isSel("ninomaru")?ac:"#7a8060"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">二の丸 NINOMARU</text>
+      <text x={cx-108} y={cy-100} fill={isSel("honmaru")?ac:"#9080c0"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">本丸 HONMARU</text>
+
+      {/* Honmaru corner yagura */}
+      {[[cx-120,cy-110],[cx+120,cy-110],[cx-120,cy+110],[cx+120,cy+110]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-9} y={ty-9} width="18" height="18" rx="2"
+          fill={isSel("yagura_ne")&&i===0?"#cc884444":"#88664422"} stroke={isSel("yagura_ne")&&i===0?"#cc8844":"#88664455"} strokeWidth="1.5"
+          onClick={i===0?()=>hit("yagura_ne"):undefined} style={i===0?{cursor:"pointer"}:{}}/>
+      ))}
+      {isSel("yagura_ne")&&<rect x={cx-129} y={cy-119} width="36" height="36" rx="4" fill="rgba(180,120,40,0.1)" filter="url(#o_glow)"/>}
+      <text x={cx-120} y={cy-128} textAnchor="middle" fill={isSel("yagura_ne")?"#cc8844":"#66440044"} fontSize="7" fontFamily="'Cinzel',serif">YAGURA</text>
+
+      {/* Tenshukaku */}
+      <rect x={cx-28} y={cy-32} width="56" height="64" rx="3"
+        fill={glo("tenshukaku","#ffcc44")} stroke={st("tenshukaku","#ffee66")} strokeWidth="3"
+        onClick={()=>hit("tenshukaku")} style={{cursor:"pointer"}}/>
+      {isSel("tenshukaku")&&<rect x={cx-35} y={cy-39} width="70" height="78" rx="4" fill="rgba(220,180,40,0.12)" filter="url(#o_glow)"/>}
+      {/* Roof lines */}
+      <line x1={cx-28} y1={cy-18} x2={cx+28} y2={cy-18} stroke={isSel("tenshukaku")?"#ffee66":"#aa882255"} strokeWidth="1"/>
+      <line x1={cx-28} y1={cy+4} x2={cx+28} y2={cy+4} stroke={isSel("tenshukaku")?"#ffee66":"#aa882255"} strokeWidth="1"/>
+      <text x={cx} y={cy-8} textAnchor="middle" fill={isSel("tenshukaku")?"#ffee66":"#aa8822"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">天守閣</text>
+      <text x={cx} y={cy+8} textAnchor="middle" fill={isSel("tenshukaku")?"#ffcc44":"#887722"} fontSize="7" fontFamily="'Cinzel',serif">TENSHU-</text>
+      <text x={cx} y={cy+20} textAnchor="middle" fill={isSel("tenshukaku")?"#ffcc44":"#887722"} fontSize="7" fontFamily="'Cinzel',serif">KAKU</text>
+
+      {/* Otemon (main gate, south) */}
+      <rect x={cx-22} y={cy+110} width="44" height="30" rx="3"
+        fill={glo("otemon","#ee4433")} stroke={st("otemon","#ff5544")} strokeWidth="2.5"
+        onClick={()=>hit("otemon")} style={{cursor:"pointer"}}/>
+      {isSel("otemon")&&<rect x={cx-27} y={cy+105} width="54" height="40" rx="4" fill="rgba(200,50,30,0.1)" filter="url(#o_glow)"/>}
+      <text x={cx} y={cy+129} textAnchor="middle" fill={isSel("otemon")?"#ff5544":"#cc3322"} fontSize="8" fontFamily="'Cinzel',serif">大手門</text>
+
+      {/* Sakuramon (north gate to honmaru) */}
+      <rect x={cx-22} y={cy-140} width="44" height="28" rx="3"
+        fill={glo("sakuramon","#ff8844")} stroke={st("sakuramon","#ffaa66")} strokeWidth="2"
+        onClick={()=>hit("sakuramon")} style={{cursor:"pointer"}}/>
+      {isSel("sakuramon")&&<rect x={cx-27} y={cy-145} width="54" height="38" rx="4" fill="rgba(200,110,40,0.1)" filter="url(#o_glow)"/>}
+      <text x={cx} y={cy-148} textAnchor="middle" fill={isSel("sakuramon")?"#ffaa66":"#cc6633"} fontSize="8" fontFamily="'Cinzel',serif">桜門</text>
+
+      {/* Moat labels */}
+      <text x={cx+215} y={cy} fill="#3a88cc" fontSize="8" fontFamily="'Cinzel',serif" transform={`rotate(-90,${cx+215},${cy})`}>ÄUSSERER GRABEN</text>
+      <text x={cx+133} y={cy} fill="#4499dd" fontSize="7" fontFamily="'Cinzel',serif" transform={`rotate(-90,${cx+133},${cy})`}>INNERER GRABEN</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-40},40)`}>
+        <circle r="16" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*9} y={-Math.cos(r2)*9+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">大阪城 OSAKA-JO</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Toyotomi-Burg · 1583 · Osaka, Japan</text>
+    </svg>
+  );
+};
+
+// ── Stirling ──────────────────────────────────────────────────────────────────
+DETAILED_PLANS.stirling=({ac,sel,onSel})=>{
+  const W=640,H=580;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("rock","Vulkanfels","⛰️","Natürliche Barriere","Stirling thront auf einem erloschenen Vulkankegel, 75m über der Umgebung. Drei Seiten bilden senkrechte Felswände – ein natürlicher Donjon.",["Höhe: 75m","3 Seiten unzugänglich"],null),
+    S("great_hall","Großer Saal","🏛️","Repräsentationsbau","Der größte mittelalterliche Saal Schottlands, erbaut 1503 unter James IV. 42m lang, Hammerbalkendecke. Dreh- und Angelpunkt des schottischen Hofes.",["Länge: 42m","Hammerbalkendecke","1503 erbaut"],null),
+    S("palace","Königspalast","👑","Palast","Renaissancepalast aus den 1540er-Jahren. Außenwände mit einzigartigen Renaissance-Skulpturen ('Stirling Heads'). Repräsentativster Renaissancebau Schottlands.",["Stirling Heads","Renaissance-Stil","1540er"],null),
+    S("chapel_royal","Kapelle Royal","⛪","Kapelle","Königliche Kapelle, 1594 von James VI erbaut für die Taufe seines Sohnes. Hochwertige Innenausstattung aus Eichenholz.",["1594 erbaut","Königliche Taufe"],null),
+    S("forework","Forework-Torhaus","🚪","Haupttor","Das spektakuläre Torhaus an der einzig angreifbaren Südseite. Flanktürme, Zugbrücke und Barbakane. Einzige reale Angriffsroute.",["Zugbrücke","Barbakane","2 Flanktürme"],2),
+    S("esplanade","Esplanade","⚔️","Vorplatz","Der breite Vorplatz vor dem Forework. Historisch freies Schussfeld. Hier finden heute die Edinburgh-Tattoo-ähnlichen Zeremonien statt.",["Freies Schussfeld","Angriffsroute"],1),
+    S("nether_bailey","Nether Bailey","🏰","Unterer Hof","Unterer Burghof, ursprünglich Verwaltungszentrum. Enthält das Große Magazin und das Mühlengebäude.",["Magazin","Stallungen"],null),
+    S("great_kitchens","Große Küchen","🍖","Versorgung","Ausgedehnte Küchenanlage, fähig Hunderte Hofleute zu versorgen. Strategisch wichtig für lange Belagerungen.",["4 Feuerstellen","Große Vorratskammern"],null),
+    S("crag","Crag & Tail","🌄","Geologie","Die charakteristische Geländeform: Burg auf dem 'Crag' (Fels), Altstadt auf dem abfallenden 'Tail' (Schwanz) dahinter.",["Eiszeit-Geologie","Natürlicher Schutz"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}44`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="s_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#080a0e"/>
+          <stop offset="100%" stopColor="#030405"/>
+        </radialGradient>
+        <filter id="s_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="s_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#s_bg)"/>
+      <rect width={W} height={H} fill="url(#s_stone)" opacity="0.55"/>
+
+      {/* Crag & Tail terrain */}
+      <path d="M120,480 Q100,420 90,350 Q80,280 110,220 Q130,160 170,120 Q220,70 300,55 Q380,42 450,60 Q510,75 540,110 Q570,145 560,200 Q550,260 520,300 Q490,340 460,370 Q430,400 400,430 Q360,465 300,480 Q240,495 180,490 Z"
+        fill={glo("rock","#6a5a30")} stroke={st("rock","#8a7848")} strokeWidth="2"
+        onClick={()=>hit("rock")} style={{cursor:"pointer"}}/>
+      {isSel("rock")&&<path d="M120,480 Q100,420 90,350 Q80,280 110,220 Q130,160 170,120 Q220,70 300,55 Q380,42 450,60 Q510,75 540,110 Q570,145 560,200 Q550,260 520,300 Q490,340 460,370 Q430,400 400,430 Q360,465 300,480 Q240,495 180,490 Z"
+        fill="rgba(100,80,40,0.1)" filter="url(#s_glow)"/>}
+      <text x="150" y="455" fill={isSel("rock")?ac:"#7a6838"} fontSize="9" fontFamily="'Cinzel',serif">VULKANFELS</text>
+
+      {/* Esplanade */}
+      <rect x="190" y="420" width="210" height="65" rx="4"
+        fill={glo("esplanade","#cc4433")} stroke={st("esplanade","#ee5544")} strokeWidth="2"
+        onClick={()=>hit("esplanade")} style={{cursor:"pointer"}}/>
+      {isSel("esplanade")&&<rect x="185" y="415" width="220" height="75" rx="5" fill="rgba(180,50,30,0.1)" filter="url(#s_glow)"/>}
+      <text x="295" y="457" textAnchor="middle" fill={isSel("esplanade")?"#ee5544":"#cc4433"} fontSize="10" fontFamily="'Cinzel',serif">ESPLANADE ⚠</text>
+
+      {/* Forework gatehouse */}
+      <rect x="245" y="390" width="100" height="46" rx="4"
+        fill={glo("forework","#ff8844")} stroke={st("forework","#ffaa66")} strokeWidth="2.5"
+        onClick={()=>hit("forework")} style={{cursor:"pointer"}}/>
+      {isSel("forework")&&<rect x="239" y="384" width="112" height="58" rx="5" fill="rgba(200,110,40,0.12)" filter="url(#s_glow)"/>}
+      {/* Flanking towers */}
+      <rect x="233" y="388" width="22" height="42" rx="3" fill={glo("forework","#ff8844")} stroke={st("forework","#ffaa66")} strokeWidth="1.5" onClick={()=>hit("forework")} style={{cursor:"pointer"}}/>
+      <rect x="335" y="388" width="22" height="42" rx="3" fill={glo("forework","#ff8844")} stroke={st("forework","#ffaa66")} strokeWidth="1.5" onClick={()=>hit("forework")} style={{cursor:"pointer"}}/>
+      <text x="295" y="418" textAnchor="middle" fill={isSel("forework")?"#ffaa66":"#cc7733"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">FOREWORK</text>
+
+      {/* Nether Bailey */}
+      <path d="M210,380 L210,290 Q215,260 240,250 L360,250 Q385,260 390,290 L390,380 Z"
+        fill={glo("nether_bailey","#7a8060")} stroke={st("nether_bailey","#9aaa70")} strokeWidth="2"
+        onClick={()=>hit("nether_bailey")} style={{cursor:"pointer"}}/>
+      {isSel("nether_bailey")&&<path d="M210,380 L210,290 Q215,260 240,250 L360,250 Q385,260 390,290 L390,380 Z"
+        fill="rgba(100,130,70,0.07)" filter="url(#s_glow)"/>}
+      <text x="300" y="325" textAnchor="middle" fill={isSel("nether_bailey")?ac:"#7a8060"} fontSize="9" fontFamily="'Cinzel',serif">NETHER</text>
+      <text x="300" y="340" textAnchor="middle" fill={isSel("nether_bailey")?ac:"#7a8060"} fontSize="9" fontFamily="'Cinzel',serif">BAILEY</text>
+
+      {/* Great Hall */}
+      <rect x="220" y="180" width="170" height="62" rx="4"
+        fill={glo("great_hall","#ffcc44")} stroke={st("great_hall","#ffee66")} strokeWidth="2.5"
+        onClick={()=>hit("great_hall")} style={{cursor:"pointer"}}/>
+      {isSel("great_hall")&&<rect x="214" y="174" width="182" height="74" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#s_glow)"/>}
+      <text x="305" y="214" textAnchor="middle" fill={isSel("great_hall")?"#ffee66":"#aa8822"} fontSize="11" fontFamily="'Cinzel',serif" fontWeight="bold">GROSSER SAAL</text>
+
+      {/* Palace */}
+      <rect x="348" y="140" width="130" height="130" rx="4"
+        fill={glo("palace","#aa44cc")} stroke={st("palace","#cc66ee")} strokeWidth="2.5"
+        onClick={()=>hit("palace")} style={{cursor:"pointer"}}/>
+      {isSel("palace")&&<rect x="342" y="134" width="142" height="142" rx="5" fill="rgba(150,50,180,0.1)" filter="url(#s_glow)"/>}
+      {[[348,140],[476,140],[348,268],[476,268]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-10} y={ty-10} width="20" height="20" rx="2"
+          fill={isSel("palace")?"#cc66ee33":"#aa44cc22"} stroke={isSel("palace")?"#cc66ee":"#aa44cc"} strokeWidth="1.5"/>
+      ))}
+      <text x="413" y="202" textAnchor="middle" fill={isSel("palace")?"#cc66ee":"#884499"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KÖNIGS-</text>
+      <text x="413" y="218" textAnchor="middle" fill={isSel("palace")?"#cc66ee":"#884499"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">PALAST</text>
+
+      {/* Chapel Royal */}
+      <rect x="220" y="110" width="110" height="62" rx="4"
+        fill={glo("chapel_royal","#5577ff")} stroke={st("chapel_royal","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("chapel_royal")} style={{cursor:"pointer"}}/>
+      {isSel("chapel_royal")&&<rect x="214" y="104" width="122" height="74" rx="5" fill="rgba(70,100,220,0.1)" filter="url(#s_glow)"/>}
+      <text x="275" y="144" textAnchor="middle" fill={isSel("chapel_royal")?"#7799ff":"#4455aa"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KAPELLE</text>
+      <text x="275" y="158" textAnchor="middle" fill={isSel("chapel_royal")?"#7799ff":"#4455aa"} fontSize="9" fontFamily="'Cinzel',serif">ROYAL</text>
+
+      {/* Great Kitchens */}
+      <rect x="220" y="250" width="110" height="55" rx="3"
+        fill={glo("great_kitchens","#44aa88")} stroke={st("great_kitchens","#66ccaa")} strokeWidth="2"
+        onClick={()=>hit("great_kitchens")} style={{cursor:"pointer"}}/>
+      <text x="275" y="282" textAnchor="middle" fill={isSel("great_kitchens")?"#66ccaa":"#338866"} fontSize="9" fontFamily="'Cinzel',serif">GR. KÜCHEN</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-40},40)`}>
+        <circle r="16" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*9} y={-Math.cos(r2)*9+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">STIRLING CASTLE</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Schottische Königsburg · 1100er · Stirling, Schottland</text>
+    </svg>
+  );
+};
+
+// ── Red Fort ──────────────────────────────────────────────────────────────────
+DETAILED_PLANS.red_fort=({ac,sel,onSel})=>{
+  const W=660,H=580;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("lahore_gate","Lahori-Tor (West)","🚪","Haupttor","Das Haupttor der Festung, erbaut 1648 unter Shah Jahan. Massiver roter Sandsteinbogen, flankiert von achteckigen Türmen. Heute Eingang zu nationalen Zeremonien.",["Roter Sandstein","1648 erbaut","Nationales Symbol"],3),
+    S("delhi_gate","Delhi-Tor (Süd)","🚪","Südtor","Das architektonisch prächtigere Tor, einst für den Kaiser reserviert. Kleine Elefanten in Stein gemeißelt – Symbol kaiserlicher Macht.",["Kaiserlicher Eingang","Steinelefanten"],4),
+    S("diwan_am","Diwan-i-Am","🏛️","Audienzsaal","'Halle der Allgemeinen Audienz'. Offener Säulenraum, wo der Kaiser öffentliche Audienzen abhielt. 60 Sandsteinpfeiler. Thronalkov mit Marmor.",["60 Säulen","Marmor-Thron","Öffentlich zugänglich"],null),
+    S("diwan_khas","Diwan-i-Khas","💎","Privataudienzsaal","'Halle der Privaten Audienz'. Geheimer Treffpunkt für VIPs. Enthielt einst den Pfauenthron ('Takht-e-Tavus') – wertvollsten Thron der Welt.",["Pfauenthron","Persienschrift","Nur Adel"],null),
+    S("hammam","Hammam","🛁","Bad","Kaiserliche Badeanlage mit kalten, lauwarmen und heißen Räumen. Inlaid-Marmor und Blumenmotive. Privat für den Kaiser und Haremsdamen.",["3 Kammern","Marmorinlays","Kaiserlich"],null),
+    S("moti_masjid","Moti Masjid","🕌","Moschee","'Perlenmoschee', erbaut 1659 von Aurangzeb. Reinweißer Marmor, drei Kuppeln. Privatmoschee des Kaisers – kein gewöhnlicher Zutritt.",["Weißer Marmor","3 Kuppeln","1659 erbaut"],null),
+    S("rang_mahal","Rang Mahal","🌸","Palast","'Palast der Farben'. Einst bunt bemalt und vergoldet. Residenz der kaiserlichen Damen. Lotusförmiges Wasserbecken im Zentrum.",["Ehemals bunt","Lotusbassin","Haremstrakt"],null),
+    S("walls","Mauern & Bastionen","🧱","Befestigung","Massive Sandsteinmauern, 16–33m hoch, 2.4km Umfang. Acht achteckige Bastionen an den Ecken und entlang der Mauern.",["Höhe: 16-33m","Umfang: 2.4km","Roter Sandstein"],null),
+    S("yamuna","Yamuna-Fluss","🌊","Natürliche Barriere","Der heilige Fluss schützte historisch die Ostseite der Festung. Heute ca. 1km entfernt, da der Fluss seinen Lauf verändert hat.",["Ehemals Ostschutz","Heiliger Fluss"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}44`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#8a7a6055";
+
+  // Main fort bounding box
+  const fx=100,fy=60,fw=440,fh=460;
+  const cx=fx+fw/2, cy=fy+fh/2;
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="rf_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#0e0805"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <filter id="rf_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="rf_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#rf_bg)"/>
+      <rect width={W} height={H} fill="url(#rf_stone)" opacity="0.55"/>
+
+      {/* Yamuna river (east) */}
+      <rect x="570" y="0" width="90" height={H} fill="rgba(34,100,180,0.2)"
+        onClick={()=>hit("yamuna")} style={{cursor:"pointer"}}/>
+      <text x="615" y="300" textAnchor="middle" fill="#4488cc" fontSize="10" fontFamily="'Cinzel',serif" transform="rotate(-90,615,300)">YAMUNA-FLUSS</text>
+
+      {/* Main walls (irregular octagon) */}
+      <path d={`M${fx+30},${fy} L${fx+fw-30},${fy} L${fx+fw},${fy+30} L${fx+fw},${fy+fh-30} L${fx+fw-30},${fy+fh} L${fx+30},${fy+fh} L${fx},${fy+fh-30} L${fx},${fy+30} Z`}
+        fill={glo("walls","#cc4422")} stroke={st("walls","#ee5533")} strokeWidth="3"
+        onClick={()=>hit("walls")} style={{cursor:"pointer"}}/>
+      {isSel("walls")&&<path d={`M${fx+30},${fy} L${fx+fw-30},${fy} L${fx+fw},${fy+30} L${fx+fw},${fy+fh-30} L${fx+fw-30},${fy+fh} L${fx+30},${fy+fh} L${fx},${fy+fh-30} L${fx},${fy+30} Z`}
+        fill="rgba(180,50,30,0.07)" filter="url(#rf_glow)"/>}
+
+      {/* Corner bastions (octagonal) */}
+      {[[fx+30,fy],[fx+fw-30,fy],[fx+fw,fy+30],[fx+fw,fy+fh-30],[fx+fw-30,fy+fh],[fx+30,fy+fh],[fx,fy+fh-30],[fx,fy+30]].map(([tx,ty],i)=>(
+        <circle key={i} cx={tx} cy={ty} r="14"
+          fill={`${ac}${isSel("walls")?"33":"18"}`} stroke={`${ac}${isSel("walls")?"88":"44"}`} strokeWidth="1.5"/>
+      ))}
+
+      {/* Inner courtyard */}
+      <rect x={fx+50} y={fy+50} width={fw-100} height={fh-100} rx="3" fill="rgba(20,12,5,0.5)"/>
+
+      {/* Lahore Gate (west) */}
+      <rect x={fx-18} y={cy-30} width="46" height="60" rx="4"
+        fill={glo("lahore_gate","#ff8844")} stroke={st("lahore_gate","#ffaa66")} strokeWidth="2.5"
+        onClick={()=>hit("lahore_gate")} style={{cursor:"pointer"}}/>
+      {isSel("lahore_gate")&&<rect x={fx-24} y={cy-36} width="58" height="72" rx="5" fill="rgba(200,110,40,0.12)" filter="url(#rf_glow)"/>}
+      <text x={fx-8} y={cy+4} textAnchor="middle" fill={isSel("lahore_gate")?"#ffaa66":"#cc7733"} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">LAHORI</text>
+      <text x={fx-8} y={cy+16} textAnchor="middle" fill={isSel("lahore_gate")?"#ffaa66":"#cc7733"} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">TOR</text>
+
+      {/* Delhi Gate (south) */}
+      <rect x={cx-30} y={fy+fh-18} width="60" height="46" rx="4"
+        fill={glo("delhi_gate","#ff6644")} stroke={st("delhi_gate","#ff8866")} strokeWidth="2.5"
+        onClick={()=>hit("delhi_gate")} style={{cursor:"pointer"}}/>
+      {isSel("delhi_gate")&&<rect x={cx-36} y={fy+fh-24} width="72" height="58" rx="5" fill="rgba(200,80,40,0.1)" filter="url(#rf_glow)"/>}
+      <text x={cx} y={fy+fh+20} textAnchor="middle" fill={isSel("delhi_gate")?"#ff8866":"#cc5533"} fontSize="9" fontFamily="'Cinzel',serif">DELHI-TOR ⚠</text>
+
+      {/* Diwan-i-Am */}
+      <rect x={fx+55} y={fy+180} width="145" height="80" rx="4"
+        fill={glo("diwan_am","#ffcc44")} stroke={st("diwan_am","#ffee66")} strokeWidth="2.5"
+        onClick={()=>hit("diwan_am")} style={{cursor:"pointer"}}/>
+      {isSel("diwan_am")&&<rect x={fx+49} y={fy+174} width="157" height="92" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#rf_glow)"/>}
+      {/* Columns */}
+      {[0,1,2,3,4].map(i=>(
+        <rect key={i} x={fx+72+i*24} y={fy+186} width="6" height="68" rx="1"
+          fill={isSel("diwan_am")?"#ffee6644":"#aa882222"} stroke={isSel("diwan_am")?"#ffee66":"#aa8822"} strokeWidth="1"/>
+      ))}
+      <text x={fx+127} y={fy+224} textAnchor="middle" fill={isSel("diwan_am")?"#ffee66":"#aa8822"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">DIWAN-i-AM</text>
+
+      {/* Diwan-i-Khas */}
+      <rect x={fx+220} y={fy+160} width="100" height="90" rx="4"
+        fill={glo("diwan_khas","#cc88ff")} stroke={st("diwan_khas","#ee99ff")} strokeWidth="2.5"
+        onClick={()=>hit("diwan_khas")} style={{cursor:"pointer"}}/>
+      {isSel("diwan_khas")&&<rect x={fx+214} y={fy+154} width="112" height="102" rx="5" fill="rgba(180,100,230,0.1)" filter="url(#rf_glow)"/>}
+      <text x={fx+270} y={fy+208} textAnchor="middle" fill={isSel("diwan_khas")?"#ee99ff":"#9955cc"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">DIWAN-i-</text>
+      <text x={fx+270} y={fy+222} textAnchor="middle" fill={isSel("diwan_khas")?"#ee99ff":"#9955cc"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">KHAS</text>
+
+      {/* Rang Mahal */}
+      <rect x={fx+55} y={fy+280} width="120" height="85" rx="4"
+        fill={glo("rang_mahal","#ff6699")} stroke={st("rang_mahal","#ff88bb")} strokeWidth="2"
+        onClick={()=>hit("rang_mahal")} style={{cursor:"pointer"}}/>
+      {isSel("rang_mahal")&&<rect x={fx+49} y={fy+274} width="132" height="97" rx="5" fill="rgba(200,80,120,0.1)" filter="url(#rf_glow)"/>}
+      <text x={fx+115} y={fy+326} textAnchor="middle" fill={isSel("rang_mahal")?"#ff88bb":"#cc4477"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">RANG MAHAL</text>
+
+      {/* Hammam */}
+      <rect x={fx+220} y={fy+270} width="90" height="75" rx="4"
+        fill={glo("hammam","#44aacc")} stroke={st("hammam","#66ccee")} strokeWidth="2"
+        onClick={()=>hit("hammam")} style={{cursor:"pointer"}}/>
+      <text x={fx+265} y={fy+311} textAnchor="middle" fill={isSel("hammam")?"#66ccee":"#3388aa"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">HAMMAM</text>
+
+      {/* Moti Masjid */}
+      <rect x={fx+330} y={fy+260} width="85" height="80" rx="4"
+        fill={glo("moti_masjid","#eeeeff")} stroke={st("moti_masjid","#ffffff")} strokeWidth="2"
+        onClick={()=>hit("moti_masjid")} style={{cursor:"pointer"}}/>
+      {/* Three domes */}
+      {[fx+355,fx+372,fx+389].map((dx,i)=>(
+        <ellipse key={i} cx={dx} cy={fy+270} rx="10" ry="7" fill={isSel("moti_masjid")?"#eeeeff55":"#ccccdd22"} stroke={isSel("moti_masjid")?"#ffffff":"#8888aa"} strokeWidth="1"/>
+      ))}
+      <text x={fx+372} y={fy+308} textAnchor="middle" fill={isSel("moti_masjid")?"#ffffff":"#9999bb"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">MOTI</text>
+      <text x={fx+372} y={fy+320} textAnchor="middle" fill={isSel("moti_masjid")?"#ffffff":"#9999bb"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">MASJID</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-44},44)`}>
+        <circle r="16" fill="rgba(0,0,0,0.6)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*9} y={-Math.cos(r2)*9+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">LAL QILA – RED FORT</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Mogul-Festung · 1648 · Delhi, Indien</text>
+    </svg>
+  );
+};
+
+// ── Himeji ────────────────────────────────────────────────────────────────────
+DETAILED_PLANS.himeji=({ac,sel,onSel})=>{
+  const W=680,H=620;
+  const S=(id,name,icon,type,desc,stats,weakness)=>({id,name,icon,type,desc,stats,weakness});
+  const EL=[
+    S("dai_tenshu","Dai-Tenshu 大天守","🏯","Hauptturm","Der sechsstöckige Hauptturm ('Weißer Reiher') ist das Wahrzeichen Japans. Außenwände mit weißem Kalkputz (Shikkui) feuerfest verputzt. Innen sieben Ebenen mit asymmetrischen Grundrissen.",["6+1 Stockwerke","Höhe: 46m","Weißer Shikkui-Putz","Erbaut: 1609"],null),
+    S("ko_tenshu_e","Ko-Tenshu Ost 東小天守","🗼","Kleiner Turm","Östlicher Nebenturm, durch watari-yagura (Verbindungsgalerie) mit dem Dai-Tenshu verbunden. Flankiert den Hauptturm gegen Ostangriffe.",["3 Stockwerke","Verbindungsgalerie"],null),
+    S("ko_tenshu_w","Ko-Tenshu West 西小天守","🗼","Kleiner Turm","Westlicher Nebenturm. Zusammen mit dem Nordturm bildet er das 'Hishi-Mon-System' — die viertürmige Verbundanlage.",["3 Stockwerke","Verbindungsgalerie"],null),
+    S("ko_tenshu_n","Ko-Tenshu Nord 乾小天守","🗼","Kleiner Turm","Nördlichster der drei Nebentürme. Schützt den Hauptturm von der einzigen zugänglichen Nordseite des Hügels.",["3 Stockwerke","Steilstes Gelände"],null),
+    S("nishi_maru","Nishi-no-Maru 西の丸","🏰","Westbefestigung","Die lange Westbefestigung (100m) war die Residenz von Senhime, Enkelin Tokugawa Ieyasus. Schmale Galerie mit Schießscharten, entlang des Hügelkamms.",["Länge: 100m","Senhime-Residenz","Kasemattengang"],null),
+    S("honmaru","Honmaru 本丸","⬛","Innerer Hof","Der innerste Hof unmittelbar um den Turm-Komplex. Kasematten, Brunnen und der Hishi-no-Mon-Hauptzugang.",["Brunnen","Kasematten","Kaiserliches Territorium"],null),
+    S("ni_maru","Ni-no-Maru 二の丸","🔲","Zweiter Hof","Zweiter Befestigungsring. Enthält die Kommandantur und die Hauptmagazine. Breiter Wehrgang.",["Kommandantur","Magazine"],null),
+    S("san_maru","San-no-Maru 三の丸","⬜","Äußerer Ring","Äußerster Burghof mit Kasernen und Versorgungsbauten. Schützt die Zugänge von Süden und Westen.",["Kasernen","Versorgung","Hauptzugang"],null),
+    S("moat","Wassergraben 外堀","🌊","Äußerer Graben","Breiter äußerer Wassergraben, der die Anlage von Westen und Süden umgibt. Nordseite durch steile Felsen natürlich geschützt.",["Breite: 30m","Westlich & südlich"],null),
+    S("otemon","Ote-Mon 大手門","🚪","Haupttor","Das Hauptzugangstor von Süden. Großes zweigeschossiges Torhaus mit massiven Holzbeschlägen.",["Hauptzugang Süd","Zugbrücke"],3),
+    S("hishi_gate","Hishi-no-Mon 菱の門","🚪","Inneres Tor","Das aufwendigste Tor der Anlage, direkt vor dem Turm-Komplex. Geschwungenes Dach im Eingangstorhaus-Stil.",["Vorzimmer zum Keep","Feinste Zimmerei"],4),
+    S("maze","83-Tore-Labyrinth","🌀","Verteidigungsweg","Das berühmte Irrwegsystem: Angreifer müssen durch 83 Tore, ständig wendende Wege und Sackgassen. Manche Pfade sind 2km lang.",["83 Tore","Irrweg-System","Keine direkte Linie"],1),
+    S("seppuku_maru","Seppuku-maru 切腹丸","⚔️","Turm","Der 'Selbstmord-Turm' — letzter Rückzugsort für ehrenhaften Tod. Im äußersten Winkel des Honmaru, diente als finales Magazin.",["Letzter Rückzug","Pulvermagazin"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}50`:`${c}1c`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#9a8a6055";
+
+  // helper: yagura (turret) marks along a wall
+  const yagura=(key,positions,c)=>positions.map(([tx,ty],i)=>(
+    <rect key={`${key}_${i}`} x={tx-7} y={ty-7} width="14" height="14" rx="2"
+      fill={`${c}22`} stroke={`${c}66`} strokeWidth="1.2"/>
+  ));
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="hj_bg" cx="50%" cy="55%" r="65%">
+          <stop offset="0%" stopColor="#080a06"/>
+          <stop offset="100%" stopColor="#030402"/>
+        </radialGradient>
+        <filter id="hj_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="hj_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#hj_bg)"/>
+      <rect width={W} height={H} fill="url(#hj_stone)" opacity="0.5"/>
+
+      {/* Outer moat */}
+      <path d="M120,540 Q80,490 70,410 Q60,320 90,240 Q120,170 190,120 Q260,70 360,60 Q460,52 530,90 Q600,130 620,210 Q640,290 600,380 Q570,450 500,500 Q420,545 300,555 Z"
+        fill={glo("moat","#2255aa")} stroke={st("moat","#4488cc")} strokeWidth="1.5"
+        onClick={()=>hit("moat")} style={{cursor:"pointer"}}/>
+      {isSel("moat")&&<path d="M120,540 Q80,490 70,410 Q60,320 90,240 Q120,170 190,120 Q260,70 360,60 Q460,52 530,90 Q600,130 620,210 Q640,290 600,380 Q570,450 500,500 Q420,545 300,555 Z"
+        fill="rgba(30,80,180,0.08)" filter="url(#hj_glow)"/>}
+      <text x="96" y="280" fill="#3366aa" fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(-75,96,280)">WASSERGRABEN</text>
+
+      {/* Hill / San-no-maru (outer ring) */}
+      <path d="M155,515 Q110,460 115,380 Q115,300 155,230 Q200,160 290,120 Q380,82 460,105 Q545,130 570,205 Q595,275 565,360 Q540,425 475,470 Q400,510 280,520 Z"
+        fill={glo("san_maru","#6a7848")} stroke={st("san_maru","#8a9a60")} strokeWidth="2.5"
+        onClick={()=>hit("san_maru")} style={{cursor:"pointer"}}/>
+      {isSel("san_maru")&&<path d="M155,515 Q110,460 115,380 Q115,300 155,230 Q200,160 290,120 Q380,82 460,105 Q545,130 570,205 Q595,275 565,360 Q540,425 475,470 Q400,510 280,520 Z"
+        fill="rgba(80,100,50,0.07)" filter="url(#hj_glow)"/>}
+      <text x="178" y="490" fill={isSel("san_maru")?ac:"#6a7840"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">三の丸 SAN-NO-MARU</text>
+
+      {/* Ni-no-maru */}
+      <path d="M205,460 Q175,415 185,345 Q190,275 230,220 Q280,165 360,145 Q440,130 495,170 Q545,205 545,275 Q545,345 510,400 Q470,450 380,468 Q285,480 205,460 Z"
+        fill={glo("ni_maru","#708860")} stroke={st("ni_maru","#90aa78")} strokeWidth="2.5"
+        onClick={()=>hit("ni_maru")} style={{cursor:"pointer"}}/>
+      {isSel("ni_maru")&&<path d="M205,460 Q175,415 185,345 Q190,275 230,220 Q280,165 360,145 Q440,130 495,170 Q545,205 545,275 Q545,345 510,400 Q470,450 380,468 Q285,480 205,460 Z"
+        fill="rgba(80,120,60,0.07)" filter="url(#hj_glow)"/>}
+      <text x="210" y="440" fill={isSel("ni_maru")?ac:"#708858"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">二の丸 NI-NO-MARU</text>
+
+      {/* Maze / labyrinth approach paths */}
+      <g onClick={()=>hit("maze")} style={{cursor:"pointer"}}>
+        {isSel("maze")&&<path d="M340,475 Q290,450 260,400 Q240,360 255,320 Q265,285 300,265" fill="none" stroke="rgba(180,120,40,0.2)" strokeWidth="20" filter="url(#hj_glow)"/>}
+        {[
+          "M340,475 Q310,455 290,420 Q275,390 280,360",
+          "M280,360 Q285,335 305,318 Q325,302 350,298",
+          "M350,298 Q375,294 390,275 Q400,258 395,235",
+          "M395,235 Q388,212 370,205 Q350,198 335,208",
+          "M335,208 Q318,218 318,238 Q318,252 330,262",
+          "M480,420 Q460,395 445,370 Q435,348 440,322",
+          "M440,322 Q445,300 430,282 Q415,265 395,265",
+        ].map((d,i)=>(
+          <path key={i} d={d} fill="none"
+            stroke={isSel("maze")?"rgba(200,150,60,0.6)":"rgba(160,120,40,0.22)"}
+            strokeWidth="3" strokeDasharray="5,3"/>
+        ))}
+        {/* Gate markers */}
+        {[[340,475],[280,360],[350,298],[395,235],[335,208],[330,262],[480,420],[440,322],[395,265]].map(([x,y],i)=>(
+          <rect key={i} x={x-4} y={y-4} width="8" height="8" rx="1"
+            fill={isSel("maze")?"#cc993355":"#cc993322"} stroke={isSel("maze")?"#cc9933":"#aa7722"} strokeWidth="1"/>
+        ))}
+        <text x="250" y="455" fill={isSel("maze")?"#cc9933":"#886622"} fontSize="8" fontFamily="'Cinzel',serif">迷宮 83 TORE</text>
+      </g>
+
+      {/* West Bailey (Nishi-no-maru) */}
+      <path d="M200,290 L200,195 Q205,180 220,178 L370,165 Q385,165 390,178 L390,195 L240,210 L235,290 Z"
+        fill={glo("nishi_maru","#8870a8")} stroke={st("nishi_maru","#aa88cc")} strokeWidth="2.5"
+        onClick={()=>hit("nishi_maru")} style={{cursor:"pointer"}}/>
+      {isSel("nishi_maru")&&<path d="M200,290 L200,195 Q205,180 220,178 L370,165 Q385,165 390,178 L390,195 L240,210 L235,290 Z"
+        fill="rgba(130,100,180,0.1)" filter="url(#hj_glow)"/>}
+      <text x="290" y="193" textAnchor="middle" fill={isSel("nishi_maru")?ac:"#9070c0"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">西の丸 NISHI-NO-MARU</text>
+      {/* Window slits along west bailey */}
+      {[225,250,275,300,325,350].map(x=>(
+        <rect key={x} x={x-2} y="185" width="4" height="8" rx="1" fill={isSel("nishi_maru")?"#aa88cc55":"#66446622"}/>
+      ))}
+
+      {/* Honmaru */}
+      <path d="M295,340 Q275,310 285,270 Q295,232 330,212 Q365,194 405,198 Q445,202 462,228 Q478,252 472,285 Q466,318 440,338 Q410,358 360,360 Z"
+        fill={glo("honmaru","#c09030")} stroke={st("honmaru","#e0b040")} strokeWidth="3"
+        onClick={()=>hit("honmaru")} style={{cursor:"pointer"}}/>
+      {isSel("honmaru")&&<path d="M295,340 Q275,310 285,270 Q295,232 330,212 Q365,194 405,198 Q445,202 462,228 Q478,252 472,285 Q466,318 440,338 Q410,358 360,360 Z"
+        fill="rgba(180,140,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="380" y="348" textAnchor="middle" fill={isSel("honmaru")?ac:"#b08020"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">本丸 HONMARU</text>
+
+      {/* Seppukumaru (in corner of honmaru) */}
+      <rect x="455" y="278" width="32" height="32" rx="3"
+        fill={glo("seppuku_maru","#aa3322")} stroke={st("seppuku_maru","#cc4433")} strokeWidth="1.8"
+        onClick={()=>hit("seppuku_maru")} style={{cursor:"pointer"}}/>
+      <text x="471" y="298" textAnchor="middle" fill={isSel("seppuku_maru")?"#cc4433":"#882222"} fontSize="7" fontFamily="'Cinzel',serif">切腹</text>
+
+      {/* Ko-tenshu East */}
+      <rect x="418" y="198" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_e","#88bbff")} stroke={st("ko_tenshu_e","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_e")} style={{cursor:"pointer"}}/>
+      {/* Roof */}
+      <polygon points="418,198 450,198 434,188" fill={isSel("ko_tenshu_e")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_e")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="434" y="220" textAnchor="middle" fill={isSel("ko_tenshu_e")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">東小</text>
+
+      {/* Ko-tenshu West */}
+      <rect x="338" y="185" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_w","#88bbff")} stroke={st("ko_tenshu_w","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_w")} style={{cursor:"pointer"}}/>
+      <polygon points="338,185 370,185 354,175" fill={isSel("ko_tenshu_w")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_w")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="354" y="207" textAnchor="middle" fill={isSel("ko_tenshu_w")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">西小</text>
+
+      {/* Ko-tenshu North */}
+      <rect x="362" y="168" width="32" height="36" rx="3"
+        fill={glo("ko_tenshu_n","#88bbff")} stroke={st("ko_tenshu_n","#aaccff")} strokeWidth="2"
+        onClick={()=>hit("ko_tenshu_n")} style={{cursor:"pointer"}}/>
+      <polygon points="362,168 394,168 378,158" fill={isSel("ko_tenshu_n")?"#aaccff55":"#6688aa33"}
+        stroke={isSel("ko_tenshu_n")?"#aaccff":"#6688aa"} strokeWidth="1"/>
+      <text x="378" y="190" textAnchor="middle" fill={isSel("ko_tenshu_n")?"#aaccff":"#5577aa"} fontSize="7" fontFamily="'Cinzel',serif">乾小</text>
+
+      {/* Connecting corridors between towers */}
+      <rect x="370" y="197" width="48" height="7" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+      <rect x="362" y="204" width="10" height="26" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+      <rect x="416" y="204" width="10" height="26" rx="1" fill={`${ac}22`} stroke={`${ac}44`} strokeWidth="1"/>
+
+      {/* Dai-tenshu (main keep) */}
+      <rect x="365" y="218" width="62" height="66" rx="4"
+        fill={glo("dai_tenshu","#ffffcc")} stroke={st("dai_tenshu","#ffff99")} strokeWidth="3"
+        onClick={()=>hit("dai_tenshu")} style={{cursor:"pointer"}}/>
+      {isSel("dai_tenshu")&&<rect x="358" y="211" width="76" height="80" rx="5" fill="rgba(255,255,180,0.08)" filter="url(#hj_glow)"/>}
+      {/* Roof layers */}
+      {[[365,218,62,7],[369,212,54,7],[374,206,44,7],[379,200,34,7]].map(([rx2,ry,rw,rh],i)=>(
+        <rect key={i} x={rx2} y={ry} width={rw} height={rh} rx="2"
+          fill={isSel("dai_tenshu")?"#ffff9933":"#eeee8822"}
+          stroke={isSel("dai_tenshu")?"#ffff99":"#cccc6644"} strokeWidth="1"/>
+      ))}
+      <text x="396" y="252" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffff99":"#cccc66"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">大天守</text>
+      <text x="396" y="266" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffee88":"#aaaa44"} fontSize="8" fontFamily="'Cinzel',serif">DAI-TENSHU</text>
+      <text x="396" y="278" textAnchor="middle" fill={isSel("dai_tenshu")?"#ffdd66":"#888833"} fontSize="7" fontFamily="'Cinzel',serif">46m · 6F</text>
+
+      {/* Hishi Gate */}
+      <rect x="290" y="260" width="20" height="30" rx="3"
+        fill={glo("hishi_gate","#ffaa44")} stroke={st("hishi_gate","#ffcc66")} strokeWidth="2"
+        onClick={()=>hit("hishi_gate")} style={{cursor:"pointer"}}/>
+      {isSel("hishi_gate")&&<rect x="285" y="255" width="30" height="40" rx="4" fill="rgba(200,140,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="300" y="300" textAnchor="middle" fill={isSel("hishi_gate")?"#ffcc66":"#cc8833"} fontSize="7" fontFamily="'Cinzel',serif">菱門</text>
+
+      {/* Otemon (main outer gate) */}
+      <rect x="335" y="490" width="50" height="34" rx="3"
+        fill={glo("otemon","#ee5533")} stroke={st("otemon","#ff7755")} strokeWidth="2.5"
+        onClick={()=>hit("otemon")} style={{cursor:"pointer"}}/>
+      {isSel("otemon")&&<rect x="329" y="484" width="62" height="46" rx="4" fill="rgba(200,70,40,0.1)" filter="url(#hj_glow)"/>}
+      <text x="360" y="511" textAnchor="middle" fill={isSel("otemon")?"#ff7755":"#cc4422"} fontSize="9" fontFamily="'Cinzel',serif">大手門 ⚠</text>
+
+      {/* Yagura turrets along walls */}
+      {yagura("s",[[185,390],[205,430],[245,468],[300,498],[410,490],[470,460],[520,400],[540,330],[530,260]],ac)}
+
+      {/* Compass */}
+      <g transform={`translate(${W-42},42)`}>
+        <circle r="17" fill="rgba(0,0,0,0.65)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*10} y={-Math.cos(r2)*10+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      {/* Scale bar */}
+      <line x1="80" y1={H-22} x2="230" y2={H-22} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="80" y1={H-18} x2="80" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="230" y1={H-18} x2="230" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <text x="155" y={H-10} textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 300m</text>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">姫路城 HIMEJI-JŌ</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Shirasagijō – Weißer Reiher · 1609 · Hyōgo, Japan</text>
+    </svg>
+  );
+};
+
+// ── Krak des Chevaliers ───────────────────────────────────────────────────────
+DETAILED_PLANS.krak=({ac,sel,onSel})=>{
+  const W=680,H=580;
+  const S=(id,nm,ic,tp,desc,stats,weak)=>({id,name:nm,icon:ic,type:tp,desc,stats,weakness:weak});
+  const EL=[
+    S("outer_wall","Äußerer Mauerring","🧱","Vorhof","13 Türme schützen den Zwinger. Hospitaller-Ritter konnten 2 000 Mann für 5 Jahre beherbergen. Die äußere Mauer wurde zwischen 1142–1271 mehrfach verstärkt.",["13 Türme","Erbaut: 1142","Hospitaller-Orden"],null),
+    S("talus","Talus / Glacis","🪨","Schrägbasis","Die gewaltige gemauerte Schrägbasis (Talus) an der Süd- und Westseite des Innenhofs. Verhindert Untergraben, lässt Sturmleitern abrutschen. Einzigartiges Merkmal des Krak.",["Neigung: 45°","5m Mauerdicke","Gegen Minen"],null),
+    S("great_hall","Salle des Chevaliers","🏛️","Großer Saal","Der berühmteste gotische Saal Syriens (1230er). Drei Schiffe, Kreuzgewölbe, 25m lang. Lawrence of Arabia nannte Krak 'das schönste Schloss der Welt'.",["Länge: 25m","Gotisches Gewölbe","1230er"],null),
+    S("chapel","Kapelle","⛪","Kapelle","Die Hospitallerkapelle (12. Jh.) mit romanischen Bogenfenstern. Nach dem Fall 1271 zur Moschee umgewidmet — ein Minarett wurde hinzugefügt.",["Romanischer Stil","Später Moschee","12. Jh."],null),
+    S("cisterns","Zisternen","💧","Wasserversorgung","Zwei riesige unterirdische Zisternen fassen genug Wasser für die gesamte Besatzung über Jahre. Entscheidend für lange Belagerungen im trockenen Klima.",["2 Zisternen","5-Jahres-Vorrat","Unterirdisch"],null),
+    S("donjon","Donjon / Bergfried","🏯","Kernburg","Der quadratische Kernturm im Nordwesteck des Innenhofs. Letzter Rückzugsort der Ritter. Massivste Mauern der gesamten Anlage.",["Mauern: 5m","Letzter Rückzug"],null),
+    S("south_tower","Großer Südturm","🗼","Südturm","Der mächtigste Einzelturm, halbkreisförmig nach außen gewölbt. Flankiert das Haupttor und die Loggia. Dominiert die Südflanke.",["Halbkreis-Grundriss","Mächtigster Turm"],null),
+    S("loggia","Loggia","🌿","Loggia","Die elegante gotische Loggia vor dem großen Saal — ein offener Säulengang aus dem 13. Jh. Selten in Kreuzritter-Burgen, zeigt den Einfluss westeuropäischer Hofarchitektur.",["Gotische Säulen","13. Jh.","Offen"],null),
+    S("aqueduct","Aquädukt","🌊","Wasserleitung","Ein gemauerts Aquädukt entlang der Nordmauer leitet Bergwasser in die Zisternen. Sicherte die Wasserversorgung auch bei langer Belagerung.",["Entlang Nordmauer","Bergwasser"],null),
+    S("bent_entry","Geknickter Eingang","🌀","Zugangsweg","Der berühmte 'bent entrance': ein langer, dunkler Tunnel mit mehreren 90°-Kurven und Schießscharten. Angreifer können nie geradeaus vorstoßen.",["90°-Kurven","Dunkler Tunnel","Kein Anlauf"],2),
+    S("north_weak","Nordflanke","⚠️","Schwachstelle","Die flachste und breiteste Angriffsroute. Der Zwinger ist hier am weitesten — aber die Mauern sind auch hier doppelt. 1271 hier durch Täuschung eingenommen.",["Flachstes Gelände","Historisch genutzt"],1),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}48`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#9a8a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="kr_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#0e0b05"/>
+          <stop offset="100%" stopColor="#050402"/>
+        </radialGradient>
+        <filter id="kr_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="kr_stone" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="1" y="1" width="8" height="8" fill={`${ac}06`} rx="1"/>
+          <rect x="11" y="11" width="8" height="8" fill={`${ac}04`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#kr_bg)"/>
+      <rect width={W} height={H} fill="url(#kr_stone)" opacity="0.55"/>
+
+      {/* Hill terrain */}
+      <ellipse cx="340" cy="295" rx="290" ry="255" fill="rgba(100,78,28,0.14)" stroke="rgba(130,100,35,0.15)" strokeWidth="1"/>
+
+      {/* Outer wall (irregular ellipse following hill) */}
+      <path d="M155,145 Q130,200 130,270 Q130,345 160,405 Q200,460 275,490 Q350,515 430,500 Q510,482 548,430 Q580,378 575,305 Q570,235 540,180 Q505,120 440,95 Q370,72 295,82 Q215,94 155,145 Z"
+        fill={glo("outer_wall","#8a7040")} stroke={st("outer_wall","#b09050")} strokeWidth="3"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {isSel("outer_wall")&&<path d="M155,145 Q130,200 130,270 Q130,345 160,405 Q200,460 275,490 Q350,515 430,500 Q510,482 548,430 Q580,378 575,305 Q570,235 540,180 Q505,120 440,95 Q370,72 295,82 Q215,94 155,145 Z"
+        fill="rgba(130,100,40,0.07)" filter="url(#kr_glow)"/>}
+      <text x="168" y="460" fill={isSel("outer_wall")?ac:"#8a7040"} fontSize="9" fontFamily="'Cinzel',serif">ÄUSSERER RING</text>
+
+      {/* Outer towers (13) */}
+      {[{x:155,y:145},{x:130,y:200},{x:130,y:270},{x:140,y:340},{x:165,y:405},{x:220,y:462},{x:295,y:500},{x:380,y:508},{x:455,y:488},{x:520,y:445},{x:555,y:375},{x:560,y:295},{x:545,y:200},{x:495,y:125},{x:415,y:90},{x:335,y:78},{x:252,y:90}].map((t,i)=>(
+        <circle key={i} cx={t.x} cy={t.y} r="12"
+          fill={`${ac}${isSel("outer_wall")?"33":"18"}`}
+          stroke={`${ac}${isSel("outer_wall")?"88":"44"}`} strokeWidth="1.8"/>
+      ))}
+
+      {/* Aqueduct (north wall) */}
+      <path d="M210,112 Q280,88 360,82 Q430,78 490,105"
+        fill="none" stroke={isSel("aqueduct")?"#4488cccc":"#4488cc55"} strokeWidth="5"
+        onClick={()=>hit("aqueduct")} style={{cursor:"pointer"}}/>
+      {isSel("aqueduct")&&<path d="M210,112 Q280,88 360,82 Q430,78 490,105" fill="none" stroke="rgba(40,100,200,0.2)" strokeWidth="18" filter="url(#kr_glow)"/>}
+      <text x="345" y="72" textAnchor="middle" fill={isSel("aqueduct")?"#66aaee":"#336688"} fontSize="8" fontFamily="'Cinzel',serif">AQUÄDUKT ↓</text>
+
+      {/* North weakness zone */}
+      <rect x="230" y="88" width="210" height="50" rx="5"
+        fill={glo("north_weak","#cc3322")} stroke={st("north_weak","#ee4433")} strokeWidth="2"
+        onClick={()=>hit("north_weak")} style={{cursor:"pointer"}}/>
+      {isSel("north_weak")&&<rect x="225" y="83" width="220" height="60" rx="6" fill="rgba(180,40,20,0.08)" filter="url(#kr_glow)"/>}
+      <text x="335" y="118" textAnchor="middle" fill={isSel("north_weak")?"#ee4433":"#aa2211"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">⚠ NORD-FLANKE</text>
+
+      {/* Zwinger / killing ground label */}
+      <text x="165" y="285" fill={`${ac}44`} fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(-75,165,285)">ZWINGER</text>
+      <text x="515" y="285" fill={`${ac}44`} fontSize="8" fontFamily="'Cinzel',serif" transform="rotate(75,515,285)">ZWINGER</text>
+
+      {/* Inner ward walls */}
+      <path d="M215,175 Q200,225 200,290 Q200,355 220,410 Q255,460 330,475 Q410,488 470,455 Q520,425 530,365 Q540,300 525,240 Q508,180 465,155 Q420,132 360,132 Q285,132 215,175 Z"
+        fill="rgba(12,9,4,0.55)" stroke={`${ac}44`} strokeWidth="1.5"/>
+
+      {/* Talus / Glacis (south & west of inner ward) */}
+      <path d="M200,310 Q195,370 225,420 Q260,468 335,480 Q415,490 470,458 Q518,428 528,368 Q530,310 200,310 Z"
+        fill={glo("talus","#aa8840")} stroke={st("talus","#ccaa55")} strokeWidth="2.5"
+        onClick={()=>hit("talus")} style={{cursor:"pointer"}}/>
+      {isSel("talus")&&<path d="M200,310 Q195,370 225,420 Q260,468 335,480 Q415,490 470,458 Q518,428 528,368 Q530,310 200,310 Z"
+        fill="rgba(160,130,50,0.08)" filter="url(#kr_glow)"/>}
+      {/* Talus hatching */}
+      {[0,1,2,3,4,5].map(i=>(
+        <line key={i} x1={210+i*55} y1={315+i*8} x2={230+i*48} y2={460-i*5}
+          stroke={isSel("talus")?"#ccaa5544":"#aa884422"} strokeWidth="1.5"/>
+      ))}
+      <text x="340" y="450" textAnchor="middle" fill={isSel("talus")?ac:"#aa8840"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">TALUS / GLACIS</text>
+
+      {/* Inner ward main area */}
+      <path d="M215,175 Q200,225 205,295 L528,295 Q520,230 500,190 Q465,148 400,138 Q330,128 268,148 Z"
+        fill={glo("outer_wall","#705828")} stroke="none" onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+
+      {/* Great Hall (Salle des Chevaliers) — south of inner ward */}
+      <rect x="235" y="255" width="210" height="65" rx="4"
+        fill={glo("great_hall","#ffcc44")} stroke={st("great_hall","#ffdd66")} strokeWidth="2.5"
+        onClick={()=>hit("great_hall")} style={{cursor:"pointer"}}/>
+      {isSel("great_hall")&&<rect x="229" y="249" width="222" height="77" rx="5" fill="rgba(220,180,40,0.1)" filter="url(#kr_glow)"/>}
+      {/* Columns inside hall */}
+      {[260,300,340,380,420].map(x=>(
+        <rect key={x} x={x-3} y="263" width="6" height="50" rx="1"
+          fill={isSel("great_hall")?"#ffdd6644":"#aa882222"} stroke={isSel("great_hall")?"#ffdd66":"#aa8822"} strokeWidth="1"/>
+      ))}
+      <text x="340" y="290" textAnchor="middle" fill={isSel("great_hall")?"#ffdd66":"#aa8822"} fontSize="11" fontFamily="'Cinzel',serif" fontWeight="bold">SALLE DES CHEVALIERS</text>
+
+      {/* Loggia (in front of great hall, south) */}
+      <rect x="235" y="318" width="210" height="28" rx="3"
+        fill={glo("loggia","#88cc88")} stroke={st("loggia","#aaddaa")} strokeWidth="2"
+        onClick={()=>hit("loggia")} style={{cursor:"pointer"}}/>
+      {[265,305,345,385,415].map(x=>(
+        <line key={x} x1={x} y1="318" x2={x} y2="346"
+          stroke={isSel("loggia")?"#aaddaa55":"#88aa8833"} strokeWidth="2"/>
+      ))}
+      <text x="340" y="337" textAnchor="middle" fill={isSel("loggia")?"#aaddaa":"#558855"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">LOGGIA</text>
+
+      {/* Chapel (east inner ward) */}
+      <rect x="440" y="165" width="75" height="90" rx="4"
+        fill={glo("chapel","#5577ff")} stroke={st("chapel","#7799ff")} strokeWidth="2.5"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      {isSel("chapel")&&<rect x="434" y="159" width="87" height="102" rx="5" fill="rgba(70,100,220,0.1)" filter="url(#kr_glow)"/>}
+      {/* Apse */}
+      <ellipse cx="515" cy="178" rx="16" ry="22"
+        fill={glo("chapel","#5577ff")} stroke={st("chapel","#7799ff")} strokeWidth="2"
+        onClick={()=>hit("chapel")} style={{cursor:"pointer"}}/>
+      <text x="470" y="212" textAnchor="middle" fill={isSel("chapel")?"#7799ff":"#4455aa"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KAPELLE</text>
+
+      {/* Cisterns (center inner ward) */}
+      <rect x="295" y="168" width="55" height="45" rx="4"
+        fill={glo("cisterns","#44aacc")} stroke={st("cisterns","#66ccee")} strokeWidth="2.5"
+        onClick={()=>hit("cisterns")} style={{cursor:"pointer"}}/>
+      {isSel("cisterns")&&<rect x="289" y="162" width="67" height="57" rx="5" fill="rgba(40,120,180,0.1)" filter="url(#kr_glow)"/>}
+      <text x="322" y="194" textAnchor="middle" fill={isSel("cisterns")?"#66ccee":"#3388aa"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">ZISTERNEN</text>
+
+      {/* Donjon (NW corner inner ward) */}
+      <rect x="215" y="155" width="65" height="65" rx="4"
+        fill={glo("donjon","#cc8844")} stroke={st("donjon","#eeaa66")} strokeWidth="3"
+        onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      {isSel("donjon")&&<rect x="209" y="149" width="77" height="77" rx="5" fill="rgba(180,120,40,0.1)" filter="url(#kr_glow)"/>}
+      {[[215,155],[278,155],[215,218],[278,218]].map(([tx,ty],i)=>(
+        <rect key={i} x={tx-9} y={ty-9} width="18" height="18" rx="2"
+          fill={isSel("donjon")?"#eeaa6644":"#cc884422"} stroke={isSel("donjon")?"#eeaa66":"#cc8844"} strokeWidth="1.5"/>
+      ))}
+      <text x="247" y="186" textAnchor="middle" fill={isSel("donjon")?"#eeaa66":"#995522"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">DONJON</text>
+
+      {/* Great South Tower */}
+      <path d="M200,345 Q175,380 185,415 Q200,448 230,458 Q255,466 265,445 Q272,420 265,390 L235,360 Z"
+        fill={glo("south_tower","#cc6644")} stroke={st("south_tower","#ee8866")} strokeWidth="2.5"
+        onClick={()=>hit("south_tower")} style={{cursor:"pointer"}}/>
+      {isSel("south_tower")&&<path d="M200,345 Q175,380 185,415 Q200,448 230,458 Q255,466 265,445 Q272,420 265,390 L235,360 Z"
+        fill="rgba(180,80,40,0.1)" filter="url(#kr_glow)"/>}
+      <text x="207" y="410" textAnchor="middle" fill={isSel("south_tower")?"#ee8866":"#994433"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">SÜDTURM</text>
+
+      {/* Bent entrance */}
+      <path d="M460,488 Q470,468 490,455 Q510,442 520,420 Q528,400 520,380"
+        fill="none" stroke={isSel("bent_entry")?"#cc9933cc":"#cc993355"} strokeWidth="8"
+        onClick={()=>hit("bent_entry")} style={{cursor:"pointer"}}/>
+      {isSel("bent_entry")&&<path d="M460,488 Q470,468 490,455 Q510,442 520,420 Q528,400 520,380" fill="none" stroke="rgba(180,130,40,0.15)" strokeWidth="20" filter="url(#kr_glow)"/>}
+      <text x="510" y="488" fill={isSel("bent_entry")?"#ccaa44":"#886622"} fontSize="8" fontFamily="'Cinzel',serif">EINGANG 🌀</text>
+
+      {/* Compass */}
+      <g transform={`translate(${W-42},42)`}>
+        <circle r="17" fill="rgba(0,0,0,0.65)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#8a7a60"],["O",90,"#8a7a60"],["W",270,"#8a7a60"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*10} y={-Math.cos(r2)*10+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+
+      {/* Scale */}
+      <line x1="80" y1={H-22} x2="230" y2={H-22} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="80" y1={H-18} x2="80" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="230" y1={H-18} x2="230" y2={H-26} stroke={`${ac}44`} strokeWidth="1.5"/>
+      <text x="155" y={H-10} textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 200m</text>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">KRAK DES CHEVALIERS</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Hospitaliterorden · 1142–1271 · Syrien</text>
+    </svg>
+  );
+};
+
+// ── Alhambra ──────────────────────────────────────────────────────────────────
+// Architectural style: wall MASSES as dark fills, rooms as lighter voids on top
+DETAILED_PLANS.alhambra=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
+  const EL=[
+    S("alcazaba","Alcazaba","🏯","Militärfestung","Ältester Teil der Alhambra (13. Jh.). Militärischer Kern mit Kaserne, Arsenal und der Torre de la Vela.",["13. Jh.","Muhammad I."],null),
+    S("torre_vela","Torre de la Vela","🗼","Hauptturm","Der höchste Turm der Alcazaba (26m). Die Glocke rief die Bauern zum Bewässern. Panoramablick über Granada und die Sierra Nevada.",["Höhe: 26m","Wachtturm","Glockenturm"],null),
+    S("mexuar","Mexuar","🏛️","Ratsaal","Der älteste der Nasridenpaläste (14. Jh.). Empfangsraum für öffentliche Audienzen und Rechtsangelegenheiten. Reich mit Azulejo-Kacheln verziert.",["14. Jh.","Audienzsaal","Azulejo-Kacheln"],null),
+    S("comares","Comares-Palast","👑","Palast","Herzstück der Nasridenherrschaft. Der berühmte Patio de los Arrayanes (Myrtenhof) mit 34m langem Reflexionsbecken. Torre de Comares mit dem Thronsaal.",["Myrtenhof","Reflexionsbecken 34m","Thronsaal"],null),
+    S("patio_lions","Löwenhof","🦁","Innenhof","Der weltberühmte Patio de los Leones mit 124 Marmorsäulen und dem Löwenbrunnen (12 Marmarlöwen). Gebaut unter Muhammad V., ca. 1370.",["124 Marmorsäulen","12 Löwen-Brunnen","~1370"],null),
+    S("harem","Harem / Königsgemächer","🌙","Privatgemächer","Die privaten Königsgemächer südlich des Löwenhofs. Sala de los Reyes, Sala de las Dos Hermanas (Saal der zwei Schwestern) mit Stalaktiten-Kuppel.",["Stalaktiten-Kuppel","Sala de las Dos Hermanas"],null),
+    S("carlos_v","Palast Karls V.","🏟️","Renaissance-Palast","Kreisförmiger Innenhof im quadratischen Außenbau, 1527 von Pedro Machuca begonnen. Ein Renaissance-Fremdkörper inmitten maurischer Architektur — nie fertiggestellt.",["Kreisrunder Hof","1527","Nie vollendet"],null),
+    S("generalife","Generalife","🌿","Gartenpalast","Der Sommerpalast der Nasridenherrscher östlich der Hauptanlage. Berühmter Patio de la Acequia: 50m langer Garten mit zentralem Wasserkanal und Springbrunnen.",["Sommerpalast","Patio de la Acequia","50m Wasserkanal"],null),
+    S("acequia","Acequia Real","💧","Wasserleitung","Der Königliche Wasserkanal kommt vom Fluss Darro, verläuft entlang des Hügelkamms und versorgt alle Brunnen, Becken und Gärten der Alhambra.",["Vom Río Darro","Gesamte Versorgung"],null),
+    S("puerta_justicia","Puerta de la Justicia","🚪","Haupttor","Das mächtige Haupttor (1348) mit Hufeisenbogen. Hand und Schlüssel in Stein gemeißelt: Hand = 5 Säulen des Islam, Schlüssel = Macht Allahs.",["1348","Hufeisenbogen","Hand & Schlüssel"],3),
+    S("medina","Medina (Stadtbereich)","🏘️","Unterstadt","Der östliche Teil der Alhambra war eine echte Stadt mit Moscheen, Bädern, Werkstätten und Wohnhäusern für tausende Einwohner.",["Moschee","Hamam","Handwerker"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const glo=(id,c)=>isSel(id)?`${c}48`:`${c}1a`;
+  const st=(id,c)=>isSel(id)?c+"cc":"#9a8a6055";
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="al_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#0a0704"/>
+          <stop offset="100%" stopColor="#050403"/>
+        </radialGradient>
+        <filter id="al_glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width={W} height={H} fill="url(#al_bg)"/>
+      {/* Sabika Hill terrain */}
+      <path d="M36,490 Q30,368 34,256 Q40,165 80,116 Q132,70 252,54 Q394,38 530,48 Q634,56 678,104 Q712,150 706,243 Q698,338 678,428 Q658,500 630,520 L88,520 Z"
+        fill="#18100a" stroke="rgba(100,65,30,0.25)" strokeWidth="1.5"/>
+
+      {/* Red hill (Sabika) */}
+      <path d="M30,500 Q25,380 40,280 Q55,180 100,130 Q150,85 260,70 Q380,58 500,65 Q590,72 630,110 Q665,150 660,240 Q655,330 640,410 Q625,480 610,510 Z"
+        fill="url(#al_hill)" stroke="rgba(140,70,30,0.2)" strokeWidth="1"/>
+
+      {/* Outer walls */}
+      <path d="M80,460 Q60,380 65,290 Q70,205 110,155 Q155,105 250,85 Q360,65 490,72 Q580,78 620,125 Q655,165 648,255 Q640,345 625,430 Q610,490 590,510 L80,510 Z"
+        fill="none" stroke={`${ac}33`} strokeWidth="2" strokeDasharray="6,3"/>
+
+      {/* Acequia Real — royal water channel along north slope */}
+      <path d="M48,110 Q158,64 292,52 Q428,42 546,54 Q624,62 664,98"
+        fill="none" stroke={isSel("acequia")?"#3399bb":"#1a4a66"} strokeWidth={isSel("acequia")?5:3.5}
+        onClick={()=>hit("acequia")} style={{cursor:"pointer"}}/>
+      {isSel("acequia")&&<path d="M48,110 Q158,64 292,52 Q428,42 546,54 Q624,62 664,98"
+        fill="none" stroke={`${ac}28`} strokeWidth="14" filter="url(#al_glow)"/>}
+      <text x="330" y="44" textAnchor="middle" fill={isSel("acequia")?"#55bbdd":"#1f5577"} fontSize="8" fontFamily="'Cinzel',serif" letterSpacing="1">ACEQUIA REAL</text>
+
+      {/* ═══ ALCAZABA — wall mass ═══ */}
+      <g onClick={()=>hit("alcazaba")} style={{cursor:"pointer"}}>
+        <path d="M42,125 L48,118 L188,118 L192,125 L192,408 L42,408 Z"
+          fill={isSel("alcazaba")?"#4a2e14":"#3a2210"}
+          stroke={isSel("alcazaba")?`${ac}88`:"#5a3818"} strokeWidth={isSel("alcazaba")?2:1.5}/>
+        <rect x="80" y="110" width="24" height="16" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="138" y="110" width="24" height="16" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="28" y="162" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="28" y="224" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="28" y="288" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="28" y="350" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="186" y="178" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="186" y="260" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="186" y="340" width="18" height="22" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="80" y="400" width="24" height="18" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        <rect x="138" y="400" width="24" height="18" fill={isSel("alcazaba")?"#5a3818":"#4a2e14"} stroke="#5a3818" strokeWidth="1"/>
+        {/* Patio de Armas — interior void */}
+        <rect x="68" y="168" width="110" height="214" fill="#0a0705"/>
+        <rect x="68" y="384" width="52" height="22" fill="#130e08"/>
+        <rect x="126" y="384" width="52" height="22" fill="#130e08"/>
+        <circle cx="123" cy="272" r="6" fill="#0a0705" stroke="rgba(100,70,30,0.4)" strokeWidth="1"/>
+        {isSel("alcazaba")&&<path d="M42,125 L48,118 L188,118 L192,125 L192,408 L42,408 Z"
+          fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#al_glow)"/>}
+        <text x="117" y="288" textAnchor="middle" fill={isSel("alcazaba")?ac:"#7a5530"} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">ALCAZABA</text>
+      </g>
+
+      {/* Torre de la Vela */}
+      <g onClick={()=>hit("torre_vela")} style={{cursor:"pointer"}}>
+        <rect x="42" y="92" width="44" height="34" fill={isSel("torre_vela")?"#6a4520":"#503418"}
+          stroke={isSel("torre_vela")?`${ac}99`:"#6a4520"} strokeWidth={isSel("torre_vela")?2:1.5}/>
+        {[42,50,58,66,74,80].map(x=>(
+          <rect key={x} x={x} y="85" width="6" height="10" fill={isSel("torre_vela")?"#6a4520":"#503418"} stroke={isSel("torre_vela")?`${ac}44`:"#6a4520"} strokeWidth="1"/>
+        ))}
+        <circle cx="64" cy="112" r="3.5" fill={isSel("torre_vela")?"#ddcc8888":"#aa884422"} stroke={isSel("torre_vela")?"#ddcc88":"#aa8844"} strokeWidth="1"/>
+        {isSel("torre_vela")&&<rect x="38" y="82" width="52" height="48" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="64" y="81" textAnchor="middle" fill={isSel("torre_vela")?ac:"#7a6030"} fontSize="7" fontFamily="'Cinzel',serif">T.VELA</text>
+      </g>
+
+      {/* ═══ COMARES PALACE — wall mass ═══ */}
+      <g onClick={()=>hit("comares")} style={{cursor:"pointer"}}>
+        <rect x="198" y="92" width="260" height="278" fill={isSel("comares")?"#3a2e10":"#2c2208"}
+          stroke={isSel("comares")?`${ac}88`:"#4a3812"} strokeWidth={isSel("comares")?2:1.5}/>
+        {/* Torre de Comares — solid tower projects north */}
+        <rect x="288" y="62" width="82" height="38" fill={isSel("comares")?"#4a3c15":"#382c0c"}
+          stroke={isSel("comares")?`${ac}66`:"#5a4818"} strokeWidth="1.5"/>
+        {[288,297,306,315,324,333,342,351,358].map(x=>(
+          <rect key={x} x={x} y="55" width="7" height="10" fill={isSel("comares")?"#4a3c15":"#382c0c"} stroke={isSel("comares")?`${ac}44`:"#5a4818"} strokeWidth="0.8"/>
+        ))}
+        {/* Salon de los Embajadores inside tower */}
+        <rect x="302" y="68" width="54" height="24" fill="#140e04"/>
+        {/* Patio de los Arrayanes — main courtyard void */}
+        <rect x="232" y="112" width="192" height="168" fill="#0d0b04"/>
+        {/* Myrtle hedges */}
+        <rect x="248" y="130" width="160" height="14" fill="#0c0f08"/>
+        <rect x="248" y="252" width="160" height="14" fill="#0c0f08"/>
+        {/* Reflecting pool — 34m — blue water */}
+        <rect x="292" y="146" width="74" height="104" rx="1"
+          fill={isSel("comares")?"rgba(18,68,138,0.55)":"rgba(12,52,110,0.4)"}
+          stroke={isSel("comares")?"#4488bbaa":"#1a5580"} strokeWidth="1"/>
+        {[154,164,174,184,194,204,214,224,234,242].map(y=>(
+          <line key={y} x1="300" y1={y} x2="358" y2={y} stroke="rgba(80,140,200,0.10)" strokeWidth="0.7"/>
+        ))}
+        <text x="329" y="200" textAnchor="middle" fill={isSel("comares")?"#88bbdd":"#1e4466"} fontSize="6.5" fontFamily="'Cinzel',serif">MYRTENHOF</text>
+        {/* Side chambers */}
+        <rect x="198" y="112" width="34" height="168" fill="#160f04"/>
+        <rect x="424" y="112" width="34" height="168" fill="#160f04"/>
+        {/* Southern rooms */}
+        <rect x="198" y="282" width="260" height="86" fill="#120e06"/>
+        {isSel("comares")&&<rect x="198" y="92" width="260" height="278" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#al_glow)"/>}
+        <text x="329" y="346" textAnchor="middle" fill={isSel("comares")?ac:"#7a6020"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">COMARES-PALAST</text>
+      </g>
+
+      {/* ═══ MEXUAR — overlaid NW of palace zone ═══ */}
+      <g onClick={()=>hit("mexuar")} style={{cursor:"pointer"}}>
+        <rect x="198" y="150" width="122" height="110" fill={isSel("mexuar")?"#2a2038":"#1e1828"}
+          stroke={isSel("mexuar")?`${ac}88`:"#3a2a48"} strokeWidth={isSel("mexuar")?2:1.5}/>
+        <rect x="212" y="164" width="94" height="56" fill="#0c0910"/>
+        <rect x="212" y="222" width="44" height="36" fill="#0c0910"/>
+        <rect x="258" y="228" width="60" height="30" fill="#110d18"/>
+        {isSel("mexuar")&&<rect x="198" y="150" width="122" height="110" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="259" y="198" textAnchor="middle" fill={isSel("mexuar")?ac:"#5a4870"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">MEXUAR</text>
+      </g>
+
+      {/* ═══ PATIO DE LOS LEONES — wall mass ═══ */}
+      <g onClick={()=>hit("patio_lions")} style={{cursor:"pointer"}}>
+        <rect x="460" y="108" width="148" height="242" fill={isSel("patio_lions")?"#2e2210":"#221a0c"}
+          stroke={isSel("patio_lions")?`${ac}88`:"#3a2a10"} strokeWidth={isSel("patio_lions")?2:1.5}/>
+        {/* Central courtyard void */}
+        <rect x="480" y="128" width="108" height="202" fill="#0d0b05"/>
+        {/* Four halls */}
+        <rect x="500" y="108" width="68" height="24" fill="#120e06"/>
+        <rect x="500" y="328" width="68" height="24" fill="#120e06"/>
+        <rect x="586" y="196" width="24" height="74" fill="#120e06"/>
+        <rect x="460" y="196" width="22" height="74" fill="#120e06"/>
+        {/* 124 Marmorsäulen — column dots */}
+        {[482,493,504,515,526,537,548,559,570,578].map((x,i)=>(
+          <circle key={`nc${i}`} cx={x} cy="133" r="2.2"
+            fill={isSel("patio_lions")?"#c8a84888":"#7a621822"} stroke={isSel("patio_lions")?"#c8a848":"#7a6218"} strokeWidth="0.7"/>
+        ))}
+        {[482,493,504,515,526,537,548,559,570,578].map((x,i)=>(
+          <circle key={`sc${i}`} cx={x} cy="325" r="2.2"
+            fill={isSel("patio_lions")?"#c8a84888":"#7a621822"} stroke={isSel("patio_lions")?"#c8a848":"#7a6218"} strokeWidth="0.7"/>
+        ))}
+        {[145,160,175,190,205,220,235,250,265,280,295,310].map((y,i)=>(
+          <circle key={`wc${i}`} cx="485" cy={y} r="2.2"
+            fill={isSel("patio_lions")?"#c8a84888":"#7a621822"} stroke={isSel("patio_lions")?"#c8a848":"#7a6218"} strokeWidth="0.7"/>
+        ))}
+        {[145,160,175,190,205,220,235,250,265,280,295,310].map((y,i)=>(
+          <circle key={`ec${i}`} cx="583" cy={y} r="2.2"
+            fill={isSel("patio_lions")?"#c8a84888":"#7a621822"} stroke={isSel("patio_lions")?"#c8a848":"#7a6218"} strokeWidth="0.7"/>
+        ))}
+        {/* Lion fountain */}
+        <circle cx="534" cy="229" r="13"
+          fill={isSel("patio_lions")?"rgba(18,62,130,0.5)":"rgba(12,50,110,0.35)"}
+          stroke={isSel("patio_lions")?"#4482bb":"#1a5080"} strokeWidth="1.5"/>
+        <circle cx="534" cy="229" r="5" fill={isSel("patio_lions")?"#4482bb55":"#1a508033"} stroke={isSel("patio_lions")?"#4482bb":"#1a5080"} strokeWidth="0.8"/>
+        {Array.from({length:12},(_,i)=>{const a=i*30*Math.PI/180;return(
+          <circle key={i} cx={534+9*Math.cos(a)} cy={229+9*Math.sin(a)} r="1.5" fill={isSel("patio_lions")?"#4482bb99":"#1a508055"}/>
+        )})}
+        {isSel("patio_lions")&&<rect x="460" y="108" width="148" height="242" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#al_glow)"/>}
+        <text x="534" y="364" textAnchor="middle" fill={isSel("patio_lions")?ac:"#6a5520"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">LÖWENHOF</text>
+        <text x="534" y="376" textAnchor="middle" fill={isSel("patio_lions")?"#c8a848":"#5a4810"} fontSize="7" fontFamily="'Cinzel',serif">124 Marmorsäulen</text>
+      </g>
+
+      {/* ═══ HAREM ═══ */}
+      <g onClick={()=>hit("harem")} style={{cursor:"pointer"}}>
+        <rect x="460" y="352" width="148" height="82" fill={isSel("harem")?"#2a1828":"#1e1020"}
+          stroke={isSel("harem")?`${ac}88`:"#3a2038"} strokeWidth={isSel("harem")?2:1.5}/>
+        <rect x="472" y="364" width="58" height="58" fill="#0d0810"/>
+        <rect x="538" y="364" width="58" height="58" fill="#0d0810"/>
+        <line x1="535" y1="364" x2="535" y2="422" stroke="rgba(60,30,60,0.3)" strokeWidth="1"/>
+        {isSel("harem")&&<rect x="460" y="352" width="148" height="82" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="534" y="406" textAnchor="middle" fill={isSel("harem")?ac:"#5a3060"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold">HAREM</text>
+      </g>
+
+      {/* ═══ PALACE OF CARLOS V — wall mass ═══ */}
+      <g onClick={()=>hit("carlos_v")} style={{cursor:"pointer"}}>
+        <rect x="198" y="378" width="260" height="148" fill={isSel("carlos_v")?"#1e2030":"#161820"}
+          stroke={isSel("carlos_v")?`${ac}88`:"#2a2c3a"} strokeWidth={isSel("carlos_v")?2:1.5}/>
+        {/* Circular courtyard void */}
+        <circle cx="328" cy="452" r="58"
+          fill="#0c0c0e" stroke={isSel("carlos_v")?"rgba(60,70,120,0.35)":"rgba(40,45,80,0.2)"} strokeWidth="1.5"/>
+        {/* 32-column ring */}
+        {Array.from({length:32},(_,i)=>{const a=i*Math.PI*2/32;return(
+          <circle key={i} cx={328+50*Math.cos(a)} cy={452+50*Math.sin(a)} r="2.5"
+            fill={isSel("carlos_v")?"#6070aa55":"#30385533"} stroke={isSel("carlos_v")?"#6070aa":"#303855"} strokeWidth="0.7"/>
+        )})}
+        <rect x="208" y="388" width="36" height="36" fill="#0f101a"/>
+        <rect x="412" y="388" width="36" height="36" fill="#0f101a"/>
+        <rect x="208" y="474" width="36" height="36" fill="#0f101a"/>
+        <rect x="412" y="474" width="36" height="36" fill="#0f101a"/>
+        {isSel("carlos_v")&&<rect x="198" y="378" width="260" height="148" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="328" y="447" textAnchor="middle" fill={isSel("carlos_v")?ac:"#4a5070"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">KARL V.</text>
+        <text x="328" y="460" textAnchor="middle" fill={isSel("carlos_v")?"#8090cc":"#303855"} fontSize="7" fontFamily="'Cinzel',serif">Renaissance · 1527</text>
+      </g>
+
+      {/* ═══ MEDINA — city district ═══ */}
+      <g onClick={()=>hit("medina")} style={{cursor:"pointer"}}>
+        <rect x="614" y="150" width="88" height="288" fill={isSel("medina")?"#1a1c14":"#12140e"}
+          stroke={isSel("medina")?`${ac}88`:"#2a2c1e"} strokeWidth={isSel("medina")?2:1.5}/>
+        <line x1="656" y1="157" x2="656" y2="430" stroke="rgba(60,65,35,0.45)" strokeWidth="5"/>
+        {[178,213,248,283,318,353,388].map(y=>(
+          <rect key={y} x="618" y={y} width="34" height="26" fill="#0c0d09" stroke="rgba(50,55,30,0.2)" strokeWidth="0.5"/>
+        ))}
+        {[178,213,248,283,318,353,388].map(y=>(
+          <rect key={y+1000} x="660" y={y} width="34" height="26" fill="#0c0d09" stroke="rgba(50,55,30,0.2)" strokeWidth="0.5"/>
+        ))}
+        {isSel("medina")&&<rect x="614" y="150" width="88" height="288" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="657" y="295" textAnchor="middle" fill={isSel("medina")?ac:"#4a5030"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(-90,657,295)">MEDINA</text>
+      </g>
+
+      {/* ═══ GENERALIFE — garden palace east ═══ */}
+      <g onClick={()=>hit("generalife")} style={{cursor:"pointer"}}>
+        {/* Upper palace */}
+        <rect x="714" y="86" width="72" height="80" fill={isSel("generalife")?"#1a2014":"#10160c"}
+          stroke={isSel("generalife")?`${ac}88`:"#1e2818"} strokeWidth={isSel("generalife")?2:1.5}/>
+        <rect x="726" y="96" width="48" height="60" fill="#0d1009"/>
+        {/* Patio de la Acequia */}
+        <rect x="714" y="174" width="72" height="212" fill={isSel("generalife")?"#1a2014":"#10160c"}
+          stroke={isSel("generalife")?`${ac}88`:"#1e2818"} strokeWidth={isSel("generalife")?2:1.5}/>
+        <rect x="722" y="182" width="22" height="196" fill="#0d1209"/>
+        <rect x="762" y="182" width="20" height="196" fill="#0d1209"/>
+        {/* Central water canal */}
+        <rect x="744" y="182" width="16" height="196"
+          fill={isSel("generalife")?"rgba(18,68,138,0.55)":"rgba(12,52,110,0.4)"}
+          stroke={isSel("generalife")?"#4488bb":"#1a5088"} strokeWidth="0.8"/>
+        {[198,218,238,258,278,298,318,338,358].map(y=>(
+          <g key={y}>
+            <line x1="740" y1={y} x2="744" y2={y} stroke={isSel("generalife")?"#5599cc44":"#2266aa22"} strokeWidth="1.2"/>
+            <line x1="760" y1={y} x2="764" y2={y} stroke={isSel("generalife")?"#5599cc44":"#2266aa22"} strokeWidth="1.2"/>
+          </g>
+        ))}
+        {isSel("generalife")&&<>
+          <rect x="714" y="86" width="72" height="80" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>
+          <rect x="714" y="174" width="72" height="212" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>
+        </>}
+        <text x="750" y="395" textAnchor="middle" fill={isSel("generalife")?ac:"#2a3820"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(-90,750,395)">GENERALIFE</text>
+      </g>
+
+      {/* Puerta de la Justicia */}
+      <g onClick={()=>hit("puerta_justicia")} style={{cursor:"pointer"}}>
+        <rect x="126" y="404" width="48" height="30" fill={isSel("puerta_justicia")?"#4a2010":"#38180c"}
+          stroke={isSel("puerta_justicia")?`${ac}cc`:"#882222"} strokeWidth={isSel("puerta_justicia")?2.5:2}/>
+        <path d="M134,432 Q134,418 150,414 Q166,418 166,432"
+          fill={isSel("puerta_justicia")?"rgba(200,50,30,0.2)":"rgba(150,30,20,0.1)"}
+          stroke={isSel("puerta_justicia")?"#cc4422":"#882222"} strokeWidth="1"/>
+        {isSel("puerta_justicia")&&<rect x="122" y="400" width="56" height="38" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#al_glow)"/>}
+        <text x="150" y="400" textAnchor="middle" fill={isSel("puerta_justicia")?ac:"#882222"} fontSize="6.5" fontFamily="'Cinzel',serif">P. JUSTICIA ⚠</text>
+      </g>
+
+      {/* Compass */}
+      <g transform={`translate(${W-44},44)`}>
+        <circle r="18" fill="rgba(0,0,0,0.7)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#e8d8b0"],["S",180,"#7a6a48"],["O",90,"#7a6a48"],["W",270,"#7a6a48"]].map(([l,a,c])=>{
+          const r2=a*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*11} y={-Math.cos(r2)*11+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+        <circle r="2" fill={ac} opacity="0.6"/>
+      </g>
+
+      {/* Scale bar */}
+      <g transform={`translate(50,${H-28})`}>
+        <line x1="0" y1="0" x2="120" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="0" y1="-5" x2="0" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="60" y1="-3" x2="60" y2="3" stroke={`${ac}33`} strokeWidth="1"/>
+        <line x1="120" y1="-5" x2="120" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <text x="60" y="14" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 200m</text>
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">الحمراء  ALHAMBRA</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Nasridenreich · 13.–14. Jh. · Granada, Spanien</text>
+    </svg>
+  );
+};
+
+// ── Mont Saint-Michel ─────────────────────────────────────────────────────────
+DETAILED_PLANS.mont_michel=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
+  const EL=[
+    S("ramparts","Stadtmauer & Türme","🏰","Befestigung","Die mittelalterlichen Befestigungsmauern umschließen die gesamte Felseninsel. Im 14.–15. Jh. nach englischen Angriffen massiv verstärkt. Drei Tore, zahlreiche Türme.",["14.–15. Jh.","3 Tore","Nie eingenommen"],null),
+    S("grande_rue","Grande Rue","🛤️","Hauptstraße","Die einzige Straße des Dorfs, steil gepflastert und von Pilgerhäusern, Tavernen und kleinen Kapellen gesäumt. Im Mittelalter zogen hier täglich tausende Pilger hinauf.",["Pflasterstein","Mittelalterlich","Pilgerroute"],null),
+    S("village","Dorf","🏘️","Mittelalterliches Dorf","Am Fuß des Berges lebten Fischer, Händler und Pilgerherbergen. Enge Gassen, alte Häuser, die Pfarrkirche Saint-Pierre.",["Fischer & Händler","Pfarrkirche","Enge Gassen"],null),
+    S("chatelet","Châtelet","🚪","Abteitor","Das befestigte Tor des 15. Jh. führt von der Terrasse in die Abtei. Zwei flankierende Türme, Fallgitter. Hier begann das Heilige.",["15. Jh.","Fallgitter","Doppeltürme"],3),
+    S("church","Abteikirche","⛪","Abteikirche","Die romanisch-gotische Kirche thront auf 92m. Langhaus 11. Jh., Chor im Flamboyantstil 1523 vollendet. Das Kirchenschiff ruht auf Krypten über dem Abgrund — ein Ingenieurswerk des Mittelalters.",["Romanik + Gotik","11.–16. Jh.","92m Höhe"],null),
+    S("merveille","La Merveille","✨","Klosterkomplex","Das 'Wunder': drei Stockwerke übereinander gebaut — Almosenkammer & Gästehaus (unten), Rittersaal & Refektorium (Mitte), Kreuzgang (oben). Errichtet 1211–1228 in reiner Gotik.",["1211–1228","3 Stockwerke","Gotisches Meisterwerk"],null),
+    S("cloister","Kreuzgang","🌿","Kreuzgang","Krönt La Merveille im obersten Stockwerk. Doppelte versetzte Säulenreihen in Granit schaffen ein Gefühl von Schwerelosigkeit — ein offenes gotisches Wunder über dem Meer.",["Doppelsäulen","Obergschoss","Über dem Abgrund"],null),
+    S("crypts","Krypten & Unterbau","⚒️","Unterbau","Mehrere Krypten stützen die Abteikirche: Notre-Dame-sous-Terre (vorromanisch, 10. Jh.), Krypta der Großen Säulen (trägt den Chor), Krypta des Ecureuil.",["10. Jh.","Vorromanisch","Stützpfeiler"],null),
+    S("gardens","Terrassen & Gärten","🌿","Terrassen","Die Südterrasse und der Klostergarten bieten Blick über die Bucht. Hier verweilten die Benediktinermönche bei Gebet und Betrachtung.",["Buchtblick","Benediktiner","Südterrasse"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="mm_sea" cx="50%" cy="60%" r="70%">
+          <stop offset="0%" stopColor="#0c1318"/>
+          <stop offset="100%" stopColor="#060a0d"/>
+        </radialGradient>
+        <filter id="mm_glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width={W} height={H} fill="url(#mm_sea)"/>
+      {/* Tidal water lines */}
+      {[80,140,200,260,320,380,440,500].map(y=>(
+        <line key={y} x1="50" y1={y} x2="750" y2={y} stroke="rgba(40,80,120,0.07)" strokeWidth="1.5"/>
+      ))}
+
+      {/* Causeway from south */}
+      <rect x="390" y="468" width="20" height="80" fill="#241a0e" stroke="rgba(100,70,30,0.3)" strokeWidth="1"/>
+      <text x="400" y="530" textAnchor="middle" fill="rgba(80,120,160,0.35)" fontSize="8" fontFamily="'Cinzel',serif">DAMM</text>
+
+      {/* Island rock (Mont Tombe) */}
+      <path d="M400,130 C476,132 540,174 560,232 C576,286 566,352 540,398 C512,440 456,468 418,478 L400,484 L382,478 C344,468 288,440 260,398 C234,352 224,286 240,232 C260,174 324,132 400,130 Z"
+        fill="#1e1508" stroke="rgba(100,65,30,0.3)" strokeWidth="1.5"/>
+
+      {/* Outer rampart wall mass */}
+      <path d="M400,142 C470,144 528,182 546,238 C560,290 552,352 526,394 C500,432 450,458 418,468 L400,473 L382,468 C350,458 300,432 274,394 C248,352 240,290 254,238 C272,182 330,144 400,142 Z"
+        fill="#2c1e0e" stroke="rgba(130,85,35,0.5)" strokeWidth="2"/>
+
+      {/* Rampart towers */}
+      {[
+        [400,143],[450,153],[498,180],[532,218],[546,268],[540,322],[518,368],[482,408],[440,438],[400,450],
+        [360,438],[318,408],[282,368],[260,322],[254,268],[268,218],[302,180],[350,153]
+      ].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="10" fill="#3a2612" stroke="rgba(150,95,40,0.55)" strokeWidth="1.5"/>
+      ))}
+
+      {/* Interior island — slightly lighter void */}
+      <path d="M400,160 C464,162 514,196 530,246 C542,292 534,348 510,386 C486,420 444,442 416,450 L400,454 L384,450 C356,442 314,420 290,386 C266,348 258,292 270,246 C286,196 336,162 400,160 Z"
+        fill="#170e06"/>
+
+      {/* Main south gate */}
+      <rect x="391" y="452" width="18" height="14" fill="#120906" stroke="rgba(150,90,35,0.6)" strokeWidth="1.5"/>
+
+      {/* ═══ VILLAGE ═══ */}
+      <g onClick={()=>hit("village")} style={{cursor:"pointer"}}>
+        {[
+          [314,390,40,28],[358,390,30,28],[296,355,36,26],[336,355,30,26],[370,355,30,26],
+          [282,318,34,26],[320,318,30,26],[280,280,32,26],[316,280,28,26]
+        ].map(([x,y,w,h],i)=>(
+          <rect key={i} x={x} y={y} width={w} height={h}
+            fill={isSel("village")?"#2a1c0c":"#1e1408"} stroke={isSel("village")?"rgba(160,100,40,0.4)":"rgba(110,65,22,0.22)"} strokeWidth="0.8"/>
+        ))}
+        {[
+          [446,390,40,28],[412,390,30,28],[464,355,36,26],[434,355,30,26],[400,355,30,26],
+          [484,318,34,26],[450,318,30,26],[488,280,32,26],[456,280,28,26]
+        ].map(([x,y,w,h],i)=>(
+          <rect key={i+20} x={x} y={y} width={w} height={h}
+            fill={isSel("village")?"#2a1c0c":"#1e1408"} stroke={isSel("village")?"rgba(160,100,40,0.4)":"rgba(110,65,22,0.22)"} strokeWidth="0.8"/>
+        ))}
+        {isSel("village")&&<path d="M400,160 C464,162 514,196 530,246 C542,292 534,348 510,386 C486,420 444,442 416,450 L400,454 L384,450 C356,442 314,420 290,386 C266,348 258,292 270,246 C286,196 336,162 400,160 Z"
+          fill="none" stroke={`${ac}33`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="330" y="370" textAnchor="middle" fill={isSel("village")?ac:"#5a3a1a"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">DORF</text>
+      </g>
+
+      {/* Grande Rue */}
+      <g onClick={()=>hit("grande_rue")} style={{cursor:"pointer"}}>
+        <rect x="396" y="248" width="8" height="200" fill={isSel("grande_rue")?"#4a3820":"#2e2010"}
+          stroke={isSel("grande_rue")?`${ac}88`:"rgba(130,85,30,0.5)"} strokeWidth="1"/>
+        {isSel("grande_rue")&&<rect x="392" y="244" width="16" height="208" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="376" y="348" textAnchor="end" fill={isSel("grande_rue")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif">Grande</text>
+        <text x="376" y="360" textAnchor="end" fill={isSel("grande_rue")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif">Rue</text>
+      </g>
+
+      {/* Ramparts clickable overlay */}
+      <g onClick={()=>hit("ramparts")} style={{cursor:"pointer"}}>
+        {isSel("ramparts")&&<path d="M400,142 C470,144 528,182 546,238 C560,290 552,352 526,394 C500,432 450,458 418,468 L400,473 L382,468 C350,458 300,432 274,394 C248,352 240,290 254,238 C272,182 330,144 400,142 Z"
+          fill="none" stroke={`${ac}55`} strokeWidth="3" filter="url(#mm_glow)"/>}
+        <text x="555" y="310" textAnchor="middle" fill={isSel("ramparts")?ac:"#5a4020"} fontSize="7.5" fontFamily="'Cinzel',serif" fontWeight="bold" transform="rotate(25,555,310)">STADTMAUER</text>
+      </g>
+
+      {/* Gardens / South Terrace */}
+      <g onClick={()=>hit("gardens")} style={{cursor:"pointer"}}>
+        <path d="M332,248 L468,248 L466,262 L408,270 L400,274 L392,270 L334,262 Z"
+          fill={isSel("gardens")?"#1a2214":"#101808"} stroke={isSel("gardens")?`${ac}88`:"rgba(40,70,20,0.35)"} strokeWidth="1.5"/>
+        {[345,365,385,405,425,445,460].map(x=>(
+          <line key={x} x1={x} y1="249" x2={x} y2="261" stroke={isSel("gardens")?"rgba(60,90,30,0.3)":"rgba(40,60,20,0.18)"} strokeWidth="0.7"/>
+        ))}
+        {isSel("gardens")&&<path d="M332,248 L468,248 L466,262 L408,270 L400,274 L392,270 L334,262 Z" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="258" textAnchor="middle" fill={isSel("gardens")?ac:"#3a5020"} fontSize="7" fontFamily="'Cinzel',serif">TERRASSEN</text>
+      </g>
+
+      {/* Crypts */}
+      <g onClick={()=>hit("crypts")} style={{cursor:"pointer"}}>
+        <rect x="340" y="228" width="120" height="24" fill={isSel("crypts")?"#251a10":"#1a1108"}
+          stroke={isSel("crypts")?`${ac}88`:"rgba(120,70,30,0.3)"} strokeWidth="1.5"/>
+        {[352,368,386,400,418,436,450].map(x=>(
+          <circle key={x} cx={x} cy="240" r="2.5" fill={isSel("crypts")?"#5a3a1888":"#3a221033"} stroke={isSel("crypts")?"#5a3a18":"#3a2210"} strokeWidth="0.7"/>
+        ))}
+        {isSel("crypts")&&<rect x="336" y="224" width="128" height="32" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="242" textAnchor="middle" fill={isSel("crypts")?ac:"#5a3a18"} fontSize="7.5" fontFamily="'Cinzel',serif">KRYPTEN</text>
+      </g>
+
+      {/* ═══ ABBEY CHURCH ═══ */}
+      <g onClick={()=>hit("church")} style={{cursor:"pointer"}}>
+        {/* Nave */}
+        <rect x="348" y="172" width="106" height="52" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* N transept */}
+        <rect x="372" y="150" width="32" height="28" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* S transept */}
+        <rect x="372" y="218" width="32" height="26" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        {/* Choir (east) */}
+        <rect x="450" y="178" width="38" height="40" fill={isSel("church")?"#302416":"#221a0e"}
+          stroke={isSel("church")?`${ac}88`:"rgba(160,110,40,0.4)"} strokeWidth={isSel("church")?2:1.5}/>
+        <path d="M488,184 Q504,198 488,212" fill={isSel("church")?"#221a0e":"#180e08"} stroke={isSel("church")?`${ac}66`:"rgba(160,110,40,0.35)"} strokeWidth="1.5"/>
+        {/* Nave interior void */}
+        <rect x="360" y="180" width="84" height="36" fill="#0e0a05"/>
+        {/* Column pairs */}
+        {[372,386,400,414,428].map(x=>(
+          <g key={x}>
+            <circle cx={x} cy="185" r="2" fill={isSel("church")?"#aa882244":"#6a551511"} stroke={isSel("church")?"#aa8822":"#6a5515"} strokeWidth="0.7"/>
+            <circle cx={x} cy="211" r="2" fill={isSel("church")?"#aa882244":"#6a551511"} stroke={isSel("church")?"#aa8822":"#6a5515"} strokeWidth="0.7"/>
+          </g>
+        ))}
+        {/* Crossing dashed outline */}
+        <rect x="372" y="172" width="32" height="52" fill="none" stroke={isSel("church")?"rgba(200,160,60,0.4)":"rgba(140,100,30,0.18)"} strokeWidth="1.5" strokeDasharray="4,2"/>
+        {/* West platform */}
+        <rect x="330" y="180" width="22" height="36" fill={isSel("church")?"#281e0e":"#1c1508"}
+          stroke={isSel("church")?`${ac}55`:"rgba(140,90,30,0.28)"} strokeWidth="1"/>
+        {isSel("church")&&<><rect x="344" y="168" width="152" height="80" fill="none" stroke={`${ac}44`} strokeWidth="3" filter="url(#mm_glow)"/>
+          <rect x="368" y="146" width="40" height="32" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/></>}
+        <text x="400" y="196" textAnchor="middle" fill={isSel("church")?ac:"#7a6020"} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">ABTEIKIRCHE</text>
+        <text x="400" y="208" textAnchor="middle" fill={isSel("church")?"#c8a840":"#5a4010"} fontSize="6.5" fontFamily="'Cinzel',serif">11.–16. Jh.</text>
+      </g>
+
+      {/* ═══ LA MERVEILLE ═══ */}
+      <g onClick={()=>hit("merveille")} style={{cursor:"pointer"}}>
+        <rect x="286" y="150" width="66" height="90" fill={isSel("merveille")?"#1e2430":"#141820"}
+          stroke={isSel("merveille")?`${ac}88`:"rgba(80,100,160,0.35)"} strokeWidth={isSel("merveille")?2:1.5}/>
+        <line x1="290" y1="180" x2="348" y2="180" stroke={isSel("merveille")?"rgba(80,100,160,0.4)":"rgba(60,80,130,0.2)"} strokeWidth="1"/>
+        <line x1="290" y1="210" x2="348" y2="210" stroke={isSel("merveille")?"rgba(80,100,160,0.4)":"rgba(60,80,130,0.2)"} strokeWidth="1"/>
+        <rect x="294" y="156" width="26" height="20" fill="#0e1018"/>
+        <rect x="322" y="156" width="26" height="20" fill="#0e1018"/>
+        <rect x="294" y="184" width="26" height="22" fill="#0e1018"/>
+        <rect x="322" y="184" width="26" height="22" fill="#0e1018"/>
+        <rect x="294" y="214" width="26" height="22" fill="#0e1018"/>
+        <rect x="322" y="214" width="26" height="22" fill="#0e1018"/>
+        {isSel("merveille")&&<rect x="282" y="146" width="74" height="98" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="319" y="248" textAnchor="middle" fill={isSel("merveille")?ac:"#3a5080"} fontSize="8.5" fontFamily="'Cinzel',serif" fontWeight="bold">LA MERVEILLE</text>
+        <text x="319" y="260" textAnchor="middle" fill={isSel("merveille")?"#6080cc":"#2a3860"} fontSize="6.5" fontFamily="'Cinzel',serif">1211–1228</text>
+      </g>
+
+      {/* ═══ CLOISTER ═══ */}
+      <g onClick={()=>hit("cloister")} style={{cursor:"pointer"}}>
+        <rect x="292" y="152" width="52" height="52" fill={isSel("cloister")?"#1a2218":"#101810"}
+          stroke={isSel("cloister")?`${ac}88`:"rgba(40,80,30,0.38)"} strokeWidth={isSel("cloister")?2:1.5}/>
+        {/* Garden void */}
+        <rect x="304" y="164" width="28" height="28" fill="#0c1009"/>
+        {/* Column dots */}
+        {[304,310,316,322,330].map(x=>(
+          <circle key={x} cx={x} cy="164" r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[304,310,316,322,330].map(x=>(
+          <circle key={x+100} cx={x} cy="192" r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[164,170,176,182,188].map(y=>(
+          <circle key={y} cx="304" cy={y} r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {[164,170,176,182,188].map(y=>(
+          <circle key={y+100} cx="332" cy={y} r="1.5" fill={isSel("cloister")?"#60a06055":"#30502822"} stroke={isSel("cloister")?"#60a060":"#305028"} strokeWidth="0.5"/>
+        ))}
+        {isSel("cloister")&&<rect x="288" y="148" width="60" height="60" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="318" y="148" textAnchor="middle" fill={isSel("cloister")?ac:"#3a6030"} fontSize="7" fontFamily="'Cinzel',serif">KREUZGANG</text>
+      </g>
+
+      {/* ═══ CHÂTELET ═══ */}
+      <g onClick={()=>hit("chatelet")} style={{cursor:"pointer"}}>
+        <rect x="384" y="246" width="32" height="16" fill={isSel("chatelet")?"#3a1808":"#2a1006"}
+          stroke={isSel("chatelet")?`${ac}cc`:"rgba(180,60,30,0.5)"} strokeWidth={isSel("chatelet")?2:1.5}/>
+        <rect x="384" y="246" width="10" height="16" fill={isSel("chatelet")?"#4a2010":"#341208"} stroke="rgba(180,60,30,0.25)" strokeWidth="0.5"/>
+        <rect x="406" y="246" width="10" height="16" fill={isSel("chatelet")?"#4a2010":"#341208"} stroke="rgba(180,60,30,0.25)" strokeWidth="0.5"/>
+        {isSel("chatelet")&&<rect x="380" y="242" width="40" height="24" fill="none" stroke={`${ac}44`} strokeWidth="2" filter="url(#mm_glow)"/>}
+        <text x="400" y="243" textAnchor="middle" fill={isSel("chatelet")?ac:"#8a3020"} fontSize="7" fontFamily="'Cinzel',serif">CHÂTELET ⚠</text>
+      </g>
+
+      {/* Compass */}
+      <g transform={`translate(${W-44},44)`}>
+        <circle r="18" fill="rgba(0,0,0,0.7)" stroke={`${ac}44`} strokeWidth="1"/>
+        {[["N",0,"#e8d8b0"],["S",180,"#7a6a48"],["O",90,"#7a6a48"],["W",270,"#7a6a48"]].map(([l,a,c])=>{
+          const r2=Number(a)*Math.PI/180;
+          return<text key={l} x={Math.sin(r2)*11} y={-Math.cos(r2)*11+4}
+            textAnchor="middle" fill={c} fontSize="8" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+        <circle r="2" fill={ac} opacity="0.6"/>
+      </g>
+
+      {/* Scale */}
+      <g transform={`translate(50,${H-28})`}>
+        <line x1="0" y1="0" x2="100" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="0" y1="-5" x2="0" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="100" y1="-5" x2="100" y2="5" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <text x="50" y="14" textAnchor="middle" fill={`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif">≈ 100m</text>
+      </g>
+
+      <text x="20" y="26" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold">MONT SAINT-MICHEL</text>
+      <text x="20" y="42" fill="#9a8a60" fontSize="9" fontFamily="'Cinzel',serif">Normandie · 8.–16. Jh. · Frankreich</text>
+    </svg>
+  );
+};
+
+// ── Gravecrest ────────────────────────────────────────────────────────────────
+DETAILED_PLANS.gravecrest=({ac,sel,onSel})=>{
+  const W=1100,H=500;
+  const S=(id,nm,ic,tp,d,st,wk)=>({id,name:nm,icon:ic,type:tp,desc:d,stats:st,weakness:wk});
+  const EL=[
+    S("rittersaal","Großer Rittersaal","⚔️","Repräsentationssaal","Der weitläufige Rittersaal folgt dem natürlichen Felsverlauf des Hügels. Hier hielt der Ordo Custodum Rittergelübde, Gerichtstage und Kriegsräte ab. Waffen und Rüstkammer flankieren den SE-Eingang.",["Natürlicher Fels","Wandmalereien","Kriegsrat"],null),
+    S("palas","Palas-Wohntrakt","🏰","Wohngebäude","Der zentrale Wohntrakt mit vier massiven Rundtürmen. Mehrgeschossig mit Palas-Küche, Wohngemächern, Kaiserzimmer, Konvent-Zimmer, Schatzkammer und Bibliothek.",["4 Rundtürme","Mehrgeschossig","Residenz"],null),
+    S("palas_kueche","Palas-Küche","🍖","Küche","Die große Burgküche im NW-Turm. Zwei Herdstellen, Bratspieß und Vorratskammern versorgen die gesamte Besatzung.",["2 Herdstellen","NW-Turm","Vorräte"],null),
+    S("wohngemaecher","Wohngemächer","🛏️","Wohnräume","Herrschaftliche Schlafgemächer im NE-Flügel. Zugang über die Wendeltreppe im NE-Turm.",["Herrschaftlich","NE-Turm","Privaträume"],null),
+    S("kaiserzimmer","Kaiserzimmer","👑","Repräsentationsraum","Prunksaal für Audienzen hochrangiger Gäste. Deckengewölbe mit Wappen des Ordo Custodum.",["Audienzraum","Gewölbe","Wappen"],null),
+    S("konventzimmer","Konvent-Zimmer","📜","Ordensraum","Geheime Versammlungsräume des inneren Ordensrats. Schalldichte Steinwände, keine Außenfenster.",["Ordensrat","Geheim","Schalldicht"],null),
+    S("schatzkammer","Schatzkammer","💎","Tresorraum","Gesicherter Tresor für Ordensgold, Reliquien und Archive. Dreifachschloss-Mechanismus.",["Dreifachschloss","Ordensgold","Archive"],null),
+    S("bibliothek","Bibliothek","📚","Wissenszentrum","Ordensbibliothek im SW-Flügel. Seltene Manuskripte über Belagerungstechnik, Alchemie und verbotenes Wissen.",["Manuskripte","SW-Turm","Verbotenes Wissen"],null),
+    S("innenhof","Oberer Innenhof","🏛️","Kleinerer Hof","Der kleinere Innenhof — Übungsplatz mit Galeriegängen, Kleinen Schmieden und Apotheken. Badehaus und Garderobe auf der Westseite.",["Galeriegänge","Übungsplatz","Kleinerer Hof"],null),
+    S("mittleres_tor","Mittleres Burgtor","🚪","Quertor","Massives Quertor zwischen Ober- und Unterhof. Fallgitter, Schießscharten, beidseitige Torwächter.",["Fallgitter","Quertor","Zwischentor"],4),
+    S("donjon","Großer Hauptturm (Donjon)","🏯","Bergfried","Zylindrischer Bergfried mit 4m Mauerdicke — stärkster Punkt der Burg. Letzter Rückzugsort der Ordenskrieger.",["4m Mauerdicke","Zylindrisch","Letzter Rückzug"],2),
+    S("haupthof","Unterer Haupthof","🌿","Größerer Hof","Weitläufiger Haupthof — wirtschaftliches Zentrum mit Schmieden, Lagerhäusern, Ställen, Küchenhof und Flaschenzug.",["Wirtschaftszentrum","Größerer Hof","Flaschenzug"],null),
+    S("torhaus","Torhaus","⚔️","Toranlage","Separat stehendes Torhaus mit vier Eckwachstuben und Zugbrücke. Letzte Verteidigungslinie.",["Zugbrücke","Eckwachstuben","Letztes Tor"],3),
+    S("keller","Subterrane Gänge & Grüfte","💀","Unterirdisch","Weitverzweigtes Tunnelnetz unter der gesamten Burg — Kerker, Vorratsräume und geheime Fluchttunnel.",["Kerker","Fluchttunnel","Geheim"],null),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+  const isSel=id=>sel&&sel.id===id;
+  const wf=id=>isSel(id)?"#382710":"#2c2208";
+  const ws=id=>isSel(id)?`${ac}88`:`${ac}33`;
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="gc2_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#0e0c05"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <pattern id="gc2_st" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent"/>
+          <rect x="0" y="0" width="9" height="9" fill={`${ac}04`}/>
+          <rect x="11" y="11" width="9" height="9" fill={`${ac}03`}/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#gc2_bg)"/>
+
+      {/* ═══ RITTERSAAL (x=20-168) ═══ */}
+      <path d="M 168,60 L 105,60 L 68,48 L 34,78 L 18,162 L 16,250 L 18,362 L 42,440 L 112,440 L 168,440 Z"
+        fill={wf("rittersaal")} stroke={ws("rittersaal")} strokeWidth="1.5"
+        onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+      {[[40,88,72,106],[24,204,46,224],[20,318,42,338],[52,432,88,440]].map(([x1,y1,x2,y2],i)=>(
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(0,0,0,0.35)" strokeWidth="2.5" style={{pointerEvents:"none"}}/>
+      ))}
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z" fill="#0d0b04" stroke="none"/>
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z" fill="url(#gc2_st)" opacity="0.4" style={{pointerEvents:"none"}}/>
+      <path d="M 168,78 L 112,78 L 80,96 L 56,134 L 44,198 L 42,260 L 46,362 L 68,422 L 114,422 L 168,422 Z"
+        fill={isSel("rittersaal")?"rgba(50,35,8,0.14)":"transparent"}
+        onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+      <text x="88" y="252" textAnchor="middle" fill={isSel("rittersaal")?ac:`${ac}77`} fontSize="8" fontFamily="'Cinzel',serif" style={{pointerEvents:"none"}}>Großer</text>
+      <text x="88" y="263" textAnchor="middle" fill={isSel("rittersaal")?ac:`${ac}66`} fontSize="8" fontFamily="'Cinzel',serif" style={{pointerEvents:"none"}}>Rittersaal</text>
+      {/* SE rooms: Waffen, Rüstkammer */}
+      {[[354,30,388,388,30],[388,30,422,388,30]].map(([y,w,y2,y3,w2],i)=>(
+        <g key={i}>
+          <rect x="118" y={y} width="48" height="30" fill={wf("rittersaal")} stroke={ws("rittersaal")} strokeWidth="1" onClick={()=>hit("rittersaal")} style={{cursor:"pointer"}}/>
+          <rect x="124" y={y+6} width="36" height="18" fill="#0d0b04" stroke="none"/>
+        </g>
+      ))}
+      <text x="142" y="372" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Waffen</text>
+      <text x="142" y="406" textAnchor="middle" fill={`${ac}55`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Rüstkammer</text>
+
+      {/* ═══ PALAS BLOCK (x=168-366) ═══ */}
+      <rect x="168" y="60" width="198" height="380" fill={wf("palas")} stroke={ws("palas")} strokeWidth="1.5" onClick={()=>hit("palas")} style={{cursor:"pointer"}}/>
+      <rect x="186" y="78" width="162" height="344" fill="#0d0b04" stroke="none"/>
+      {/* 4 corner towers */}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="26" fill={wf("palas")} stroke={ws("palas")} strokeWidth="1.5" onClick={()=>hit("palas")} style={{cursor:"pointer"}}/>
+      ))}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="13" fill="#0d0b04" stroke="none"/>
+      ))}
+      {[[168,78],[366,78],[168,422],[366,422]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="6" fill="none" stroke={`${ac}22`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      ))}
+      {/* Room dividers */}
+      {[150,228,308].map((y,i)=>(
+        <rect key={i} x="186" y={y} width="162" height="8" fill={wf("palas")} stroke="none" style={{pointerEvents:"none"}}/>
+      ))}
+      <rect x="252" y="78" width="8" height="230" fill={wf("palas")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Palas-Küche */}
+      <rect x="186" y="78" width="66" height="72" fill={isSel("palas_kueche")?"#2a2010":"#1e1808"} stroke={isSel("palas_kueche")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("palas_kueche")?1.5:1} onClick={()=>hit("palas_kueche")} style={{cursor:"pointer"}}/>
+      <text x="219" y="112" textAnchor="middle" fill={isSel("palas_kueche")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Palas-</text>
+      <text x="219" y="123" textAnchor="middle" fill={isSel("palas_kueche")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Küche</text>
+      {/* Wohngemächer */}
+      <rect x="260" y="78" width="88" height="72" fill={isSel("wohngemaecher")?"#2a2010":"#1e1808"} stroke={isSel("wohngemaecher")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("wohngemaecher")?1.5:1} onClick={()=>hit("wohngemaecher")} style={{cursor:"pointer"}}/>
+      <text x="304" y="112" textAnchor="middle" fill={isSel("wohngemaecher")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Wohn-</text>
+      <text x="304" y="123" textAnchor="middle" fill={isSel("wohngemaecher")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>gemächer</text>
+      {/* Kaiserzimmer */}
+      <rect x="186" y="158" width="66" height="70" fill={isSel("kaiserzimmer")?"#2a2010":"#1e1808"} stroke={isSel("kaiserzimmer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("kaiserzimmer")?1.5:1} onClick={()=>hit("kaiserzimmer")} style={{cursor:"pointer"}}/>
+      <text x="219" y="191" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Kaiser-</text>
+      <text x="219" y="202" textAnchor="middle" fill={isSel("kaiserzimmer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>zimmer</text>
+      {/* Konvent-Zimmer */}
+      <rect x="260" y="158" width="88" height="70" fill={isSel("konventzimmer")?"#2a2010":"#1e1808"} stroke={isSel("konventzimmer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("konventzimmer")?1.5:1} onClick={()=>hit("konventzimmer")} style={{cursor:"pointer"}}/>
+      <text x="304" y="191" textAnchor="middle" fill={isSel("konventzimmer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Konvent-</text>
+      <text x="304" y="202" textAnchor="middle" fill={isSel("konventzimmer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Zimmer</text>
+      {/* Schatzkammer */}
+      <rect x="186" y="236" width="66" height="72" fill={isSel("schatzkammer")?"#2a2010":"#1e1808"} stroke={isSel("schatzkammer")?`${ac}77`:"rgba(150,95,30,0.3)"} strokeWidth={isSel("schatzkammer")?1.5:1} onClick={()=>hit("schatzkammer")} style={{cursor:"pointer"}}/>
+      <text x="219" y="270" textAnchor="middle" fill={isSel("schatzkammer")?ac:`${ac}77`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Schatz-</text>
+      <text x="219" y="281" textAnchor="middle" fill={isSel("schatzkammer")?ac:`${ac}66`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>kammer</text>
+      {/* Bibliothek (bottom, full width) */}
+      <rect x="186" y="316" width="162" height="106" fill={isSel("bibliothek")?"#1a2420":"#111a18"} stroke={isSel("bibliothek")?`${ac}88`:"rgba(40,90,70,0.5)"} strokeWidth={isSel("bibliothek")?2:1} onClick={()=>hit("bibliothek")} style={{cursor:"pointer"}}/>
+      <text x="267" y="372" textAnchor="middle" fill={isSel("bibliothek")?ac:"rgba(70,140,100,0.7)"} fontSize="9" fontFamily="serif" style={{pointerEvents:"none"}}>Bibliothek</text>
+      <text x="168" y="44" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">NW-Turm</text>
+      <text x="366" y="44" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">NE-Turm</text>
+      <text x="168" y="476" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">SW-Turm</text>
+      <text x="366" y="476" textAnchor="middle" fill={`${ac}44`} fontSize="6.5" fontFamily="serif">SE-Turm</text>
+
+      {/* ═══ CENTRAL SECTION (x=366-512): INNENHOF + FUNCTIONAL ═══ */}
+      {/* N/S outer walls (continuous strip) */}
+      <rect x="366" y="60" width="146" height="18" fill={wf("innenhof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="366" y="422" width="146" height="18" fill={wf("innenhof")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Fill entire central interior with wall mass */}
+      <rect x="366" y="78" width="146" height="344" fill={wf("innenhof")} stroke="none" onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}/>
+      {/* Galeriegang N void */}
+      <rect x="372" y="80" width="134" height="20" fill="#0d0b04" stroke="none"/>
+      <text x="439" y="93" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Galeriegang</text>
+      {/* Galeriegang S void */}
+      <rect x="372" y="344" width="134" height="20" fill="#0d0b04" stroke="none"/>
+      <text x="439" y="357" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Galeriegang</text>
+      {/* W rooms: Badehaus (top void), Garderobe (bottom void) */}
+      <rect x="374" y="108" width="30" height="98" fill="#0d0b04" stroke="none"/>
+      <text x="389" y="155" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Bade-</text>
+      <text x="389" y="165" textAnchor="middle" fill={`${ac}38`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>haus</text>
+      <rect x="374" y="216" width="30" height="118" fill="#0d0b04" stroke="none"/>
+      <text x="389" y="273" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Garde-</text>
+      <text x="389" y="283" textAnchor="middle" fill={`${ac}38`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>robe</text>
+      {/* N rooms above Innenhof: Kleine Schmieden, Apotheken */}
+      <rect x="412" y="102" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="435" y="122" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Kl.</text>
+      <text x="435" y="132" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>Schm.</text>
+      <rect x="462" y="102" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="485" y="122" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apothe-</text>
+      <text x="485" y="132" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>ken</text>
+      {/* Oberer Innenhof void */}
+      <rect x="412" y="148" width="96" height="148" fill="#0d0b04" stroke={`${ac}22`} strokeWidth="1" onClick={()=>hit("innenhof")} style={{cursor:"pointer"}}/>
+      <text x="460" y="218" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Oberer</text>
+      <text x="460" y="230" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Innenhof</text>
+      <text x="460" y="241" textAnchor="middle" fill={`${ac}25`} fontSize="6" fontFamily="serif" style={{pointerEvents:"none"}}>(Kleinerer Hof)</text>
+      {/* S rooms below Innenhof */}
+      <rect x="412" y="298" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="435" y="318" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Kl.</text>
+      <text x="435" y="328" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>Schm.</text>
+      <rect x="462" y="298" width="46" height="44" fill="#0d0b04" stroke="none"/>
+      <text x="485" y="318" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apothe-</text>
+      <text x="485" y="328" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>ken</text>
+
+      {/* ═══ MITTLERES BURGTOR (x=512-534) ═══ */}
+      <rect x="512" y="60" width="22" height="380" fill={wf("mittleres_tor")} stroke={ws("mittleres_tor")} strokeWidth="1.5" onClick={()=>hit("mittleres_tor")} style={{cursor:"pointer"}}/>
+      <rect x="517" y="192" width="12" height="116" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      <text x="523" y="258" textAnchor="middle" fill={isSel("mittleres_tor")?ac:`${ac}55`} fontSize="6" fontFamily="serif" transform="rotate(-90,523,258)" style={{pointerEvents:"none"}}>MITTL. BURGTOR</text>
+
+      {/* ═══ RIGHT SECTION (x=534-870): HAUPTHOF + DONJON ═══ */}
+      {/* Outer walls */}
+      <rect x="534" y="60" width="336" height="18" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="534" y="422" width="336" height="18" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="852" y="60" width="18" height="380" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      <rect x="534" y="60" width="18" height="380" fill={wf("haupthof")} stroke="none" style={{pointerEvents:"none"}}/>
+      {/* Zinnen-Wehrtürme along N wall */}
+      {[556,584,612,640,668,696,724,752,780,808,836].map((x,i)=>(
+        <rect key={i} x={x} y="46" width="14" height="16" fill={wf("haupthof")} stroke={ws("haupthof")} strokeWidth="1" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      ))}
+      <text x="696" y="38" textAnchor="middle" fill={`${ac}33`} fontSize="7" fontFamily="serif">Zinnen-Wehrtürme</text>
+      {/* Fill entire right section interior with wall mass */}
+      <rect x="552" y="78" width="300" height="344" fill={wf("haupthof")} stroke="none" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      {/* N room voids */}
+      <rect x="560" y="84" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="585" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Waffen-</text>
+      <text x="585" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>kämmer</text>
+      <rect x="620" y="84" width="46" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="643" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wach-</text>
+      <text x="643" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>stuben</text>
+      <rect x="676" y="84" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="701" y="107" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Küchen-</text>
+      <text x="701" y="116" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>hof</text>
+      <rect x="736" y="84" width="108" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="790" y="108" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Lagerhäuser</text>
+      {/* Haupthof courtyard void */}
+      <rect x="558" y="132" width="286" height="166" fill="#0d0b04" stroke={`${ac}22`} strokeWidth="1" onClick={()=>hit("haupthof")} style={{cursor:"pointer"}}/>
+      <text x="701" y="292" textAnchor="middle" fill={`${ac}28`} fontSize="8" fontFamily="serif" style={{pointerEvents:"none"}}>Unterer Haupthof (Größerer Hof)</text>
+      {/* Großer Hauptturm / Donjon — large round */}
+      <circle cx="701" cy="215" r="52" fill={wf("donjon")} stroke={ws("donjon")} strokeWidth="2.5" onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      <circle cx="701" cy="215" r="36" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="1" style={{pointerEvents:"none"}}/>
+      <circle cx="701" cy="215" r="20" fill={wf("donjon")} stroke={`${ac}55`} strokeWidth="1.5" onClick={()=>hit("donjon")} style={{cursor:"pointer"}}/>
+      <circle cx="701" cy="215" r="10" fill="#0d0b04" stroke="none" style={{pointerEvents:"none"}}/>
+      <text x="701" y="213" textAnchor="middle" fill={isSel("donjon")?ac:`${ac}77`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Donjon</text>
+      <text x="701" y="222" textAnchor="middle" fill={isSel("donjon")?ac:`${ac}55`} fontSize="6" fontFamily="serif" style={{pointerEvents:"none"}}>(Hauptturm)</text>
+      {/* S room voids */}
+      <rect x="560" y="306" width="62" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="591" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Ställe</text>
+      <rect x="632" y="306" width="44" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="654" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wach-</text>
+      <text x="654" y="337" textAnchor="middle" fill={`${ac}38`} fontSize="6.5" fontFamily="serif" style={{pointerEvents:"none"}}>stuben</text>
+      <rect x="686" y="306" width="50" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="711" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Schmieden</text>
+      <rect x="746" y="306" width="98" height="40" fill="#0d0b04" stroke="none"/>
+      <text x="795" y="328" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Lagerhäuser</text>
+      {/* Extra bottom: Apotheke, Militärakademie */}
+      <rect x="616" y="356" width="54" height="38" fill="#0d0b04" stroke="none"/>
+      <text x="643" y="378" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Apotheke</text>
+      <rect x="680" y="356" width="164" height="38" fill="#0d0b04" stroke="none"/>
+      <text x="762" y="378" textAnchor="middle" fill={`${ac}44`} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Militärakademie</text>
+      {/* Unterirdische Gänge label (N side of right section) */}
+      <text x="701" y="52" textAnchor="middle" fill={`${ac}33`} fontSize="6.5" fontFamily="serif">Unterirdische Gänge</text>
+
+      {/* ═══ CONNECTION PASSAGE (x=870-932) ═══ */}
+      <rect x="870" y="228" width="62" height="44" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="1" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      <rect x="876" y="234" width="50" height="32" fill="#0d0b04" stroke="none"/>
+
+      {/* ═══ TORHAUS (x=932-1082) ═══ */}
+      <rect x="932" y="148" width="122" height="204" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="2" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      {/* Gate passage void */}
+      <rect x="984" y="148" width="18" height="204" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      {/* 4 wachstuben room voids */}
+      <rect x="940" y="156" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="1002" y="156" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="940" y="262" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      <rect x="1002" y="262" width="42" height="82" fill="#0d0b04" stroke="none"/>
+      {/* Corner square towers */}
+      {[[932,148],[1054,148],[932,352],[1054,352]].map(([x,y],i)=>(
+        <rect key={i} x={x-16} y={y-16} width="32" height="32" fill={isSel("torhaus")?"#3a1010":"#2c1008"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="2" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Labels */}
+      <text x="961" y="199" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="961" y="208" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="1027" y="199" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="1027" y="208" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="961" y="305" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="961" y="314" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="1027" y="305" textAnchor="middle" fill={isSel("torhaus")?"#ee6644":"#aa3322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Torhaus-</text>
+      <text x="1027" y="314" textAnchor="middle" fill={isSel("torhaus")?"#dd5533":"#993322"} fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Wachstuben</text>
+      <text x="993" y="256" textAnchor="middle" fill={isSel("torhaus")?"#ff7755":"#cc3322"} fontSize="9" fontFamily="'Cinzel',serif" fontWeight="bold" style={{pointerEvents:"none"}}>TORHAUS</text>
+      {/* Zugbrücke */}
+      <rect x="1054" y="226" width="36" height="48" fill={isSel("torhaus")?"#2e1010":"#1e0e08"} stroke={isSel("torhaus")?"#cc4433":"#882222"} strokeWidth="1.5" onClick={()=>hit("torhaus")} style={{cursor:"pointer"}}/>
+      <rect x="1060" y="232" width="24" height="36" fill="#0d0b04" stroke="none"/>
+      <line x1="1060" y1="234" x2="1052" y2="242" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1084" y1="234" x2="1090" y2="242" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1060" y1="264" x2="1052" y2="256" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <line x1="1084" y1="264" x2="1090" y2="256" stroke="#882222" strokeWidth="1.2" style={{pointerEvents:"none"}}/>
+      <text x="1072" y="253" textAnchor="middle" fill="#882222" fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>Zug-</text>
+      <text x="1072" y="262" textAnchor="middle" fill="#882222" fontSize="7" fontFamily="serif" style={{pointerEvents:"none"}}>brücke</text>
+
+      {/* ═══ UNDERGROUND PASSAGES ═══ */}
+      <rect x="42" y="448" width="828" height="16" rx="2" fill="rgba(6,5,2,0.85)" stroke={isSel("keller")?"rgba(120,90,30,0.7)":"rgba(60,45,20,0.4)"} strokeWidth="1" strokeDasharray="7,3" onClick={()=>hit("keller")} style={{cursor:"pointer"}}/>
+      <text x="90" y="43" textAnchor="middle" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Subterrane Gänge &amp; Grüfte</text>
+      <text x="220" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Unterirdische Gänge</text>
+      <text x="500" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Unterirdische Gänge &amp; Grüfte</text>
+      <text x="810" y="460" fill={isSel("keller")?ac:`${ac}44`} fontSize="7" fontFamily="serif" onClick={()=>hit("keller")} style={{cursor:"pointer"}}>Flaschenzug</text>
+
+      {/* ═══ TITLE + COMPASS + SCALE ═══ */}
+      <text x="540" y="20" textAnchor="middle" fill={ac} fontSize="13" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="2">GRUNDRISS DER BURG GRAVECREST</text>
+      <text x="540" y="34" textAnchor="middle" fill={`${ac}55`} fontSize="8" fontFamily="'Cinzel',serif">Ordo Custodum · Fiktive Burg</text>
+      <g transform="translate(1060,460)">
+        <circle r="18" fill="rgba(8,6,3,0.65)" stroke={`${ac}33`} strokeWidth="1"/>
+        <text x="0" y="-5" textAnchor="middle" fill={`${ac}77`} fontSize="9" fontFamily="serif">N</text>
+        <line x1="0" y1="-2" x2="0" y2="-14" stroke={`${ac}66`} strokeWidth="1.5"/>
+        <line x1="-10" y1="8" x2="0" y2="-2" stroke={`${ac}44`} strokeWidth="1"/>
+        <line x1="10" y1="8" x2="0" y2="-2" stroke={`${ac}44`} strokeWidth="1"/>
+      </g>
+      <g transform="translate(50,482)">
+        <line x1="0" y1="0" x2="100" y2="0" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="0" y1="-4" x2="0" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <line x1="100" y1="-4" x2="100" y2="4" stroke={`${ac}55`} strokeWidth="1.5"/>
+        <text x="50" y="12" textAnchor="middle" fill={`${ac}66`} fontSize="7.5" fontFamily="'Cinzel',serif">Maßstab 1:200</text>
+      </g>
+    </svg>
+  );
+};
+
+DETAILED_PLANS.carcassonne=({ac,sel,onSel})=>{
+  const W=800,H=560;
+  const isSel=id=>sel&&sel.id===id;
+  const S=(id,nm,ic,tp,desc,stats,weak)=>({id,name:nm,icon:ic,type:tp,desc,stats,weakness:weak});
+  const EL=[
+    S("outer_wall","Äußere Enceinte","🧱","Außenmauer","52 Türme schützen die Äußere Enceinte, errichtet im 13. Jh. unter Ludwig IX. und Philipp III. Viollet-le-Duc restaurierte sie 1853–1879 — umstrittenerweise mit spitzen Türmen statt der historisch flachen Bedachung.",["52 Türme","3–4 m stark","13. Jh."],7),
+    S("lices","Lices — Zwinger","⚔️","Verteidigungszone","Der 8–12 m breite Korridor zwischen Äußerer und Innerer Enceinte. Eindringlinge, die die Außenmauer durchbrachen, gerieten hier unter Kreuzfeuer von beiden Seiten gleichzeitig.",["8–12 m breit","Kreuzfeuer","Tödliche Falle"],5),
+    S("inner_wall","Innere Enceinte","🛡️","Innenmauer","Die ältere Stadtmauer mit gallo-romanischen und westgotischen Fundamenten (3.–6. Jh.). Einige Türme sind hufeisenförmig — typisch westgotisch. Bis zu 5 m dick.",["~30 Türme","Teils röm.","Westgotisch (5. Jh.)"],6),
+    S("chateau","Château Comtal","🏯","Hauptburg","Die Grafenburg im NW der Cité, ursprünglich Residenz der Trencavel-Grafen (12. Jh.). Eigene Doppel-Ummauerung, Halbmond-Barbikan gegen die Stadt, tiefer Graben. Nach 1226 Sitz der königlichen Seneschalle.",["Barbikan","4 Türme","12. Jh."],3),
+    S("saint_nazaire","Basilika Saint-Nazaire","⛪","Kathedrale","Gotische Basilika (11.–14. Jh.) mit romanischem Langhaus (1096) und prächtigen gotischen Querschiffen. Berühmt für Kreuzfahrer-Grabplatten und mittelalterliche Buntglasfenster.",["Romanisch/Gotisch","Rosette 14. Jh.","1096–1330"]),
+    S("porte_narbonnaise","Porte Narbonnaise","🚪","Haupttor","Das Haupttor der Cité im Osten (1280 unter Philipp III.). Zwei mächtige Rundtürme flankieren den Eingang. Zugbrücke, Barbikan-Vorhof, Fallgitter und Schießscharten machen es zum stärksten Punkt.",["Zugbrücke","Fallgitter","Erbaut: 1280"],4),
+    S("porte_aude","Porte d'Aude","🚪","Nebentor","Das Westtor führt den steilen Hang hinunter zur Aude-Brücke und zur Unterstadt. Der gewundene, schmale Aufstieg macht Sturmangriffe praktisch unmöglich.",["Steilweg","Flussseite","Westseite"],5),
+    S("grande_rue","Grande Rue","🛤️","Hauptstraße","Die Hauptstraße verbindet Porte Narbonnaise mit Porte d'Aude auf der ganzen Länge des Hügels. Entlang ihr lagen Tavernen, Händler und Handwerksbetriebe.",["Hauptachse","Märkte","Händler"]),
+    S("cite","Cité Innenstadt","🏘️","Wohnbebauung","Dichte mittelalterliche Bebauung mit engen Gassen, Wohnhäusern und Innenhöfen. Im Mittelalter wohnten hier ca. 1.000 Einwohner.",["~1000 Einw.","Enge Gassen","13. Jh."]),
+  ];
+  const el=id=>EL.find(e=>e.id===id)||null;
+  const hit=id=>onSel(sel&&sel.id===id?null:el(id));
+
+  const OP="M 175,195 L 215,115 L 285,70 L 380,50 L 480,58 L 562,92 L 622,148 L 652,220 L 656,300 L 635,382 L 582,450 L 475,492 L 360,500 L 240,474 L 162,412 L 138,322 Z";
+  const IP="M 202,212 L 238,140 L 300,100 L 382,80 L 478,87 L 550,116 L 602,162 L 626,228 L 629,302 L 609,376 L 559,434 L 467,468 L 358,476 L 250,452 L 183,393 L 162,310 Z";
+  const CV="M 224,228 L 254,158 L 308,118 L 383,100 L 475,107 L 540,132 L 586,173 L 608,234 L 610,302 L 590,368 L 543,412 L 460,446 L 355,454 L 256,430 L 198,375 L 178,308 Z";
+
+  const OT=[[380,50],[440,52],[490,62],[535,80],[575,110],[610,142],[638,180],[650,225],[654,275],[648,320],[636,360],[614,400],[576,440],[525,475],[460,492],[390,500],[320,496],[252,480],[190,452],[150,410],[136,358],[136,308],[148,252],[170,198],[215,122],[275,72]];
+  const IT=[[382,82],[445,86],[500,102],[540,122],[578,155],[606,190],[622,225],[628,265],[627,305],[618,345],[604,378],[576,415],[538,446],[488,465],[428,473],[360,474],[295,462],[248,440],[210,410],[184,374],[172,330],[168,285],[175,244],[198,210],[232,148]];
+
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="ca_bg" cx="50%" cy="50%" r="70%">
+          <stop offset="0%" stopColor="#100e06"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <pattern id="ca_st" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+          <rect width="24" height="24" fill="transparent"/>
+          <rect x="0" y="0" width="11" height="11" fill={`${ac}05`}/>
+          <rect x="13" y="13" width="11" height="11" fill={`${ac}04`}/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#ca_bg)"/>
+
+      {/* Hill terrain */}
+      <ellipse cx="400" cy="275" rx="322" ry="262" fill="rgba(38,28,10,0.22)" stroke={`${ac}0a`} strokeWidth="0.5"/>
+
+      {/* Outer enceinte mass */}
+      <path d={OP} fill={isSel("outer_wall")?"#382710":"#2c2208"}
+        stroke={isSel("outer_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      {/* Lices void (cuts inner part of outer fill) */}
+      <path d={IP} fill="#0a0804" stroke="none"/>
+      {/* Outer towers */}
+      {OT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="13"
+          fill={isSel("outer_wall")?"#382710":"#2c2208"}
+          stroke={isSel("outer_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("outer_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Lices interactive overlay */}
+      <path d={IP} fill={isSel("lices")?"rgba(50,75,28,0.14)":"transparent"}
+        style={{cursor:"pointer"}} onClick={()=>hit("lices")}/>
+
+      {/* Inner enceinte mass */}
+      <path d={IP} fill={isSel("inner_wall")?"#382710":"#2c2208"}
+        stroke={isSel("inner_wall")?`${ac}77`:`${ac}33`} strokeWidth="1"
+        onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      {/* City void */}
+      <path d={CV} fill="#0d0b04" stroke="none"/>
+      {/* Inner towers */}
+      {IT.map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="11"
+          fill={isSel("inner_wall")?"#382710":"#2c2208"}
+          stroke={isSel("inner_wall")?`${ac}77`:`${ac}44`} strokeWidth="1"
+          onClick={()=>hit("inner_wall")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* City stone texture */}
+      <path d={CV} fill="url(#ca_st)" opacity="0.5"/>
+      {/* Street grid */}
+      {[230,260,290,320,350,380,410].map(y=>(
+        <line key={y} x1="215" y1={y} x2="595" y2={y} stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+      {[270,320,375,430,490,545].map(x=>(
+        <line key={x} x1={x} y1="115" x2={x} y2="448" stroke={`${ac}07`} strokeWidth="0.5"/>
+      ))}
+
+      {/* Building blocks — N strip */}
+      {[[240,118,52,35],[300,112,52,35],[360,106,55,35],[422,104,52,35],[482,110,52,35],[542,122,42,35]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — E strip */}
+      {[[558,162,38,40],[554,210,42,40],[553,260,42,40],[552,310,42,40],[548,360,42,40],[534,406,42,32]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — W strip */}
+      {[[260,168,44,40],[257,218,44,40],[255,266,44,40],[258,314,44,40],[261,362,44,40],[266,408,44,30]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+      {/* Building blocks — S strip */}
+      {[[290,416,50,28],[350,423,50,26],[414,427,50,24],[474,421,48,28],[524,412,38,28]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("cite")?"#1e1610":"#181208"} stroke={`${ac}10`} strokeWidth="0.8"
+          onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* Grande Rue (main N-S street) */}
+      <rect x="388" y="118" width="16" height="316"
+        fill={isSel("grande_rue")?"rgba(50,40,12,0.3)":"rgba(15,12,4,0.6)"}
+        stroke={isSel("grande_rue")?`${ac}55`:`${ac}10`} strokeWidth="0.5"
+        onClick={()=>hit("grande_rue")} style={{cursor:"pointer"}}/>
+
+      {/* Place du Grand Puits */}
+      <circle cx="396" cy="282" r="22"
+        fill={isSel("cite")?"rgba(40,32,10,0.5)":"rgba(18,14,5,0.7)"}
+        stroke={isSel("cite")?`${ac}55`:`${ac}20`} strokeWidth="1"
+        onClick={()=>hit("cite")} style={{cursor:"pointer"}}/>
+      <circle cx="396" cy="282" r="6" fill="none" stroke={`${ac}33`} strokeWidth="1" style={{pointerEvents:"none"}}/>
+
+      {/* CHÂTEAU COMTAL */}
+      <rect x="200" y="192" width="118" height="102" rx="2"
+        fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="222" y="212" width="72" height="62" fill="#0d0b04" stroke="none"/>
+      <rect x="224" y="214" width="32" height="26" fill={isSel("chateau")?"#1a1508":"#161006"}
+        stroke={`${ac}18`} strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+      {[[200,192],[318,192],[200,294],[318,294]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="17"
+          fill={isSel("chateau")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("chateau")?`${ac}aa`:`${ac}66`} strokeWidth={isSel("chateau")?2:1.5}
+          onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      ))}
+      <path d="M 318,215 Q 362,243 318,277" fill="none"
+        stroke={isSel("chateau")?`${ac}99`:`${ac}55`} strokeWidth={isSel("chateau")?3:2}
+        onClick={()=>hit("chateau")} style={{cursor:"pointer"}}/>
+      <rect x="304" y="205" width="10" height="84"
+        fill="rgba(22,44,70,0.65)" stroke="rgba(30,70,110,0.45)" strokeWidth="0.5" style={{pointerEvents:"none"}}/>
+
+      {/* BASILIQUE SAINT-NAZAIRE */}
+      <rect x="348" y="362" width="90" height="52"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="362" y="374" width="62" height="28" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="344" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="351" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <rect x="380" y="414" width="26" height="21"
+        fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      <rect x="388" y="416" width="12" height="12" fill="#0d0b04" stroke="none"/>
+      <path d="M 438,365 Q 462,378 438,411" fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+        onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      {[[348,362,14,22],[348,392,14,22]].map(([x,y,w,h],i)=>(
+        <rect key={i} x={x} y={y} width={w} height={h}
+          fill={isSel("saint_nazaire")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("saint_nazaire")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("saint_nazaire")?2:1.5}
+          onClick={()=>hit("saint_nazaire")} style={{cursor:"pointer"}}/>
+      ))}
+
+      {/* PORTE NARBONNAISE */}
+      {[[648,272],[648,320]].map(([cx,cy],i)=>(
+        <circle key={i} cx={cx} cy={cy} r="22"
+          fill={isSel("porte_narbonnaise")?"#3a2a0e":"#2c2208"}
+          stroke={isSel("porte_narbonnaise")?`${ac}cc`:`${ac}77`} strokeWidth="2"
+          onClick={()=>hit("porte_narbonnaise")} style={{cursor:"pointer"}}/>
+      ))}
+      <rect x="641" y="283" width="26" height="28" fill="#0d0b04" stroke={`${ac}33`} strokeWidth="0.8" style={{pointerEvents:"none"}}/>
+      <text x="688" y="300" fill={`${ac}77`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="688" y="310" fill={`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">NARB.</text>
+
+      {/* PORTE D'AUDE */}
+      <rect x="144" y="284" width="26" height="40"
+        fill={isSel("porte_aude")?"#3a2a0e":"#2c2208"}
+        stroke={isSel("porte_aude")?`${ac}aa`:`${ac}55`} strokeWidth={isSel("porte_aude")?2:1.5}
+        onClick={()=>hit("porte_aude")} style={{cursor:"pointer"}}/>
+      <rect x="152" y="293" width="12" height="22" fill="#0d0b04" stroke="none"/>
+      <text x="133" y="304" textAnchor="end" fill={`${ac}55`} fontSize="7" fontFamily="'Cinzel',serif">PORTE</text>
+      <text x="133" y="314" textAnchor="end" fill={`${ac}44`} fontSize="7" fontFamily="'Cinzel',serif">D'AUDE</text>
+
+      {/* Labels */}
+      <text x="252" y="248" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}88`} fontSize="8" fontFamily="'Cinzel',serif">CHÂTEAU</text>
+      <text x="252" y="260" textAnchor="middle" fill={isSel("chateau")?ac:`${ac}77`} fontSize="8" fontFamily="'Cinzel',serif">COMTAL</text>
+      <text x="400" y="396" textAnchor="middle" fill={isSel("saint_nazaire")?ac:`${ac}66`} fontSize="7" fontFamily="'Cinzel',serif">ST-NAZAIRE</text>
+      <text x="172" y="448" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(-28,172,448)">LICES</text>
+      <text x="596" y="452" fill={`${ac}33`} fontSize="7" fontFamily="serif" transform="rotate(22,596,452)">LICES</text>
+
+      {/* Title */}
+      <text x="400" y="22" textAnchor="middle" fill={`${ac}66`} fontSize="12" fontFamily="'Cinzel',serif" letterSpacing="3">CARCASSONNE</text>
+      <text x="400" y="36" textAnchor="middle" fill={`${ac}33`} fontSize="8" fontFamily="serif" letterSpacing="1.5">DOPPELTER MAUERRING · 13. JAHRHUNDERT</text>
+      <text x="765" y="32" textAnchor="middle" fill={`${ac}55`} fontSize="10" fontFamily="serif">N</text>
+      <line x1="765" y1="36" x2="765" y2="52" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="761" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="769" y1="52" x2="765" y2="44" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="680" y1="524" x2="780" y2="524" stroke={`${ac}44`} strokeWidth="1.5"/>
+      <line x1="680" y1="519" x2="680" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <line x1="780" y1="519" x2="780" y2="529" stroke={`${ac}44`} strokeWidth="1"/>
+      <text x="730" y="537" textAnchor="middle" fill={`${ac}44`} fontSize="8" fontFamily="serif">≈200m</text>
+    </svg>
+  );
+};
+
+function CastleFloorPlanTab({castle}){
+  const sel=castle;
+  const [selEl,setSelEl]=useState(null);
+  const plan=DETAILED_PLANS[sel.id];
+
+  const infoPanel=(el)=>{
+    if(!el)return(
+      <div style={{padding:"16px",color:"#6a5a3a",fontFamily:"'Cinzel',serif",fontSize:"12px",textAlign:"center",letterSpacing:"0.5px"}}>
+        <div style={{fontSize:"24px",marginBottom:"8px",opacity:0.4}}>🏰</div>
+        Element anklicken<br/>für Details
+      </div>
+    );
+    return(
+      <div style={{padding:"14px",animation:"fadeIn 0.15s ease"}}>
+        <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${sel.theme.accent}22`}}>
+          <span style={{fontSize:"20px"}}>{el.icon||"🏛️"}</span>
+          <div>
+            <div style={{fontSize:"13px",fontWeight:"bold",color:"#f0e6cc",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{el.name}</div>
+            {el.type&&<div style={{fontSize:"10px",color:sel.theme.accent,letterSpacing:"1px",marginTop:"2px"}}>{el.type}</div>}
+          </div>
+        </div>
+        {el.desc&&<p style={{fontSize:"12px",color:"#c8b890",lineHeight:1.6,margin:"0 0 10px"}}>{el.desc}</p>}
+        {el.stats&&<div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
+          {el.stats.map((s,i)=>(
+            <div key={i} style={{padding:"4px 8px",background:`${sel.theme.accent}12`,border:`1px solid ${sel.theme.accent}30`,borderRadius:"4px",fontSize:"10px",color:sel.theme.accent,fontFamily:"'Cinzel',serif"}}>{s}</div>
+          ))}
+        </div>}
+        {el.weakness!=null&&<div style={{marginTop:"8px",padding:"6px 8px",background:"rgba(180,40,20,0.12)",border:"1px solid rgba(180,40,20,0.25)",borderRadius:"4px",fontSize:"11px",color:"#dd7755"}}>
+          ⚠ Schwachstelle — Angriffswert {el.weakness}/10
+        </div>}
+      </div>
+    );
+  };
+
+  return(
+    <div style={{animation:"fadeIn 0.2s ease"}}>
+      <div style={{display:"flex",gap:"14px",height:"calc(100vh - 220px)",minHeight:"520px"}}>
+        {/* Main plan area */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",gap:"8px",minWidth:0}}>
+          <div style={{display:"flex",alignItems:"center",gap:"8px"}}>
+            <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
+              Mausrad · Zoomen &nbsp;|&nbsp; Ziehen · Verschieben &nbsp;|&nbsp; Klicken · Details
+            </span>
+            <button onClick={()=>setSelEl(null)}
+              style={{marginLeft:"auto",padding:"4px 10px",fontSize:"10px",fontFamily:"'Cinzel',serif",
+                background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
+                color:"#9a8a6a",borderRadius:"5px",cursor:"pointer"}}>Auswahl aufheben</button>
+          </div>
+          <PanZoomFloorPlan accent={sel.theme.accent} height={0} style={{flex:1}}>
+            {plan
+              ? plan({ac:sel.theme.accent,sel:selEl,onSel:setSelEl})
+              : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selEl} onSel={setSelEl}/>
+            }
+          </PanZoomFloorPlan>
+        </div>
+        {/* Side info panel */}
+        <div style={{width:"220px",flexShrink:0,background:"rgba(8,6,3,0.95)",border:`1px solid ${sel.theme.accent}20`,borderRadius:"8px",overflow:"hidden",display:"flex",flexDirection:"column"}}>
+          <div style={{padding:"8px 12px",borderBottom:`1px solid ${sel.theme.accent}18`,fontSize:"10px",color:sel.theme.accent,fontFamily:"'Cinzel',serif",letterSpacing:"2px"}}>ELEMENT</div>
+          <div style={{flex:1,overflowY:"auto"}}>{infoPanel(selEl)}</div>
+          <div style={{borderTop:`1px solid ${sel.theme.accent}15`,padding:"8px 12px"}}>
+            <div style={{fontSize:"10px",color:"#6a5a3a",letterSpacing:"1px",marginBottom:"4px"}}>LEGENDE</div>
+            {[{c:"#8888ff",l:"Türme"},{c:"#88ccff",l:"Tore"},{c:"#ffcc44",l:"Hauptgebäude"},{c:"#44bb88",l:"Höfe"},{c:"#cc4433",l:"Schwachstellen"}].map(lg=>(
+              <div key={lg.l} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"3px"}}>
+                <div style={{width:"10px",height:"10px",borderRadius:"2px",background:lg.c,flexShrink:0}}/>
+                <span style={{fontSize:"10px",color:"#9a8a68"}}>{lg.l}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Generic detailed plan (used when no DETAILED_PLANS entry exists)
+function GenericDetailedPlan({castle,ac,sel,onSel}){
+  const zones=castle.zones||[];
+  const W=600,H=500;
+  const cx=W/2,cy=H/2;
+  const layers=Math.min(4,Math.ceil(zones.length/4));
+  return(
+    <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id="dp_bg" cx="50%" cy="50%" r="65%">
+          <stop offset="0%" stopColor="#110d06"/>
+          <stop offset="100%" stopColor="#060402"/>
+        </radialGradient>
+        <filter id="dp_glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <pattern id="dp_stone" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+          <rect width="30" height="30" fill="transparent"/>
+          <rect x="1" y="1" width="13" height="13" fill={`${ac}06`} rx="1"/>
+          <rect x="16" y="16" width="13" height="13" fill={`${ac}05`} rx="1"/>
+        </pattern>
+      </defs>
+      <rect width={W} height={H} fill="url(#dp_bg)"/>
+      <rect width={W} height={H} fill="url(#dp_stone)" opacity="0.6"/>
+      {/* Concentric curtain walls */}
+      {[...Array(layers)].map((_,li)=>{
+        const r=60+li*70;
+        return<rect key={li} x={cx-r} y={cy-r} width={r*2} height={r*2} rx="8"
+          fill="none" stroke={`${ac}${li===0?"55":"33"}`} strokeWidth={li===0?3:2}/>;
+      })}
+      {/* Zones */}
+      {zones.map((z,i)=>{
+        const angle=(i/zones.length)*Math.PI*2-Math.PI/2;
+        const layer=Math.floor(i/(zones.length/layers));
+        const r=80+layer*70;
+        const zx=cx+Math.cos(angle)*r*0.6;
+        const zy=cy+Math.sin(angle)*r*0.6;
+        const isS=sel===z.id;
+        return(
+          <g key={z.id} onClick={()=>onSel(isS?null:{id:z.id,name:z.l,icon:"🏛️",type:"Zone",desc:z.d,weakness:z.a<=2?z.a:undefined,stats:[`Verteidigung ${z.a}/10`]})}
+            style={{cursor:"pointer"}}>
+            {isS&&<circle cx={zx} cy={zy} r="28" fill={`${z.c}22`} filter="url(#dp_glow)"/>}
+            <circle cx={zx} cy={zy} r="22" fill={`${z.c}${isS?"30":"18"}`}
+              stroke={`${z.c}${isS?"cc":"55"}`} strokeWidth={isS?2:1}/>
+            <text x={zx} y={zy-2} textAnchor="middle" fill={isS?z.c:"#c8b890"}
+              fontSize="9" fontFamily="'Cinzel',serif" fontWeight={isS?"bold":"normal"}>{z.l.slice(0,10)}</text>
+            <text x={zx} y={zy+9} textAnchor="middle" fill={isS?"#dd6633":"#8a7a60"}
+              fontSize="8">{z.a<=2?"⚠ Schwach":""}</text>
+          </g>
+        );
+      })}
+      {/* Center keep */}
+      <rect x={cx-25} y={cy-25} width="50" height="50" rx="4"
+        fill={`${ac}22`} stroke={`${ac}88`} strokeWidth="2.5"/>
+      <text x={cx} y={cy+5} textAnchor="middle" fill={ac} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KEEP</text>
+      {/* Compass */}
+      <g transform={`translate(${W-36},36)`}>
+        <circle r="14" fill="rgba(0,0,0,0.5)" stroke={`${ac}40`} strokeWidth="1"/>
+        {[["N",0,"#f0e6cc"],["S",180,"#c8b890"],["O",90,"#c8b890"],["W",270,"#c8b890"]].map(([l,a,c])=>{
+          const rad=a*Math.PI/180;
+          return<text key={l} x={Math.sin(rad)*9} y={-Math.cos(rad)*9+3.5}
+            textAnchor="middle" fill={c} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
+        })}
+      </g>
+    </svg>
+  );
+}
+
+// ── Pan+Zoom Floor Plan Container ───────────────────────────────────────────
+function PanZoomFloorPlan({children, accent, height=540, style={}}){
+  const containerRef=useRef(null);
+  const [tr,setTr]=useState({x:0,y:0,s:1});
+  const drag=useRef(null);
+  const didMove=useRef(false);
+
+  const clampTr=(x,y,s,w,h)=>{
+    const minX=w-w*s; const minY=h-h*s;
+    return{x:Math.min(0,Math.max(minX,x)),y:Math.min(0,Math.max(minY,y)),s};
+  };
+
+  const onWheel=useCallback((e)=>{
+    e.preventDefault();
+    const rect=containerRef.current.getBoundingClientRect();
+    const cx=e.clientX-rect.left; const cy=e.clientY-rect.top;
+    const delta=e.deltaY<0?1.15:1/1.15;
+    setTr(t=>{
+      const ns=Math.min(8,Math.max(0.5,t.s*delta));
+      const nx=cx-(cx-t.x)*(ns/t.s);
+      const ny=cy-(cy-t.y)*(ns/t.s);
+      return clampTr(nx,ny,ns,rect.width,rect.height);
+    });
+  },[]);
+
+  useEffect(()=>{
+    const el=containerRef.current;
+    if(!el)return;
+    el.addEventListener("wheel",onWheel,{passive:false});
+    return()=>el.removeEventListener("wheel",onWheel);
+  },[onWheel]);
+
+  const onMouseDown=useCallback((e)=>{
+    if(e.button!==0)return;
+    drag.current={sx:e.clientX,sy:e.clientY,tx:tr.x,ty:tr.y};
+    didMove.current=false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  },[tr]);
+
+  const onMouseMove=useCallback((e)=>{
+    if(!drag.current)return;
+    const dx=e.clientX-drag.current.sx; const dy=e.clientY-drag.current.sy;
+    if(!didMove.current&&(Math.abs(dx)>3||Math.abs(dy)>3))didMove.current=true;
+    if(!didMove.current)return;
+    const rect=containerRef.current.getBoundingClientRect();
+    setTr(t=>clampTr(drag.current.tx+dx,drag.current.ty+dy,t.s,rect.width,rect.height));
+  },[]);
+
+  const onMouseUp=useCallback(()=>{drag.current=null;},[]);
+
+  const onClickCapture=useCallback((e)=>{if(didMove.current)e.stopPropagation();},[]);
+
+  const btnStyle=(extra={})=>({
+    width:"30px",height:"30px",display:"flex",alignItems:"center",justifyContent:"center",
+    background:"rgba(10,8,5,0.85)",border:`1px solid ${accent}40`,
+    borderRadius:"6px",color:accent,cursor:"pointer",fontSize:"15px",
+    fontFamily:"'Cinzel',serif",transition:"all 0.15s",userSelect:"none",...extra
+  });
+
+  return(
+    <div ref={containerRef}
+      style={{position:"relative",...(height>0?{height:`${height}px`}:{flex:1,minHeight:0}),
+        background:"rgba(6,4,2,0.98)",border:`1px solid ${accent}28`,
+        borderRadius:"10px",overflow:"hidden",
+        boxShadow:`0 6px 32px rgba(0,0,0,0.75), inset 0 0 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6)`,
+        cursor:drag.current?"grabbing":"grab",...style}}
+      onMouseDown={onMouseDown} onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
+      onClickCapture={onClickCapture}>
+      <div style={{position:"absolute",top:0,left:0,
+        transform:`translate(${tr.x}px,${tr.y}px) scale(${tr.s})`,
+        transformOrigin:"0 0",width:"100%",height:"100%"}}>
+        {children}
+      </div>
+      {/* Controls overlay */}
+      <div style={{position:"absolute",bottom:"12px",right:"12px",
+        display:"flex",flexDirection:"column",gap:"5px",zIndex:10}}>
+        <button style={btnStyle()} title="Zoom in"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr(t=>{const ns=Math.min(8,t.s*1.3);const rect=containerRef.current.getBoundingClientRect();return clampTr(rect.width/2-(rect.width/2-t.x)*(ns/t.s),rect.height/2-(rect.height/2-t.y)*(ns/t.s),ns,rect.width,rect.height);})}>+</button>
+        <button style={btnStyle()} title="Zoom out"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr(t=>{const ns=Math.max(0.5,t.s/1.3);const rect=containerRef.current.getBoundingClientRect();return clampTr(rect.width/2-(rect.width/2-t.x)*(ns/t.s),rect.height/2-(rect.height/2-t.y)*(ns/t.s),ns,rect.width,rect.height);})}>−</button>
+        <button style={btnStyle()} title="Reset"
+          onMouseDown={e=>e.stopPropagation()}
+          onClick={()=>setTr({x:0,y:0,s:1})}>↺</button>
+        <div style={{textAlign:"center",fontSize:"9px",color:accent,fontFamily:"'Cinzel',serif",
+          background:"rgba(10,8,5,0.85)",border:`1px solid ${accent}30`,borderRadius:"5px",
+          padding:"3px 4px",lineHeight:1}}>{Math.round(tr.s*100)}%</div>
+      </div>
+    </div>
+  );
+}
+
 // ── Castle Map Tab ──────────────────────────────────────────────────────────
 function CastleMapTab({castle}){
   const sel=castle;
-  const [mapMode,setMapMode]=useState("plan");
-  const [zoom,setZoom]=useState(1);
-  const [selZone,setSelZone]=useState(null);
-  const [attackMode,setAttackMode]=useState(false);
-  const [viewMode,setViewMode]=useState("flat");
-  const selZ=sel.zones.find(z=>z.id===selZone);
-  const plan=CASTLE_PLANS[sel.id];
   return(
                   <div style={{animation:"fadeIn 0.2s ease"}}>
-                    {/* Sub-tab bar */}
-                    <div style={{display:"flex",gap:"6px",marginBottom:"12px",alignItems:"center"}}>
-                      {[{k:"plan",l:"🗺️ Grundriss"},{k:"lage",l:"📍 Historische Lage"}].map(t=>(
-                        <button key={t.k} onClick={()=>setMapMode(t.k)}
-                          style={{padding:"6px 14px",fontSize:"12px",
-                            background:mapMode===t.k?`${sel.theme.accent}14`:"rgba(255,255,255,0.02)",
-                            border:`1px solid ${mapMode===t.k?sel.theme.accent+"44":"rgba(255,255,255,0.07)"}`,
-                            color:mapMode===t.k?sel.theme.accent:"#6a5a38",
-                            borderRadius:"5px",cursor:"pointer"}}>
-                          {t.l}
-                        </button>
-                      ))}
-                      <div style={{marginLeft:"auto",display:"flex",gap:"5px",alignItems:"center"}}>
-                        <button onClick={()=>setAttackMode(a=>!a)}
-                          style={{padding:"5px 10px",fontSize:"11px",
-                            background:attackMode?"rgba(180,50,20,0.15)":"rgba(255,255,255,0.02)",
-                            border:`1px solid ${attackMode?"rgba(180,50,20,0.4)":"rgba(255,255,255,0.07)"}`,
-                            color:attackMode?"#cc5533":"#5a4a28",borderRadius:"4px",cursor:"pointer"}}>
-                          {attackMode?"⚔️ Angriff an":"⚔️ Angriff"}
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* GRUNDRISS MODE */}
-                    {mapMode==="plan"&&(
-                      <div className="map-detail-grid" style={{display:"grid",gridTemplateColumns:"1fr minmax(220px,280px)",gap:"14px"}}>
-                        {/* Left: SVG with zoom */}
-                        <div>
-                          {/* Zoom controls + 3D toggle */}
-                          <div style={{display:"flex",gap:"5px",marginBottom:"6px",alignItems:"center"}}>
-                            <span style={{fontSize:"11px",color:"#5a4a28"}}>🔍 Zoom:</span>
-                            {[{v:0.8,l:"−"},{v:1,l:"1×"},{v:1.5,l:"1.5×"},{v:2,l:"2×"},{v:2.5,l:"2.5×"}].map(z=>(
-                              <button key={z.v} onClick={()=>setZoom(z.v)}
-                                style={{padding:"2px 7px",fontSize:"11px",
-                                  background:zoom===z.v?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${zoom===z.v?"rgba(201,168,76,0.3)":"rgba(255,255,255,0.06)"}`,
-                                  color:zoom===z.v?"#c9a84c":"#5a4a28",borderRadius:"3px",cursor:"pointer"}}>
-                                {z.l}
-                              </button>
-                            ))}
-                            <div style={{marginLeft:"auto",display:"flex",gap:"4px",alignItems:"center"}}>
-                              <button onClick={()=>setViewMode(v=>v==="flat"?"iso":"flat")}
-                                style={{padding:"2px 9px",fontSize:"11px",
-                                  background:viewMode==="iso"?`${sel.theme.accent}18`:"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${viewMode==="iso"?sel.theme.accent+"55":"rgba(255,255,255,0.06)"}`,
-                                  color:viewMode==="iso"?sel.theme.accent:"#5a4a28",
-                                  borderRadius:"3px",cursor:"pointer",whiteSpace:"nowrap"}}>
-                                {viewMode==="iso"?"🏰 3D an":"🏰 3D"}
-                              </button>
-                              <span style={{fontSize:"10px",color:"#3a2a14"}}>
-                                {sel.zones.length} Zonen
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* SVG Container with overflow for zoom */}
-                          <div style={{
-                            background:"rgba(8,6,3,0.97)",
-                            border:`1px solid ${sel.theme.accent}18`,
-                            borderRadius:"8px",overflow:"hidden",
-                            boxShadow:`0 4px 24px rgba(0,0,0,0.6), inset 0 0 40px rgba(0,0,0,0.3)`}}>
-                            <div style={{
-                              overflow:"auto",
-                              maxHeight:"420px",
-                              cursor:zoom>1?"grab":"default"}}>
-                              <svg
-                                viewBox="0 0 220 200"
-                                style={{
-                                  width:`${220*zoom}px`,
-                                  height:`${200*zoom}px`,
-                                  display:"block",
-                                  minWidth:"100%",
-                                  transition:"width 0.3s ease, height 0.3s ease"}}>
-                                <defs>
-                                  <radialGradient id="bg_grad" cx="50%" cy="50%" r="60%">
-                                    <stop offset="0%" stopColor="#0e0a06"/>
-                                    <stop offset="100%" stopColor="#060402"/>
-                                  </radialGradient>
-                                </defs>
-                                <rect width="220" height="200" fill="url(#bg_grad)"/>
-                                {viewMode==="iso"
-                                  ? <IsoCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
-                                  : plan
-                                    ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-                                    : <GenericCastlePlan castle={sel} ac={sel.theme.accent} sel={selZone} onZone={setSelZone}/>
-                                }
-                                {/* Attack arrows overlay */}
-                                {attackMode&&sel.attackTips&&sel.zones.filter(z=>z.a<=2).map((z,i)=>(
-                                  <g key={z.id} style={{pointerEvents:"none"}}>
-                                    <circle cx={z.x*2.2} cy={z.y*2} r="8" fill="rgba(200,50,30,0.15)"
-                                      stroke="#cc4433" strokeWidth="1" strokeDasharray="3,2"/>
-                                    <text x={z.x*2.2} y={z.y*2+5} textAnchor="middle"
-                                      fill="#cc4433" fontSize="10">⚠</text>
-                                  </g>
-                                ))}
-                              </svg>
-                            </div>
-                          </div>
-
-                          {/* Zone pill buttons */}
-                          <div style={{display:"flex",flexWrap:"wrap",gap:"4px",marginTop:"8px"}}>
-                            {sel.zones.map(z=>(
-                              <button key={z.id} onClick={()=>setSelZone(selZone===z.id?null:z.id)}
-                                style={{padding:"3px 8px",fontSize:"10px",
-                                  background:selZone===z.id?`${z.c}22`:"rgba(255,255,255,0.02)",
-                                  border:`1px solid ${selZone===z.id?z.c+"66":"rgba(255,255,255,0.05)"}`,
-                                  color:selZone===z.id?z.c:"#5a4a28",
-                                  borderRadius:"10px",cursor:"pointer"}}>
-                                {z.l}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Right: Zone info panel */}
-                        <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
-                          {/* Selected zone detail */}
-                          {selZ?(
-                            <div style={{padding:"12px 14px",
-                              background:`${selZ.c}0e`,
-                              border:`1px solid ${selZ.c}33`,
-                              borderLeft:`4px solid ${selZ.c}`,
-                              borderRadius:"5px",animation:"fadeIn 0.15s ease"}}>
-                              <div style={{fontSize:"11px",color:selZ.c,letterSpacing:"2px",marginBottom:"6px",fontWeight:"bold"}}>
-                                {selZ.l.toUpperCase()}
-                              </div>
-                              <div style={{fontSize:"13px",color:"#9a8a68",lineHeight:1.8,marginBottom:"10px"}}>
-                                {selZ.d}
-                              </div>
-                              {/* Defence strength bar */}
-                              <div style={{marginBottom:"4px"}}>
-                                <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
-                                  <span style={{fontSize:"10px",color:"#5a4a28",letterSpacing:"1px"}}>VERTEIDIGUNGSWERT</span>
-                                  <span style={{fontSize:"11px",fontWeight:"bold",color:rCol(selZ.a*10+30)}}>{selZ.a}/6</span>
-                                </div>
-                                <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
-                                  <div style={{height:"100%",width:`${(selZ.a/6)*100}%`,
-                                    background:selZ.a>=5?"#6aaa50":selZ.a>=3?"#c9a84c":"#cc5533",
-                                    borderRadius:"3px",transition:"width 0.5s ease"}}/>
-                                </div>
-                              </div>
-                              {/* Tactical note */}
-                              {selZ.a<=2&&(
-                                <div style={{marginTop:"8px",padding:"6px 8px",
-                                  background:"rgba(180,50,20,0.08)",border:"1px solid rgba(180,50,20,0.2)",
-                                  borderRadius:"4px",fontSize:"11px",color:"#aa3322"}}>
-                                  ⚠️ Schwachstelle — Prioritätsziel für Angreifer
-                                </div>
-                              )}
-                              {selZ.a>=6&&(
-                                <div style={{marginTop:"8px",padding:"6px 8px",
-                                  background:"rgba(30,80,15,0.08)",border:"1px solid rgba(30,80,15,0.2)",
-                                  borderRadius:"4px",fontSize:"11px",color:"#4a8a30"}}>
-                                  🛡️ Stärkster Punkt — nahezu unüberwindbar
-                                </div>
-                              )}
-                            </div>
-                          ):(
-                            <div style={{padding:"12px 14px",background:"rgba(255,255,255,0.02)",
-                              border:"1px solid rgba(255,255,255,0.05)",borderRadius:"5px",
-                              textAlign:"center",color:"#3a2a14",fontSize:"12px",lineHeight:1.7}}>
-                              👆 Klicke auf einen Bereich im Grundriss<br/>
-                              oder wähle eine Zone unten
-                            </div>
-                          )}
-
-                          {/* All zones list */}
-                          <div style={{fontSize:"11px",color:"#5a4a28",letterSpacing:"1.5px",marginTop:"4px"}}>
-                            ALLE VERTEIDIGUNGSBEREICHE
-                          </div>
-                          {sel.zones.map(z=>(
-                            <div key={z.id}
-                              onClick={()=>setSelZone(selZone===z.id?null:z.id)}
-                              style={{padding:"8px 10px",cursor:"pointer",
-                                background:selZone===z.id?`${z.c}12`:"rgba(255,255,255,0.01)",
-                                border:`1px solid ${selZone===z.id?z.c+"44":"rgba(255,255,255,0.04)"}`,
-                                borderLeft:`3px solid ${z.c}`,
-                                borderRadius:"4px",transition:"all 0.15s"}}>
-                              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"3px"}}>
-                                <div style={{fontSize:"12px",fontWeight:"bold",color:selZone===z.id?z.c:"#7a6a48"}}>
-                                  {z.l}
-                                </div>
-                                <div style={{display:"flex",gap:"1px"}}>
-                                  {Array.from({length:6},(_,i)=>(
-                                    <div key={i} style={{width:"5px",height:"5px",borderRadius:"1px",
-                                      background:i<z.a
-                                        ?z.a<=2?"#cc5533":z.a<=4?"#c9a84c":"#6aaa50"
-                                        :"rgba(255,255,255,0.04)"}}/>
-                                  ))}
-                                </div>
-                              </div>
-                              {selZone===z.id&&(
-                                <div style={{fontSize:"11px",color:"#6a5a38",lineHeight:1.7,animation:"fadeIn 0.15s ease"}}>
-                                  {z.d}
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* LAGE MODE */}
-                    {mapMode==="lage"&&(
+                    {(
                       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"14px"}}>
                         {/* Location info */}
                         <div style={{display:"flex",flexDirection:"column",gap:"8px"}}>
@@ -2783,14 +5477,14 @@ function CastleMapTab({castle}){
                             <div style={{fontSize:"16px",fontWeight:"bold",color:"#f0e6cc",marginBottom:"2px"}}>{sel.name}</div>
                             <div style={{fontSize:"13px",color:sel.theme.accent,marginBottom:"4px"}}>{sel.sub}</div>
                             <div style={{fontSize:"12px",color:"#7a6a48"}}>{sel.loc}</div>
-                            <div style={{fontSize:"12px",color:"#6a5a38",marginTop:"2px"}}>{sel.era} · {sel.epoch}</div>
+                            <div style={{fontSize:"12px",color:"#9a8a6a",marginTop:"2px"}}>{sel.era} · {sel.epoch}</div>
                           </div>
 
                           {/* Strategic significance — terrain based */}
                           <div style={{padding:"12px 14px",background:"rgba(0,0,0,0.2)",
                             border:"1px solid rgba(255,255,255,0.05)",borderRadius:"5px"}}>
                             <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"2px",marginBottom:"8px"}}>⛰️ STRATEGISCHE LAGE</div>
-                            <div style={{fontSize:"13px",color:"#7a6a50",lineHeight:1.85}}>
+                            <div style={{fontSize:"13px",color:"#90a2cc",lineHeight:1.85}}>
                               {getTerrainDesc(sel)}
                             </div>
                           </div>
@@ -2807,7 +5501,7 @@ function CastleMapTab({castle}){
                             ].map(s=>(
                               <div key={s.l} style={{marginBottom:"7px"}}>
                                 <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
-                                  <span style={{fontSize:"11px",color:"#6a5a38"}}>{s.i} {s.l}</span>
+                                  <span style={{fontSize:"11px",color:"#9a8a6a"}}>{s.i} {s.l}</span>
                                   <span style={{fontSize:"11px",fontWeight:"bold",color:s.inv?rCol(100-s.v):rCol(s.v)}}>{s.v}</span>
                                 </div>
                                 <div style={{height:"4px",background:"rgba(255,255,255,0.04)",borderRadius:"2px",overflow:"hidden"}}>
@@ -2837,7 +5531,7 @@ function CastleMapTab({castle}){
                                     <span style={{fontSize:"14px"}}>{c.icon}</span>
                                     <div style={{flex:1}}>
                                       <div style={{fontSize:"12px",color:"#8a7a50"}}>{c.name}</div>
-                                      <div style={{fontSize:"10px",color:"#4a3a20"}}>{c.loc}</div>
+                                      <div style={{fontSize:"10px",color:"#8a7860"}}>{c.loc}</div>
                                     </div>
                                     <div style={{fontSize:"11px",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
                                   </div>
@@ -2865,7 +5559,7 @@ function CastleMapTab({castle}){
                               </div>
                             );
                           })():(
-                            <div style={{padding:"40px",textAlign:"center",color:"#4a3a20",fontSize:"12px",
+                            <div style={{padding:"40px",textAlign:"center",color:"#8a7860",fontSize:"12px",
                               background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"8px"}}>
                               Keine Kartendaten verfügbar
                             </div>
@@ -2874,7 +5568,7 @@ function CastleMapTab({castle}){
                           {GEO[sel.id]&&(
                             <div style={{marginTop:"8px",padding:"7px 12px",
                               background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",
-                              borderRadius:"4px",fontSize:"11px",color:"#4a3a20",fontFamily:"monospace"}}>
+                              borderRadius:"4px",fontSize:"11px",color:"#8a7860",fontFamily:"monospace"}}>
                               {(()=>{const g=GEO[sel.id];const lon=((g.x/1000*360)-180).toFixed(2);const lat=(90-(g.y/500*180)).toFixed(2);return`${lat}°N ${lon}°E · ${sel.loc}`;})()}
                             </div>
                           )}
@@ -2882,7 +5576,7 @@ function CastleMapTab({castle}){
                       </div>
                     )}
                   </div>
-);
+  );
 }
 
 
@@ -3462,7 +6156,7 @@ function FantasyMap({castles,onSelect,selected}){
             </div>
             <div style={{textAlign:"center",padding:"5px 10px",background:"rgba(0,0,0,0.3)",borderRadius:"4px"}}>
               <div style={{fontSize:"19px",fontWeight:"bold",color:rCol(avg(c))}}>{avg(c)}</div>
-              <div style={{fontSize:"8px",color:"#4a3a20",letterSpacing:"1px"}}>SCORE</div>
+              <div style={{fontSize:"8px",color:"#8a7860",letterSpacing:"1px"}}>SCORE</div>
             </div>
           </div>
         );
@@ -3595,7 +6289,7 @@ function SorrowlandMap({castles,onSelect,selected}){
               <div style={{fontSize:"11px",color:c.theme.accent,marginTop:"1px"}}>{c.sub}</div>
               <div style={{fontSize:"10px",color:"#5a4a38",marginTop:"1px"}}>{c.era}</div>
             </div>
-            <div style={{fontSize:"11px",color:"#6a5a38",textAlign:"right",maxWidth:"160px",lineHeight:1.5}}>
+            <div style={{fontSize:"11px",color:"#9a8a6a",textAlign:"right",maxWidth:"160px",lineHeight:1.5}}>
               {c.desc.slice(0,80)}…
             </div>
           </div>
@@ -3793,95 +6487,164 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
     const [maxK,maxV]=rEntries.reduce((a,b)=>a[1]>b[1]?a:b);
     const [minK,minV]=rEntries.reduce((a,b)=>a[1]<b[1]?a:b);
     const RLBL={walls:"Mauern",position:"Lage",supply:"Versorg.",garrison:"Garnison",morale:"Moral"};
+    const scoreColor=rCol(sc);
     return(
       <button onClick={()=>onSelect(c)} onMouseEnter={()=>setHov(c.id)} onMouseLeave={()=>setHov(null)}
         style={{textAlign:"left",padding:0,background:"transparent",border:"none",cursor:"pointer",display:"block",width:"100%"}}>
         <div className="castle-card" style={{
           position:"relative",overflow:"hidden",
-          background:isH?`linear-gradient(145deg,${c.theme.bg} 0%,rgba(8,6,4,0.97) 70%)`:"rgba(255,255,255,0.03)",
-          border:`1px solid ${isH?ac+"50":"rgba(255,255,255,0.08)"}`,
-          borderRadius:"12px",
-          boxShadow:isH?`0 12px 40px rgba(0,0,0,0.7),0 0 0 1px ${ac}1a,inset 0 1px 0 ${ac}20`:"0 2px 8px rgba(0,0,0,0.4)",
+          background:isH
+            ?`linear-gradient(145deg,${c.theme.bg} 0%,rgba(10,8,5,0.97) 65%,rgba(6,4,2,0.99) 100%)`
+            :"linear-gradient(145deg,rgba(255,255,255,0.028),rgba(255,255,255,0.012))",
+          border:`1px solid ${isH?ac+"65":"rgba(255,255,255,0.07)"}`,
+          borderRadius:"14px",
+          boxShadow:isH
+            ?`0 16px 48px rgba(0,0,0,0.75),0 0 0 1px ${ac}22,0 4px 24px ${ac}18,inset 0 1px 0 ${ac}25`
+            :"0 2px 10px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.02)",
         }}>
-          {/* Top accent bar */}
-          <div style={{height:"3px",background:`linear-gradient(90deg,${ac} 0%,${ac}66 50%,transparent 100%)`,opacity:isH?1:0.35,transition:"opacity .2s"}}/>
+          {/* Top accent bar — thicker and more vivid on hover */}
+          <div style={{
+            height:"3px",
+            background:`linear-gradient(90deg,${ac} 0%,${ac}88 45%,${ac}22 80%,transparent 100%)`,
+            opacity:isH?1:0.28,
+            transition:"opacity .25s ease, height .25s ease",
+          }}/>
 
-          <div style={{display:"flex",padding:"12px",gap:"12px",alignItems:"center"}}>
+          {/* Hover glow overlay */}
+          {isH&&<div style={{
+            position:"absolute",top:0,left:0,right:0,height:"60%",pointerEvents:"none",
+            background:`radial-gradient(ellipse at 20% 0%,${ac}12,transparent 60%)`,
+          }}/>}
+
+          <div style={{display:"flex",padding:"13px",gap:"12px",alignItems:"center"}}>
             {/* Icon bubble */}
             <div style={{
-              width:"52px",height:"52px",flexShrink:0,borderRadius:"12px",
-              background:isH?`radial-gradient(circle at 40% 40%,${ac}28,${c.theme.bg}88)`:`rgba(255,255,255,0.04)`,
-              border:`1px solid ${isH?ac+"30":"rgba(255,255,255,0.06)"}`,
+              width:"54px",height:"54px",flexShrink:0,borderRadius:"13px",
+              background:isH
+                ?`radial-gradient(circle at 35% 35%,${ac}32,${c.theme.bg}aa)`
+                :`linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))`,
+              border:`1px solid ${isH?ac+"45":"rgba(255,255,255,0.07)"}`,
               display:"flex",alignItems:"center",justifyContent:"center",
-              transition:"all .2s",
+              transition:"all .25s ease",
+              boxShadow:isH?`0 4px 16px ${ac}30,inset 0 1px 0 rgba(255,255,255,0.1)`:"none",
             }}>
-              <span style={{fontSize:"26px",filter:isH?`drop-shadow(0 0 10px ${ac}99)`:"none",transition:"filter .2s"}}>{c.icon}</span>
+              <span style={{
+                fontSize:"27px",
+                filter:isH?`drop-shadow(0 2px 10px ${ac}cc)`:"drop-shadow(0 1px 2px rgba(0,0,0,0.5))",
+                transition:"filter .25s ease, transform .25s ease",
+                transform:isH?"scale(1.12)":"scale(1)",
+                display:"block",
+              }}>{c.icon}</span>
             </div>
 
             {/* Main content */}
             <div style={{flex:1,minWidth:0}}>
               {/* Name row */}
-              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"6px",marginBottom:"2px"}}>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"14px",fontWeight:"700",
-                  color:isH?"#f5edd8":"#c8b87a",letterSpacing:"0.02em",
+              <div style={{display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:"6px",marginBottom:"3px"}}>
+                <div style={{
+                  fontFamily:"'Cinzel',serif",fontSize:"13.5px",fontWeight:"700",
+                  color:isH?"#f6eedd":"#b0a068",
+                  letterSpacing:"0.03em",
                   overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",flex:1,
-                  textShadow:isH?`0 0 20px ${ac}55`:"none",transition:"text-shadow .2s",
+                  textShadow:isH?`0 0 22px ${ac}66`:"none",
+                  transition:"color .2s ease, text-shadow .2s ease",
                 }}>{c.name}</div>
                 <div style={{display:"flex",gap:"4px",alignItems:"center",flexShrink:0}}>
-                  <span style={{fontSize:"8px",padding:"2px 7px",borderRadius:"20px",letterSpacing:"0.8px",
-                    background:c.type==="real"?"rgba(40,80,20,0.4)":"rgba(60,30,100,0.4)",
-                    border:`1px solid ${c.type==="real"?"rgba(70,140,35,0.35)":"rgba(100,50,170,0.35)"}`,
-                    color:c.type==="real"?"#6aba40":"#a066dd",fontFamily:"'Cinzel',serif",
+                  {/* Type badge */}
+                  <span style={{
+                    fontSize:"8px",padding:"2px 7px",borderRadius:"20px",letterSpacing:"1px",
+                    background:c.type==="real"
+                      ?"linear-gradient(135deg,rgba(50,100,25,0.5),rgba(35,70,18,0.4))"
+                      :"linear-gradient(135deg,rgba(70,35,120,0.5),rgba(50,25,90,0.4))",
+                    border:`1px solid ${c.type==="real"?"rgba(80,160,40,0.4)":"rgba(120,60,200,0.4)"}`,
+                    color:c.type==="real"?"#74cc44":"#b07aee",
+                    fontFamily:"'Cinzel',serif",
+                    boxShadow:isH&&c.type==="real"?"0 0 8px rgba(80,180,40,0.2)":isH?"0 0 8px rgba(130,70,220,0.2)":"none",
                   }}>{c.type==="real"?"HIST.":"FAN."}</span>
                   <button onClick={e=>{e.stopPropagation();onFavToggle&&onFavToggle(c.id);}}
-                    style={{background:"transparent",border:"none",cursor:"pointer",
-                      fontSize:"13px",lineHeight:1,padding:"1px",
-                      opacity:isFav?1:isH?0.4:0.12,transition:"opacity .15s",
-                      color:isFav?"#f0c040":"#a09060"}}>
+                    style={{
+                      background:"transparent",border:"none",cursor:"pointer",
+                      fontSize:"13px",lineHeight:1,padding:"2px",
+                      opacity:isFav?1:isH?0.5:0.15,
+                      transition:"opacity .15s, transform .15s",
+                      color:isFav?"#f0c040":"#c0a060",
+                      transform:isFav?"scale(1.15)":"scale(1)",
+                    }}>
                     {isFav?"⭐":"☆"}
                   </button>
                 </div>
               </div>
 
               {/* Sub */}
-              <div style={{fontSize:"11px",color:isH?ac+"cc":"#5a4828",
-                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"2px"}}>{c.sub}</div>
+              <div style={{
+                fontSize:"11px",
+                color:isH?`${ac}dd`:"#4e3e22",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+                marginBottom:"2px",
+                transition:"color .2s ease",
+              }}>{c.sub}</div>
 
               {/* Meta */}
-              <div style={{fontSize:"10px",color:"#3e3018",
-                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginBottom:"7px"}}>{c.era} · {c.loc}</div>
+              <div style={{
+                fontSize:"10px",
+                color:isH?"#5a4e34":"#322818",
+                overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",
+                marginBottom:"8px",
+                transition:"color .2s ease",
+              }}>{c.era} · {c.loc}</div>
 
               {/* Stats row */}
-              <div style={{display:"flex",gap:"8px",alignItems:"center"}}>
-                <div style={{flex:1,display:"flex",flexDirection:"column",gap:"3px"}}>
+              <div style={{display:"flex",gap:"9px",alignItems:"center"}}>
+                <div style={{flex:1,display:"flex",flexDirection:"column",gap:"4px"}}>
+                  {/* Best stat */}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:"9px",color:isH?ac+"99":"#4a3820",letterSpacing:"0.5px"}}>▲ {RLBL[maxK]}</span>
-                    <span style={{fontSize:"9px",fontFamily:"monospace",color:isH?"#88cc44":"#486618",fontWeight:"bold"}}>{maxV}</span>
+                    <span style={{fontSize:"9px",color:isH?`${ac}cc`:"#4a3820",letterSpacing:"0.5px"}}>
+                      ▲ {RLBL[maxK]}
+                    </span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:isH?"#90d845":"#506a22",fontWeight:"bold"}}>{maxV}</span>
                   </div>
-                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
-                    <div style={{height:"100%",width:`${maxV}%`,borderRadius:"1px",
-                      background:`linear-gradient(90deg,${ac},${ac}55)`,transition:"width .4s"}}/>
+                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                    <div style={{
+                      height:"100%",width:`${maxV}%`,borderRadius:"2px",
+                      background:isH?`linear-gradient(90deg,${ac},${ac}66)`:"linear-gradient(90deg,rgba(201,168,76,0.6),rgba(201,168,76,0.3))",
+                      transition:"width .5s ease, background .25s",
+                      boxShadow:isH?`0 0 6px ${ac}66`:"none",
+                    }}/>
                   </div>
+                  {/* Worst stat */}
                   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                    <span style={{fontSize:"9px",color:"#3a2810",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
-                    <span style={{fontSize:"9px",fontFamily:"monospace",color:"#774422"}}>{minV}</span>
+                    <span style={{fontSize:"9px",color:"#8a7060",letterSpacing:"0.5px"}}>▼ {RLBL[minK]}</span>
+                    <span style={{fontSize:"9px",fontFamily:"monospace",color:"#7a3a20"}}>{minV}</span>
                   </div>
-                  <div style={{height:"2px",background:"rgba(255,255,255,0.06)",borderRadius:"1px"}}>
-                    <div style={{height:"100%",width:`${minV}%`,borderRadius:"1px",background:"rgba(180,80,40,0.6)",transition:"width .4s"}}/>
+                  <div style={{height:"3px",background:"rgba(255,255,255,0.06)",borderRadius:"2px",overflow:"hidden"}}>
+                    <div style={{
+                      height:"100%",width:`${minV}%`,borderRadius:"2px",
+                      background:"rgba(180,70,35,0.55)",
+                      transition:"width .5s ease",
+                    }}/>
                   </div>
                 </div>
 
                 {/* Score ring */}
-                <div style={{flexShrink:0,position:"relative",width:"36px",height:"36px"}}>
-                  <svg width="36" height="36" viewBox="0 0 36 36">
-                    <circle cx="18" cy="18" r="14" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="2.5"/>
-                    <circle cx="18" cy="18" r="14" fill="none" stroke={rCol(sc)} strokeWidth="2.5"
-                      strokeDasharray={`${sc*0.879} 87.9`} strokeLinecap="round"
-                      transform="rotate(-90 18 18)"/>
+                <div style={{flexShrink:0,position:"relative",width:"40px",height:"40px"}}>
+                  <svg width="40" height="40" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3"/>
+                    <circle cx="20" cy="20" r="16" fill="none" stroke={scoreColor} strokeWidth="3"
+                      strokeDasharray={`${sc*1.005} 100.5`} strokeLinecap="round"
+                      transform="rotate(-90 20 20)"
+                      style={{filter:isH?`drop-shadow(0 0 4px ${scoreColor}88)`:"none",transition:"filter .25s"}}
+                    />
                   </svg>
-                  <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
-                    alignItems:"center",justifyContent:"center",gap:"0px"}}>
-                    <span style={{fontSize:"10px",fontWeight:"bold",color:rCol(sc),fontFamily:"monospace",lineHeight:1}}>{sc}</span>
+                  <div style={{
+                    position:"absolute",inset:0,display:"flex",flexDirection:"column",
+                    alignItems:"center",justifyContent:"center",
+                  }}>
+                    <span style={{
+                      fontSize:"11px",fontWeight:"800",color:scoreColor,
+                      fontFamily:"'Cinzel',serif",lineHeight:1,
+                      textShadow:isH?`0 0 8px ${scoreColor}88`:"none",
+                      transition:"text-shadow .25s",
+                    }}>{sc}</span>
                     {hs&&<span style={{fontSize:"8px",lineHeight:1,marginTop:"1px"}}>{hs.won?"✅":"❌"}</span>}
                   </div>
                 </div>
@@ -3896,62 +6659,105 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
   const RCOL={europa:"#7788bb",nahost:"#cc9944",ostasien:"#dd6644",suedostasien:"#66bb55",suedamerika:"#cc7722",mittelerde:"#8855cc",westeros:"#44aacc"};
 
   return(
-    <div className="castle-outer" style={{padding:"16px 20px"}}>
+    <div className="castle-outer" style={{padding:"18px 22px"}}>
       {/* ── FILTER BAR ── */}
       <div className="filter-bar" style={{
-        marginBottom:"20px",
-        background:"rgba(12,9,6,0.92)",
-        backdropFilter:"blur(12px)",
-        border:"1px solid rgba(201,168,76,0.14)",
-        borderRadius:"14px",
-        padding:"14px 16px",
-        boxShadow:"0 6px 28px rgba(0,0,0,0.55)",
+        marginBottom:"22px",
+        background:"linear-gradient(145deg,rgba(14,10,6,0.96),rgba(10,8,5,0.94))",
+        backdropFilter:"blur(16px)",
+        WebkitBackdropFilter:"blur(16px)",
+        border:"1px solid rgba(201,168,76,0.16)",
+        borderTop:"1px solid rgba(201,168,76,0.1)",
+        borderRadius:"16px",
+        padding:"14px 18px",
+        boxShadow:"0 8px 32px rgba(0,0,0,0.6),inset 0 1px 0 rgba(201,168,76,0.08)",
       }}>
         {/* Top row */}
-        <div style={{display:"flex",gap:"10px",alignItems:"center",marginBottom:"12px"}}>
-          <div>
-            <div style={{fontFamily:"'Cinzel',serif",fontSize:"13px",fontWeight:"600",color:"#e8d498",letterSpacing:"3px"}}>BURGENKATALOG</div>
-            <div style={{fontSize:"10px",color:"#4a3820",letterSpacing:"1px",marginTop:"2px"}}>{filtered.length} von {castles.length} Festungen</div>
+        <div style={{display:"flex",gap:"10px",alignItems:"center",marginBottom:"14px",flexWrap:"wrap"}}>
+          <div style={{flex:"1 1 auto",minWidth:0}}>
+            <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",color:"#d4bc78",letterSpacing:"3.5px"}}>
+              BURGENKATALOG
+            </div>
+            <div style={{fontSize:"10px",color:"#8a7a5a",letterSpacing:"1.5px",marginTop:"2px"}}>
+              <span style={{color:"#c9a84c",fontWeight:"bold"}}>{filtered.length}</span>
+              <span style={{color:"#7a6a4a"}}> von {castles.length} Festungen</span>
+            </div>
           </div>
-          <div style={{flex:1}}/>
-          <div style={{position:"relative"}}>
-            <span style={{position:"absolute",left:"11px",top:"50%",transform:"translateY(-50%)",fontSize:"12px",pointerEvents:"none",opacity:0.5}}>🔍</span>
-            <input value={search} onChange={e=>setSearch(e.target.value)}
-              placeholder="Suchen…"
-              style={{padding:"7px 14px 7px 32px",background:"rgba(255,255,255,0.06)",
-                border:"1px solid rgba(255,255,255,0.1)",borderRadius:"20px",
-                color:"#c0a870",fontSize:"12px",outline:"none",width:"150px",fontFamily:"inherit"}}/>
+          {/* Search */}
+          <div style={{position:"relative",flexShrink:0}}>
+            <span style={{
+              position:"absolute",left:"11px",top:"50%",transform:"translateY(-50%)",
+              fontSize:"12px",pointerEvents:"none",opacity:0.5,
+            }}>🔍</span>
+            <input
+              className="search-input"
+              value={search} onChange={e=>setSearch(e.target.value)}
+              placeholder="Burg suchen…"
+              style={{
+                padding:"7px 14px 7px 32px",
+                background:"rgba(255,255,255,0.06)",
+                border:"1px solid rgba(201,168,76,0.22)",
+                borderRadius:"20px",
+                color:"#c8b07a",fontSize:"12px",outline:"none",
+                width:"140px",
+                fontFamily:"inherit",
+                transition:"width .25s ease, border-color .2s, box-shadow .2s",
+              }}
+              onFocus={e=>e.target.style.width="180px"}
+              onBlur={e=>e.target.style.width="140px"}
+            />
           </div>
         </div>
-        {/* Filter pills */}
+
+        {/* Filter pills row */}
         <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
+          {/* Type filters */}
           {[{k:"all",l:"Alle"},{k:"real",l:"⚜ Historisch"},{k:"fantasy",l:"✦ Fantasy"}].map(f=>(
-            <button key={f.k} onClick={()=>setFilter(f.k)} style={{
-              padding:"5px 13px",fontSize:"11px",letterSpacing:"0.5px",
-              background:filter===f.k?"rgba(201,168,76,0.15)":"rgba(255,255,255,0.04)",
-              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.08)"}`,
-              color:filter===f.k?"#d4aa56":"#5a4a30",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+            <button key={f.k} onClick={()=>setFilter(f.k)} className="filter-pill" style={{
+              background:filter===f.k
+                ?"linear-gradient(135deg,rgba(201,168,76,0.25),rgba(201,168,76,0.12))"
+                :"rgba(255,255,255,0.07)",
+              border:`1px solid ${filter===f.k?"rgba(201,168,76,0.6)":"rgba(255,255,255,0.14)"}`,
+              color:filter===f.k?"#e0c070":"#c0aa80",
+              fontFamily:"inherit",
+              boxShadow:filter===f.k?"0 2px 14px rgba(201,168,76,0.25)":"none",
+            }}>
               {f.l}
             </button>
           ))}
-          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
-          <select value={epochFilter} onChange={e=>setEpochFilter(e.target.value)}
-            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
-              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
-            <option value="">Alle Epochen</option>{epochs.map(e=><option key={e} value={e}>{e}</option>)}
-          </select>
-          <select value={regionFilter} onChange={e=>setRegionFilter(e.target.value)}
-            style={{padding:"5px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(255,255,255,0.08)",
-              color:"#6a5a38",fontSize:"11px",borderRadius:"20px",outline:"none",fontFamily:"inherit",cursor:"pointer"}}>
-            <option value="">Alle Regionen</option>{regions.map(r=><option key={r} value={r}>{REGION_LABELS[r]||r}</option>)}
-          </select>
-          <div style={{width:"1px",height:"20px",background:"rgba(255,255,255,0.07)",margin:"0 2px"}}/>
+
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(201,168,76,0.35),transparent)",margin:"0 2px"}}/>
+
+          {/* Epoch & Region selects */}
+          {[
+            {value:epochFilter,onChange:e=>setEpochFilter(e.target.value),opts:[{v:"",l:"Alle Epochen"},...epochs.map(e=>({v:e,l:e}))]},
+            {value:regionFilter,onChange:e=>setRegionFilter(e.target.value),opts:[{v:"",l:"Alle Regionen"},...regions.map(r=>({v:r,l:REGION_LABELS[r]||r}))]},
+          ].map((sel,i)=>(
+            <select key={i} value={sel.value} onChange={sel.onChange} style={{
+              padding:"6px 12px",
+              background:"rgba(255,255,255,0.07)",
+              border:"1px solid rgba(255,255,255,0.14)",
+              color:"#b0a080",fontSize:"11px",borderRadius:"20px",
+              outline:"none",fontFamily:"inherit",cursor:"pointer",
+              transition:"border-color .18s",
+            }}>
+              {sel.opts.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}
+            </select>
+          ))}
+
+          <div style={{width:"1px",height:"22px",background:"linear-gradient(180deg,transparent,rgba(138,173,255,0.3),transparent)",margin:"0 2px"}}/>
+
+          {/* Sort buttons */}
           {[{k:"default",l:"🗺 Karte"},{k:"score",l:"↓ Score"},{k:"epoch",l:"Epoche"},{k:"name",l:"A–Z"},{k:"favs",l:`⭐ ${favs.size}`}].map(s=>(
-            <button key={s.k} onClick={()=>setSortBy(s.k)} style={{
-              padding:"5px 11px",fontSize:"11px",
-              background:sortBy===s.k?"rgba(201,168,76,0.1)":"rgba(255,255,255,0.03)",
-              border:`1px solid ${sortBy===s.k?"rgba(201,168,76,0.32)":"rgba(255,255,255,0.05)"}`,
-              color:sortBy===s.k?"#c9a84c":"#4a3a20",borderRadius:"20px",cursor:"pointer",fontFamily:"inherit"}}>
+            <button key={s.k} onClick={()=>setSortBy(s.k)} className="filter-pill" style={{
+              background:sortBy===s.k
+                ?"linear-gradient(135deg,rgba(111,138,255,0.22),rgba(66,216,207,0.14))"
+                :"rgba(255,255,255,0.07)",
+              border:`1px solid ${sortBy===s.k?"rgba(138,173,255,0.5)":"rgba(255,255,255,0.14)"}`,
+              color:sortBy===s.k?"#c8dcff":"#a8a898",
+              fontFamily:"inherit",
+              boxShadow:sortBy===s.k?"0 2px 14px rgba(111,138,255,0.2)":"none",
+            }}>
               {s.l}
             </button>
           ))}
@@ -3963,21 +6769,34 @@ function CastleGrid({castles,onSelect,scores,filter,setFilter,epochFilter,setEpo
         ? Object.entries(grouped)
             .sort(([a],[b])=>{const o=["europa","nahost","ostasien","suedostasien","suedamerika","mittelerde","westeros"];return(o.indexOf(a)>=0?o.indexOf(a):99)-(o.indexOf(b)>=0?o.indexOf(b):99);})
             .map(([region,cards])=>(
-          <div key={region} style={{marginBottom:"32px"}}>
-            {/* Region header */}
-            <div style={{display:"flex",alignItems:"center",gap:"14px",marginBottom:"14px"}}>
-              <div style={{width:"3px",height:"32px",borderRadius:"2px",flexShrink:0,
-                background:`linear-gradient(180deg,${RCOL[region]||"#c9a84c"} 0%,transparent 100%)`}}/>
+          <div key={region} style={{marginBottom:"36px"}}>
+            {/* Region header — improved */}
+            <div className="region-bar" style={{
+              borderLeftColor:RCOL[region]||"#c9a84c",
+              marginBottom:"16px",
+            }}>
+              <div style={{
+                width:"28px",height:"28px",borderRadius:"8px",flexShrink:0,
+                background:`linear-gradient(135deg,${RCOL[region]||"#c9a84c"}28,${RCOL[region]||"#c9a84c"}10)`,
+                border:`1px solid ${RCOL[region]||"#c9a84c"}40`,
+                display:"flex",alignItems:"center",justifyContent:"center",
+                fontSize:"14px",
+              }}>
+                {region==="europa"?"🏰":region==="nahost"?"🕌":region==="ostasien"?"⛩️":region==="suedostasien"?"🌿":region==="suedamerika"?"🌄":region==="mittelerde"?"🧙":"⚔️"}
+              </div>
               <div>
-                <div style={{fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",
-                  color:RCOL[region]||"#c9a84c",letterSpacing:"3px",textTransform:"uppercase"}}>
+                <div style={{
+                  fontFamily:"'Cinzel',serif",fontSize:"12px",fontWeight:"700",
+                  color:RCOL[region]||"#c9a84c",letterSpacing:"3px",textTransform:"uppercase",
+                  textShadow:`0 0 16px ${RCOL[region]||"#c9a84c"}55`,
+                }}>
                   {REGION_LABELS[region]||region}
                 </div>
-                <div style={{fontSize:"9px",color:"#3a2a10",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
+                <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"2px",marginTop:"2px",fontFamily:"monospace"}}>
                   {cards.length} FESTUNG{cards.length!==1?"EN":""}
                 </div>
               </div>
-              <div style={{flex:1,height:"1px",background:`linear-gradient(90deg,${RCOL[region]||"#c9a84c"}55 0%,transparent 100%)`}}/>
+              <div style={{flex:1,height:"1px",background:`linear-gradient(90deg,${RCOL[region]||"#c9a84c"}44,transparent)`}}/>
             </div>
             <div className="castle-grid" style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:"10px"}}>
               {cards.map(c=><CastleCard key={c.id} c={c}/>)}
@@ -4324,7 +7143,7 @@ Nach 5-9 Zügen bei guter Strategie: "**[GEFALLEN]**", bei schlechter: "**[GEHAL
             </div>}
           </button>
         )}
-        <div style={{display:"flex",gap:"3px",flexWrap:"wrap",marginBottom:"6px"}}>{qas.map((q,i)=><button key={i} onClick={()=>setInput(q)} style={{fontSize:"12px",padding:"2px 7px",background:"rgba(201,168,76,0.03)",border:"1px solid rgba(201,168,76,0.09)",color:"#3a2a16",borderRadius:"8px",cursor:"pointer"}}>{q.slice(0,32)}…</button>)}</div>
+        <div style={{display:"flex",gap:"3px",flexWrap:"wrap",marginBottom:"6px"}}>{qas.map((q,i)=><button key={i} onClick={()=>setInput(q)} style={{fontSize:"12px",padding:"2px 7px",background:"rgba(201,168,76,0.03)",border:"1px solid rgba(201,168,76,0.09)",color:"#8a7a60",borderRadius:"8px",cursor:"pointer"}}>{q.slice(0,32)}…</button>)}</div>
         <div style={{display:"flex",gap:"5px"}}>
           <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&send()} placeholder="Dein Angriffszug…" style={{flex:1,padding:"7px 10px",background:"rgba(255,255,255,0.04)",border:"1px solid rgba(201,168,76,0.13)",borderRadius:"4px",color:"#e8d8b0",fontSize:"14px",outline:"none",fontFamily:"inherit"}}/>
           <button onClick={send} disabled={loading||!input.trim()} style={{padding:"7px 12px",background:input.trim()&&!loading?"rgba(130,35,8,.18)":"rgba(255,255,255,.02)",border:`1px solid ${input.trim()&&!loading?"rgba(130,35,8,.36)":"rgba(255,255,255,.05)"}`,color:input.trim()&&!loading?"#cc5533":"#1a0e08",borderRadius:"4px",cursor:"pointer",fontSize:"13px"}}>⚔</button>
@@ -4534,11 +7353,11 @@ function SiegeSimulator({castle,onScore,general,season}){
   };
   return(
     <div>
-      <div style={{padding:"9px 12px",background:"rgba(130,60,8,.07)",border:"1px solid rgba(130,60,8,.16)",borderRadius:"4px",marginBottom:"12px",fontSize:"14px",color:"#7a6038",lineHeight:1.7}}>
-        <strong style={{color:"#c9a84c",display:"block",marginBottom:"1px"}}>⚔️ SIMULATOR · {TOTAL_RES} PUNKTE</strong>{castle.siegeCtx}
+      <div style={{padding:"10px 13px",background:"rgba(130,60,8,.1)",border:"1px solid rgba(180,90,20,.22)",borderRadius:"6px",marginBottom:"12px",fontSize:"13px",color:"#b09060",lineHeight:1.75}}>
+        <strong style={{color:"#c9a84c",display:"block",marginBottom:"3px",fontSize:"11px",letterSpacing:"2px"}}>⚔️ BELAGERUNGSSZENARIO · {TOTAL_RES} PUNKTE</strong>{castle.siegeCtx}
       </div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"10px"}}>
-        <span style={{fontSize:"11px",color:"#9a8a68",letterSpacing:"2px"}}>RESSOURCEN VERTEILEN</span>
+        <span style={{fontSize:"11px",color:"#b09a72",letterSpacing:"2.5px",fontFamily:"'Cinzel',serif"}}>RESSOURCEN VERTEILEN</span>
         <span style={{fontSize:"15px",fontWeight:"bold",color:used===TOTAL_RES?"#8aaa68":"#c9a84c"}}>{used}/{TOTAL_RES}</span>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"5px",marginBottom:"12px"}}>
@@ -4546,22 +7365,38 @@ function SiegeSimulator({castle,onScore,general,season}){
           const seasonBonus=season?.bonuses?.[k]||0,seasonPen=season?.penalties?.[k]||0;
           const genBonus=general?.bonus?.[k]||0;
           return(
-            <div key={k} style={{padding:"7px 9px",background:"rgba(255,255,255,.016)",border:`1px solid ${alloc[k]>0?`${r.c}28`:"rgba(255,255,255,.03)"}`,borderRadius:"3px"}}>
-              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"4px"}}>
-                <div style={{fontSize:"12px",color:alloc[k]>0?r.c:"#2a1a14"}}>{r.i} {r.l}</div>
+            <div key={k} style={{
+              padding:"8px 10px",
+              background:alloc[k]>0?`${r.c}0d`:"rgba(255,255,255,.022)",
+              border:`1px solid ${alloc[k]>0?`${r.c}35`:"rgba(255,255,255,.06)"}`,
+              borderRadius:"6px",
+              transition:"all .15s ease",
+            }}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:"5px"}}>
+                <div style={{fontSize:"12px",color:alloc[k]>0?r.c:"#7a6a58",fontWeight:alloc[k]>0?600:400}}>{r.i} {r.l}</div>
                 <div style={{display:"flex",gap:"3px",alignItems:"center"}}>
-                  {genBonus!==0&&<span style={{fontSize:"11px",color:genBonus>0?"#8aaa68":"#cc5544"}}>{genBonus>0?"+":""}{genBonus}</span>}
-                  {seasonBonus>0&&<span style={{fontSize:"11px",color:"#88cc44"}}>+{seasonBonus}</span>}
-                  {seasonPen<0&&<span style={{fontSize:"11px",color:"#cc4433"}}>{seasonPen}</span>}
-                  <div style={{fontSize:"15px",fontWeight:"bold",color:alloc[k]>0?r.c:"#1a0a00"}}>{alloc[k]}</div>
+                  {genBonus!==0&&<span style={{fontSize:"10px",color:genBonus>0?"#7acc55":"#ee5544",fontWeight:"bold"}}>{genBonus>0?"+":""}{genBonus}</span>}
+                  {seasonBonus>0&&<span style={{fontSize:"10px",color:"#88dd44",fontWeight:"bold"}}>+{seasonBonus}</span>}
+                  {seasonPen<0&&<span style={{fontSize:"10px",color:"#ee4433",fontWeight:"bold"}}>{seasonPen}</span>}
+                  <div style={{fontSize:"14px",fontWeight:"bold",color:alloc[k]>0?r.c:"#6a5a48",minWidth:"14px",textAlign:"right"}}>{alloc[k]}</div>
                 </div>
               </div>
-              <div style={{display:"flex",gap:"2px"}}>{[0,1,2,3,4,5].map(v=><button key={v} onClick={()=>change(k,v)} style={{flex:1,height:"10px",borderRadius:"2px",border:"none",cursor:"pointer",background:v<=alloc[k]?r.c:"rgba(255,255,255,0.03)",opacity:v<=alloc[k]?1:.26,transition:"all .08s"}}/>)}</div>
+              <div style={{display:"flex",gap:"2px"}}>{[0,1,2,3,4,5].map(v=><button key={v} onClick={()=>change(k,v)} style={{flex:1,height:"11px",borderRadius:"3px",border:"none",cursor:"pointer",background:v<=alloc[k]?r.c:"rgba(255,255,255,0.06)",opacity:v<=alloc[k]?1:.3,transition:"all .1s"}}/>)}</div>
             </div>
           );
         })}
       </div>
-      <button onClick={run} disabled={loading||used<3} style={{width:"100%",padding:"9px",fontSize:"13px",letterSpacing:"1px",background:used>=3&&!loading?"rgba(160,60,12,.16)":"rgba(255,255,255,.018)",border:`1px solid ${used>=3&&!loading?"rgba(160,60,12,.36)":"rgba(255,255,255,.04)"}`,color:used>=3&&!loading?"#dd7744":"#1a0e08",borderRadius:"4px",cursor:used>=3?"pointer":"not-allowed"}}>
+      <button onClick={run} disabled={loading||used<3} style={{
+        width:"100%",padding:"10px",fontSize:"13px",letterSpacing:"1.5px",fontWeight:600,
+        background:used>=3&&!loading
+          ?"linear-gradient(135deg,rgba(200,80,20,.22),rgba(160,50,10,.15))"
+          :"rgba(255,255,255,.03)",
+        border:`1px solid ${used>=3&&!loading?"rgba(220,100,40,.45)":"rgba(255,255,255,.06)"}`,
+        color:used>=3&&!loading?"#ee8855":"#5a4a38",
+        borderRadius:"6px",cursor:used>=3?"pointer":"not-allowed",
+        transition:"all .2s ease",
+        boxShadow:used>=3&&!loading?"0 4px 16px rgba(200,80,20,.2)":"none",
+      }}>
         {loading?"⏳ Belagerung läuft…":"⚔️ BELAGERUNG STARTEN"}
       </button>
       {result&&<div style={{marginTop:"12px",padding:"12px",background:result.success?"rgba(22,70,12,.1)":"rgba(85,12,7,.1)",border:`1px solid ${result.success?"rgba(35,95,18,.22)":"rgba(105,18,10,.22)"}`,borderRadius:"4px"}}>
@@ -4570,16 +7405,22 @@ function SiegeSimulator({castle,onScore,general,season}){
           <div><div style={{fontSize:"11px",letterSpacing:"2px",color:result.success?"#5aaa42":"#cc3322",marginBottom:"2px"}}>{result.success?"✅ ERFOLG":"❌ GESCHEITERT"}</div><div style={{fontSize:"12px",fontWeight:"bold",color:"#f0e0c0"}}>{result.title}</div>{result.daysElapsed&&<div style={{fontSize:"12px",color:"#b09a70",marginTop:"1px"}}>~{result.daysElapsed} Tage</div>}</div>
           <div style={{textAlign:"center"}}><div style={{fontSize:"22px",fontWeight:"bold",color:rCol(result.rating*10)}}>{result.rating}</div><div style={{fontSize:"11px",color:"#9a8a68"}}>/10</div></div>
         </div>
-        <div style={{fontSize:"14px",color:"#6a5038",lineHeight:1.75,marginBottom:"8px"}}>{result.outcome}</div>
-        {result.keyMoment&&<div style={{padding:"7px 9px",background:"rgba(0,0,0,.22)",borderLeft:"3px solid rgba(201,168,76,.28)",borderRadius:"2px",fontSize:"13px",color:"#cbb888",lineHeight:1.8,marginBottom:"8px"}}>{result.keyMoment}</div>}
-        {result.phases?.length>0&&<div style={{marginBottom:"8px"}}>{result.phases.map((p,i)=><div key={i} style={{fontSize:"13px",color:"#c0a878",padding:"2px 0",borderBottom:"1px solid rgba(255,255,255,.02)",display:"flex",gap:"5px"}}><span style={{color:"#c9a84c",flexShrink:0}}>{i+1}.</span>{p}</div>)}</div>}
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"7px",marginBottom:"7px"}}>
-          {result.whatWorked?.length>0&&<div><div style={{fontSize:"11px",color:"#3a7022",letterSpacing:"2px",marginBottom:"3px"}}>FUNKTIONIERTE</div>{result.whatWorked.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#2a5518",padding:"1px 0"}}>✓ {w}</div>)}</div>}
-          {result.mistakes?.length>0&&<div><div style={{fontSize:"11px",color:"#702a18",letterSpacing:"2px",marginBottom:"3px"}}>FEHLER</div>{result.mistakes.map((m,i)=><div key={i} style={{fontSize:"12px",color:"#5a2010",padding:"1px 0"}}>✗ {m}</div>)}</div>}
+        <div style={{fontSize:"14px",color:"#c0a870",lineHeight:1.75,marginBottom:"8px"}}>{result.outcome}</div>
+        {result.keyMoment&&<div style={{padding:"8px 10px",background:"rgba(0,0,0,.28)",borderLeft:"3px solid rgba(201,168,76,.4)",borderRadius:"3px",fontSize:"13px",color:"#d4bc88",lineHeight:1.8,marginBottom:"8px"}}>{result.keyMoment}</div>}
+        {result.phases?.length>0&&<div style={{marginBottom:"8px"}}>{result.phases.map((p,i)=><div key={i} style={{fontSize:"13px",color:"#c8b080",padding:"3px 0",borderBottom:"1px solid rgba(255,255,255,.04)",display:"flex",gap:"6px"}}><span style={{color:"#c9a84c",flexShrink:0,fontWeight:"bold"}}>{i+1}.</span>{p}</div>)}</div>}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
+          {result.whatWorked?.length>0&&<div style={{padding:"8px",background:"rgba(40,100,20,.1)",border:"1px solid rgba(60,140,30,.2)",borderRadius:"4px"}}>
+            <div style={{fontSize:"10px",color:"#70cc44",letterSpacing:"2px",marginBottom:"5px"}}>FUNKTIONIERTE</div>
+            {result.whatWorked.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#90cc68",padding:"2px 0"}}>✓ {w}</div>)}
+          </div>}
+          {result.mistakes?.length>0&&<div style={{padding:"8px",background:"rgba(100,20,12,.1)",border:"1px solid rgba(150,30,20,.2)",borderRadius:"4px"}}>
+            <div style={{fontSize:"10px",color:"#ee6644",letterSpacing:"2px",marginBottom:"5px"}}>FEHLER</div>
+            {result.mistakes.map((m,i)=><div key={i} style={{fontSize:"12px",color:"#cc7060",padding:"2px 0"}}>✗ {m}</div>)}
+          </div>}
         </div>
-        {result.generalBonus&&<div style={{fontSize:"12px",color:"#4a4030",fontStyle:"italic",borderTop:"1px solid rgba(255,255,255,0.03)",paddingTop:"5px",marginBottom:"3px"}}>⚔️ {result.generalBonus}</div>}
-        {result.seasonEffect&&<div style={{fontSize:"12px",color:"#3a4030",fontStyle:"italic"}}>🌿 {result.seasonEffect}</div>}
-        {result.historicalParallel&&<div style={{fontSize:"12px",color:"#9a8a68",fontStyle:"italic",marginTop:"4px"}}>📜 {result.historicalParallel}</div>}
+        {result.generalBonus&&<div style={{fontSize:"12px",color:"#a09068",fontStyle:"italic",borderTop:"1px solid rgba(255,255,255,0.05)",paddingTop:"6px",marginBottom:"3px"}}>⚔️ {result.generalBonus}</div>}
+        {result.seasonEffect&&<div style={{fontSize:"12px",color:"#80a068",fontStyle:"italic"}}>🌿 {result.seasonEffect}</div>}
+        {result.historicalParallel&&<div style={{fontSize:"12px",color:"#b0a07a",fontStyle:"italic",marginTop:"5px"}}>📜 {result.historicalParallel}</div>}
       </div>}
     </div>
   );
@@ -4616,7 +7457,7 @@ function WhatIf({castle}){
         <strong style={{color:"#8899cc",display:"block",marginBottom:"1px"}}>🌀 WAS WÄRE WENN…</strong>Kontrafaktische Analyse: Wie hätte sich die Geschichte geändert?
       </div>
       <div style={{display:"flex",flexWrap:"wrap",gap:"3px",marginBottom:"9px"}}>
-        {presets.map((p,i)=><button key={i} onClick={()=>setScen(p)} style={{fontSize:"12px",padding:"3px 8px",background:scen===p?"rgba(136,153,204,.12)":"rgba(255,255,255,.018)",border:`1px solid ${scen===p?"rgba(136,153,204,.3)":"rgba(255,255,255,.05)"}`,color:scen===p?"#8899cc":"#3a3a5a",borderRadius:"9px",cursor:"pointer"}}>{p.length>52?p.slice(0,50)+"…":p}</button>)}
+        {presets.map((p,i)=><button key={i} onClick={()=>setScen(p)} style={{fontSize:"12px",padding:"4px 10px",background:scen===p?"rgba(136,153,204,.16)":"rgba(255,255,255,.04)",border:`1px solid ${scen===p?"rgba(136,153,204,.4)":"rgba(255,255,255,.08)"}`,color:scen===p?"#a0b0e0":"#8a8aaa",borderRadius:"9px",cursor:"pointer",transition:"all .15s"}}>{p.length>52?p.slice(0,50)+"…":p}</button>)}
       </div>
       <div style={{display:"flex",gap:"5px",marginBottom:"10px"}}>
         <input value={scen} onChange={e=>setScen(e.target.value)} onKeyDown={e=>e.key==="Enter"&&analyze()} placeholder="Eigenes Szenario…" style={{flex:1,padding:"7px 10px",background:"rgba(255,255,255,.04)",border:"1px solid rgba(136,153,204,.18)",borderRadius:"4px",color:"#e8d8b0",fontSize:"14px",outline:"none",fontFamily:"inherit"}}/>
@@ -4627,13 +7468,13 @@ function WhatIf({castle}){
           <div><div style={{fontSize:"11px",letterSpacing:"2px",color:res.wouldHaveFallen?"#cc4433":"#5a9a42",marginBottom:"2px"}}>{res.wouldHaveFallen?"💀 WÄRE GEFALLEN":"🛡️ HÄTTE GEHALTEN"}</div><div style={{fontSize:"12px",fontWeight:"bold",color:"#e0d0b0"}}>{res.outcome}</div></div>
           <div style={{textAlign:"center",padding:"5px 9px",background:"rgba(136,153,204,.08)",border:"1px solid rgba(136,153,204,.14)",borderRadius:"3px"}}>
             <div style={{fontSize:"15px",fontWeight:"bold",color:"#8899cc"}}>{res.likelihood}</div>
-            <div style={{fontSize:"11px",color:"#2a2a40"}}>PLAUSIB.</div>
+            <div style={{fontSize:"11px",color:"#7a7a9a"}}>PLAUSIB.</div>
           </div>
         </div>
-        <div style={{fontSize:"14px",color:"#5a5a80",lineHeight:1.8,marginBottom:"8px",fontStyle:"italic",borderLeft:"3px solid rgba(136,153,204,.22)",paddingLeft:"9px"}}>{res.analysis}</div>
-        {res.keyFactor&&<div style={{padding:"6px 9px",background:"rgba(136,153,204,.06)",border:"1px solid rgba(136,153,204,.1)",borderRadius:"3px",marginBottom:"7px",fontSize:"13px",color:"#6a6a8a"}}><strong style={{color:"#8899cc"}}>Entscheidend:</strong> {res.keyFactor}</div>}
-        {res.timeChange&&<div style={{fontSize:"12px",color:"#4a4a60",marginBottom:"5px"}}>⏱ {res.timeChange}</div>}
-        {res.historicalParallels?.length>0&&<div><div style={{fontSize:"11px",color:"#2a2a48",letterSpacing:"2px",marginBottom:"3px"}}>PARALLELEN</div>{res.historicalParallels.map((p,i)=><div key={i} style={{fontSize:"12px",color:"#3a3a58",padding:"1px 0",display:"flex",gap:"5px"}}><span style={{color:"#8899cc"}}>›</span>{p}</div>)}</div>}
+        <div style={{fontSize:"14px",color:"#9090b8",lineHeight:1.8,marginBottom:"8px",fontStyle:"italic",borderLeft:"3px solid rgba(136,153,204,.3)",paddingLeft:"9px"}}>{res.analysis}</div>
+        {res.keyFactor&&<div style={{padding:"6px 9px",background:"rgba(136,153,204,.08)",border:"1px solid rgba(136,153,204,.16)",borderRadius:"3px",marginBottom:"7px",fontSize:"13px",color:"#9898c0"}}><strong style={{color:"#a0aedd"}}>Entscheidend:</strong> {res.keyFactor}</div>}
+        {res.timeChange&&<div style={{fontSize:"12px",color:"#8080a0",marginBottom:"5px"}}>⏱ {res.timeChange}</div>}
+        {res.historicalParallels?.length>0&&<div><div style={{fontSize:"11px",color:"#7a7a9a",letterSpacing:"2px",marginBottom:"3px"}}>PARALLELEN</div>{res.historicalParallels.map((p,i)=><div key={i} style={{fontSize:"12px",color:"#8888a8",padding:"2px 0",display:"flex",gap:"5px"}}><span style={{color:"#9090c0"}}>›</span>{p}</div>)}</div>}
       </div>}
     </div>
   );
@@ -4982,7 +7823,7 @@ function CastleBuilder(){
           <div key={s.l} style={{textAlign:"center",padding:"7px 4px",background:"rgba(255,255,255,.018)",border:"1px solid rgba(255,255,255,.03)",borderRadius:"4px"}}>
             <div style={{fontSize:"17px",fontWeight:"bold",color:rCol(s.v)}}>{s.v}</div>
             {s.b>0&&<div style={{fontSize:"10px",color:"#6aaa50"}}>+{s.b} Synergie</div>}
-            <div style={{fontSize:"11px",color:"#8a7a60",letterSpacing:"1px",marginTop:"1px"}}>{s.l.toUpperCase()}</div>
+            <div style={{fontSize:"11px",color:"#9cb0de",letterSpacing:"1px",marginTop:"1px"}}>{s.l.toUpperCase()}</div>
           </div>
         ))}
       </div>
@@ -4996,7 +7837,7 @@ function CastleBuilder(){
               <span style={{fontSize:"16px"}}>{s.emoji}</span>
               <div style={{flex:1}}>
                 <div style={{fontSize:"12px",fontWeight:"bold",color:"#6aaa50"}}>{s.name}</div>
-                <div style={{fontSize:"11px",color:"#3a6a20",lineHeight:1.5}}>{s.desc}</div>
+                <div style={{fontSize:"11px",color:"#7acc4a",lineHeight:1.5}}>{s.desc}</div>
               </div>
             </div>
           ))}
@@ -5006,7 +7847,7 @@ function CastleBuilder(){
         {BUILDER.map(el=>{const isS=sel.includes(el.id),canA=rem>=(el.cost)||isS;return(
           <button key={el.id} onClick={()=>toggle(el.id)} style={{padding:"7px 9px",textAlign:"left",background:isS?"rgba(201,168,76,0.07)":"rgba(255,255,255,0.016)",border:`1px solid ${isS?"rgba(201,168,76,0.26)":canA?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.016)"}`,borderRadius:"4px",cursor:canA?"pointer":"not-allowed",opacity:canA?1:.3,transition:"all .1s"}}>
             <div style={{display:"flex",justifyContent:"space-between",marginBottom:"1px"}}><div style={{fontSize:"13px",color:isS?"#e0c878":"#4a3a28"}}>{el.i} {el.l}</div><div style={{fontSize:"12px",fontWeight:"bold",color:isS?"#c9a84c":"#1a0e08"}}>💰{el.cost}</div></div>
-            <div style={{fontSize:"11px",color:"#8a7a60",lineHeight:1.4}}>{el.desc}</div>
+            <div style={{fontSize:"11px",color:"#9cb0de",lineHeight:1.4}}>{el.desc}</div>
             {isS&&<div style={{display:"flex",gap:"4px",marginTop:"2px"}}>{el.def>0&&<span style={{fontSize:"10px",color:"#cc7744"}}>🛡+{el.def}</span>}{el.sup>0&&<span style={{fontSize:"10px",color:"#4488cc"}}>📦+{el.sup}</span>}{el.pos>0&&<span style={{fontSize:"10px",color:"#88aa44"}}>⛰+{el.pos}</span>}</div>}
           </button>);})}
       </div>
@@ -5021,8 +7862,8 @@ function CastleBuilder(){
         </div>
         {res.flavorText&&<div style={{fontSize:"13px",color:"#c0a878",fontStyle:"italic",lineHeight:1.8,marginBottom:"8px",borderLeft:"3px solid rgba(201,168,76,.2)",paddingLeft:"8px"}}>{res.flavorText}</div>}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",marginBottom:"8px"}}>
-          <div><div style={{fontSize:"10px",color:"#3a6a22",letterSpacing:"2px",marginBottom:"3px"}}>STÄRKEN</div>{res.strengths?.map((s,i)=><div key={i} style={{fontSize:"12px",color:"#2a5018",padding:"1px 0"}}>✓ {s}</div>)}</div>
-          <div><div style={{fontSize:"10px",color:"#6a2a18",letterSpacing:"2px",marginBottom:"3px"}}>SCHWÄCHEN</div>{res.weaknesses?.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#4a1810",padding:"1px 0"}}>✗ {w}</div>)}</div>
+          <div><div style={{fontSize:"10px",color:"#7acc4a",letterSpacing:"2px",marginBottom:"3px"}}>STÄRKEN</div>{res.strengths?.map((s,i)=><div key={i} style={{fontSize:"12px",color:"#7acc5a",padding:"1px 0"}}>✓ {s}</div>)}</div>
+          <div><div style={{fontSize:"10px",color:"#ee6644",letterSpacing:"2px",marginBottom:"3px"}}>SCHWÄCHEN</div>{res.weaknesses?.map((w,i)=><div key={i} style={{fontSize:"12px",color:"#cc7060",padding:"1px 0"}}>✗ {w}</div>)}</div>
         </div>
         {res.worstVulnerability&&<div style={{padding:"6px 9px",background:"rgba(110,18,6,.09)",border:"1px solid rgba(110,18,6,.16)",borderRadius:"3px",marginBottom:"6px",fontSize:"12px",color:"#5a2a18"}}><strong style={{color:"#bb4422",display:"block",marginBottom:"1px"}}>Kritischste Schwachstelle:</strong>{res.worstVulnerability}</div>}
         {res.bestAttack&&<div style={{padding:"6px 9px",background:"rgba(100,15,6,.08)",border:"1px solid rgba(100,15,6,.14)",borderRadius:"3px",marginBottom:"6px",fontSize:"12px",color:"#5a2818",lineHeight:1.7}}><strong style={{color:"#aa3322",display:"block",marginBottom:"1px"}}>Angreifbar durch:</strong>{res.bestAttack}</div>}
@@ -5076,7 +7917,7 @@ function Compare({castles,init}){
               <div style={{fontSize:"10px",color:c1.theme.accent,marginBottom:"6px"}}>{c1.era}</div>
               <div style={{fontSize:"26px",fontWeight:"bold",color:rCol(avg(c1))}}>{avg(c1)}</div>
             </div>
-            <div style={{display:"flex",alignItems:"center",color:"#3a2a14",fontSize:"12px",fontFamily:"serif"}}>VS</div>
+            <div style={{display:"flex",alignItems:"center",color:"#8a7a60",fontSize:"12px",fontFamily:"serif"}}>VS</div>
             <div style={{padding:"12px",background:`${c2.theme.bg}`,border:`1px solid ${c2.theme.accent}33`,borderRight:`4px solid ${c2.theme.accent}`,borderRadius:"5px"}}>
               <div style={{fontSize:"22px",marginBottom:"3px"}}>{c2.icon}</div>
               <div style={{fontSize:"13px",fontWeight:"bold",color:"#d0c090",marginBottom:"2px"}}>{c2.name}</div>
@@ -5087,7 +7928,7 @@ function Compare({castles,init}){
 
           {/* Unified dual radar */}
           <div style={{padding:"14px",background:"rgba(0,0,0,0.25)",border:"1px solid rgba(255,255,255,0.05)",borderRadius:"6px",marginBottom:"14px"}}>
-            <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",textAlign:"center",marginBottom:"8px"}}>RADAR-VERGLEICH</div>
+            <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",textAlign:"center",marginBottom:"8px"}}>RADAR-VERGLEICH</div>
             <div style={{maxWidth:"240px",margin:"0 auto"}}>
               <RadarChart castle={c1} compare={c2}/>
             </div>
@@ -5113,7 +7954,7 @@ function Compare({castles,init}){
                 <div key={cat.k} style={{marginBottom:"8px"}}>
                   <div style={{display:"flex",justifyContent:"space-between",marginBottom:"3px"}}>
                     <span style={{fontSize:"12px",color:w==="l"?c1.theme.accent:"#5a4a28",fontWeight:w==="l"?"bold":"normal"}}>{v1}</span>
-                    <span style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"1px"}}>{cat.i} {cat.l}</span>
+                    <span style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"1px"}}>{cat.i} {cat.l}</span>
                     <span style={{fontSize:"12px",color:w==="r"?c2.theme.accent:"#5a4a28",fontWeight:w==="r"?"bold":"normal"}}>{v2}</span>
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 20px 1fr",gap:"3px",alignItems:"center"}}>
@@ -5143,7 +7984,7 @@ function Compare({castles,init}){
             ].map(row=>(
               <div key={row.l} style={{gridColumn:"1/-1",display:"grid",gridTemplateColumns:"1fr 60px 1fr",gap:"6px",alignItems:"start",padding:"5px 0",borderBottom:"1px solid rgba(255,255,255,0.04)"}}>
                 <div style={{fontSize:"11px",color:"#a09070",textAlign:"right",paddingRight:"4px"}}>{row.v1}</div>
-                <div style={{fontSize:"10px",color:"#4a3a20",textAlign:"center",letterSpacing:"1px"}}>{row.l}</div>
+                <div style={{fontSize:"10px",color:"#8a7860",textAlign:"center",letterSpacing:"1px"}}>{row.l}</div>
                 <div style={{fontSize:"11px",color:"#a09070",textAlign:"left",paddingLeft:"4px"}}>{row.v2}</div>
               </div>
             ))}
@@ -5676,7 +8517,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
               <span style={{fontSize:"11px",color:"#8a7a58"}}>Kapitel {step+1}/{activeCampaign.castles.length}</span>
               <button onClick={()=>setActiveCampaign(null)}
                 style={{padding:"2px 7px",background:"transparent",border:"1px solid rgba(255,255,255,0.06)",
-                  color:"#4a3a20",borderRadius:"3px",cursor:"pointer",fontSize:"10px"}}>
+                  color:"#8a7860",borderRadius:"3px",cursor:"pointer",fontSize:"10px"}}>
                 Abbrechen
               </button>
             </div>
@@ -5890,7 +8731,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
                       ✅ {saved.score}%</div>}
                   </div>
                   <div style={{fontSize:"12px",color:"#7a6a48",marginBottom:"6px",lineHeight:1.7}}>{camp.desc}</div>
-                  <div style={{fontSize:"11px",color:"#6a5a38",marginBottom:"8px"}}>⏳ {camp.era}</div>
+                  <div style={{fontSize:"11px",color:"#9a8a6a",marginBottom:"8px"}}>⏳ {camp.era}</div>
                   <div style={{display:"flex",gap:"5px",flexWrap:"wrap",alignItems:"center"}}>
                     {campCastles.map(c=>(
                       <span key={c.id} style={{fontSize:"15px"}} title={c.name}>{c.icon}</span>
@@ -5900,7 +8741,7 @@ function Campaign({castles,onSelect,addScore,general,season}){
                     </span>
                   </div>
                 </div>
-                <div style={{fontSize:"20px",color:"#3a2a14",flexShrink:0,alignSelf:"center"}}>›</div>
+                <div style={{fontSize:"20px",color:"#8a7a60",flexShrink:0,alignSelf:"center"}}>›</div>
               </div>
             </div>
           );
@@ -6007,7 +8848,7 @@ function GlobalStats({scores,playStats,castles}){
               border:"1px solid rgba(255,255,255,0.04)",borderRadius:"6px",textAlign:"center"}}>
               <div style={{fontSize:"18px",marginBottom:"3px"}}>{s.icon}</div>
               <div style={{fontSize:"21px",fontWeight:"bold",color:s.c}}>{s.v}</div>
-              <div style={{fontSize:"10px",color:"#4a3a1c",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
+              <div style={{fontSize:"10px",color:"#8a7a5a",letterSpacing:"1px",marginTop:"2px"}}>{s.l.toUpperCase()}</div>
             </div>
           ))}
         </div>
@@ -6031,7 +8872,7 @@ function GlobalStats({scores,playStats,castles}){
             ].map(x=>(
               <div key={x.l} style={{textAlign:"center",padding:"8px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
                 <div style={{fontSize:"16px",fontWeight:"bold",color:x.c}}>{x.v}</div>
-                <div style={{fontSize:"9px",color:"#4a3a20",letterSpacing:"1px",marginTop:"2px"}}>{x.l.toUpperCase()}</div>
+                <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"1px",marginTop:"2px"}}>{x.l.toUpperCase()}</div>
               </div>
             ))}
           </div>
@@ -6045,7 +8886,7 @@ function GlobalStats({scores,playStats,castles}){
               <div style={{flex:wins,height:"100%",background:"linear-gradient(90deg,rgba(80,160,60,0.5),rgba(100,180,80,0.7))",borderRadius:"4px 0 0 4px",minWidth:"4px"}}/>
               <div style={{flex:total-wins,height:"100%",background:"linear-gradient(90deg,rgba(160,50,40,0.7),rgba(180,60,50,0.5))",borderRadius:"0 4px 4px 0",minWidth:"4px"}}/>
             </div>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#6a5a38"}}>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#9a8a6a"}}>
               <span>✅ {wins} Siege ({winRate}%)</span>
               <span>❌ {total-wins} Niederlagen</span>
             </div>
@@ -6071,7 +8912,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             </div>
           ))}
-          <div style={{display:"flex",gap:"14px",marginTop:"8px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"8px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(100,180,80,0.55)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gewonnen</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(180,80,50,0.5)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Verloren</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(255,255,255,0.04)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Noch nicht</span>
@@ -6144,7 +8985,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
               <div style={{textAlign:"right",minWidth:"40px"}}>
                 <div style={{fontSize:"14px",fontWeight:"bold",color:g.wins>0?"#c9a84c":"#3a2a14"}}>{g.wins}</div>
-                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>SIEGE</div>
+                <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>SIEGE</div>
               </div>
               {g.wins>0&&(
                 <div style={{width:"60px",height:"4px",background:"rgba(255,255,255,0.04)",borderRadius:"2px",overflow:"hidden"}}>
@@ -6192,7 +9033,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             );
           })}
-          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(201,168,76,0.2)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Gesamt</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"#c9a84c",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Belagert</span>
           </div>
@@ -6239,7 +9080,7 @@ function GlobalStats({scores,playStats,castles}){
               <div key={x.l} style={{padding:"8px",background:"rgba(255,255,255,0.015)",borderRadius:"4px",textAlign:"center"}}>
                 <div style={{fontSize:"15px",marginBottom:"2px"}}>{x.icon}</div>
                 <div style={{fontSize:"14px",fontWeight:"bold",color:"#c9a84c"}}>{x.v}</div>
-                <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
               </div>
             ))}
           </div>
@@ -6266,7 +9107,7 @@ function GlobalStats({scores,playStats,castles}){
                   ].map(x=>(
                     <div key={x.l} style={{textAlign:"center",padding:"6px 4px",background:"rgba(255,255,255,0.015)",borderRadius:"4px"}}>
                       <div style={{fontSize:"15px",fontWeight:"bold",color}}>{x.v}</div>
-                      <div style={{fontSize:"9px",color:"#4a3a1c",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
+                      <div style={{fontSize:"9px",color:"#8a7a5a",letterSpacing:"1px"}}>{x.l.toUpperCase()}</div>
                     </div>
                   ))}
                 </div>
@@ -6302,7 +9143,7 @@ function GlobalStats({scores,playStats,castles}){
               </div>
             );
           })}
-          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#4a3a1c"}}>
+          <div style={{display:"flex",gap:"14px",marginTop:"6px",fontSize:"10px",color:"#8a7a5a"}}>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(138,170,104,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Historisch</span>
             <span><span style={{display:"inline-block",width:"8px",height:"8px",background:"rgba(153,136,187,0.6)",borderRadius:"1px",marginRight:"3px",verticalAlign:"middle"}}/>Fantasy</span>
           </div>
@@ -6318,7 +9159,7 @@ function GlobalStats({scores,playStats,castles}){
               <div style={{fontSize:"10px",color,letterSpacing:"1px",marginBottom:"8px"}}>{label}</div>
               {[...list].sort((a,b)=>avg(b)-avg(a)).slice(0,5).map((c,i)=>(
                 <div key={c.id} style={{display:"flex",alignItems:"center",gap:"5px",marginBottom:"4px"}}>
-                  <div style={{fontSize:"10px",color:i===0?color:"#4a3a20",width:"13px"}}>{i+1}</div>
+                  <div style={{fontSize:"10px",color:i===0?color:"#8a7860",width:"13px"}}>{i+1}</div>
                   <span style={{fontSize:"12px"}}>{c.icon}</span>
                   <div style={{flex:1,fontSize:"11px",color:"#7a6a40",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{c.name}</div>
                   <div style={{fontSize:"12px",fontWeight:"bold",color:rCol(avg(c)),fontFamily:"monospace"}}>{avg(c)}</div>
@@ -6465,15 +9306,15 @@ function Timeline({castles,onSelect}){
                 {isUp&&<div style={{fontSize:"10px",color:"#b09a70",whiteSpace:"nowrap",maxWidth:"60px",overflow:"hidden",textOverflow:"ellipsis",textAlign:"center"}}>{c.name.split(" ")[0]}</div>}
                 <div style={{fontSize:"13px",padding:"2px",background:`${c.theme.accent}12`,border:`1px solid ${c.theme.accent}28`,borderRadius:"50%",width:"24px",height:"24px",display:"flex",alignItems:"center",justifyContent:"center"}}>{c.icon}</div>
                 {!isUp&&<div style={{fontSize:"10px",color:"#b09a70",whiteSpace:"nowrap",maxWidth:"60px",overflow:"hidden",textOverflow:"ellipsis",textAlign:"center"}}>{c.name.split(" ")[0]}</div>}
-                <div style={{fontSize:"9px",color:"#8a7a60",fontFamily:"monospace"}}>{c.year>0?c.year:`${Math.abs(c.year)}v`}</div>
+                <div style={{fontSize:"9px",color:"#9cb0de",fontFamily:"monospace"}}>{c.year>0?c.year:`${Math.abs(c.year)}v`}</div>
               </div>
             </button>
           );
         })}
       </div>
-      <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#8a7a60",fontFamily:"monospace",marginBottom:"16px"}}>
+      <div style={{display:"flex",justifyContent:"space-between",fontSize:"11px",color:"#9cb0de",fontFamily:"monospace",marginBottom:"16px"}}>
         <span>{minY>0?`${minY} n.Chr.`:`${Math.abs(minY)} v.Chr.`}</span>
-        <span style={{color:"#5a4a30"}}>{sorted.length} Burgen</span>
+        <span style={{color:"#9a8a6a"}}>{sorted.length} Burgen</span>
         <span>{maxY>0?`${maxY} n.Chr.`:`${Math.abs(maxY)} v.Chr.`}</span>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(170px,1fr))",gap:"5px"}}>
@@ -6485,7 +9326,7 @@ function Timeline({castles,onSelect}){
             <span style={{fontSize:"16px"}}>{c.icon}</span>
             <div style={{flex:1,minWidth:0}}>
               <div style={{fontSize:"12px",fontWeight:"bold",color:"#9a8860",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
-              <div style={{fontSize:"11px",color:"#8a7a60"}}>{c.era}</div>
+              <div style={{fontSize:"11px",color:"#9cb0de"}}>{c.era}</div>
             </div>
             <div style={{fontSize:"14px",fontWeight:"bold",color:rCol(avg(c)),flexShrink:0}}>{avg(c)}</div>
           </button>
@@ -6608,7 +9449,7 @@ function AchievementsPanel({scores,castles,playStats}){
 
       {cats.map(cat=>(
         <div key={cat} style={{marginBottom:"20px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"10px"}}>{cat}</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"10px"}}>{cat}</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:"6px"}}>
             {all.filter(a=>a.cat===cat).map(a=>(
               <div key={a.id} style={{padding:"10px 12px",
@@ -6824,7 +9665,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
     <div style={{padding:"40px",textAlign:"center",animation:"fadeIn 0.3s ease"}}>
       <div style={{fontSize:"40px",marginBottom:"12px"}}>🏆</div>
       <div style={{fontSize:"14px",color:"#b09a70",marginBottom:"6px"}}>Noch keine Belagerungen aufgezeichnet.</div>
-      <div style={{fontSize:"12px",color:"#6a5a38",lineHeight:1.7}}>Starte eine Belagerung im Rollenspiel- oder Simulator-Tab<br/>um deine Statistiken hier zu sehen.</div>
+      <div style={{fontSize:"12px",color:"#9a8a6a",lineHeight:1.7}}>Starte eine Belagerung im Rollenspiel- oder Simulator-Tab<br/>um deine Statistiken hier zu sehen.</div>
     </div>
   );
 
@@ -6834,7 +9675,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"16px"}}>
         <div>
           <div style={{fontSize:"16px",fontWeight:"bold",color:"#f0e6cc"}}>🏆 Belagerungs-Chronik</div>
-          <div style={{fontSize:"11px",color:"#6a5a38",marginTop:"2px"}}>{total} Belagerungen · {winRate}% Siegesquote</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",marginTop:"2px"}}>{total} Belagerungen · {winRate}% Siegesquote</div>
         </div>
         <button onClick={exportStats}
           style={{padding:"6px 12px",background:"rgba(201,168,76,0.07)",
@@ -6865,7 +9706,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       <div style={{marginBottom:"14px",padding:"10px 14px",
         background:"rgba(0,0,0,0.2)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"5px"}}>
         <div style={{display:"flex",justifyContent:"space-between",marginBottom:"5px"}}>
-          <span style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"1.5px"}}>SIEGESQUOTE</span>
+          <span style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"1.5px"}}>SIEGESQUOTE</span>
           <span style={{fontSize:"12px",fontWeight:"bold",color:rCol(winRate)}}>{winRate}%</span>
         </div>
         <div style={{height:"6px",background:"rgba(255,255,255,0.04)",borderRadius:"3px",overflow:"hidden"}}>
@@ -6878,7 +9719,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       {/* Records */}
       {(bestRating||fastestWin||longestSiege||hardestFall)&&(
         <div style={{marginBottom:"14px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"8px"}}>🏅 REKORDE</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"8px"}}>🏅 REKORDE</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px"}}>
             {[
               bestRating&&{icon:"🏆",label:"Bestes Rating",  value:`${bestRating.icon} ${bestRating.name}`,sub:`${bestRating.rating}/10`,castle:bestRating.castle},
@@ -6890,7 +9731,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
                 style={{padding:"8px 10px",background:"rgba(201,168,76,0.04)",
                   border:"1px solid rgba(201,168,76,0.12)",borderLeft:"3px solid rgba(201,168,76,0.35)",
                   borderRadius:"4px",cursor:"pointer"}}>
-                <div style={{fontSize:"10px",color:"#6a5a38",letterSpacing:"1px",marginBottom:"3px"}}>{r.icon} {r.label.toUpperCase()}</div>
+                <div style={{fontSize:"10px",color:"#9a8a6a",letterSpacing:"1px",marginBottom:"3px"}}>{r.icon} {r.label.toUpperCase()}</div>
                 <div style={{fontSize:"12px",color:"#d0c090",marginBottom:"1px"}}>{r.value}</div>
                 <div style={{fontSize:"11px",color:"#c9a84c",fontWeight:"bold"}}>{r.sub}</div>
               </div>
@@ -6903,7 +9744,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
       {Object.keys(byRegion).length>1&&(
         <div style={{marginBottom:"14px",padding:"12px 14px",
           background:"rgba(0,0,0,0.18)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"5px"}}>
-          <div style={{fontSize:"11px",color:"#6a5a38",letterSpacing:"2px",marginBottom:"10px"}}>🌍 NACH REGION</div>
+          <div style={{fontSize:"11px",color:"#9a8a6a",letterSpacing:"2px",marginBottom:"10px"}}>🌍 NACH REGION</div>
           {Object.entries(byRegion).sort((a,b)=>b[1].total-a[1].total).map(([region,data])=>{
             const wr=Math.round(data.wins/data.total*100);
             return(
@@ -6937,7 +9778,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
           ))}
         </div>
         <div style={{marginLeft:"auto",display:"flex",gap:"4px",alignItems:"center"}}>
-          <span style={{fontSize:"10px",color:"#4a3a20"}}>Sortieren:</span>
+          <span style={{fontSize:"10px",color:"#8a7860"}}>Sortieren:</span>
           {[{v:"rating",l:"Rating"},{v:"turns",l:"Züge"},{v:"date",l:"Datum"},{v:"name",l:"Name"}].map(s=>(
             <button key={s.v} onClick={()=>setSortBy(s.v)}
               style={{padding:"2px 7px",fontSize:"10px",
@@ -6975,7 +9816,7 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
               <div style={{fontSize:"11px",display:"flex",gap:"8px",marginTop:"1px"}}>
                 <span style={{color:e.won?"#4a7a32":"#7a2a18"}}>{e.won?"✅ Eingenommen":"❌ Gehalten"}</span>
                 {e.turns>0&&<span style={{color:"#5a4a28"}}>· {e.turns} Züge</span>}
-                {e.ts&&<span style={{color:"#3a2a14"}}>· {new Date(e.ts).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}</span>}
+                {e.ts&&<span style={{color:"#8a7a60"}}>· {new Date(e.ts).toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})}</span>}
               </div>
             </div>
             {/* Rating bars */}
@@ -6988,12 +9829,12 @@ ${allEntries.sort((a,b)=>b.rating-a.rating).map(e=>`
             {/* Rating number */}
             <div style={{textAlign:"center",flexShrink:0,minWidth:"28px"}}>
               <div style={{fontSize:"15px",fontWeight:"bold",color:rCol(e.rating*10)}}>{e.rating}</div>
-              <div style={{fontSize:"9px",color:"#4a3a20"}}>/10</div>
+              <div style={{fontSize:"9px",color:"#8a7860"}}>/10</div>
             </div>
           </div>
         ))}
         {entries.length===0&&(
-          <div style={{padding:"20px",textAlign:"center",color:"#4a3a20",fontSize:"13px"}}>
+          <div style={{padding:"20px",textAlign:"center",color:"#8a7860",fontSize:"13px"}}>
             Keine Einträge für diesen Filter.
           </div>
         )}
@@ -7187,6 +10028,7 @@ export default function App(){
   const [season,setSeason]=useState(SEASONS[0]);
   const {weather,randomize:randomizeWeather}=useWeather();
   const [showSetup,setShowSetup]=useState(false);
+  const [visualPreset,setVisualPreset]=useState("blue");
   const [achievementToast,setAchievementToast]=useState(null);
   const prevAchievements=useRef(new Set());
 
@@ -7226,21 +10068,51 @@ export default function App(){
     if(search&&!c.name.toLowerCase().includes(search.toLowerCase()))return false;
     return true;
   }),[filter,epochFilter,regionFilter,search]);
+  const topCastles=useMemo(()=>[...CASTLES].sort((a,b)=>avg(b)-avg(a)).slice(0,4),[]);
+  const uiTheme=visualPreset==="gold"
+    ? {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(214,164,77,0.18) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(139,96,45,0.16) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#120d07 0%,#1a1209 45%,#080604 100%)",
+        appColor:"#f4ead7",
+        headerBg:"linear-gradient(180deg,rgba(31,20,12,0.96) 0%,rgba(17,12,7,0.94) 100%)",
+        headerBorder:"1px solid rgba(201,168,76,0.30)",
+        setupBg:"rgba(24,16,10,0.92)",
+        setupBorder:"1px solid rgba(201,168,76,0.25)",
+        heroBorder:"1px solid rgba(201,168,76,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(201,168,76,0.16),transparent 36%),radial-gradient(circle at 90% 15%,rgba(232,200,120,0.18),transparent 42%),linear-gradient(145deg,rgba(30,20,12,0.9),rgba(14,10,6,0.92))",
+        accent:"rgba(201,168,76,0.75)",
+        accentSoft:"rgba(201,168,76,0.28)",
+        textMuted:"#cbb38b",
+        textStrong:"#f8edd8",
+      }
+    : {
+        appBg:"radial-gradient(circle at 12% -10%, rgba(111,138,255,0.26) 0%, rgba(10,14,30,0) 42%), radial-gradient(circle at 88% -10%, rgba(64,224,208,0.15) 0%, rgba(10,14,30,0) 48%), linear-gradient(150deg,#070a14 0%,#080d1b 45%,#05070f 100%)",
+        appColor:"#e8eeff",
+        headerBg:"linear-gradient(180deg,rgba(16,24,44,0.96) 0%,rgba(10,16,32,0.94) 100%)",
+        headerBorder:"1px solid rgba(138,173,255,0.28)",
+        setupBg:"rgba(11,20,38,0.9)",
+        setupBorder:"1px solid rgba(138,173,255,0.25)",
+        heroBorder:"1px solid rgba(130,170,255,0.35)",
+        heroBg:"radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92))",
+        accent:"rgba(138,173,255,0.78)",
+        accentSoft:"rgba(138,173,255,0.28)",
+        textMuted:"#9cb0de",
+        textStrong:"#f1f6ff",
+      };
 
   const sc=avg(sel);
-  const DTABS=[{id:"map",l:"🗺 Karte"},{id:"diorama",l:"🏰 3D Diorama"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
+  const DTABS=[{id:"map",l:"📍 Historische Lage"},{id:"grundriss",l:"🏰 Grundriss"},{id:"stats",l:"📊 Wertung"},{id:"roleplay",l:"🎭 Belagerung"},{id:"simulator",l:"⚔️ Simulator"},{id:"whatif",l:"🌀 Was wäre wenn"},{id:"ai",l:"🤖 Berater"},{id:"compare",l:"⚡ Vergleich"},{id:"history",l:"📜 Geschichte"},{id:"lexikon",l:"📚 Lexikon"}];
   const NAVTABS=[{id:"overview",l:"🏰 Übersicht"},{id:"worldmap",l:"🌍 Karte"},{id:"detail",l:`${sel.icon} ${sel.name.split(" ")[0]}`},{id:"campaign",l:"📖 Kampagne"},{id:"tournament",l:"🗡️ Turnier"},{id:"build",l:"🏗️ Bauen"},{id:"timeline",l:"📅 Zeit"},{id:"globalstats",l:"📊 Atlas"},{id:"achievements",l:"🏆 Erfolge"},{id:"highscores",l:"🎖️ Scores"}];
 
   return(
-    <div style={{height:"100vh",overflow:"hidden",background:"radial-gradient(ellipse 120% 40% at 50% -10%, rgba(50,35,10,0.45) 0%, transparent 60%), #080604",color:"#ede4cf",fontFamily:"'Crimson Text',Georgia,serif",display:"flex",flexDirection:"column"}}>
+    <div className="app-shell" style={{height:"100vh",overflow:"hidden",background:uiTheme.appBg,color:uiTheme.appColor,fontFamily:"'Inter','Segoe UI',system-ui,sans-serif",display:"flex",flexDirection:"column","--ui-accent":uiTheme.accent,"--ui-accent-soft":uiTheme.accentSoft,"--ui-muted":uiTheme.textMuted,"--ui-strong":uiTheme.textStrong}}>
       <style>{`
         *{box-sizing:border-box}
         ::-webkit-scrollbar{width:4px;height:4px}
-        ::-webkit-scrollbar-track{background:#080604}
-        ::-webkit-scrollbar-thumb{background:#3a2010;border-radius:2px}
-        ::-webkit-scrollbar-thumb:hover{background:#5a3018}
-        input::placeholder{color:#2a1a0a}
-        select option{background:#100c06;color:#c0a070}
+        ::-webkit-scrollbar-track{background:#070b18}
+        ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#6f8aff,#42d8cf);border-radius:2px}
+        ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#9baeff,#63e9df)}
+        input::placeholder{color:#6e7ca8}
+        select option{background:#101a2e;color:#d8e6ff}
         button{transition:all 0.15s ease}
         button:hover{filter:brightness(1.15)}
         button:active{transform:scale(0.97)}
@@ -7250,18 +10122,41 @@ export default function App(){
         @keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-4px)}}
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         @keyframes pf{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(2.5)}}
-        @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.7}}
+        @keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.75}}
         @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-        @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(201,168,76,0.1)}50%{box-shadow:0 0 20px rgba(201,168,76,0.25)}}
+        @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(201,168,76,0.12)}50%{box-shadow:0 0 24px rgba(201,168,76,0.32)}}
         @keyframes barFill{from{width:0}to{width:var(--w)}}
-        .castle-card{transition:transform 0.15s ease,border-color 0.15s ease,box-shadow 0.15s ease}
-        .castle-card:hover{transform:translateY(-2px)}
+        @keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-5px)}}
+        @keyframes borderGlow{0%,100%{box-shadow:0 0 0 1px rgba(111,138,255,0.15),0 4px 20px rgba(0,0,0,0.4)}50%{box-shadow:0 0 0 1px rgba(111,138,255,0.45),0 8px 32px rgba(111,138,255,0.18)}}
+        @keyframes logoFloat{0%,100%{filter:drop-shadow(0 0 6px rgba(201,168,76,0.5))}50%{filter:drop-shadow(0 0 14px rgba(201,168,76,0.85))}}
+        @keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes kpiPop{0%{transform:scale(0.88);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+        @keyframes accentSlide{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+        @keyframes regionPulse{0%,100%{opacity:0.7}50%{opacity:1}}
+        @keyframes dotPulse{0%,100%{box-shadow:0 0 0 0 rgba(111,138,255,0.5)}50%{box-shadow:0 0 0 5px rgba(111,138,255,0)}}
+        @keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+        /* ── Castle cards ── */
+        .castle-card{
+          transition:transform 0.22s cubic-bezier(.4,0,.2,1),
+            border-color 0.22s ease,
+            box-shadow 0.22s cubic-bezier(.4,0,.2,1),
+            background 0.22s ease;
+          will-change:transform,box-shadow;
+        }
+        .castle-card:hover{
+          transform:translateY(-5px) scale(1.012)!important;
+        }
+
+        /* ── Tab navigation ── */
         .tab-btn{transition:all 0.18s ease;position:relative;overflow:hidden}
         .tab-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:currentColor;transform:scaleX(0);transition:transform 0.2s ease}
         .tab-btn.active::after{transform:scaleX(1)}
         .detail-panel{animation:fadeIn 0.22s ease}
         .score-ring{transition:stroke-dashoffset 0.8s ease}
         .stat-bar{animation:barFill 0.6s ease forwards}
+
+        /* ── Responsive ── */
         @media(max-width:768px){
           .sidebar{display:none!important}
           .main-content{flex-direction:column!important}
@@ -7280,7 +10175,7 @@ export default function App(){
         @media(max-width:600px){
           .castle-grid{grid-template-columns:1fr 1fr!important}
           .castle-outer{padding:8px!important}
-          header{height:40px!important}
+          header{height:44px!important}
           header span{font-size:12px!important}
           .card{width:calc(100vw - 24px)!important;margin:12px auto!important}
           .detail-header-meta{font-size:10px!important;white-space:normal!important}
@@ -7292,49 +10187,105 @@ export default function App(){
         }
         @media(hover:none){
           button:hover{filter:none}
-          .castle-card:hover{transform:none}
+          .castle-card:hover{transform:none!important}
         }
         @media(prefers-reduced-motion:reduce){
           *{animation:none!important;transition:none!important}
         }
+
+        /* ── Typography ── */
         .cinzel{font-family:'Cinzel',serif!important;letter-spacing:0.05em}
         .cinzel-lg{font-family:'Cinzel',serif!important;letter-spacing:0.12em}
         input,textarea,select{font-family:inherit}
         .castle-card{transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease,background 0.18s ease}
+
+        .app-shell::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:linear-gradient(rgba(143,167,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(143,167,255,0.045) 1px,transparent 1px);background-size:34px 34px;mask-image:radial-gradient(circle at center,black 35%,transparent 90%)}
+        .app-shell > *{position:relative;z-index:1}
+        .glass{background:linear-gradient(160deg,rgba(18,28,52,0.82),rgba(12,20,40,0.62));backdrop-filter:blur(10px);border:1px solid var(--ui-accent-soft);box-shadow:0 14px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)}
+        .premium-title{font-family:'Cinzel',serif;letter-spacing:0.2em;text-transform:uppercase}
+        .nav-premium{position:relative;border:1px solid transparent;border-radius:10px;margin:6px 4px;padding:0 12px!important;height:38px!important;display:flex;align-items:center;justify-content:center;font-size:12px!important;font-weight:600;transition:all .2s ease}
+        .nav-premium:hover{border-color:var(--ui-accent-soft);background:color-mix(in oklab,var(--ui-accent) 12%, transparent);transform:translateY(-1px)}
+        .nav-premium.active{background:linear-gradient(135deg,color-mix(in oklab,var(--ui-accent) 32%, transparent),rgba(66,216,207,0.20));color:var(--ui-strong)!important;border-color:var(--ui-accent);box-shadow:0 0 0 1px color-mix(in oklab,var(--ui-accent) 32%, transparent),0 8px 24px rgba(66,216,207,0.18)}
+        .panel-premium{background:linear-gradient(155deg,rgba(16,25,45,0.88),rgba(11,17,34,0.75));border:1px solid var(--ui-accent-soft);border-radius:14px;box-shadow:0 18px 30px rgba(0,0,0,0.26)}
+        .hero-v2{margin:16px;border:1px solid rgba(130,170,255,0.35);border-radius:16px;padding:18px;background:
+          radial-gradient(circle at 10% 10%,rgba(66,216,207,0.22),transparent 36%),
+          radial-gradient(circle at 90% 15%,rgba(111,138,255,0.32),transparent 42%),
+          linear-gradient(145deg,rgba(16,30,56,0.9),rgba(8,16,34,0.92));
+          box-shadow:0 22px 42px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.08)}
+        .hero-kpi{padding:10px 12px;border-radius:10px;background:rgba(8,16,32,0.46);border:1px solid var(--ui-accent-soft);text-align:center}
+        .hero-cta{padding:9px 12px;border-radius:10px;border:1px solid var(--ui-accent);background:linear-gradient(135deg,color-mix(in oklab,var(--ui-accent) 42%, transparent),rgba(66,216,207,0.24));color:var(--ui-strong);cursor:pointer;font-weight:600}
+        .hero-cta.alt{background:color-mix(in oklab,var(--ui-accent) 10%, transparent);color:var(--ui-muted)}
+        .hero-mini-card{padding:10px;border-radius:12px;background:rgba(9,16,31,0.52);border:1px solid var(--ui-accent-soft);display:flex;align-items:center;justify-content:space-between;gap:8px}
+        .hero-mini-card button{padding:6px 8px;border-radius:8px;border:1px solid var(--ui-accent-soft);background:color-mix(in oklab,var(--ui-accent) 14%, transparent);color:var(--ui-strong);font-size:11px;cursor:pointer}
+        .content-wrap{max-width:1280px;margin:0 auto;width:100%}
+        .mobile-quickbar{display:none}
+        .soft-card{border-radius:14px;background:linear-gradient(155deg,rgba(14,22,41,0.78),rgba(10,16,31,0.62));border:1px solid var(--ui-accent-soft);box-shadow:0 10px 24px rgba(0,0,0,0.2)}
         .castle-card:hover{transform:translateY(-3px)}
         .gold-text{color:#c9a84c;font-family:'Cinzel',serif}
         .section-title{font-family:'Cinzel',serif;letter-spacing:0.08em;font-size:11px;color:#a08848;text-transform:uppercase}
+        @media(max-width:768px){
+          .mobile-quickbar{
+            display:flex;position:fixed;left:10px;right:10px;bottom:10px;z-index:450;
+            gap:8px;padding:8px;border-radius:12px;
+            background:linear-gradient(155deg,rgba(10,18,36,0.95),rgba(8,14,28,0.92));
+            border:1px solid rgba(138,173,255,0.24);box-shadow:0 14px 24px rgba(0,0,0,0.35)
+          }
+          .mobile-quickbar button{
+            flex:1;border-radius:8px;border:1px solid rgba(138,173,255,0.28);
+            background:rgba(138,173,255,0.1);color:#e8f0ff;padding:8px 6px;font-size:12px
+          }
+        }
       `}</style>
 
       {/* ── HEADER ── */}
-      <header style={{height:"52px",display:"flex",alignItems:"stretch",borderBottom:"1px solid rgba(201,168,76,0.14)",background:"linear-gradient(180deg,rgba(14,11,7,0.99) 0%,rgba(8,6,4,0.99) 100%)",boxShadow:"0 2px 24px rgba(0,0,0,0.6),0 1px 0 rgba(201,168,76,0.08)",position:"sticky",top:0,zIndex:300,flexShrink:0}}>
+      <header className="glass" style={{height:"62px",display:"flex",alignItems:"stretch",borderBottom:uiTheme.headerBorder,background:uiTheme.headerBg,position:"sticky",top:0,zIndex:300,flexShrink:0}}>
         <div style={{display:"flex",alignItems:"center",gap:"10px",padding:"0 16px",borderRight:"1px solid rgba(201,168,76,0.1)",flexShrink:0}}>
           <span style={{fontSize:"18px",filter:"drop-shadow(0 0 6px rgba(201,168,76,0.4))"}}>⚔️</span>
           <div style={{display:"flex",flexDirection:"column",gap:"1px"}}>
-            <span className="header-title cinzel-lg" style={{fontSize:"13px",fontWeight:"700",color:"#e8d498",letterSpacing:"4px",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(201,168,76,0.35)"}}>BELAGERUNGS-ATLAS</span>
-            <span style={{fontSize:"9px",color:"#6a5530",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
+            <span className="header-title premium-title" style={{fontSize:"13px",fontWeight:"700",color:"#f1f5ff",whiteSpace:"nowrap",textShadow:"0 0 18px rgba(111,138,255,0.45)"}}>BELAGERUNGS-ATLAS</span>
+            <span style={{fontSize:"9px",color:"#8ea2d8",letterSpacing:"2px",fontFamily:"'Cinzel',serif"}}>{CASTLES.length} FESTUNGEN</span>
           </div>
         </div>
-        <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto"}}>
+
+        {/* Nav tabs */}
+        <div className="nav-tabs" style={{display:"flex",height:"100%",flex:1,overflowX:"auto",padding:"0 4px"}}>
           {NAVTABS.map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{height:"100%",padding:"0 13px",background:tab===t.id?"rgba(201,168,76,0.06)":"transparent",border:"none",borderBottom:`2px solid ${tab===t.id?"#c9a84c":"transparent"}`,borderTop:`1px solid ${tab===t.id?"rgba(201,168,76,0.12)":"transparent"}`,color:tab===t.id?"#d4aa56":"#6a5a40",cursor:"pointer",fontSize:"12px",letterSpacing:"0.3px",transition:"all .16s",marginBottom:"-1px",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
+            <button className={`nav-premium ${tab===t.id?"active":""}`} key={t.id} onClick={()=>setTab(t.id)} style={{background:"transparent",border:"none",color:tab===t.id?"#ebf2ff":"#9aa9d0",cursor:"pointer",whiteSpace:"nowrap",fontFamily:tab===t.id?"'Cinzel',serif":"inherit"}}>{t.l}</button>
           ))}
         </div>
+
         {/* Setup button */}
-        <button onClick={()=>setShowSetup(s=>!s)} style={{padding:"0 12px",background:showSetup?"rgba(201,168,76,0.08)":"transparent",border:"none",borderBottom:`2px solid ${showSetup?"#c9a84c":"transparent"}`,borderLeft:"1px solid rgba(255,255,255,0.04)",color:showSetup?"#c9a84c":"#7a6a48",cursor:"pointer",fontSize:"13px",whiteSpace:"nowrap",marginBottom:"-1px"}}>
-          ⚙️ {general?general.emoji:""} {season?.emoji||""}
+        <button
+          onClick={()=>setShowSetup(s=>!s)}
+          style={{
+            padding:"0 14px",
+            background:showSetup
+              ?"linear-gradient(135deg,rgba(201,168,76,0.14),rgba(201,168,76,0.06))"
+              :"transparent",
+            border:"none",
+            borderLeft:"1px solid rgba(138,173,255,0.08)",
+            borderBottom:`2px solid ${showSetup?"rgba(201,168,76,0.7)":"transparent"}`,
+            color:showSetup?"#d4b060":"#6a5a48",
+            cursor:"pointer",fontSize:"13px",whiteSpace:"nowrap",
+            transition:"all .2s ease",
+            display:"flex",alignItems:"center",gap:"5px",
+          }}
+        >
+          <span style={{opacity:showSetup?1:0.7}}>⚙️</span>
+          {general&&<span>{general.emoji}</span>}
+          {season?.emoji&&<span>{season.emoji}</span>}
         </button>
       </header>
 
       {/* ── SETUP PANEL ── */}
       {showSetup&&(
-        <div style={{background:"rgba(8,6,4,0.98)",borderBottom:"1px solid rgba(201,168,76,0.1)",padding:"12px 14px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
+        <div className="glass" style={{background:uiTheme.setupBg,borderBottom:uiTheme.setupBorder,padding:"14px 16px",display:"flex",gap:"16px",flexWrap:"wrap"}}>
           <div>
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>⚔️ GENERAL</div>
             <div style={{display:"flex",gap:"4px",flexWrap:"wrap"}}>
-              <button onClick={()=>setGeneral(null)} style={{padding:"3px 8px",fontSize:"12px",background:!general?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${!general?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:!general?"#c9a84c":"#2a1a0a",borderRadius:"2px",cursor:"pointer"}}>Keiner</button>
+              <button onClick={()=>setGeneral(null)} style={{padding:"4px 10px",fontSize:"12px",background:!general?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${!general?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:!general?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>Keiner</button>
               {GENERALS.map(g=>(
-                <button key={g.id} onClick={()=>setGeneral(g===general?null:g)} title={g.bio} style={{padding:"3px 8px",fontSize:"12px",background:general?.id===g.id?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${general?.id===g.id?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:general?.id===g.id?"#c9a84c":"#2a1a0a",borderRadius:"2px",cursor:"pointer"}}>
+                <button key={g.id} onClick={()=>setGeneral(g===general?null:g)} title={g.bio} style={{padding:"4px 10px",fontSize:"12px",background:general?.id===g.id?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${general?.id===g.id?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:general?.id===g.id?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>
                   {g.emoji} {g.name}
                 </button>
               ))}
@@ -7344,10 +10295,17 @@ export default function App(){
             <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>🌿 JAHRESZEIT</div>
             <div style={{display:"flex",gap:"4px"}}>
               {SEASONS.map(s=>(
-                <button key={s.id} onClick={()=>setSeason(s)} title={s.desc} style={{padding:"3px 8px",fontSize:"12px",background:season?.id===s.id?"rgba(201,168,76,0.08)":"rgba(255,255,255,0.02)",border:`1px solid ${season?.id===s.id?"rgba(201,168,76,0.25)":"rgba(255,255,255,0.05)"}`,color:season?.id===s.id?"#c9a84c":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>
+                <button key={s.id} onClick={()=>setSeason(s)} title={s.desc} style={{padding:"4px 10px",fontSize:"12px",background:season?.id===s.id?"rgba(201,168,76,0.12)":"rgba(255,255,255,0.04)",border:`1px solid ${season?.id===s.id?"rgba(201,168,76,0.35)":"rgba(255,255,255,0.08)"}`,color:season?.id===s.id?"#c9a84c":"#8a7a60",borderRadius:"4px",cursor:"pointer",transition:"all .15s"}}>
                   {s.emoji} {s.name}
                 </button>
               ))}
+            </div>
+          </div>
+          <div>
+            <div style={{fontSize:"11px",color:"#b09a70",letterSpacing:"2px",marginBottom:"5px"}}>🎨 DESIGN</div>
+            <div style={{display:"flex",gap:"4px"}}>
+              <button onClick={()=>setVisualPreset("blue")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="blue"?"rgba(111,138,255,0.22)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="blue"?"rgba(138,173,255,0.5)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="blue"?"#dce8ff":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🔹 Premium Blue</button>
+              <button onClick={()=>setVisualPreset("gold")} style={{padding:"3px 8px",fontSize:"12px",background:visualPreset==="gold"?"rgba(201,168,76,0.18)":"rgba(255,255,255,0.02)",border:`1px solid ${visualPreset==="gold"?"rgba(201,168,76,0.45)":"rgba(255,255,255,0.05)"}`,color:visualPreset==="gold"?"#e8cc98":"#7a6a48",borderRadius:"2px",cursor:"pointer"}}>🟡 Royal Gold</button>
             </div>
           </div>
           {/* Weather display */}
@@ -7359,12 +10317,12 @@ export default function App(){
                 <div>
                   <div style={{fontSize:"12px",color:"#c9a84c"}}>{weather.label.split(" ").slice(1).join(" ")}</div>
                   <div style={{fontSize:"10px",color:"#5a4a28"}}>{weather.desc}</div>
-                  <div style={{fontSize:"10px",color:"#6a5a38",marginTop:"1px"}}>
+                  <div style={{fontSize:"10px",color:"#9a8a6a",marginTop:"1px"}}>
                     Angriff {weather.siegeMod>=0?"+":""}{weather.siegeMod} · Verteidigung {weather.defMod>=0?"+":""}{weather.defMod}
                   </div>
                 </div>
               </div>
-              <button onClick={randomizeWeather} title="Wetter zufällig" style={{padding:"5px 8px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",color:"#6a5a38",borderRadius:"4px",cursor:"pointer",fontSize:"14px"}}>🎲</button>
+              <button onClick={randomizeWeather} title="Wetter zufällig" style={{padding:"5px 8px",background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",color:"#9a8a6a",borderRadius:"4px",cursor:"pointer",fontSize:"14px"}}>🎲</button>
             </div>
           </div>
           {general&&<div style={{padding:"6px 10px",background:"rgba(0,0,0,0.3)",border:"1px solid rgba(255,255,255,0.04)",borderRadius:"4px",fontSize:"13px",color:"#cbb888"}}>
@@ -7377,7 +10335,51 @@ export default function App(){
 
       {/* ── OVERVIEW ── */}
       {tab==="overview"&&<div style={{flex:1,overflowY:"auto"}}>
-        <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        <div className="content-wrap">
+        <section className="hero-v2" style={{border:uiTheme.heroBorder,background:uiTheme.heroBg}}>
+          <div style={{display:"flex",justifyContent:"space-between",gap:"14px",alignItems:"flex-start",flexWrap:"wrap"}}>
+            <div style={{maxWidth:"620px"}}>
+              <div style={{fontSize:"11px",letterSpacing:"2px",color:"#96aee4",marginBottom:"8px"}}>COMMAND OVERVIEW · V2</div>
+              <h2 style={{margin:"0 0 8px",fontSize:"28px",lineHeight:1.15,color:"#f2f7ff",fontFamily:"'Cinzel',serif",letterSpacing:"1px"}}>Strategisches Erlebnis mit Premium-Inszenierung</h2>
+              <p style={{margin:0,color:"#b5c5eb",fontSize:"14px",lineHeight:1.7}}>
+                Entdecke Burgen wie in einem Tactical Command Center: schneller Zugriff auf Weltkarte, Kampagnen und Belagerungssimulation
+                mit klaren KPIs und hochwertiger visueller Dramaturgie.
+              </p>
+            </div>
+            <div style={{display:"flex",gap:"8px",flexWrap:"wrap"}}>
+              <button className="hero-cta" onClick={()=>setTab("worldmap")}>🌍 Weltkarte öffnen</button>
+              <button className="hero-cta alt" onClick={()=>setTab("campaign")}>📖 Kampagne starten</button>
+              <button className="hero-cta alt" onClick={()=>{setTab("detail");setDtab("simulator");}}>⚔️ Simulator direkt</button>
+            </div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:"10px",marginTop:"14px"}}>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>FESTUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{CASTLES.length}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>ERFOLGE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{checkAchievements(scores,CASTLES,playStats).filter(a=>a.unlocked).length}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>BELAGERUNGEN</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges||0}</div></div>
+            <div className="hero-kpi"><div style={{fontSize:"11px",color:"#8ea2d8",letterSpacing:"1px"}}>SIEGRATE</div><div style={{fontSize:"22px",fontWeight:"700",color:"#ebf3ff"}}>{playStats?.sieges?Math.round(((playStats.wins||0)/playStats.sieges)*100):0}%</div></div>
+          </div>
+          <div style={{marginTop:"12px"}}>
+            <div style={{fontSize:"10px",letterSpacing:"2px",color:"#8ea2d8",marginBottom:"8px"}}>TOP FESTUNGEN · SCHNELLSTART</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(210px,1fr))",gap:"8px"}}>
+              {topCastles.map(c=>(
+                <div key={c.id} className="hero-mini-card">
+                  <div style={{display:"flex",gap:"8px",alignItems:"center",minWidth:0}}>
+                    <span style={{fontSize:"18px"}}>{c.icon}</span>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontSize:"12px",color:"#eff5ff",fontWeight:600,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                      <div style={{fontSize:"10px",color:"#8ea2d8"}}>{c.epoch} · Score {avg(c)}</div>
+                    </div>
+                  </div>
+                  <button onClick={()=>{setSel(c);setTab("detail");setDtab("stats");}}>Öffnen</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        <div className="soft-card" style={{margin:"0 16px 16px",padding:"2px"}}>
+          <CastleGrid castles={CASTLES} onSelect={go} scores={scores} filter={filter} setFilter={setFilter} epochFilter={epochFilter} setEpochFilter={setEpochFilter} regionFilter={regionFilter} setRegionFilter={setRegionFilter} search={search} setSearch={setSearch} favs={favs} onFavToggle={toggleFav}/>
+        </div>
+        </div>
       </div>}
 
       {/* ── WORLD MAP ── */}
@@ -7405,6 +10407,12 @@ export default function App(){
       {tab==="achievements"&&<div style={{flex:1,overflowY:"auto"}}><AchievementsPanel scores={scores} castles={CASTLES} playStats={playStats}/></div>}
       {tab==="highscores"&&<div style={{flex:1,overflowY:"auto"}}><Highscores scores={scores} onSelect={go} playStats={playStats}/></div>}
 
+      <div className="mobile-quickbar">
+        <button onClick={()=>setTab("overview")}>🏰 Übersicht</button>
+        <button onClick={()=>setTab("worldmap")}>🌍 Karte</button>
+        <button onClick={()=>setTab("campaign")}>📖 Kampagne</button>
+      </div>
+
       {/* Achievement toast notification */}
       {achievementToast&&(
         <AchievementToast
@@ -7417,34 +10425,34 @@ export default function App(){
       {tab==="detail"&&(
         <div style={{display:"flex",flex:1,overflow:"hidden"}}>
           {/* Sidebar */}
-          <aside className="sidebar" style={{width:sideOpen?"195px":"40px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.16)",overflowY:"auto",overflowX:"hidden"}}>
-            <button onClick={()=>setSideOpen(e=>!e)} style={{width:"100%",padding:"6px",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.02)",color:"#8a7a60",cursor:"pointer",fontSize:"14px",textAlign:sideOpen?"right":"center"}}>{sideOpen?"◀":"▶"}</button>
+          <aside className="sidebar" style={{width:sideOpen?"225px":"44px",flexShrink:0,transition:"width .2s ease",borderRight:"1px solid rgba(138,173,255,0.15)",background:"linear-gradient(180deg,rgba(10,16,30,0.88),rgba(8,12,24,0.84))",borderRadius:"14px",overflowY:"auto",overflowX:"hidden"}}>
+            <button onClick={()=>setSideOpen(e=>!e)} style={{width:"100%",padding:"6px",background:"transparent",border:"none",borderBottom:"1px solid rgba(255,255,255,0.02)",color:"#9cb0de",cursor:"pointer",fontSize:"14px",textAlign:sideOpen?"right":"center"}}>{sideOpen?"◀":"▶"}</button>
             {sideFiltered.map(c=>{const a=avg(c),isA=sel.id===c.id,hs=scores[c.id];return(
               <button key={c.id} onClick={()=>{setSel(c);setDtab("map");setAttackMode(false);}} title={c.name}
                 style={{width:"100%",textAlign:"left",padding:sideOpen?"6px 8px":"6px",background:isA?c.theme.glow:"transparent",border:"none",borderLeft:`2px solid ${isA?c.theme.accent:"transparent"}`,borderBottom:"1px solid rgba(255,255,255,0.018)",cursor:"pointer",display:"flex",gap:"5px",alignItems:"center",transition:"all .09s"}}>
                 <span style={{fontSize:"13px",flexShrink:0}}>{c.icon}</span>
                 {sideOpen&&<><div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:"12px",fontWeight:"bold",color:isA?"#f0e6cc":"#5a4a30",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
-                  <div style={{fontSize:"10px",color:c.type==="real"?"#1a4010":"#1a1a48"}}>{c.type==="real"?"⚜":"✦"} {c.epoch}</div>
+                  <div style={{fontSize:"12px",fontWeight:"bold",color:isA?"#f0e6cc":"#9a8a6a",whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{c.name}</div>
+                  <div style={{fontSize:"10px",color:c.type==="real"?"#5a8040":"#6a6aaa"}}>{c.type==="real"?"⚜":"✦"} {c.epoch}</div>
                 </div>
                 <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"flex-end",gap:"1px"}}>
                   <span style={{fontSize:"12px",fontWeight:"bold",color:rCol(a)}}>{a}</span>
-                  {hs&&<span style={{fontSize:"10px",color:hs.won?"#4a7a32":"#7a2a18"}}>{hs.won?"✅":"❌"}</span>}
+                  {hs&&<span style={{fontSize:"10px",color:hs.won?"#6aaa42":"#aa4a32"}}>{hs.won?"✅":"❌"}</span>}
                 </div></>}
               </button>
             );})}
           </aside>
 
           {/* Main detail area */}
-          <main style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
+          <main className="panel-premium" style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column"}}>
             {/* Castle header */}
-            <div style={{padding:"13px 16px 10px",borderBottom:"1px solid rgba(201,168,76,0.05)",background:`linear-gradient(135deg,${sel.theme.bg} 0%,rgba(6,5,4,0.9) 100%)`,flexShrink:0}}>
+            <div style={{padding:"13px 16px 10px",borderBottom:"1px solid rgba(201,168,76,0.05)",background:`linear-gradient(135deg,${sel.theme.bg} 0%,rgba(12,20,40,0.88) 100%)`,flexShrink:0}}>
               <div style={{display:"flex",gap:"10px",alignItems:"flex-start"}}>
                 <div style={{fontSize:"30px",width:"48px",height:"48px",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",background:`${sel.theme.accent}12`,border:`1px solid ${sel.theme.accent}24`,borderRadius:"4px"}}>{sel.icon}</div>
                 <div style={{flex:1}}>
                   <div style={{display:"flex",gap:"4px",alignItems:"center",marginBottom:"2px",flexWrap:"wrap"}}>
                     <span style={{fontSize:"11px",letterSpacing:"2px",padding:"1px 6px",borderRadius:"2px",background:sel.type==="real"?"rgba(40,70,25,0.18)":"rgba(40,40,90,0.18)",color:sel.type==="real"?"#5a7a38":"#6a6aaa",border:`1px solid ${sel.type==="real"?"rgba(40,70,25,0.28)":"rgba(40,40,90,0.28)"}`}}>{sel.type==="real"?"⚜ HISTORISCH":"✦ FANTASY"}</span>
-                    <span className="detail-header-meta" style={{fontSize:"11px",color:"#8a7a60",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
+                    <span className="detail-header-meta" style={{fontSize:"11px",color:"#9cb0de",overflow:"hidden",textOverflow:"ellipsis",maxWidth:"100%"}}>{sel.epoch} · {sel.loc} · {sel.era}</span>
                   </div>
                   <h1 style={{fontSize:"15px",fontWeight:"bold",color:"#f5edd8",margin:"0 0 1px"}}>{sel.name}</h1>
                   <div style={{fontSize:"12px",color:sel.theme.accent,marginBottom:"3px"}}>{sel.sub}</div>
@@ -7452,7 +10460,7 @@ export default function App(){
                 </div>
                 <div style={{flexShrink:0,textAlign:"center",padding:"8px 11px",background:"rgba(0,0,0,0.35)",border:`1px solid ${sel.theme.accent}1e`,borderRadius:"4px"}}>
                   <div style={{fontSize:"20px",fontWeight:"bold",color:rCol(sc)}}>{sc}</div>
-                  <div style={{fontSize:"10px",color:"#8a7a60",letterSpacing:"2px",marginTop:"1px"}}>GESAMT</div>
+                  <div style={{fontSize:"10px",color:"#9cb0de",letterSpacing:"2px",marginTop:"1px"}}>GESAMT</div>
                   {general&&<div style={{fontSize:"12px",color:sel.theme.accent,marginTop:"2px"}}>{general.emoji}</div>}
                   {season&&<div style={{fontSize:"13px",marginTop:"1px"}}>{season.emoji}</div>}
                 </div>
@@ -7460,16 +10468,16 @@ export default function App(){
             </div>
 
             {/* Detail tabs */}
-            <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(0,0,0,0.06)",flexShrink:0,overflowX:"auto"}}>
+            <div className="detail-tabs" style={{display:"flex",borderBottom:"1px solid rgba(201,168,76,0.05)",background:"rgba(12,20,36,0.6)",flexShrink:0,overflowX:"auto"}}>
               {DTABS.map(t=>(
-                <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"7px 11px",background:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#7a6a50",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .13s",marginBottom:"-1px",whiteSpace:"nowrap"}}>{t.l}</button>
+                <button key={t.id} onClick={()=>setDtab(t.id)} style={{padding:"8px 12px",background:dtab===t.id?`${sel.theme.accent}0d`:"transparent",border:"none",borderBottom:`2px solid ${dtab===t.id?sel.theme.accent:"transparent"}`,color:dtab===t.id?sel.theme.accent:"#8a7a68",cursor:"pointer",fontSize:"12px",letterSpacing:"0.5px",transition:"all .18s ease",marginBottom:"-1px",whiteSpace:"nowrap",fontWeight:dtab===t.id?600:400}}>{t.l}</button>
               ))}
             </div>
 
             {/* Detail content */}
             <div style={{flex:1,padding:"14px 16px",animation:"fadeIn .2s ease",overflowY:"auto"}}>
               {dtab==="map"&&<CastleMapTab castle={sel}/>}
-              {dtab==="diorama"&&<CastleDiorama castle={sel}/>}
+              {dtab==="grundriss"&&<CastleFloorPlanTab castle={sel}/>}
 
               {dtab==="stats"&&(
                 <div className="grid-2col" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"12px"}}>
@@ -7482,7 +10490,7 @@ export default function App(){
                       <ScoreBar label="Garnison" value={sel.ratings.garrison} delay={150} accent={sel.theme.accent}/>
                       <ScoreBar label="Moral" value={sel.ratings.morale} delay={200} accent={sel.theme.accent}/>
                       <div style={{marginTop:"9px",paddingTop:"8px",borderTop:"1px solid rgba(255,255,255,.03)",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <span style={{fontSize:"11px",color:"#8a7a60",letterSpacing:"2px"}}>GESAMT</span>
+                        <span style={{fontSize:"11px",color:"#9cb0de",letterSpacing:"2px"}}>GESAMT</span>
                         <span style={{fontSize:"16px",fontWeight:"bold",color:rCol(sc)}}>{sc}</span>
                       </div>
                     </div>
@@ -7492,10 +10500,14 @@ export default function App(){
                     </div>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:"5px"}}>
-                    {[{t:"STÄRKEN",items:sel.strengths,c:"rgba(40,70,22,.07)",bc:"rgba(40,70,22,.13)",tc:"#3a5a1e",ic:"#4a6a28"},{t:"SCHWÄCHEN",items:sel.weaknesses,c:"rgba(80,20,10,.07)",bc:"rgba(80,20,10,.13)",tc:"#4a2010",ic:"#622a18"},{t:"ANGRIFFSTIPPS",items:sel.attackTips,c:"rgba(100,40,6,.05)",bc:"rgba(100,40,6,.1)",tc:"#5a3018",ic:"#c9a84c"}].map(g=>(
-                      <div key={g.t} style={{padding:"9px 10px",background:g.c,border:`1px solid ${g.bc}`,borderRadius:"4px"}}>
-                        <div style={{fontSize:"10px",color:g.ic,letterSpacing:"2px",marginBottom:"5px"}}>{g.t}</div>
-                        {g.items.map((s,i)=><div key={i} style={{fontSize:"12px",color:g.tc,padding:"2px 0",borderBottom:i<g.items.length-1?"1px solid rgba(255,255,255,.018)":"none",display:"flex",gap:"4px"}}><span style={{color:g.ic,flexShrink:0}}>›</span>{s}</div>)}
+                    {[
+                      {t:"STÄRKEN",items:sel.strengths,c:"rgba(40,80,22,.1)",bc:"rgba(60,120,30,.2)",tc:"#8acc68",ic:"#70bb44"},
+                      {t:"SCHWÄCHEN",items:sel.weaknesses,c:"rgba(100,25,12,.1)",bc:"rgba(150,40,20,.2)",tc:"#dd8870",ic:"#ee6644"},
+                      {t:"ANGRIFFSTIPPS",items:sel.attackTips,c:"rgba(120,50,8,.08)",bc:"rgba(180,80,20,.18)",tc:"#c8a060",ic:"#c9a84c"}
+                    ].map(g=>(
+                      <div key={g.t} style={{padding:"10px 12px",background:g.c,border:`1px solid ${g.bc}`,borderRadius:"6px"}}>
+                        <div style={{fontSize:"10px",color:g.ic,letterSpacing:"2px",marginBottom:"6px",fontWeight:600}}>{g.t}</div>
+                        {g.items.map((s,i)=><div key={i} style={{fontSize:"12px",color:g.tc,padding:"3px 0",borderBottom:i<g.items.length-1?"1px solid rgba(255,255,255,.04)":"none",display:"flex",gap:"6px",lineHeight:1.5}}><span style={{color:g.ic,flexShrink:0,fontWeight:"bold"}}>›</span>{s}</div>)}
                       </div>
                     ))}
                   </div>
@@ -7519,11 +10531,11 @@ export default function App(){
                     <div style={{flex:1}}>
                       <div style={{fontSize:"18px",fontWeight:"bold",color:"#f0e6cc",marginBottom:"2px"}}>{sel.name}</div>
                       <div style={{fontSize:"13px",color:sel.theme.accent,marginBottom:"1px"}}>{sel.sub}</div>
-                      <div style={{fontSize:"12px",color:"#6a5a38"}}>{sel.loc} · {sel.era} · {sel.epoch}</div>
+                      <div style={{fontSize:"12px",color:"#9a8a68"}}>{sel.loc} · {sel.era} · {sel.epoch}</div>
                     </div>
                     <div style={{textAlign:"center",padding:"10px 16px",background:"rgba(0,0,0,0.3)",borderRadius:"5px",border:`1px solid ${sel.theme.accent}18`}}>
                       <div style={{fontSize:"28px",fontWeight:"bold",color:rCol(avg(sel))}}>{avg(sel)}</div>
-                      <div style={{fontSize:"9px",color:"#4a3a20",letterSpacing:"1.5px"}}>GESAMTWERT</div>
+                      <div style={{fontSize:"9px",color:"#8a7860",letterSpacing:"1.5px"}}>GESAMTWERT</div>
                     </div>
                   </div>
 
@@ -7594,7 +10606,7 @@ export default function App(){
                   {/* Siege context */}
                   <div style={{padding:"13px 15px",background:`${sel.theme.accent}06`,border:`1px solid ${sel.theme.accent}18`,borderRadius:"5px"}}>
                     <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"2px",marginBottom:"6px"}}>🎭 BELAGERUNGSSZENARIO</div>
-                    <p style={{fontSize:"13px",color:"#5a4828",lineHeight:1.9,margin:0,fontStyle:"italic"}}>{sel.siegeCtx}</p>
+                    <p style={{fontSize:"13px",color:"#9a8868",lineHeight:1.9,margin:0,fontStyle:"italic"}}>{sel.siegeCtx}</p>
                     {sel.defender&&<div style={{marginTop:"8px",fontSize:"12px",color:"#7a6840"}}>🛡️ Verteidiger: <strong style={{color:sel.theme.accent}}>{sel.defender}</strong></div>}
                   </div>
                 </div>
