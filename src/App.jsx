@@ -5254,8 +5254,15 @@ DETAILED_PLANS.carcassonne=({ac,sel,onSel})=>{
 function CastleFloorPlanTab({castle}){
   const sel=castle;
   const [selZone,setSelZone]=useState(null);
+  const [selDetail,setSelDetail]=useState(null);
+  const DetailedPlan=DETAILED_PLANS[sel.id]||null;
   const selZ=sel.zones.find(z=>z.id===selZone);
-  const plan=resolveCastlePlan(sel);
+
+  useEffect(()=>{
+    setSelZone(null);
+    setSelDetail(null);
+  },[sel.id]);
+
   return(
     <div style={{animation:"fadeIn 0.2s ease"}}>
       <div style={{display:"flex",gap:"14px",height:"calc(100vh - 220px)",minHeight:"520px"}}>
@@ -5265,23 +5272,38 @@ function CastleFloorPlanTab({castle}){
             <span style={{fontSize:"11px",color:"#9a8a6a",fontFamily:"'Cinzel',serif",letterSpacing:"0.5px"}}>
               Mausrad · Zoomen &nbsp;|&nbsp; Ziehen · Verschieben &nbsp;|&nbsp; Klicken · Details
             </span>
-            <button onClick={()=>setSelZone(null)}
+            <button onClick={()=>{
+              setSelZone(null);
+              setSelDetail(null);
+            }}
               style={{marginLeft:"auto",padding:"4px 10px",fontSize:"10px",fontFamily:"'Cinzel',serif",
                 background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",
                 color:"#9a8a6a",borderRadius:"5px",cursor:"pointer"}}>Auswahl aufheben</button>
           </div>
           <PanZoomFloorPlan accent={sel.theme.accent} height={0} style={{flex:1}}>
-            {plan
-              ? plan({ac:sel.theme.accent,sel:selZone,onZone:setSelZone})
-              : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>
-            }
+            {DetailedPlan
+              ? <DetailedPlan ac={sel.theme.accent} sel={selDetail} onSel={setSelDetail}/>
+              : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>}
           </PanZoomFloorPlan>
         </div>
         {/* Side info panel */}
         <div style={{width:"220px",flexShrink:0,background:"rgba(8,6,3,0.95)",border:`1px solid ${sel.theme.accent}20`,borderRadius:"8px",overflow:"hidden",display:"flex",flexDirection:"column"}}>
           <div style={{padding:"8px 12px",borderBottom:`1px solid ${sel.theme.accent}18`,fontSize:"10px",color:sel.theme.accent,fontFamily:"'Cinzel',serif",letterSpacing:"2px"}}>ELEMENT</div>
           <div style={{flex:1,overflowY:"auto",padding:"10px 12px"}}>
-            {selZ ? (
+            {selDetail ? (
+              <div style={{padding:"10px",background:"rgba(201,168,76,0.08)",border:`1px solid ${sel.theme.accent}35`,borderRadius:"6px"}}>
+                <div style={{fontSize:"11px",color:sel.theme.accent,letterSpacing:"1px",fontFamily:"'Cinzel',serif",marginBottom:"6px"}}>
+                  {selDetail.icon ? `${selDetail.icon} ` : ""}{selDetail.name}
+                </div>
+                {selDetail.type&&<div style={{fontSize:"10px",color:"#7a6949",marginBottom:"6px"}}>{selDetail.type}</div>}
+                <div style={{fontSize:"12px",lineHeight:1.5,color:"#9a8a68",marginBottom:"8px"}}>{selDetail.desc}</div>
+                {Array.isArray(selDetail.stats)&&selDetail.stats.length>0&&(
+                  <ul style={{margin:"0",paddingLeft:"16px",fontSize:"10px",lineHeight:1.5,color:"#7a6949"}}>
+                    {selDetail.stats.map((s,i)=><li key={i}>{s}</li>)}
+                  </ul>
+                )}
+              </div>
+            ) : selZ ? (
               <div style={{padding:"10px",background:`${selZ.c}10`,border:`1px solid ${selZ.c}35`,borderRadius:"6px"}}>
                 <div style={{fontSize:"11px",color:selZ.c,letterSpacing:"1px",fontFamily:"'Cinzel',serif",marginBottom:"6px"}}>
                   {selZ.l}
@@ -5350,7 +5372,7 @@ function GenericDetailedPlan({castle,ac,sel,onSel}){
         const zy=cy+Math.sin(angle)*r*0.6;
         const isS=sel===z.id;
         return(
-          <g key={z.id} onClick={()=>onSel(isS?null:{id:z.id,name:z.l,icon:"🏛️",type:"Zone",desc:z.d,weakness:z.a<=2?z.a:undefined,stats:[`Verteidigung ${z.a}/10`]})}
+          <g key={z.id} onClick={()=>onSel(isS?null:z.id)}
             style={{cursor:"pointer"}}>
             {isS&&<circle cx={zx} cy={zy} r="28" fill={`${z.c}22`} filter="url(#dp_glow)"/>}
             <circle cx={zx} cy={zy} r="22" fill={`${z.c}${isS?"30":"18"}`}
