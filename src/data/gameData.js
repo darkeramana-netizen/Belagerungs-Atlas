@@ -159,7 +159,7 @@ export const CASTLE_PERSONALITIES = {
   krak:"fanatiker", masada:"fanatiker", helmsdeep:"fanatiker",
   barad_dur:"fanatiker", angband:"fanatiker", schwarzer_bergfried:"fanatiker",
   minas_tirith:"stratege", gondolin:"stratege", constantinople:"stratege",
-  castle_sorrow:"stratege", gravecrest:"stratege",
+  castle_sorrow:"stratege", ashenveil:"stratege", gravecrest:"stratege",
   carcassonne:"pragmatiker", himeji:"pragmatiker", malbork:"pragmatiker",
   windsor:"ehrenmann", dover:"ehrenmann", beaumaris:"ehrenmann",
   chateau_gaillard:"ehrenmann", caernarvon:"ehrenmann",

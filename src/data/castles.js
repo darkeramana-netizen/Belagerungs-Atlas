@@ -12,6 +12,7 @@ export const COORDS = {
   windsor:        {x:44, y:19},   // England
   bodiam:         {x:45, y:20},   // SE England
   alhambra:       {x:43, y:31},   // Spanien
+  ashenveil:      {x:47, y:23},   // Sorrowland-Moor
   // ── NAHER OSTEN ─────────────────────────────────────
   constantinople: {x:57, y:28},   // Bosphorus
   rhodes:         {x:57, y:32},   // Ägäis
@@ -912,53 +913,75 @@ components:[
  zones:[
    {id:"bt",l:"Schwarzer Bergfried",x:50,y:35,r:16,c:"#8a8a9a",a:6,d:"Massiver Bergfried. Extrem dicke Mauern, wenige Fenster, schwer zugänglicher Eingang. Die verbotenen Karten sind hinter einer Doppelwand eingemauert."},
    {id:"ar",l:"Das versiegelte Archiv",x:30,y:38,r:9,c:"#aa9944",a:5,d:"Nur der Ordensrat kennt den vollen Inhalt. Karten zu Ruinen einer untergegangenen Zivilisation — und die politischen Konsequenzen ihrer Wiederentdeckung. Drei Ritter sterben für jeden Buchstaben darin."},
-   {id:"fp",l:"Felsplateau",x:50,y:58,r:36,c:"#666677",a:5,d:"Drei Seiten senkrecht abfallend. Signalverbindung zu Castle Sorrow und Gravecrest."},
+   {id:"fp",l:"Felsplateau",x:50,y:58,r:36,c:"#666677",a:5,d:"Drei Seiten senkrecht abfallend. Signalverbindung zu Burgfeste Drachenstein und Gravecrest."},
    {id:"sg",l:"Signalfeuer",x:78,y:25,r:8,c:"#cc8833",a:3,d:"Feuerzeichen nachts, Rauch tagsüber. Code-System das nur Ordensritter entschlüsseln können."},
    {id:"sp",l:"Einziger Pfad ⚠",x:50,y:92,r:9,c:"#cc4444",a:1,d:"Der einzige Zugang. Ein Dutzend Ritter kann hier eine Armee aufhalten."},
  ],
- strengths:["Verborgenes Wissen als stärkste Waffe — Feinde wissen nicht was sie suchen","Unerschütterliche Moral durch Ordensschwur","Extremdicke Mauern, minimale Angriffsfläche","Dreistufiges Verteidigungsnetz mit Castle Sorrow und Gravecrest"],
+ strengths:["Verborgenes Wissen als stärkste Waffe — Feinde wissen nicht was sie suchen","Unerschütterliche Moral durch Ordensschwur","Extremdicke Mauern, minimale Angriffsfläche","Dreistufiges Verteidigungsnetz mit Burgfeste Drachenstein und Gravecrest"],
  weaknesses:["Kleine Garnison","Versorgung nur über einen Pfad","Bei Verrat könnte der Archiv-Standort enthüllt werden"],
  attackTips:["Einen Ritter zum Reden bringen — Verrat ist die einzige echte Waffe","Archiv als Verhandlungsmasse androhen","Alle drei Burgen gleichzeitig isolieren — sonst rückt Entsatz nach","Langzeitblockade: Hunger erzwingt was Schwerter nicht können"],
  siegeCtx:"Ein rivalisierender Herzog hat Gerüchte gehört — Karten die seine Herrschaft illegitim machen würden. Er schickt 1.200 Mann. Die letzten 40 Ritter des Ordens halten das Archiv. Der Großmeister hat den Befehl gegeben: Verbrennt die Karten lieber als sie herauszugeben.",
  defender:"Großmeister Edric der Schweigsame (gest. 1241)"},
 
-{id:"castle_sorrow",name:"Castle Sorrow",sub:"Das Schwert des Ordens",era:"10.–11. Jh.",year:1000,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"🏰",
- theme:{bg:"#0a080e",accent:"#aa6688",glow:"rgba(150,80,120,0.15)"},
- ratings:{walls:90,supply:92,position:82,garrison:88,morale:90},
- desc:"Hauptsitz des Ordo Custodum, Sitz des Ordensrats, stärkste Garnison der Region. Erste Verteidigungslinie gegen Königreich Veldrath im Norden und die Kirche des Ewigen Lichts, die den Orden als Ketzer betrachtet.",
- history:"Im 10.–11. Jahrhundert von Großmeister Harwin dem Gründer erbaut — er erkannte dass ein einzelner Turm nicht genügt. Der Ordensrat tagt hier, kennt den vollen Inhalt des Archivs und trägt kollektiv die Last des Geheimnisses. 1389 versuchte Bischof Aldous von Veldrath den Orden durch päpstlichen Erlass aufzulösen — Großmeisterin Sera von Dunmoor verweigerte und hielt Castle Sorrow gegen ein kirchliches Heer 11 Monate lang.",
- verdict:"Castle Sorrow ist das Herz des Ordens — fällt es, zerfällt die Organisation. Aber der Ordensrat hat einen Notfallplan: Sollte die Burg fallen, verschwinden die Karten mit den Rittern nach Gravecrest.",
+{id:"castle_sorrow",name:"Burgfeste Drachenstein",sub:"Die dreifache Kernburg des Ordens",era:"1150–1580",year:1280,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"🏰",
+ theme:{bg:"#100b06",accent:"#c59658",glow:"rgba(197,150,88,0.18)"},
+ ratings:{walls:96,supply:94,position:89,garrison:86,morale:93},
+ desc:"Massive Burgfeste mit äußerer Ringmauer, drei gestaffelten Burghöfen, Hafenanbindung und starkem Kern mit Bergfried. Kontrolliert Fluss, Markt und Landwege zugleich.",
+ history:"Zwischen 1150 und 1580 wuchs Drachenstein in klaren Bauphasen: erst Urkern und Ringmauer am Höhenrücken, dann Untere Burg mit Marktviertel, danach Mittlere und Obere Burg mit Palas/Kapelle/Bergfried und zuletzt der befestigte Hafenbezirk am Drachenkai. Die gestaffelte Anlage verbindet Höhenfestung und Handelsstadt; in den Ordenskriegen war sie deshalb zugleich Schild, Arsenal und Logistikzentrum von Sorrowland.",
+ verdict:"Burgfeste Drachenstein fällt selten durch Sturm, sondern nur durch lange Einkesselung oder Verrat an Tor und Hafen. Solange Unterer, Mittlerer und Oberer Burghof zusammenhalten, bleibt sie nahezu uneinnehmbar.",
  zones:[
-   {id:"bt2",l:"Bastionsturm (15. Jh.)",x:75,y:30,r:14,c:"#cc5533",a:6,d:"Kanonen-Bastionsturm — nachträglich für Schwarzpulverwaffen errichtet. Kontrolliert alle Annäherungsrouten."},
-   {id:"rm",l:"Ringmauer",x:50,y:50,r:42,c:"#aa6688",a:5,d:"Große Ringmauer mit mehreren Türmen. Befestigtes Torhaus im Süden."},
-   {id:"hq",l:"Ordensrat & Verwaltung",x:40,y:42,r:14,c:"#886699",a:4,d:"Hier tagt der Ordensrat. Waffenlager, Hauptgarnison, logistische Versorgung."},
-   {id:"th2",l:"Befestigtes Torhaus",x:50,y:82,r:10,c:"#aa6688",a:4,d:"Doppeltes Fallgitter, Schießscharten, Mordloch."},
-   {id:"sf",l:"Signalfeuer",x:22,y:22,r:8,c:"#cc8833",a:3,d:"Koordiniert mit Gravecrest und Schwarzem Bergfried."},
-   {id:"ow",l:"Offene Fläche ⚠",x:50,y:68,r:12,c:"#cc4444",a:2,d:"Größte Burg = mehr Fläche zu verteidigen. Schwachstelle bei zu kleiner Garnison."},
+   {id:"am",l:"Äußere Ringmauer",x:50,y:58,r:45,c:"#8a6a3f",a:5,d:"Breiter Mauerring mit Bastionen und vorgelagerten Toren. Schützt Stadt, Markt und Kernburg."},
+   {id:"ub",l:"Unterer Burghof",x:39,y:49,r:15,c:"#b98952",a:4,d:"Wirtschaftshof mit Stallungen und Schmieden. Erste innere Verteidigungslinie."},
+   {id:"mb",l:"Mittlerer Burghof",x:55,y:47,r:13,c:"#c59658",a:5,d:"Palas, Kemenaten und Zisternen. Operatives Zentrum der Festung."},
+   {id:"ob",l:"Oberer Burghof",x:69,y:45,r:12,c:"#d8ad70",a:6,d:"Höchster Kernbereich vor dem Bergfried. Letzter Hof vor der Zitadelle."},
+   {id:"bf",l:"Bergfried",x:78,y:42,r:10,c:"#e8c68a",a:6,d:"Stärkster Turm der Anlage. Kommandostand und letzter Rückzugsort."},
+   {id:"hf",l:"Hafenviertel ⚠",x:24,y:74,r:12,c:"#4d8fbf",a:2,d:"Werft und Hafenbecken sichern Versorgung, sind aber bei Seeblockade verwundbar."},
+   {id:"st",l:"Stadttor/Rarg-Tor ⚠",x:48,y:80,r:10,c:"#cc5544",a:2,d:"Hauptzugang zur Vorstadt. Kritischer Punkt bei konzentriertem Sturmangriff."},
  ],
- strengths:["Kanonen-Bastionsturm dominiert Umgebung","Große Garnison und Logistik","Befestigtes Torhaus mit Mordloch","Direkte Signalverbindung zu Gravecrest"],
- weaknesses:["Größte Burg — meiste Fläche zu verteidigen","Verlust hier enthauptet den Orden militärisch","Im offenen Gelände keine natürliche Erhöhung wie Gravecrest"],
- attackTips:["Offene Südflanke zuerst","Bastionsturm mit schwerem Gerät ausschalten","Torhaus unterminieren","Versorgungswege kappen bevor Belagerung beginnt"],
- siegeCtx:"Eine feindliche Armee von 2.000 Mann marschiert auf Castle Sorrow. Gravecrest ist noch frei — aber der Entsatz braucht 3 Tage. Hält der Bastionsturm?",
- defender:"Ordensmarschall von Sorrowland"},
+ strengths:["Dreifach gestaffelte Kernburg mit mehreren Höfen","Starker Bergfried und hoher Innenkern","Hafen, Markt und Werkstätten sichern Nachschub","Äußere Ringmauer mit Bastionen und Torstaffelung"],
+ weaknesses:["Große Gesamtfläche erfordert viele Verteidiger","Hafenviertel bei Blockade verwundbar","Torachsen zur Vorstadt sind natürliche Angriffsschwerpunkte"],
+ attackTips:["Hafenviertel und Stadttor parallel unter Druck setzen","Äußere Ringmauer durch Minen/Artillerie öffnen","Unteren Burghof isolieren, dann stufenweise nach innen","Bergfried erst nach Fall der drei Höfe stürmen"],
+ siegeCtx:"Die Belagerer haben Fluss und Handelswege gekappt. 2.400 Mann greifen Burgfeste Drachenstein von Süden und Osten an. Hält die dreifache Kernburg bis Entsatz aus Gravecrest eintrifft?",
+ defender:"Festungskommandant von Drachenstein"},
+
+{id:"ashenveil",name:"Burg Ashenveil",sub:"Die Sumpfburg des Ordens",era:"13.–16. Jh.",year:1320,loc:"Sorrowland-Moor",type:"real",epoch:"Mittelalter",region:"europa",icon:"🐊",
+ theme:{bg:"#0b120e",accent:"#6f8c62",glow:"rgba(110,150,95,0.16)"},
+ ratings:{walls:87,supply:90,position:91,garrison:76,morale:88},
+ desc:"Auf Inselboden im Moor errichtete Rechteckfestung mit Graben, Zugbrücken und überdachtem Innenhof. Dient als Logistik- und Rückzugsbastion des Ordens in nassen Grenzgebieten.",
+ history:"Nach den Ordenskriegen wurde Ashenveil als vierte Bastion gegründet, um Wasserwege, Sumpfpfade und geheime Nachschubrouten zu sichern. Die Festung wuchs aus einem Holzfort zu einer steinernen Kastenburg mit doppelten Torachsen, Rüstkammern und Stallungen.",
+ verdict:"Ashenveil ist weniger monumentaler Kern als Drachenstein — aber als Sumpffestung extrem zäh. Feinde verlieren im Moor oft mehr Männer als an der Mauer.",
+ zones:[
+   {id:"og",l:"Offener Gang",x:50,y:26,r:40,c:"#8a9a7a",a:4,d:"Umlaufender Wehrgang mit Sicht auf Wasserarme und Moorpfade."},
+   {id:"ms",l:"Marstall & Reithalle",x:32,y:47,r:15,c:"#9c8a62",a:4,d:"Pferde, Futterkammern und Stallungen sichern schnelle Reiterangriffe im Umland."},
+   {id:"ih",l:"Überdachter Innenhof",x:56,y:56,r:18,c:"#7f9b74",a:5,d:"Zentraler Hof mit Holzstegen und schneller Truppenverlegung."},
+   {id:"rk",l:"Rüstkammer-Komplex",x:58,y:40,r:12,c:"#7f8c74",a:5,d:"Erweiterte Rüstkammern, Schmieden und Waffenlager."},
+   {id:"br",l:"Brunnen",x:48,y:70,r:8,c:"#4d8fbf",a:3,d:"Süßwasserbrunnen im Innenkern — kritisch für lange Belagerungen."},
+   {id:"zb",l:"Zugbrücke/Torhaus ⚠",x:84,y:52,r:10,c:"#cc5544",a:2,d:"Haupttor mit Zugbrücke. Bei Sabotage droht direkter Einbruch."},
+   {id:"sw",l:"Sumpfgraben ⚠",x:20,y:78,r:12,c:"#4f7c5a",a:2,d:"Natürliche Verteidigung, aber auch Risiko: Krankheiten und weicher Boden."},
+ ],
+ strengths:["Moorlage mit natürlichem Wasserhindernis","Überdachter Innenhof für ganzjährige Mobilität","Starke Logistik: Marstall, Lager, Schmieden","Mehrere Tor-/Brückenachsen zur Verzögerung von Sturmangriffen"],
+ weaknesses:["Dauerfeuchte belastet Mauern und Vorräte","Zugbrückenmechanik als kritischer Ausfallpunkt","Sumpfkrankheiten können Moral und Kampfkraft senken"],
+ attackTips:["Brückenmechanik sabotieren","Sumpfzufahrten mit Bohlenwegen sichern","Rüstkammern und Lager durch Brandwaffen unter Druck setzen","Lange Belagerung mit Seuchen-/Versorgungsdruck"],
+ siegeCtx:"Eine Koalition aus Grenzbaronen schiebt Belagerungstürme auf Bohlenwegen durchs Moor. Ashenveil muss halten, bis Drachenstein Entsatz über den Nordkanal sendet.",
+ defender:"Marschallin Elyra von Ashenveil"},
 
 {id:"gravecrest",name:"Gravecrest",sub:"Der Schild des Ordens",era:"12. Jh.",year:1150,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"⛰️",
  theme:{bg:"#080c0a",accent:"#7aaa88",glow:"rgba(100,160,120,0.15)"},
  ratings:{walls:92,supply:72,position:97,garrison:68,morale:92},
  desc:"Auf einem unzugänglichen Berggipfel — nur ein schmaler Pfad führt hinauf. Letzte Zuflucht des Ordens, Sammelplatz nach Niederlagen, und stille Beobachtungsstation für das gesamte Sorrowland.",
- history:"Im 12. Jahrhundert von Großmeister Talvyn dem Stillen errichtet — er sagte: 'Eine Burg die man nicht sehen kann, kann man nicht nehmen.' Gravecrest ist auf alten Karten nicht verzeichnet. 1312 flohen die überlebenden Ritter nach der Niederlage von Castle Sorrow hierher — und organisierten von hier den Gegenangriff. Der gegenwärtige Ritterhauptmann Oswin von Gravecrest ist seit 22 Jahren im Amt und hat die Burg nie verlassen.",
+ history:"Im 12. Jahrhundert von Großmeister Talvyn dem Stillen errichtet — er sagte: 'Eine Burg die man nicht sehen kann, kann man nicht nehmen.' Gravecrest ist auf alten Karten nicht verzeichnet. 1312 flohen die überlebenden Ritter nach der Niederlage von Burgfeste Drachenstein hierher — und organisierten von hier den Gegenangriff. Der gegenwärtige Ritterhauptmann Oswin von Gravecrest ist seit 22 Jahren im Amt und hat die Burg nie verlassen.",
  verdict:"Solange Gravecrest steht, lebt der Orden. Kein Feind der Geschichte hat es je genommen — nicht weil es so stark ist, sondern weil niemand weiß wo genau es liegt.",
  zones:[
-   {id:"bp2",l:"Berggipfel-Position",x:50,y:30,r:22,c:"#7aaa88",a:6,d:"Beherrschende Höhenposition — Sicht auf das gesamte umliegende Land, inkl. Castle Sorrow und Schwarzem Bergfried."},
+   {id:"bp2",l:"Berggipfel-Position",x:50,y:30,r:22,c:"#7aaa88",a:6,d:"Beherrschende Höhenposition — Sicht auf das gesamte umliegende Land, inkl. Burgfeste Drachenstein und Schwarzem Bergfried."},
    {id:"sp2",l:"Schmaler Zugangspfad ⚠",x:50,y:90,r:10,c:"#cc4444",a:2,d:"Einziger Zugang. Ein Dutzend Mann kann Hunderte aufhalten. Aber auch Versorgung kommt nur hier durch."},
    {id:"sf2",l:"Signalfeuer",x:78,y:28,r:9,c:"#cc8833",a:4,d:"Verbindet alle drei Burgen. Von hier aus sieht man beide anderen Burgen gleichzeitig."},
-   {id:"rs",l:"Sammelplatz für Verstärkung",x:35,y:52,r:14,c:"#558866",a:3,d:"Truppen die von Castle Sorrow fliehen sammeln sich hier. Organisierter Gegenangriff startet von hier."},
+   {id:"rs",l:"Sammelplatz für Verstärkung",x:35,y:52,r:14,c:"#558866",a:3,d:"Truppen die von Burgfeste Drachenstein fliehen sammeln sich hier. Organisierter Gegenangriff startet von hier."},
    {id:"ow2",l:"Innere Zitadelle",x:55,y:40,r:12,c:"#7aaa88",a:5,d:"Kern der Bergfestung. Letzter Rückzugsort innerhalb von Gravecrest selbst."},
  ],
  strengths:["Steilhang auf allen Seiten","Sichtkontrolle über gesamtes Sorrowland","Sammelpunkt für Entsatz","Überwacht Zugang zum Schwarzen Bergfried"],
  weaknesses:["Versorgung nur über Pfad","Kleiner Mauerring wegen Bergkuppe","Schwer mit großer Garnison zu besetzen"],
- attackTips:["Pfad mit kleiner Einheit blockieren — Hunger erzwingen","Versorgungskolonnen abfangen","Gleichzeitig mit Castle Sorrow angreifen um Signalsystem zu überlasten","Winter abwarten — Pfad wird schwer passierbar"],
- siegeCtx:"Castle Sorrow ist gefallen. Die überlebenden Ritter haben sich nach Gravecrest zurückgezogen. 400 feindliche Soldaten stürmen den Pfad. Oben warten 80 Ritter.",
+ attackTips:["Pfad mit kleiner Einheit blockieren — Hunger erzwingen","Versorgungskolonnen abfangen","Gleichzeitig mit Burgfeste Drachenstein angreifen um Signalsystem zu überlasten","Winter abwarten — Pfad wird schwer passierbar"],
+ siegeCtx:"Burgfeste Drachenstein ist gefallen. Die überlebenden Ritter haben sich nach Gravecrest zurückgezogen. 400 feindliche Soldaten stürmen den Pfad. Oben warten 80 Ritter.",
  defender:"Ritterhauptmann von Gravecrest"},
 
 // ── NEUE BURGEN BATCH 3 ────────────────────────────────────────────────────
@@ -1558,5 +1581,3 @@ components:[
  attackTips:["Musketen — mittelalterliche Verteidigung machtlos","Sahara-Flanke nutzen: unerwarteter Anmarsch","Niger-Übergang mit Booten am Abend","Markt sofort nehmen — Versorgung unterbrechen"],
  siegeCtx:"1591 — Marokkanische Söldner mit Musketen. 4.000 gegen 30.000 Songhai-Krieger. Du hast den Technologievorteil. Gao liegt vor dir — Lehmziegelmauern, keine Kanonen. Geschichte wird gemacht.",defender:"Askia Ishaq II."},
 ];
-
-
