@@ -923,11 +923,11 @@ components:[
  siegeCtx:"Ein rivalisierender Herzog hat Gerüchte gehört — Karten die seine Herrschaft illegitim machen würden. Er schickt 1.200 Mann. Die letzten 40 Ritter des Ordens halten das Archiv. Der Großmeister hat den Befehl gegeben: Verbrennt die Karten lieber als sie herauszugeben.",
  defender:"Großmeister Edric der Schweigsame (gest. 1241)"},
 
-{id:"castle_sorrow",name:"Burgfeste Drachenstein",sub:"Die dreifache Kernburg des Ordens",era:"1150–1580",year:1280,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"🏰",
+{id:"castle_sorrow",name:"Burgfeste Drachenstein",sub:"Die sechsphasige Ordensfeste",era:"1050–18. Jh.",year:1050,loc:"Sorrowland",type:"real",epoch:"Mittelalter",region:"europa",icon:"🏰",
  theme:{bg:"#100b06",accent:"#c59658",glow:"rgba(197,150,88,0.18)"},
  ratings:{walls:96,supply:94,position:89,garrison:86,morale:93},
  desc:"Massive Burgfeste mit äußerer Ringmauer, drei gestaffelten Burghöfen, Hafenanbindung und starkem Kern mit Bergfried. Kontrolliert Fluss, Markt und Landwege zugleich.",
- history:"Zwischen 1150 und 1580 wuchs Drachenstein in klaren Bauphasen: erst Urkern und Ringmauer am Höhenrücken, dann Untere Burg mit Marktviertel, danach Mittlere und Obere Burg mit Palas/Kapelle/Bergfried und zuletzt der befestigte Hafenbezirk am Drachenkai. Die gestaffelte Anlage verbindet Höhenfestung und Handelsstadt; in den Ordenskriegen war sie deshalb zugleich Schild, Arsenal und Logistikzentrum von Sorrowland.",
+ history:"Von 1050 bis ins 18. Jahrhundert entstand Drachenstein in sechs Bauphasen: I Urkern (10.–11. Jh.), II romanische Erweiterung (12.–13. Jh.), III gotische Hochphase (14. Jh.), IV spätmittelalterliche Verdichtung (15. Jh.), V Artillerie-Anpassung (16. Jh.) und VI Infrastruktur-/Hafenphase (17.–18. Jh.). So wuchs aus einer Höhenburg eine gestaffelte Gesamtanlage mit Unterer, Mittlerer und Oberer Burg sowie Drachenkai und Hafenbezirk.",
  verdict:"Burgfeste Drachenstein fällt selten durch Sturm, sondern nur durch lange Einkesselung oder Verrat an Tor und Hafen. Solange Unterer, Mittlerer und Oberer Burghof zusammenhalten, bleibt sie nahezu uneinnehmbar.",
  zones:[
    {id:"am",l:"Äußere Ringmauer",x:50,y:58,r:45,c:"#8a6a3f",a:5,d:"Breiter Mauerring mit Bastionen und vorgelagerten Toren. Schützt Stadt, Markt und Kernburg."},

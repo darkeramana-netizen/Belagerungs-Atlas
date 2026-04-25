@@ -2008,6 +2008,13 @@ const CASTLE_PLANS = {
       {/* terrain mass */}
       <path d="M 18 154 Q 10 132 17 108 Q 27 74 58 48 Q 92 20 142 19 Q 178 19 201 32 Q 215 40 214 57 Q 212 81 194 95 Q 194 118 180 137 Q 165 159 130 168 Q 92 177 58 171 Q 32 167 18 154 Z"
         fill="rgba(84,62,33,0.16)" stroke="rgba(112,82,46,0.35)" strokeWidth="1.2"/>
+      {/* Bauphasen overlays I-VI */}
+      <path d="M 142 93 L 153 71 L 171 70 L 176 88 L 160 106 Z" fill="rgba(176,66,56,0.26)" stroke="rgba(176,66,56,0.42)" strokeWidth="0.8"/>
+      <path d="M 106 111 L 114 76 L 145 70 L 152 102 L 131 119 Z" fill="rgba(194,126,62,0.22)" stroke="rgba(194,126,62,0.38)" strokeWidth="0.8"/>
+      <path d="M 74 123 L 81 90 L 112 80 L 121 112 L 99 127 Z" fill="rgba(198,168,86,0.2)" stroke="rgba(198,168,86,0.35)" strokeWidth="0.8"/>
+      <path d="M 40 152 L 57 131 L 96 122 L 112 142 L 75 160 Z" fill="rgba(112,150,82,0.16)" stroke="rgba(112,150,82,0.32)" strokeWidth="0.8"/>
+      <path d="M 34 112 L 51 76 L 92 46 L 148 41 L 182 53 L 196 75 L 191 106 L 171 132 L 129 150 L 75 155 L 32 146 Z" fill="rgba(88,124,162,0.12)" stroke="rgba(88,124,162,0.25)" strokeWidth="0.7"/>
+      <path d="M 88 164 Q 99 179 112 186 Q 126 194 139 200 L 181 200 Q 173 187 174 168 Q 174 154 166 147 Q 153 139 134 143 Q 111 149 95 150 Z" fill="rgba(128,94,152,0.18)" stroke="rgba(128,94,152,0.32)" strokeWidth="0.8"/>
 
       {/* harbor district / water basin */}
       <path d="M 86 164 Q 94 176 112 186 Q 126 194 139 200 L 181 200 Q 173 187 174 168 Q 175 152 166 146 Q 152 137 133 143 Q 110 150 95 150 Z"
@@ -2039,7 +2046,7 @@ const CASTLE_PLANS = {
       ))}
       <path d="M 44 134 Q 72 120 99 124 Q 126 129 160 118" fill="none" stroke="rgba(160,125,78,0.32)" strokeWidth="1"/>
       <path d="M 50 153 Q 82 143 108 145 Q 139 148 162 140" fill="none" stroke="rgba(160,125,78,0.30)" strokeWidth="1"/>
-      <rect x="96" y="131" width="18" height="14" fill="rgba(182,154,104,0.2)" stroke="rgba(198,165,112,0.45)" strokeWidth="0.7"/>
+      <path d="M 96 132 L 114 131 L 115 145 L 97 146 Z" fill="rgba(182,154,104,0.2)" stroke="rgba(198,165,112,0.45)" strokeWidth="0.7"/>
       <text x="105" y="141" textAnchor="middle" fill={`${ac}77`} fontSize="6.3" fontFamily="serif">MARKT</text>
 
       {/* triple core on ridge */}
@@ -2079,12 +2086,26 @@ const CASTLE_PLANS = {
       <path d="M 129 120 Q 142 110 155 102 Q 169 92 180 84" fill="none" stroke="rgba(175,138,85,0.5)" strokeWidth="1.2"/>
       <text x="133" y="60" textAnchor="middle" fill={`${ac}55`} fontSize="6.3" fontFamily="serif">PALAS · KEMENATEN · KAPELLE · ZISTERNEN</text>
       <text x="66" y="168" fill={`${ac}55`} fontSize="6.2" fontFamily="serif">UNTERE BURG / MARKTVIERTEL</text>
+      <text x="12" y="18" fill={`${ac}77`} fontSize="6.2" fontFamily="serif">BAUPHASEN:</text>
+      {[
+        ["I","10.–11. Jh.","rgba(176,66,56,0.6)"],
+        ["II","12.–13. Jh.","rgba(194,126,62,0.6)"],
+        ["III","14. Jh.","rgba(198,168,86,0.65)"],
+        ["IV","15. Jh.","rgba(112,150,82,0.62)"],
+        ["V","16. Jh.","rgba(88,124,162,0.62)"],
+        ["VI","17.–18. Jh.","rgba(128,94,152,0.65)"],
+      ].map(([p,t,c],i)=>(
+        <g key={p} transform={`translate(12,${24+i*8})`}>
+          <circle cx="2.6" cy="0" r="2.1" fill={c}/>
+          <text x="7" y="2.1" fill={`${ac}66`} fontSize="5.7" fontFamily="serif">{p} {t}</text>
+        </g>
+      ))}
 
       {/* compass + title */}
       <text x="198" y="20" textAnchor="middle" fill={`${ac}55`} fontSize="10" fontFamily="serif">N</text>
       <line x1="198" y1="23" x2="198" y2="40" stroke={`${ac}33`} strokeWidth="1"/>
-      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="7.9" fontFamily="serif" letterSpacing="1.2">
-        BURGFESTE DRACHENSTEIN · GRUNDRISS DER GESAMTANLAGE
+      <text x="110" y="197" textAnchor="middle" fill={`${ac}55`} fontSize="7.4" fontFamily="serif" letterSpacing="1.05">
+        BURGFESTE DRACHENSTEIN · GESAMTANLAGE (1050–18. JAHRHUNDERT)
       </text>
     </g>
   ),
