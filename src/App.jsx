@@ -2642,7 +2642,16 @@ const CASTLE_PLANS = {
   ),
 };
 
-// Generic plan for all other castles — enhanced top-down view
+function resolveCastlePlan(castle){
+  if(!castle) return null;
+  if(CASTLE_PLANS[castle.id]) return CASTLE_PLANS[castle.id];
+  const n=(castle.name||"").toLowerCase();
+  if(n.includes("drachenstein")) return CASTLE_PLANS.castle_sorrow;
+  if(n.includes("ashenveil")) return CASTLE_PLANS.ashenveil;
+  return null;
+}
+
+// Generic plan for all other castles
 function GenericCastlePlan({castle,ac,sel,onZone}){
   const zones=castle.zones;
 
@@ -5244,38 +5253,13 @@ DETAILED_PLANS.carcassonne=({ac,sel,onSel})=>{
 
 function CastleFloorPlanTab({castle}){
   const sel=castle;
-  const [selEl,setSelEl]=useState(null);
-  const plan=DETAILED_PLANS[sel.id];
-
-  const infoPanel=(el)=>{
-    if(!el)return(
-      <div style={{padding:"16px",color:"#6a5a3a",fontFamily:"'Cinzel',serif",fontSize:"12px",textAlign:"center",letterSpacing:"0.5px"}}>
-        <div style={{fontSize:"24px",marginBottom:"8px",opacity:0.4}}>🏰</div>
-        Element anklicken<br/>für Details
-      </div>
-    );
-    return(
-      <div style={{padding:"14px",animation:"fadeIn 0.15s ease"}}>
-        <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"10px",paddingBottom:"8px",borderBottom:`1px solid ${sel.theme.accent}22`}}>
-          <span style={{fontSize:"20px"}}>{el.icon||"🏛️"}</span>
-          <div>
-            <div style={{fontSize:"13px",fontWeight:"bold",color:"#f0e6cc",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{el.name}</div>
-            {el.type&&<div style={{fontSize:"10px",color:sel.theme.accent,letterSpacing:"1px",marginTop:"2px"}}>{el.type}</div>}
-          </div>
-        </div>
-        {el.desc&&<p style={{fontSize:"12px",color:"#c8b890",lineHeight:1.6,margin:"0 0 10px"}}>{el.desc}</p>}
-        {el.stats&&<div style={{display:"flex",flexWrap:"wrap",gap:"5px"}}>
-          {el.stats.map((s,i)=>(
-            <div key={i} style={{padding:"4px 8px",background:`${sel.theme.accent}12`,border:`1px solid ${sel.theme.accent}30`,borderRadius:"4px",fontSize:"10px",color:sel.theme.accent,fontFamily:"'Cinzel',serif"}}>{s}</div>
-          ))}
-        </div>}
-        {el.weakness!=null&&<div style={{marginTop:"8px",padding:"6px 8px",background:"rgba(180,40,20,0.12)",border:"1px solid rgba(180,40,20,0.25)",borderRadius:"4px",fontSize:"11px",color:"#dd7755"}}>
-          ⚠ Schwachstelle — Angriffswert {el.weakness}/10
-        </div>}
-      </div>
-    );
-  };
-
+  const [mapMode,setMapMode]=useState("plan");
+  const [zoom,setZoom]=useState(1);
+  const [selZone,setSelZone]=useState(null);
+  const [attackMode,setAttackMode]=useState(false);
+  const [viewMode,setViewMode]=useState("flat");
+  const selZ=sel.zones.find(z=>z.id===selZone);
+  const plan=resolveCastlePlan(sel);
   return(
     <div style={{animation:"fadeIn 0.2s ease"}}>
       <div style={{display:"flex",gap:"14px",height:"calc(100vh - 220px)",minHeight:"520px"}}>
@@ -5606,7 +5590,7 @@ function BattleMap({castle,interactive}){
   const ac=castle.theme.accent;
   const selZ=castle.zones.find(z=>z.id===selZone);
 
-  const PlanComp=CASTLE_PLANS[castle.id];
+  const PlanComp=resolveCastlePlan(castle);
 
   return(
     <div>
@@ -8406,7 +8390,7 @@ function CampaignExplore({castle, general, season, siegeBonus, choiceMade, onSie
 
 function CampaignExploreMap({castle, onStartSiege, onBack}){
   const [selZone, setSelZone] = useState(null);
-  const plan = CASTLE_PLANS[castle.id];
+  const plan = resolveCastlePlan(castle);
   const ac = castle.theme.accent;
   const selZ = castle.zones.find(z=>z.id===selZone);
 
