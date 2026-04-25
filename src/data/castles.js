@@ -927,7 +927,7 @@ components:[
  theme:{bg:"#100b06",accent:"#c59658",glow:"rgba(197,150,88,0.18)"},
  ratings:{walls:96,supply:94,position:89,garrison:86,morale:93},
  desc:"Massive Burgfeste mit äußerer Ringmauer, drei gestaffelten Burghöfen, Hafenanbindung und starkem Kern mit Bergfried. Kontrolliert Fluss, Markt und Landwege zugleich.",
- history:"Zwischen 1150 und 1580 in mehreren Bauphasen zur Burgfeste Drachenstein ausgebaut. Untere Vorstadt mit Werft und Markt wurde zuerst befestigt, später folgte die innere Dreifach-Kernburg mit Palas, Zeughaus und Bergfried. Während der Ordenskriege galt Drachenstein als logistisches Herz von Sorrowland.",
+ history:"Zwischen 1150 und 1580 wuchs Drachenstein in klaren Bauphasen: erst Urkern und Ringmauer am Höhenrücken, dann Untere Burg mit Marktviertel, danach Mittlere und Obere Burg mit Palas/Kapelle/Bergfried und zuletzt der befestigte Hafenbezirk am Drachenkai. Die gestaffelte Anlage verbindet Höhenfestung und Handelsstadt; in den Ordenskriegen war sie deshalb zugleich Schild, Arsenal und Logistikzentrum von Sorrowland.",
  verdict:"Burgfeste Drachenstein fällt selten durch Sturm, sondern nur durch lange Einkesselung oder Verrat an Tor und Hafen. Solange Unterer, Mittlerer und Oberer Burghof zusammenhalten, bleibt sie nahezu uneinnehmbar.",
  zones:[
    {id:"am",l:"Äußere Ringmauer",x:50,y:58,r:45,c:"#8a6a3f",a:5,d:"Breiter Mauerring mit Bastionen und vorgelagerten Toren. Schützt Stadt, Markt und Kernburg."},
