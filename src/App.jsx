@@ -5256,6 +5256,7 @@ function CastleFloorPlanTab({castle}){
   const [selZone,setSelZone]=useState(null);
   const [selDetail,setSelDetail]=useState(null);
   const DetailedPlan=DETAILED_PLANS[sel.id]||null;
+  const LegacyPlan=!DetailedPlan?resolveCastlePlan(sel):null;
   const selZ=sel.zones.find(z=>z.id===selZone);
 
   useEffect(()=>{
@@ -5283,7 +5284,9 @@ function CastleFloorPlanTab({castle}){
           <PanZoomFloorPlan accent={sel.theme.accent} height={0} style={{flex:1}}>
             {DetailedPlan
               ? <DetailedPlan ac={sel.theme.accent} sel={selDetail} onSel={setSelDetail}/>
-              : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>}
+              : LegacyPlan
+                ? <LegacyDetailedPlan castle={sel} PlanComp={LegacyPlan} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>
+                : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>}
           </PanZoomFloorPlan>
         </div>
         {/* Side info panel */}
@@ -5332,71 +5335,135 @@ function CastleFloorPlanTab({castle}){
   );
 }
 
+
+function LegacyDetailedPlan({castle,PlanComp,ac,sel,onSel}){
+  const selected=castle.zones?.find(z=>z.id===sel);
+  return(
+    <svg viewBox="0 0 900 620" style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id={`${castle.id}_legacy_bg`} cx="50%" cy="45%" r="75%">
+          <stop offset="0%" stopColor="#151006"/>
+          <stop offset="72%" stopColor="#080502"/>
+          <stop offset="100%" stopColor="#030201"/>
+        </radialGradient>
+        <pattern id={`${castle.id}_legacy_grid`} width="36" height="36" patternUnits="userSpaceOnUse">
+          <path d="M36 0H0V36" fill="none" stroke={`${ac}0f`} strokeWidth="0.7"/>
+        </pattern>
+        <filter id={`${castle.id}_legacy_shadow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="12" stdDeviation="14" floodColor="#000" floodOpacity="0.55"/>
+        </filter>
+        <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width="900" height="620" fill={`url(#${castle.id}_legacy_bg)`}/>
+      <rect width="900" height="620" fill={`url(#${castle.id}_legacy_grid)`} opacity="0.65"/>
+      <ellipse cx="450" cy="330" rx="360" ry="236" fill="rgba(48,35,12,0.24)" stroke={`${ac}18`} strokeWidth="1.2"/>
+      <g transform="translate(120 78) scale(3)" filter={`url(#${castle.id}_legacy_shadow)`}>
+        <rect x="-6" y="-6" width="232" height="212" rx="10" fill="rgba(5,3,1,0.45)" stroke={`${ac}26`} strokeWidth="0.8"/>
+        <PlanComp ac={ac} sel={sel} onZone={id=>onSel(sel===id?null:id)}/>
+      </g>
+      <text x="450" y="34" textAnchor="middle" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="3">{castle.name.toUpperCase()}</text>
+      <text x="450" y="54" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1.5">REKONSTRUIERTER BURGGRUNDRISS · {castle.era}</text>
+      {selected&&<g pointerEvents="none">
+        <rect x="636" y="86" width="214" height="82" rx="9" fill="rgba(6,4,2,0.9)" stroke={`${selected.c}77`} strokeWidth="1"/>
+        <text x="654" y="112" fill={selected.c} fontSize="12" fontFamily="'Cinzel',serif" fontWeight="bold">{selected.l.replace('⚠','')}</text>
+        <text x="654" y="135" fill="#9a8a68" fontSize="11">Verteidigung {selected.a}/6</text>
+        {selected.a<=2&&<text x="654" y="154" fill="#dd6644" fontSize="11" fontWeight="bold">⚠ Schwachstelle</text>}
+      </g>}
+      <g transform="translate(820,552)"><circle r="24" fill="rgba(0,0,0,0.55)" stroke={`${ac}45`} strokeWidth="1"/><path d="M0,-18 L5,-2 L0,5 L-5,-2 Z" fill={ac}/><text y="-25" textAnchor="middle" fill={ac} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">N</text></g>
+      <g transform="translate(52,574)"><line x1="0" y1="0" x2="150" y2="0" stroke={`${ac}55`} strokeWidth="2"/><line x1="0" y1="-6" x2="0" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><line x1="150" y1="-6" x2="150" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><text x="75" y="18" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="serif">schematischer Maßstab</text></g>
+    </svg>
+  );
+}
+
 // Generic detailed plan (used when no DETAILED_PLANS entry exists)
 function GenericDetailedPlan({castle,ac,sel,onSel}){
   const zones=castle.zones||[];
-  const W=600,H=500;
-  const cx=W/2,cy=H/2;
-  const layers=Math.min(4,Math.ceil(zones.length/4));
+  const W=900,H=620;
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+  const pctX=x=>clamp((Number(x)||50)/100*W,70,W-70);
+  const pctY=y=>clamp((Number(y)||50)/100*H,72,H-72);
+  const isMountain=castle.plan==="mountain"||castle.ratings?.position>=92||/berg|felsen|klippe|mount|rock|masada|alamut|sigiriya/i.test(`${castle.name} ${castle.sub}`);
+  const isTower=castle.plan==="tower"||zones.length<=3||/turm|tower|bergfried/i.test(`${castle.name} ${castle.sub}`);
+  const isTemple=castle.region==="ostasien"||castle.region==="suedostasien"||/tempel|palast|pyramide|angkor|borobudur/i.test(`${castle.name} ${castle.sub}`);
+  const wallZones=zones.filter(z=>z.r>=24||/mauer|wall|ring|wall|wall|klippe|graben|wall|enceinte|stadt/i.test(`${z.l} ${z.d}`));
+  const pointZones=zones.filter(z=>!wallZones.includes(z));
+  const orderedWalls=[...wallZones].sort((a,b)=>(b.r||0)-(a.r||0)).slice(0,4);
+  const selectedZone=zones.find(z=>z.id===sel);
+  const hit=z=>onSel(sel===z.id?null:z.id);
+  const stone=`${castle.id || 'castle'}_professional_stone`;
+  const grid=`${castle.id || 'castle'}_survey_grid`;
+  const glow=`${castle.id || 'castle'}_plan_glow`;
+  const bg=`${castle.id || 'castle'}_plan_bg`;
+  const getShape=z=>{
+    const x=pctX(z.x), y=pctY(z.y), r=clamp((z.r||12)*4.2,28,210);
+    const label=`${z.l} ${z.d}`.toLowerCase();
+    const weak=(z.a||0)<=2||label.includes('⚠')||label.includes('schwach');
+    const water=label.includes('wasser')||label.includes('zister')||label.includes('fluss')||label.includes('graben')||label.includes('moat');
+    const gate=label.includes('tor')||label.includes('gate')||label.includes('zugang')||label.includes('porte');
+    const keep=label.includes('donjon')||label.includes('bergfried')||label.includes('keep')||label.includes('palas')||label.includes('turm')||label.includes('tower');
+    return {x,y,r,weak,water,gate,keep,label};
+  };
+  const buildingGlyph=(z,i)=>{
+    const g=getShape(z), isS=sel===z.id;
+    const c=z.c||ac;
+    const w=clamp(g.r*1.35,46,150), h=clamp(g.r*0.95,34,105);
+    if(g.water){
+      return <g key={z.id} onClick={()=>hit(z)} style={{cursor:"pointer"}}>
+        <ellipse cx={g.x} cy={g.y} rx={w*0.52} ry={h*0.44} fill={isS?`${c}55`:`${c}22`} stroke={isS?c:`${c}88`} strokeWidth={isS?3:1.6}/>
+        <path d={`M ${g.x-w*.35} ${g.y} C ${g.x-w*.15} ${g.y-h*.18}, ${g.x+w*.15} ${g.y+h*.18}, ${g.x+w*.35} ${g.y}`} fill="none" stroke={`${c}88`} strokeWidth="1" opacity="0.7"/>
+      </g>;
+    }
+    if(g.gate){
+      return <g key={z.id} onClick={()=>hit(z)} style={{cursor:"pointer"}}>
+        <rect x={g.x-w/2} y={g.y-h/2} width={w} height={h} rx="5" fill={isS?`${c}40`:`${c}18`} stroke={isS?c:`${c}99`} strokeWidth={isS?3:1.8}/>
+        <rect x={g.x-w*.18} y={g.y-h*.5} width={w*.36} height={h} fill="#070503" stroke={`${c}77`} strokeWidth="1"/>
+        <circle cx={g.x-w*.42} cy={g.y} r={h*.34} fill={isS?`${c}55`:`${c}22`} stroke={isS?c:`${c}99`} strokeWidth="1.5"/>
+        <circle cx={g.x+w*.42} cy={g.y} r={h*.34} fill={isS?`${c}55`:`${c}22`} stroke={isS?c:`${c}99`} strokeWidth="1.5"/>
+      </g>;
+    }
+    if(g.keep){
+      const sides=isTower?8:4;
+      const pts=Array.from({length:sides},(_,n)=>{const a=-Math.PI/2+n/sides*Math.PI*2;return `${g.x+Math.cos(a)*g.r*.75},${g.y+Math.sin(a)*g.r*.75}`}).join(' ');
+      return <polygon key={z.id} points={pts} fill={isS?`${c}50`:`${c}20`} stroke={isS?c:`${c}aa`} strokeWidth={isS?3:1.8} onClick={()=>hit(z)} style={{cursor:"pointer"}}/>;
+    }
+    return <g key={z.id} onClick={()=>hit(z)} style={{cursor:"pointer"}}>
+      <rect x={g.x-w/2} y={g.y-h/2} width={w} height={h} rx="4" fill={isS?`${c}40`:`${c}18`} stroke={isS?c:`${c}88`} strokeWidth={isS?2.6:1.4}/>
+      <line x1={g.x-w/2+8} y1={g.y} x2={g.x+w/2-8} y2={g.y} stroke={`${c}33`} strokeWidth="1"/>
+      <line x1={g.x} y1={g.y-h/2+7} x2={g.x} y2={g.y+h/2-7} stroke={`${c}28`} strokeWidth="1"/>
+    </g>;
+  };
   return(
     <svg viewBox={`0 0 ${W} ${H}`} style={{width:"100%",height:"100%",display:"block"}}>
       <defs>
-        <radialGradient id="dp_bg" cx="50%" cy="50%" r="65%">
-          <stop offset="0%" stopColor="#110d06"/>
-          <stop offset="100%" stopColor="#060402"/>
-        </radialGradient>
-        <filter id="dp_glow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-        <pattern id="dp_stone" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-          <rect width="30" height="30" fill="transparent"/>
-          <rect x="1" y="1" width="13" height="13" fill={`${ac}06`} rx="1"/>
-          <rect x="16" y="16" width="13" height="13" fill={`${ac}05`} rx="1"/>
-        </pattern>
+        <radialGradient id={bg} cx="50%" cy="45%" r="72%"><stop offset="0%" stopColor="#161006"/><stop offset="72%" stopColor="#090602"/><stop offset="100%" stopColor="#030201"/></radialGradient>
+        <pattern id={grid} width="45" height="45" patternUnits="userSpaceOnUse"><path d="M45 0H0V45" fill="none" stroke={`${ac}10`} strokeWidth="0.7"/></pattern>
+        <pattern id={stone} width="32" height="22" patternUnits="userSpaceOnUse"><path d="M0 0H32V22H0Z" fill="none"/><path d="M0 11H32M16 0V11M8 11V22M24 11V22" stroke={`${ac}16`} strokeWidth="0.7"/></pattern>
+        <filter id={glow} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
-      <rect width={W} height={H} fill="url(#dp_bg)"/>
-      <rect width={W} height={H} fill="url(#dp_stone)" opacity="0.6"/>
-      {/* Concentric curtain walls */}
-      {[...Array(layers)].map((_,li)=>{
-        const r=60+li*70;
-        return<rect key={li} x={cx-r} y={cy-r} width={r*2} height={r*2} rx="8"
-          fill="none" stroke={`${ac}${li===0?"55":"33"}`} strokeWidth={li===0?3:2}/>;
-      })}
-      {/* Zones */}
-      {zones.map((z,i)=>{
-        const angle=(i/zones.length)*Math.PI*2-Math.PI/2;
-        const layer=Math.floor(i/(zones.length/layers));
-        const r=80+layer*70;
-        const zx=cx+Math.cos(angle)*r*0.6;
-        const zy=cy+Math.sin(angle)*r*0.6;
-        const isS=sel===z.id;
-        return(
-          <g key={z.id} onClick={()=>onSel(isS?null:z.id)}
-            style={{cursor:"pointer"}}>
-            {isS&&<circle cx={zx} cy={zy} r="28" fill={`${z.c}22`} filter="url(#dp_glow)"/>}
-            <circle cx={zx} cy={zy} r="22" fill={`${z.c}${isS?"30":"18"}`}
-              stroke={`${z.c}${isS?"cc":"55"}`} strokeWidth={isS?2:1}/>
-            <text x={zx} y={zy-2} textAnchor="middle" fill={isS?z.c:"#c8b890"}
-              fontSize="9" fontFamily="'Cinzel',serif" fontWeight={isS?"bold":"normal"}>{z.l.slice(0,10)}</text>
-            <text x={zx} y={zy+9} textAnchor="middle" fill={isS?"#dd6633":"#8a7a60"}
-              fontSize="8">{z.a<=2?"⚠ Schwach":""}</text>
-          </g>
-        );
-      })}
-      {/* Center keep */}
-      <rect x={cx-25} y={cy-25} width="50" height="50" rx="4"
-        fill={`${ac}22`} stroke={`${ac}88`} strokeWidth="2.5"/>
-      <text x={cx} y={cy+5} textAnchor="middle" fill={ac} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">KEEP</text>
-      {/* Compass */}
-      <g transform={`translate(${W-36},36)`}>
-        <circle r="14" fill="rgba(0,0,0,0.5)" stroke={`${ac}40`} strokeWidth="1"/>
-        {[["N",0,"#f0e6cc"],["S",180,"#c8b890"],["O",90,"#c8b890"],["W",270,"#c8b890"]].map(([l,a,c])=>{
-          const rad=a*Math.PI/180;
-          return<text key={l} x={Math.sin(rad)*9} y={-Math.cos(rad)*9+3.5}
-            textAnchor="middle" fill={c} fontSize="7" fontFamily="'Cinzel',serif" fontWeight="bold">{l}</text>;
-        })}
-      </g>
+      <rect width={W} height={H} fill={`url(#${bg})`}/><rect width={W} height={H} fill={`url(#${grid})`} opacity="0.55"/>
+      <ellipse cx={W/2} cy={H/2+18} rx={isMountain?360:330} ry={isMountain?238:220} fill={isMountain?"rgba(78,64,38,0.24)":"rgba(42,31,13,0.22)"} stroke={`${ac}18`} strokeWidth="1.2"/>
+      {isMountain&&[0,1,2,3].map(i=><path key={i} d={`M ${150+i*52} ${420-i*42} C ${280+i*30} ${250-i*35}, ${505+i*28} ${210+i*18}, ${735-i*34} ${385-i*18}`} fill="none" stroke={`${ac}${i===0?'18':'10'}`} strokeWidth="1" strokeDasharray="9 10"/>)}
+      {isTemple&&<g opacity="0.42">{[0,1,2].map(i=><rect key={i} x={W/2-185+i*42} y={H/2-138+i*34} width={370-i*84} height={276-i*68} fill="none" stroke={`${ac}22`} strokeWidth="1.2"/>)}</g>}
+      {orderedWalls.map((z,i)=>{const g=getShape(z), isS=sel===z.id, c=z.c||ac; const rx=clamp(g.r*(isTower?0.72:1.15),80,310), ry=clamp(g.r*(isTower?0.72:0.86),66,240); return <g key={z.id} onClick={()=>hit(z)} style={{cursor:"pointer"}} filter={isS?`url(#${glow})`:undefined}>
+        <ellipse cx={g.x} cy={g.y} rx={rx} ry={ry} fill={isS?`${c}18`:"rgba(0,0,0,0.04)"} stroke={isS?c:`${c}88`} strokeWidth={isS?9:6}/>
+        <ellipse cx={g.x} cy={g.y} rx={rx-13} ry={ry-13} fill="none" stroke={`${c}30`} strokeWidth="1.2" strokeDasharray="5 7"/>
+        {Array.from({length:Math.max(8,Math.round(rx/18))},(_,n)=>{const a=n/Math.max(8,Math.round(rx/18))*Math.PI*2;return <rect key={n} x={g.x+Math.cos(a)*rx-5} y={g.y+Math.sin(a)*ry-5} width="10" height="10" rx="1.5" fill={isS?`${c}aa`:`${c}55`} stroke={`${c}88`} strokeWidth="0.7"/>})}
+        <path d={`M ${g.x-rx*.72} ${g.y} C ${g.x-rx*.3} ${g.y-ry*.24}, ${g.x+rx*.26} ${g.y+ry*.2}, ${g.x+rx*.7} ${g.y}`} stroke={`${c}22`} strokeWidth="18" fill="none"/>
+      </g>})}
+      <g fill={`url(#${stone})`}>{pointZones.map(buildingGlyph)}</g>
+      {zones.map((z,i)=>{const g=getShape(z), isS=sel===z.id, c=z.c||ac; return <g key={`${z.id}_label`} onClick={()=>hit(z)} style={{cursor:"pointer",pointerEvents:"all"}}>
+        {isS&&<circle cx={g.x} cy={g.y} r={clamp(g.r*.55,20,58)} fill={`${c}22`} filter={`url(#${glow})`}/>}
+        {g.weak&&<text x={g.x+clamp(g.r*.35,18,50)} y={g.y-clamp(g.r*.32,16,44)} fill="#dd6644" fontSize="18" fontFamily="serif" fontWeight="bold">⚠</text>}
+        <text x={g.x} y={g.y+clamp(g.r*.72,26,62)} textAnchor="middle" fill={isS?c:`${ac}9a`} fontSize={isS?"14":"11"} fontFamily="'Cinzel',serif" fontWeight={isS?"bold":"600"} letterSpacing="0.7">{z.l.replace('⚠','').slice(0,24)}</text>
+      </g>})}
+      {selectedZone&&(()=>{const g=getShape(selectedZone), c=selectedZone.c||ac; return <g pointerEvents="none"><line x1={g.x} y1={g.y} x2={W-238} y2="96" stroke={`${c}88`} strokeWidth="1.2" strokeDasharray="5 5"/><rect x={W-234} y="64" width="200" height="64" rx="8" fill="rgba(6,4,2,0.88)" stroke={`${c}77`} strokeWidth="1"/><text x={W-218} y="86" fill={c} fontSize="12" fontFamily="'Cinzel',serif" fontWeight="bold">{selectedZone.l.replace('⚠','')}</text><text x={W-218} y="108" fill="#9a8a68" fontSize="11">Verteidigung {selectedZone.a}/6</text></g>})()}
+      <text x={W/2} y="34" textAnchor="middle" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="3">{castle.name.toUpperCase()}</text>
+      <text x={W/2} y="54" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1.5">PROFESSIONELLER TAKTISCHER GRUNDRISS · {castle.era}</text>
+      <g transform={`translate(${W-62},${H-58})`}><circle r="24" fill="rgba(0,0,0,0.55)" stroke={`${ac}45`} strokeWidth="1"/><path d="M0,-18 L5,-2 L0,5 L-5,-2 Z" fill={ac}/><text y="-25" textAnchor="middle" fill={ac} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">N</text></g>
+      <g transform="translate(52,574)"><line x1="0" y1="0" x2="150" y2="0" stroke={`${ac}55`} strokeWidth="2"/><line x1="0" y1="-6" x2="0" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><line x1="150" y1="-6" x2="150" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><text x="75" y="18" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="serif">schematischer Maßstab</text></g>
     </svg>
   );
 }
