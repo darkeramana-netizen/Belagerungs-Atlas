@@ -5256,6 +5256,7 @@ function CastleFloorPlanTab({castle}){
   const [selZone,setSelZone]=useState(null);
   const [selDetail,setSelDetail]=useState(null);
   const DetailedPlan=DETAILED_PLANS[sel.id]||null;
+  const LegacyPlan=!DetailedPlan?resolveCastlePlan(sel):null;
   const selZ=sel.zones.find(z=>z.id===selZone);
 
   useEffect(()=>{
@@ -5283,7 +5284,9 @@ function CastleFloorPlanTab({castle}){
           <PanZoomFloorPlan accent={sel.theme.accent} height={0} style={{flex:1}}>
             {DetailedPlan
               ? <DetailedPlan ac={sel.theme.accent} sel={selDetail} onSel={setSelDetail}/>
-              : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>}
+              : LegacyPlan
+                ? <LegacyDetailedPlan castle={sel} PlanComp={LegacyPlan} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>
+                : <GenericDetailedPlan castle={sel} ac={sel.theme.accent} sel={selZone} onSel={setSelZone}/>}
           </PanZoomFloorPlan>
         </div>
         {/* Side info panel */}
@@ -5329,6 +5332,49 @@ function CastleFloorPlanTab({castle}){
         </div>
       </div>
     </div>
+  );
+}
+
+
+function LegacyDetailedPlan({castle,PlanComp,ac,sel,onSel}){
+  const selected=castle.zones?.find(z=>z.id===sel);
+  return(
+    <svg viewBox="0 0 900 620" style={{width:"100%",height:"100%",display:"block"}}>
+      <defs>
+        <radialGradient id={`${castle.id}_legacy_bg`} cx="50%" cy="45%" r="75%">
+          <stop offset="0%" stopColor="#151006"/>
+          <stop offset="72%" stopColor="#080502"/>
+          <stop offset="100%" stopColor="#030201"/>
+        </radialGradient>
+        <pattern id={`${castle.id}_legacy_grid`} width="36" height="36" patternUnits="userSpaceOnUse">
+          <path d="M36 0H0V36" fill="none" stroke={`${ac}0f`} strokeWidth="0.7"/>
+        </pattern>
+        <filter id={`${castle.id}_legacy_shadow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="12" stdDeviation="14" floodColor="#000" floodOpacity="0.55"/>
+        </filter>
+        <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect width="900" height="620" fill={`url(#${castle.id}_legacy_bg)`}/>
+      <rect width="900" height="620" fill={`url(#${castle.id}_legacy_grid)`} opacity="0.65"/>
+      <ellipse cx="450" cy="330" rx="360" ry="236" fill="rgba(48,35,12,0.24)" stroke={`${ac}18`} strokeWidth="1.2"/>
+      <g transform="translate(120 78) scale(3)" filter={`url(#${castle.id}_legacy_shadow)`}>
+        <rect x="-6" y="-6" width="232" height="212" rx="10" fill="rgba(5,3,1,0.45)" stroke={`${ac}26`} strokeWidth="0.8"/>
+        <PlanComp ac={ac} sel={sel} onZone={id=>onSel(sel===id?null:id)}/>
+      </g>
+      <text x="450" y="34" textAnchor="middle" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="3">{castle.name.toUpperCase()}</text>
+      <text x="450" y="54" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1.5">REKONSTRUIERTER BURGGRUNDRISS · {castle.era}</text>
+      {selected&&<g pointerEvents="none">
+        <rect x="636" y="86" width="214" height="82" rx="9" fill="rgba(6,4,2,0.9)" stroke={`${selected.c}77`} strokeWidth="1"/>
+        <text x="654" y="112" fill={selected.c} fontSize="12" fontFamily="'Cinzel',serif" fontWeight="bold">{selected.l.replace('⚠','')}</text>
+        <text x="654" y="135" fill="#9a8a68" fontSize="11">Verteidigung {selected.a}/6</text>
+        {selected.a<=2&&<text x="654" y="154" fill="#dd6644" fontSize="11" fontWeight="bold">⚠ Schwachstelle</text>}
+      </g>}
+      <g transform="translate(820,552)"><circle r="24" fill="rgba(0,0,0,0.55)" stroke={`${ac}45`} strokeWidth="1"/><path d="M0,-18 L5,-2 L0,5 L-5,-2 Z" fill={ac}/><text y="-25" textAnchor="middle" fill={ac} fontSize="10" fontFamily="'Cinzel',serif" fontWeight="bold">N</text></g>
+      <g transform="translate(52,574)"><line x1="0" y1="0" x2="150" y2="0" stroke={`${ac}55`} strokeWidth="2"/><line x1="0" y1="-6" x2="0" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><line x1="150" y1="-6" x2="150" y2="6" stroke={`${ac}55`} strokeWidth="1.5"/><text x="75" y="18" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="serif">schematischer Maßstab</text></g>
+    </svg>
   );
 }
 
