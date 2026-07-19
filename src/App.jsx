@@ -5337,7 +5337,12 @@ function CastleFloorPlanTab({castle}){
 
 
 function LegacyDetailedPlan({castle,PlanComp,ac,sel,onSel}){
-  const selected=castle.zones?.find(z=>z.id===sel);
+  const zones=castle.zones||[];
+  const selected=zones.find(z=>z.id===sel);
+  const weakZones=zones.filter(z=>z.a<=2||z.l.includes("⚠"));
+  const px=z=>120+((Number(z.x)||50)/100)*660;
+  const py=z=>78+((Number(z.y)||50)/100)*600;
+  const approach=z=>({x:px(z)<450?54:846,y:py(z)});
   return(
     <svg viewBox="0 0 900 620" style={{width:"100%",height:"100%",display:"block"}}>
       <defs>
@@ -5352,6 +5357,9 @@ function LegacyDetailedPlan({castle,PlanComp,ac,sel,onSel}){
         <filter id={`${castle.id}_legacy_shadow`} x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0" dy="12" stdDeviation="14" floodColor="#000" floodOpacity="0.55"/>
         </filter>
+        <marker id={`${castle.id}_legacy_arrow`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L8,3 z" fill="#cc4433" opacity="0.85"/>
+        </marker>
         <filter id="glowFilter" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
           <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
@@ -5363,6 +5371,12 @@ function LegacyDetailedPlan({castle,PlanComp,ac,sel,onSel}){
       <g transform="translate(120 78) scale(3)" filter={`url(#${castle.id}_legacy_shadow)`}>
         <rect x="-6" y="-6" width="232" height="212" rx="10" fill="rgba(5,3,1,0.45)" stroke={`${ac}26`} strokeWidth="0.8"/>
         <PlanComp ac={ac} sel={sel} onZone={id=>onSel(sel===id?null:id)}/>
+      </g>
+      <g pointerEvents="none">
+        {weakZones.slice(0,3).map(z=>{const a=approach(z);return <g key={`${z.id}_approach`} opacity={sel&&sel!==z.id?0.35:0.9}>
+          <path d={`M ${a.x} ${a.y} C ${(a.x+px(z))/2} ${a.y-48}, ${(a.x+px(z))/2} ${py(z)+48}, ${px(z)} ${py(z)}`} fill="none" stroke="#cc4433" strokeWidth={sel===z.id?3:1.8} strokeDasharray="10 8" markerEnd={`url(#${castle.id}_legacy_arrow)`}/>
+          <text x={a.x<450?70:830} y={a.y-10} textAnchor={a.x<450?"start":"end"} fill="#cc6644" fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1">ANGRIFFSACHSE</text>
+        </g>})}
       </g>
       <text x="450" y="34" textAnchor="middle" fill={ac} fontSize="15" fontFamily="'Cinzel',serif" fontWeight="bold" letterSpacing="3">{castle.name.toUpperCase()}</text>
       <text x="450" y="54" textAnchor="middle" fill={`${ac}66`} fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1.5">REKONSTRUIERTER BURGGRUNDRISS · {castle.era}</text>
@@ -5392,6 +5406,8 @@ function GenericDetailedPlan({castle,ac,sel,onSel}){
   const pointZones=zones.filter(z=>!wallZones.includes(z));
   const orderedWalls=[...wallZones].sort((a,b)=>(b.r||0)-(a.r||0)).slice(0,4);
   const selectedZone=zones.find(z=>z.id===sel);
+  const weakZones=zones.filter(z=>(z.a||0)<=2||z.l.includes("⚠")).slice(0,3);
+  const strongZones=zones.filter(z=>(z.a||0)>=4).slice(0,5);
   const hit=z=>onSel(sel===z.id?null:z.id);
   const stone=`${castle.id || 'castle'}_professional_stone`;
   const grid=`${castle.id || 'castle'}_survey_grid`;
@@ -5442,6 +5458,7 @@ function GenericDetailedPlan({castle,ac,sel,onSel}){
         <pattern id={grid} width="45" height="45" patternUnits="userSpaceOnUse"><path d="M45 0H0V45" fill="none" stroke={`${ac}10`} strokeWidth="0.7"/></pattern>
         <pattern id={stone} width="32" height="22" patternUnits="userSpaceOnUse"><path d="M0 0H32V22H0Z" fill="none"/><path d="M0 11H32M16 0V11M8 11V22M24 11V22" stroke={`${ac}16`} strokeWidth="0.7"/></pattern>
         <filter id={glow} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <marker id={`${castle.id}_attack_arrow`} markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#cc4433" opacity="0.85"/></marker>
       </defs>
       <rect width={W} height={H} fill={`url(#${bg})`}/><rect width={W} height={H} fill={`url(#${grid})`} opacity="0.55"/>
       <ellipse cx={W/2} cy={H/2+18} rx={isMountain?360:330} ry={isMountain?238:220} fill={isMountain?"rgba(78,64,38,0.24)":"rgba(42,31,13,0.22)"} stroke={`${ac}18`} strokeWidth="1.2"/>
@@ -5453,6 +5470,13 @@ function GenericDetailedPlan({castle,ac,sel,onSel}){
         {Array.from({length:Math.max(8,Math.round(rx/18))},(_,n)=>{const a=n/Math.max(8,Math.round(rx/18))*Math.PI*2;return <rect key={n} x={g.x+Math.cos(a)*rx-5} y={g.y+Math.sin(a)*ry-5} width="10" height="10" rx="1.5" fill={isS?`${c}aa`:`${c}55`} stroke={`${c}88`} strokeWidth="0.7"/>})}
         <path d={`M ${g.x-rx*.72} ${g.y} C ${g.x-rx*.3} ${g.y-ry*.24}, ${g.x+rx*.26} ${g.y+ry*.2}, ${g.x+rx*.7} ${g.y}`} stroke={`${c}22`} strokeWidth="18" fill="none"/>
       </g>})}
+      <g pointerEvents="none">
+        {strongZones.flatMap((sZone,si)=>weakZones.slice(0,2).map((wZone,wi)=>{const s=getShape(sZone), w=getShape(wZone);return <line key={`${sZone.id}_${wZone.id}_${wi}`} x1={s.x} y1={s.y} x2={w.x} y2={w.y} stroke={`${ac}${si===0?'26':'14'}`} strokeWidth="1" strokeDasharray="4 8"/>}))}
+        {weakZones.map(z=>{const g=getShape(z);const fromX=g.x<W/2?46:W-46;return <g key={`${z.id}_attack`} opacity={sel&&sel!==z.id?0.3:0.9}>
+          <path d={`M ${fromX} ${g.y} C ${(fromX+g.x)/2} ${g.y-58}, ${(fromX+g.x)/2} ${g.y+58}, ${g.x} ${g.y}`} fill="none" stroke="#cc4433" strokeWidth={sel===z.id?3:1.8} strokeDasharray="10 8" markerEnd={`url(#${castle.id}_attack_arrow)`}/>
+          <text x={fromX<W/2?62:W-62} y={g.y-12} textAnchor={fromX<W/2?"start":"end"} fill="#cc6644" fontSize="10" fontFamily="'Cinzel',serif" letterSpacing="1">ANGRIFFSACHSE</text>
+        </g>})}
+      </g>
       <g fill={`url(#${stone})`}>{pointZones.map(buildingGlyph)}</g>
       {zones.map((z,i)=>{const g=getShape(z), isS=sel===z.id, c=z.c||ac; return <g key={`${z.id}_label`} onClick={()=>hit(z)} style={{cursor:"pointer",pointerEvents:"all"}}>
         {isS&&<circle cx={g.x} cy={g.y} r={clamp(g.r*.55,20,58)} fill={`${c}22`} filter={`url(#${glow})`}/>}
